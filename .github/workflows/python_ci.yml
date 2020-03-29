@@ -59,7 +59,6 @@ jobs:
             printf "\n\n $last_commit_log  commit message failed match"
             exit 1
           fi
-
         - name: Install dependencies
           run: |
             python -m pip install --upgrade pip
