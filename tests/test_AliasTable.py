@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 import numpy as np
 import numpy
-from aliasTable import AliasTable
+from src.utils.aliasTable import AliasTable
 
 
 class TestAliasTable(unittest.TestCase):
