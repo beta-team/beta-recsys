@@ -16,49 +16,49 @@ jobs:
         with: 
           python-version: 3.7
 
-      - name: check commit message format
-        run: |
-          # Get Commit Message
-          last_commit_log=$(git log -1 --pretty=format:"%s")
-          echo "last commit log: $last_commit_log"
+      - name: should it be skipped?
+          run: |
+            # Get Commit Message
+            last_commit_log=$(git log -1 --pretty=format:"%s")
+            echo "last commit log: $last_commit_log"
 
-          feat="feat:[[:space:]].*$"
-          fix="fix:[[:space:]].*$"
-          test="test:[[:space:]].*$"
-          chore="chore:[[:space:]].*$"
-          merge="Merge pull request.*$"
-          doc="doc:[[:space:]].*$"
+            feat="feat:[[:space:]].*$"
+            fix="fix:[[:space:]].*$"
+            test="test:[[:space:]].*$"
+            chore="chore:[[:space:]].*$"
+            merge="Merge pull request.*$"
+            doc="doc:[[:space:]].*$"
 
-          commit_msg_reg=(
-            $feat
-            $fix
-            $test
-            $chore
-            $merge
-            $doc
-          )
-          
-          check_commit_msg() {
-            for regex in ${commit_msg_reg[*]}
-              do
-                echo "last commit log: $last_commit_log"
-                echo "$regex"
-                if [[ $last_commit_log =~ $regex ]]; then
-                  printf "do match \n\n  $last_commit_log  $regex"
-                  return 0
-                else
-                  printf "does not match $last_commit_log  $regex"
-                fi
-              done
-            return 1
-          }
-          
-          check_commit_msg
-          if [[ $? == 1 ]]
-          then
-            printf "\n\n $last_commit_log  commit message failed match"
-            exit 1
-          fi
+            commit_msg_reg=(
+              $feat
+              $fix
+              $test
+              $chore
+              $merge
+              $doc
+            )
+
+            check_commit_msg() {
+              for regex in ${commit_msg_reg[*]}
+                do
+                  echo "last commit log: $last_commit_log"
+                  echo "$regex"
+                  if [[ $last_commit_log =~ $regex ]]; then
+                    printf "do match \n\n  $last_commit_log  $regex"
+                    return 0
+                  else
+                    printf "does not match $last_commit_log  $regex"
+                  fi
+                done
+              return 1
+            }
+
+            check_commit_msg
+            if [[ $? == 1 ]]
+            then
+              printf "\n\n $last_commit_log  commit message failed match"
+              exit 1
+            fi
         - name: Install dependencies
           run: |
             python -m pip install --upgrade pip
