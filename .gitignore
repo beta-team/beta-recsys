@@ -32,4 +32,6 @@
 ##!/datasets/dunnhumby/leave_one_out/
 ##!/datasets/dunnhubmy/temperal/
 /datasets/instacart/
-/tests/
+.coverage
+coverage.xml
+.idea/
