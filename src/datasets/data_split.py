@@ -26,7 +26,7 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
     n_interact = len(df.index)
     n_users = df[DEFAULT_USER_COL].nunique()
     n_items = df[DEFAULT_ITEM_COL].nunique()
-    print("before filter", n_interact, n_orders, n_users, n_items)
+    print(f"before filter, n_interact:{n_interact}, n_users:{n_users}, n_items:{n_items}")
 
     while True:
         # Filter out users that have less than min_i_c interactions (items)

@@ -181,7 +181,7 @@ class VBCAR(nn.Module):
 
     def predict(self, users, items):
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
-        items_t = to 2 rch.tensor(items, dtype=torch.int64, device=self.device)
+        items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
         with torch.no_grad():
             scores = torch.mul(
                 self.user_encode(users_t)[0],
