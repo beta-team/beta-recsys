@@ -208,7 +208,6 @@ class TestDataSplit(unittest.TestCase):
         mock_shuffle.side_effect = self.my_shuffle_side_effect
         
         data = random_split(testdata, test_rate=0.1, by_user=False)
-        print(data)
         # check shape
         self.assertEqual(data.shape[0], 10)
         self.assertEqual(data.shape[1], 6)

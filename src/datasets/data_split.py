@@ -223,7 +223,6 @@ def random_split(data, test_rate=0.1, by_user=False):
         data.loc[
             interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
         ] = "validate"
-        print(data)
     return data
 
 
