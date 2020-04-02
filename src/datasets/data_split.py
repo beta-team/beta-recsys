@@ -8,8 +8,8 @@ sys.path.append("../")
 import random
 import sklearn
 from tqdm import tqdm
-from utils.unigramTable import UnigramTable
-from utils.constants import *
+from src.utils.unigramTable import UnigramTable
+from src.utils.constants import *
 
 
 def fiter_by_count(df, group_col, filter_col, num):
@@ -26,7 +26,7 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
     n_interact = len(df.index)
     n_users = df[DEFAULT_USER_COL].nunique()
     n_items = df[DEFAULT_ITEM_COL].nunique()
-    print("before filter", n_interact, n_orders, n_users, n_items)
+    print(f"before filter, n_interact:{n_interact}, n_users:{n_users}, n_items:{n_items}")
 
     while True:
         # Filter out users that have less than min_i_c interactions (items)
@@ -183,7 +183,7 @@ def random_split(data, test_rate=0.1, by_user=False):
 
     Args:
         data: Dataframe. of interactions.
-        test_rate: percentage of the test data. Note that percentage of the vidation data will be the same as testing.
+        test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
                     - Ture: user-based split,
                     - False: global split,
@@ -203,7 +203,7 @@ def random_split(data, test_rate=0.1, by_user=False):
             train_size = total_size - test_size
             data.loc[
                 interactions[train_size:], DEFAULT_FLAG_COL,
-            ] = "test"  # the last test_rateof the total orders to be the test set
+            ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
             ] = "validate"
@@ -211,6 +211,7 @@ def random_split(data, test_rate=0.1, by_user=False):
     else:
         interactions = data.index.values  # numpy array
         interactions = sklearn.utils.shuffle(interactions)
+        print(interactions)
         total_size = len(interactions)
         validate_size = math.ceil(total_size * test_rate)
         test_size = math.ceil(total_size * test_rate)
@@ -218,7 +219,7 @@ def random_split(data, test_rate=0.1, by_user=False):
 
         data.loc[
             interactions[train_size:], DEFAULT_FLAG_COL,
-        ] = "test"  # the last test_rateof the total orders to be the test set
+        ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
         ] = "validate"
@@ -250,7 +251,7 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
             train_size = total_size - test_size
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(orders[train_size:]), DEFAULT_FLAG_COL,
-            ] = "test"  # the last test_rateof the total orders to be the test set
+            ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
                     orders[train_size - validate_size : train_size]
@@ -267,7 +268,7 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
         train_size = total_size - test_size
         data.loc[
             data[DEFAULT_ORDER_COL].isin(orders[train_size:]), DEFAULT_FLAG_COL,
-        ] = "test"  # the last test_rateof the total orders to be the test set
+        ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
                 orders[train_size - validate_size : train_size]
@@ -333,14 +334,14 @@ def temporal_split(data, test_rate=0.1, by_user=False):
 
     Args:
         data: Dataframe. of interactions.
-        test_rate: percentage of the test data. Note that percentage of the vidation data will be the same as testing.
+        test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
                     - Ture: user-based split,
                     - False: global split,
 
     Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
     """
-    print("temporal_split_basket")
+    print("temporal_split")
     data[DEFAULT_FLAG_COL] = "train"
     data.sort_values(by=[DEFAULT_TIMESTAMP_COL], inplace=True)
     if by_user:
@@ -368,7 +369,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
 
         data.loc[
             interactions[train_size:], DEFAULT_FLAG_COL,
-        ] = "test"  # the last test_rateof the total orders to be the test set
+        ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
         ] = "validate"
@@ -380,7 +381,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
 
     Args:
         data: Dataframe. of interactions. must have a col DEFAULT_ORDER_COL
-        test_rate: percentage of the test data. Note that percentage of the vidation data will be the same as testing.
+        test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
                     - Ture: user-based split,
                     - False: global split,
@@ -400,7 +401,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
             train_size = total_size - test_size
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(orders[train_size:]), DEFAULT_FLAG_COL,
-            ] = "test"  # the last test_rateof the total orders to be the test set
+            ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
                     orders[train_size - validate_size : train_size]
@@ -415,7 +416,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
         train_size = total_size - test_size
         data.loc[
             data[DEFAULT_ORDER_COL].isin(orders[train_size:]), DEFAULT_FLAG_COL,
-        ] = "test"  # the last test_rateof the total orders to be the test set
+        ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
                 orders[train_size - validate_size : train_size]
@@ -447,16 +448,16 @@ def data_split(
                         - temporal
                         - temporal_basket
         random: bool.  Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
-        test_rate: percentage of the test data. Note that percentage of the vidation data will be the same as testing.
+        test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         n_negative: Number of negative samples for testing and validation data.
-        save_dir: str. Default None. If specifed, the split data will be saved to the dir.
+        save_dir: str. Default None. If specified, the split data will be saved to the dir.
         by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
-        test_copy: int. Default 10. The number of testing and validation copys.
+        test_copy: int. Default 10. The number of testing and validation copies.
 
     Returns:
-        Dataframe. The split data. Note that the returned data will not have negagive samples.
+        Dataframe. The split data. Note that the returned data will not have negative samples.
 
     """
     if split_type == "random":
@@ -479,7 +480,7 @@ def data_split(
     tp_train = data[data[DEFAULT_FLAG_COL] == "train"]
     tp_validate = data[data[DEFAULT_FLAG_COL] == "validate"]
     tp_test = data[data[DEFAULT_FLAG_COL] == "test"]
-    if save_dir == None:
+    if save_dir is None:
         return data
     save_data(tp_train, save_dir, split_type, "train.npz")
     item_sampler = UnigramTable(data[DEFAULT_ITEM_COL].value_counts().to_dict())
@@ -491,13 +492,13 @@ def data_split(
     return data
 
 
-def generate_random_data(n_interation, user_id, item_id):
+def generate_random_data(n_interaction, user_id, item_id):
     oder_id = 10
-    users = np.random.randint(user_id, size=n_interation)
-    orders = np.random.randint(oder_id, size=n_interation) * 100 + users
+    users = np.random.randint(user_id, size=n_interaction)
+    orders = np.random.randint(oder_id, size=n_interaction) * 100 + users
     timestamps = orders
-    items = np.random.randint(item_id, size=n_interation)
-    ratings = np.array([1] * n_interation)
+    items = np.random.randint(item_id, size=n_interaction)
+    ratings = np.array([1] * n_interaction)
 
     data = {
         DEFAULT_USER_COL: users,
