@@ -20,6 +20,8 @@ import logging
 import sys
 from datetime import datetime
 
+BASIC_FORMAT = "%(asctime)s:%(levelname)s - %(message)s"
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 def init_logger(log_file_name="log", console=True, error=True, debug=False):
     logger = logging.getLogger()
@@ -54,8 +56,7 @@ def init_logger(log_file_name="log", console=True, error=True, debug=False):
 
 def get_logger(filename="default", level="info"):
     logger = logging.getLogger()
-    BASIC_FORMAT = "%(asctime)s:%(levelname)s - %(message)s"
-    DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
     formatter = logging.Formatter(BASIC_FORMAT, DATE_FORMAT)
     if level == "info":
         file_out_info = logging.FileHandler(filename + ".log")

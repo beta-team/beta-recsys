@@ -15,8 +15,8 @@ import pandas as pd
 import GPUtil
 import torch
 from tensorboardX import SummaryWriter
-import utils.evaluation as eval_model
-import utils.constants as Constants
+import src.utils.evaluation as eval_model
+import src.utils.constants as Constants
 
 
 def dict2str(dic):
@@ -82,8 +82,8 @@ class Engine(object):
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0
-        for batch_id, batch in enumerate(train_loader):
-            assert isinstance(batch, torch.LongTensor)
+        for batch_id, batch_data in enumerate(train_loader):
+            assert isinstance(batch_data, torch.LongTensor)
             loss = self.train_single_batch(batch_data)
             total_loss += loss
         print("[Training Epoch {}], Loss {}".format(epoch_id, total_loss))

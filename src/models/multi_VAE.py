@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 import numpy as np
-from models.torch_engine import Engine
+from src.models.torch_engine import Engine
 
 
 class MultiVAE(nn.Module):
@@ -116,7 +116,7 @@ class MultiVAE(nn.Module):
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
         with torch.no_grad():
-            pre_vector,_,_ = self.forward(self, input):
+            pre_vector,_,_ = self.forward(self, input)
 
 
 def loss_function(recon_x, x, mu, logvar, alpha=1.0):
