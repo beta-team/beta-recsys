@@ -9,14 +9,13 @@ import pandas as pd
 import GPUtil
 import random
 import string
-
 from tqdm import tqdm
 from datetime import datetime
+from test_engine import TestEngine
 from utils import logger, data_util
 from utils.monitor import Monitor
 from utils.constants import *
 from utils.triple_sampler import Sampler
-from utils.evaluation import save_result
 from datasets import dataset
 
 import torch
@@ -52,9 +51,7 @@ class TrainEngine(object):
         config = json_config
         # construct unique model run id, which consist of model name, config id and a timestamp
         timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-        random_str = "".join(
-            [random.choice(string.ascii_letters + string.digits) for n in range(4)]
-        )
+        random_str = "".join([random.choice(string.ascii_lowercase) for n in range(4)])
         config["model_run_id"] = (
             config["model"]
             + "_"
@@ -99,6 +96,7 @@ class TrainEngine(object):
         print_dict(config)
         self.config = config
         self.gpu_id = self.get_gpu()
+        self.test_engine = TestEngine(self.config)
         """
         monitoring resources of this application
         """
@@ -170,7 +168,7 @@ class TrainEngine(object):
 
     def build_data_loader(self):
         return DataLoader(
-            torch.LongTensor(self.train_data.to_numpy(), device=self.engine.device),
+            torch.LongTensor(self.train_data.to_numpy()).to(self.engine.device),
             batch_size=self.config["batch_size"],
             shuffle=True,
             drop_last=True,
@@ -181,6 +179,7 @@ class TrainEngine(object):
         data_loader = DataLoader(
             torch.LongTensor(t_triple_df.to_numpy()),
             batch_size=self.config["batch_size"],
+            num_workers=8,
             shuffle=True,
             drop_last=True,
         )
@@ -189,7 +188,6 @@ class TrainEngine(object):
     """
     Default train
     """
-
     def train(self):
         assert hasattr(self, "engine"), "Please specify the exact model engine !"
         monitor = Monitor(log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id)
@@ -205,26 +203,22 @@ class TrainEngine(object):
         for epoch in epoch_bar:
             print("Epoch {} starts !".format(epoch))
             print("-" * 80)
-            data_loader = self.build_data_loader()
-            self.engine.train_an_epoch(data_loader, epoch_id=epoch)
-            result = self.engine.evaluate(self.data.validate[0], epoch_id=epoch)
-            test_result = self.engine.evaluate(self.data.test[0], epoch_id=epoch)
-            self.engine.record_performance(result, test_result, epoch_id=epoch)
-            if result[self.config["validate_metric"]] > best_performance:
-                n_no_update = 0
-                print_dict(result)
+            if epoch > 0 and self.test_engine.n_no_update == 0:
+                # previous epoch have already obtained better result
                 self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"])
-                best_performance = result[self.config["validate_metric"]]
-            else:
-                n_no_update += 1
 
-            if n_no_update >= MAX_N_UPDATE:
+            if self.test_engine.n_no_update >= MAX_N_UPDATE:
                 print(
                     "Early stop criterion triggered, no performance update for {:} times".format(
                         MAX_N_UPDATE
                     )
                 )
                 break
+            data_loader = self.build_data_loader()
+            self.engine.train_an_epoch(data_loader, epoch_id=epoch)
+            self.test_engine.train_eval(
+                self.data.validate[0], self.data.test[0], self.engine.model, epoch
+            )
             """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
             lr = self.config["lr"] * (0.5 ** (epoch // 10))
             for param_group in self.engine.optimizer.param_groups:
@@ -232,32 +226,34 @@ class TrainEngine(object):
         self.config["run_time"] = monitor.stop()
         return best_performance
 
+    def temporal_train(self):
+        assert hasattr(self, "engine"), "Please specify the exact model engine !"
+        """
+        init model
+        """
+        print("init model ...")
+        self.engine.data = self.data
+        print("strat traning... ")
+        best_performance = 0
+        epoch_bar = tqdm(range(self.config["num_epoch"]), file=sys.stdout)
+        for t in range(self.config["temp_train"]):
+            for epoch in epoch_bar:
+                data_loader = self.build_temporal_data_loader(t)
+                self.engine.train_an_epoch(data_loader, epoch_id=epoch)
+                """test modle on vilidate set"""
+                result = self.engine.evaluate(self.data.validate[0], epoch_id=epoch)
+                test_result = self.engine.evaluate(self.data.test[0], epoch_id=epoch)
+                self.engine.record_performance(result, test_result, epoch_id=epoch)
+                if result[self.config["validate_metric"]] > best_performance:
+                    print_dict(result)
+                    self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"])
+                    best_performance = result[self.config["validate_metric"]]
+                """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
+                lr = self.config["lr"] * (0.5 ** (epoch // 10))
+                for param_group in engine.optimizer.param_groups:
+                    param_group["lr"] = lr
+        self.config["run_time"] = monitor.stop()
+        return best_performance
+    
     def test(self):
-        """
-        Prediction and evalution on test set
-        """
-        result_para = {
-            "model": [self.config["model"]],
-            "dataset": [self.config["dataset"]],
-            "data_split": [self.config["data_split"]],
-            "temp_train": [self.config["temp_train"]],
-            "emb_dim": [int(self.config["emb_dim"])],
-            "lr": [self.config["lr"]],
-            "batch_size": [int(self.config["batch_size"])],
-            "optimizer": [self.config["optimizer"]],
-            "num_epoch": [self.config["num_epoch"]],
-            "model_run_id": [self.config["model_run_id"]],
-            "run_time": [self.config["run_time"]],
-        }
-
-        """
-        load the best model in terms of the validate
-        """
-        self.engine.resume_checkpoint(model_dir=self.config["model_ckp_file"])
-        for i in range(10):
-            print("Testing test_data", i, "...")
-            result = self.engine.evaluate(self.data.test[i], epoch_id=0)
-            print_dict(result)
-            result.update(result_para)
-            result_df = pd.DataFrame(result)
-            save_result(result_df, self.config["result_file"])
+        self.test_engine.test_eval(self.data.test, self.engine.model)    

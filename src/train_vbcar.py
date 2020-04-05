@@ -56,6 +56,9 @@ def parse_args():
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
     parser.add_argument(
+        "--sub_set", nargs="?", type=int, help="Subset of dataset."
+    )
+    parser.add_argument(
         "--temp_train",
         nargs="?",
         type=int,
