@@ -1,7 +1,8 @@
 import random
 import time
 import numpy as np
-import tprch
+import torch
+import pandas as pd
 
 def timeit(method):
     """
