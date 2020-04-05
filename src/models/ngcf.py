@@ -6,9 +6,9 @@ from scipy.sparse import vstack
 from scipy import sparse
 import torch
 import torch.nn as nn
-from models.gmf import GMF
-from models.mlp import MLP
-from models.torch_engine import Engine
+from src.models.gmf import GMF
+from src.models.mlp import MLP
+from src.models.torch_engine import Engine
 
 class NGCF(torch.nn.Module):
     def __init__(self, config):
