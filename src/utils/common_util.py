@@ -5,6 +5,15 @@ import tprch
 
 def timeit(method):
     """
+    Decorator for tracking the execution time for the specific method
+    Args:
+        method: The method need to timeit.
+
+    To use:
+        @timeit
+        def method(self):
+            pass
+    
     """
     def timed(*args, **kw):
         ts = time.time()
@@ -19,13 +28,24 @@ def timeit(method):
     return timed
 
 def save_to_csv(result, result_file):
+    """
+    Save a result dict to disk.
+
+    Args:
+        result: The result dict to be saved.
+        result_file: The file path to be saved.
+
+    Returns:
+        None
+
+    """
     result_df = pd.DataFrame(result)
     if os.path.exists(result_file):
         print(result_file, " already exists, appending result to it")
         total_result = pd.read_csv(result_file)
         total_result = total_result.append(result_df)
     else:
-        print("create new result_file:", result_file)
+        print("Create new result_file:", result_file)
         total_result = result_df
     total_result.to_csv(result_file, index=False)
 
