@@ -1,22 +1,9 @@
-"""
-Created on Aug 5, 2019
-Update on XX,2019 BY xxx@
-
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset fetching and dataset pre-processing functions.
-
-@author: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-
-import sys
-sys.path.append("../")
 from models.torch_engine import Engine
+from utils.constants import *
+from utils.common_util import *
 import torch
-from torch import autograd
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 
 
 class VBCAR(nn.Module):
@@ -34,7 +21,7 @@ class VBCAR(nn.Module):
         if config["activator"] == "tanh":
             self.act = torch.tanh
         elif config["activator"] == "sigmoid":
-            self.act = F.sigmoid
+            self.act = torch.sigmoid
         elif config["activator"] == "relu":
             self.act = F.relu
         elif config["activator"] == "lrelu":
@@ -45,12 +32,14 @@ class VBCAR(nn.Module):
             self.act = lambda x: x
 
     def init_layers(self):
-        self.fc_u_1_mu = nn.Linear(self.user_fea_dim, self.emb_dim)
-        self.fc_i_1_mu = nn.Linear(self.item_fea_dim, self.emb_dim)
-        self.fc_i_2_mu = nn.Linear(self.item_fea_dim, self.emb_dim)
-        self.fc_u_1_std = nn.Linear(self.user_fea_dim, self.emb_dim)
-        self.fc_i_1_std = nn.Linear(self.item_fea_dim, self.emb_dim)
-        self.fc_i_2_std = nn.Linear(self.item_fea_dim, self.emb_dim)
+        self.fc_u_1_mu = nn.Linear(self.user_fea_dim, self.late_dim)
+        self.fc_u_2_mu = nn.Linear(self.late_dim, self.emb_dim)
+        self.fc_u_1_std = nn.Linear(self.user_fea_dim, self.late_dim)
+        self.fc_u_2_std = nn.Linear(self.late_dim, self.emb_dim)
+        self.fc_i_1_mu = nn.Linear(self.item_fea_dim, self.late_dim)
+        self.fc_i_2_mu = nn.Linear(self.late_dim, self.emb_dim)
+        self.fc_i_1_std = nn.Linear(self.item_fea_dim, self.late_dim)
+        self.fc_i_2_std = nn.Linear(self.late_dim, self.emb_dim)
 
     def init_feature(self, user_fea, item_fea):
         self.user_fea = user_fea
@@ -60,20 +49,14 @@ class VBCAR(nn.Module):
 
     def user_encode(self, index):
         x = self.user_fea[index]
-        mu = torch.tanh(self.fc_u_1_mu(x))
-        std = self.act(self.fc_u_1_std(x))
+        mu = self.fc_u_2_mu(self.act(self.fc_u_1_mu(x)))
+        std = self.fc_u_2_std(self.act(self.fc_u_1_std(x)))
         return mu, std
 
-    def item_1_encode(self, index):
+    def item_encode(self, index):
         x = self.item_fea[index]
-        mu = torch.tanh(self.fc_i_1_mu(x))
-        std = self.act(self.fc_i_1_std(x))
-        return mu, std
-
-    def item_2_encode(self, index):
-        x = self.item_fea[index]
-        mu = torch.tanh(self.fc_i_2_mu(x))
-        std = self.act(self.fc_i_2_std(x))
+        mu = self.fc_i_2_mu(self.act(self.fc_i_1_mu(x)))
+        std = self.fc_i_2_std(self.act(self.fc_i_1_std(x)))
         return mu, std
 
     def reparameterize(self, gaussian):
@@ -101,7 +84,7 @@ class VBCAR(nn.Module):
             * (mean2 - mean1)
         )
         tr_std_mul = (torch.tensor(1.0, device=self.device) / var2) * var1
-        if neg == False:
+        if neg is False:
             dkl = (
                 (torch.log(var2 / var1) - 1 + tr_std_mul + mean_pow2)
                 .mul(0.5)
@@ -122,17 +105,17 @@ class VBCAR(nn.Module):
         pos_u, pos_i_1, pos_i_2, neg_u, neg_i_1, neg_i_2 = batch_data
         pos_u_dis = self.user_encode(pos_u)
         emb_u = self.reparameterize(pos_u_dis)
-        pos_i_1_dis = self.item_1_encode(pos_i_1)
+        pos_i_1_dis = self.item_encode(pos_i_1)
         emb_i_1 = self.reparameterize(pos_i_1_dis)
-        pos_i_2_dis = self.item_2_encode(pos_i_2)
+        pos_i_2_dis = self.item_encode(pos_i_2)
         emb_i_2 = self.reparameterize(pos_i_2_dis)
         neg_u_dis = self.user_encode(neg_u.view(-1))
         emb_u_neg = self.reparameterize(neg_u_dis).view(-1, self.n_neg, self.emb_dim)
-        neg_i_1_dis = self.item_1_encode(neg_i_1.view(-1))
+        neg_i_1_dis = self.item_encode(neg_i_1.view(-1))
         emb_i_1_neg = self.reparameterize(neg_i_1_dis).view(
             -1, self.n_neg, self.emb_dim
         )
-        neg_i_2_dis = self.item_2_encode(neg_i_2.view(-1))
+        neg_i_2_dis = self.item_encode(neg_i_2.view(-1))
         emb_i_2_neg = self.reparameterize(neg_i_2_dis).view(
             -1, self.n_neg, self.emb_dim
         )
@@ -184,8 +167,7 @@ class VBCAR(nn.Module):
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
         with torch.no_grad():
             scores = torch.mul(
-                self.user_encode(users_t)[0],
-                (self.item_1_encode(items_t)[0] + self.item_2_encode(items_t)[0]) / 2,
+                self.user_encode(users_t)[0], self.item_encode(items_t)[0],
             ).sum(dim=1)
         return scores
 
@@ -226,6 +208,7 @@ class VBCAREngine(Engine):
         loss = loss.item()
         return loss
 
+    @timeit
     def train_an_epoch(self, train_loader, epoch_id):
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
@@ -233,7 +216,7 @@ class VBCAREngine(Engine):
         kl_loss = 0
         #         with autograd.detect_anomaly():
         for batch_id, sample in enumerate(train_loader):
-            assert isinstance(sample, torch.LongTensor)
+            assert isinstance(sample, torch.Tensor)
             pos_u = torch.tensor(
                 [triple[0] for triple in sample], dtype=torch.int64, device=self.device,
             )

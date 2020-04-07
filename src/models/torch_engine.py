@@ -1,22 +1,9 @@
-"""
-Created on Feb 5, 2020 by Zaiqiao
-
-Training engine for pytorch models.
-Code was modified from the orginal codes of https://github.com/yihong-chen/neural-collaborative-filtering
-
-@author: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-import sys
-
-sys.path.append("../")
 import numpy as np
 import pandas as pd
-import GPUtil
 import torch
 from tensorboardX import SummaryWriter
-import src.utils.evaluation as eval_model
-import src.utils.constants as Constants
+import utils.evaluation as eval_model
+from utils.constants import *
 
 
 def dict2str(dic):
@@ -165,7 +152,7 @@ class Engine(object):
         state_dict = torch.load(
             model_dir, map_location=self.device
         )  # ensure all storage are on gpu
-        if model == None:
+        if model is None:
             self.model.load_state_dict(state_dict)
             self.model.to(self.device)
             return self.model

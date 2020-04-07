@@ -1,6 +1,3 @@
-import sys
-
-sys.path.append("../")
 import torch
 from models.gmf import GMF
 from models.mlp import MLP
@@ -79,7 +76,7 @@ class NeuMFEngine(Engine):
         self.mlp_config = mlp_config
         super(NeuMFEngine, self).__init__(config)
         print(self.model)
-        if gmf_config != None and mlp_config != None:
+        if gmf_config is not None and mlp_config is not None:
             self.load_pretrain_weights()
 
     def train_single_batch(self, users, items, ratings):

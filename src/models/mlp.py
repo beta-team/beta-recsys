@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("../")
-
 import torch
 from models.gmf import GMF
 from models.torch_engine import Engine
@@ -100,6 +96,8 @@ class MLPEngine(Engine):
     def load_pretrain_weights(self):
         """Loading weights from trained GMF model"""
         gmf_model = GMF(self.gmf_config)
-        self.resume_checkpoint(self.config["checkpoint_dir"]+self.config["pretrain_gmf"], gmf_model)
+        self.resume_checkpoint(
+            self.config["checkpoint_dir"] + self.config["pretrain_gmf"], gmf_model
+        )
         self.model.embedding_user.weight.data = gmf_model.embedding_user.weight.data
         self.model.embedding_item.weight.data = gmf_model.embedding_item.weight.data

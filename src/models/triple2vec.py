@@ -1,20 +1,6 @@
-"""
-Created on Aug 5, 2019
-Update on XX,2019 BY xxx@
-
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset fetching and dataset pre-processing functions.
-
-@author: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-
-import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
-
 from models.torch_engine import Engine
 
 
@@ -163,6 +149,3 @@ class Triple2vecEngine(Engine):
             total_loss += loss
         print("[Training Epoch {}], Loss {}".format(epoch_id, loss))
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
-        
-        
-        

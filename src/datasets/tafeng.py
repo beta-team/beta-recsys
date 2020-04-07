@@ -1,33 +1,7 @@
-"""
-Created on 2020.02.17 BY @zaiqiao
-
-------
-
-@zaiqiao: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-import sys
 import os
-import math
-import random
 import numpy as np
 import pandas as pd
-import sklearn
-
-sys.path.append("../")
-
-import utils.constants as Constants
-from utils.unigramTable import UnigramTable
-
-# indicators of the colunmn name
-DEFAULT_USER_COL = Constants.DEFAULT_USER_COL
-DEFAULT_ITEM_COL = Constants.DEFAULT_ITEM_COL
-DEFAULT_ORDER_COL = Constants.DEFAULT_ORDER_COL
-DEFAULT_RATING_COL = Constants.DEFAULT_RATING_COL
-DEFAULT_LABEL_COL = Constants.DEFAULT_LABEL_COL
-DEFAULT_TIMESTAMP_COL = Constants.DEFAULT_TIMESTAMP_COL
-DEFAULT_PREDICTION_COL = Constants.DEFAULT_PREDICTION_COL
-DEFAULT_FLAG_COL = Constants.DEFAULT_FLAG_COL
+from utils.constants import *
 
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
 
@@ -118,7 +92,7 @@ def load_temporal(root_dir=par_abs_dir, max_id=0, test_percent=None):
     temporal_dir = "datasets/tafeng/temporal"
     print("loading ta-feng dataset using temporal split")
     data_file = os.path.join(root_dir, temporal_dir)
-    if test_percent != None:
+    if test_percent is not None:
         if test_percent < 1:
             test_percent = int(test_percent * 100)
         data_file = os.path.join(data_file, str(test_percent))

@@ -1,23 +1,10 @@
-import sys
 import torch
 import random
-from tqdm import tqdm
 import pandas as pd
 from copy import deepcopy
 from torch.utils.data import DataLoader, Dataset
-import utils.constants as Constants
-
-# indicators of the colunmn name
-DEFAULT_USER_COL = Constants.DEFAULT_USER_COL
-DEFAULT_ITEM_COL = Constants.DEFAULT_ITEM_COL
-DEFAULT_ORDER_COL = Constants.DEFAULT_ORDER_COL
-DEFAULT_RATING_COL = Constants.DEFAULT_RATING_COL
-DEFAULT_LABEL_COL = Constants.DEFAULT_LABEL_COL
-DEFAULT_TIMESTAMP_COL = Constants.DEFAULT_TIMESTAMP_COL
-DEFAULT_PREDICTION_COL = Constants.DEFAULT_PREDICTION_COL
-DEFAULT_FLAG_COL = Constants.DEFAULT_FLAG_COL
-
-random.seed(0)
+from utils.constants import *
+from utils.common_util import *
 
 
 class UserItemRatingDataset(Dataset):
@@ -106,7 +93,7 @@ class SampleGenerator(object):
         train_ratings["negatives"] = train_ratings["negative_items"].apply(
             lambda x: random.sample(x, num_negatives)
         )
-        for _,row in train_ratings.iterrows():
+        for _, row in train_ratings.iterrows():
             users.append(int(row[DEFAULT_USER_COL]))
             items.append(int(row[DEFAULT_ITEM_COL]))
             ratings.append(float(row[DEFAULT_RATING_COL]))
@@ -121,8 +108,10 @@ class SampleGenerator(object):
         )
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    def instance_temporal_train_loader(self, num_negatives, batch_size, time_step=None, t=0):
-        if time_step == None:
+    def instance_temporal_train_loader(
+        self, num_negatives, batch_size, time_step=None, t=0
+    ):
+        if time_step is None:
             return self.instance_a_train_loader(num_negatives, batch_size)
         n_intera = len(self.ratings.index)
         n_intera_per_t = int(n_intera / time_step)
@@ -142,7 +131,7 @@ class SampleGenerator(object):
         train_ratings["negatives"] = train_ratings["negative_items"].apply(
             lambda x: random.sample(x, num_negatives)
         )
-        for _,row in train_ratings.iterrows():
+        for _, row in train_ratings.iterrows():
             users.append(int(row[DEFAULT_USER_COL]))
             items.append(int(row[DEFAULT_ITEM_COL]))
             ratings.append(float(row[DEFAULT_RATING_COL]))

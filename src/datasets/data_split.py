@@ -2,10 +2,6 @@ import numpy as np
 import pandas as pd
 import math
 import os
-import sys
-
-sys.path.append("../")
-import random
 import sklearn
 from tqdm import tqdm
 from src.utils.unigramTable import UnigramTable
@@ -26,7 +22,9 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
     n_interact = len(df.index)
     n_users = df[DEFAULT_USER_COL].nunique()
     n_items = df[DEFAULT_ITEM_COL].nunique()
-    print(f"before filter, n_interact:{n_interact}, n_users:{n_users}, n_items:{n_items}")
+    print(
+        f"before filter, n_interact:{n_interact}, n_users:{n_users}, n_items:{n_items}"
+    )
 
     while True:
         # Filter out users that have less than min_i_c interactions (items)
@@ -297,8 +295,8 @@ def leave_one_out(data, random=False):
     users = data[DEFAULT_USER_COL].unique()
     for u in tqdm(users):
         interactions = data[data[DEFAULT_USER_COL] == u].index.values
-        data.loc[interactions[-1], DEFAULT_FLAG_COL,] = "test"
-        data.loc[interactions[-2], DEFAULT_FLAG_COL,] = "validate"
+        data.loc[interactions[-1], DEFAULT_FLAG_COL] = "test"
+        data.loc[interactions[-2], DEFAULT_FLAG_COL] = "validate"
 
     return data
 
@@ -322,9 +320,9 @@ def leave_one_basket(data, random=False):
     users = data[DEFAULT_USER_COL].unique()
     for u in tqdm(users):
         user_orders = data[data[DEFAULT_USER_COL] == u][DEFAULT_ORDER_COL].unique()
-        data.loc[data[DEFAULT_ORDER_COL] == user_orders[-1], DEFAULT_FLAG_COL,] = "test"
+        data.loc[data[DEFAULT_ORDER_COL] == user_orders[-1], DEFAULT_FLAG_COL] = "test"
         data.loc[
-            data[DEFAULT_ORDER_COL] == user_orders[-2], DEFAULT_FLAG_COL,
+            data[DEFAULT_ORDER_COL] == user_orders[-2], DEFAULT_FLAG_COL
         ] = "validate"
     return data
 
@@ -441,10 +439,10 @@ def data_split(
     Args:
         data: Dataframe. of interactions.
         split_type: str. options can be:
-                        - random 
+                        - random
                         - random_basket
-                        - leave_one_out 
-                        - leave_one_basket 
+                        - leave_one_out
+                        - leave_one_basket
                         - temporal
                         - temporal_basket
         random: bool.  Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket

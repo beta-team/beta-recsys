@@ -1,37 +1,9 @@
-"""
-Created on Aug 5, 2019 BY @zaiqiao
-------
-fixed a bug that the sampler didn't take the last basekets into training.
-rest_baskets = n_orders - time_step * n_orders_per_t
-
--- Updated on 2020.01.21 BY @zaiqiao
-------
-change input with raw dataframe with "order_ids", "user_ids" ,"item_ids", "timestamp"
--- Updated on 2020.01.20 BY @zaiqiao
-------
-
-sample triples from purchase history
-
-@zaiqiao: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-
 import os
 import sys
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import utils.constants as Constants
-
-# indicators of the colunmn name
-DEFAULT_USER_COL = Constants.DEFAULT_USER_COL
-DEFAULT_ITEM_COL = Constants.DEFAULT_ITEM_COL
-DEFAULT_ORDER_COL = Constants.DEFAULT_ORDER_COL
-DEFAULT_RATING_COL = Constants.DEFAULT_RATING_COL
-DEFAULT_LABEL_COL = Constants.DEFAULT_LABEL_COL
-DEFAULT_TIMESTAMP_COL = Constants.DEFAULT_TIMESTAMP_COL
-DEFAULT_PREDICTION_COL = Constants.DEFAULT_PREDICTION_COL
-DEFAULT_FLAG_COL = Constants.DEFAULT_FLAG_COL
+from utils.constants import *
 
 
 class Sampler(object):

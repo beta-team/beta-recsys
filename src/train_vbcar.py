@@ -1,21 +1,9 @@
-"""
-Created on Aug 5, 2019
-Updated on XX,2019 BY xxx@
-
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset fetching and dataset pre-processing functions.
-
-@author: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-import os
 import sys
 import argparse
 from ray import tune
-from train_engine import TrainEngine,print_dict
+from train_engine import TrainEngine, print_dict
 from models.vbcar import VBCAREngine
 from utils.monitor import Monitor
-from utils import logger, data_util
 from utils.constants import *
 from tqdm import tqdm
 
@@ -43,9 +31,7 @@ def parse_args():
         type=str,
         help="Options are: leave_one_out and temporal",
     )
-    parser.add_argument(
-        "--root_dir", nargs="?", type=str, help="working directory",
-    )
+    parser.add_argument("--root_dir", nargs="?", type=str, help="working directory")
     parser.add_argument(
         "--percent",
         nargs="?",
@@ -55,11 +41,12 @@ def parse_args():
     parser.add_argument(
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
+    parser.add_argument("--sub_set", nargs="?", type=int, help="Subset of dataset.")
     parser.add_argument(
         "--temp_train",
         nargs="?",
         type=int,
-        help="IF this value >0, then the model will be trained based on the temporal feeding, else use normal trainning. Same as the time step.",
+        help="IF value >0, then the model will be trained based on the temporal feeding, else use normal trainning.",
     )
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
@@ -89,7 +76,7 @@ def update_args(config, args):
     #     print(vars(args))
     print("Received parameters form comand line:")
     for k, v in vars(args).items():
-        if v != None:
+        if v is not None:
             config[k] = v
             print(k, "\t", v)
 

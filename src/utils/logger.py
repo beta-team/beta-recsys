@@ -23,6 +23,7 @@ from datetime import datetime
 BASIC_FORMAT = "%(asctime)s:%(levelname)s - %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+
 def init_logger(log_file_name="log", console=True, error=True, debug=False):
     logger = logging.getLogger()
     logger.setLevel("DEBUG")
@@ -83,17 +84,17 @@ class Logger(object):
         #         with open(self.filename, "a") as logger:
         #             logger.write(str(len(message)) + ":" + message + "\n")
 
-        if message == "" or message == None:
+        if message == "" or message is None:
             return
         elif "\n" in message:
             self.message += message
             now = datetime.now()
             date_time = now.strftime("%Y-%m-%d %H:%M:%S ")
-            if self.stdout != None:
+            if self.stdout is not None:
                 self.message = date_time + "[INFO]-" + self.message
                 self.stdout.write(self.message)
                 self.stdout.flush()
-            if self.stderr != None:
+            if self.stderr is not None:
                 self.message = date_time + "[ERROR]-" + self.message
                 self.stderr.write(self.message)
                 self.stderr.flush()

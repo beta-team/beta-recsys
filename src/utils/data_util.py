@@ -1,37 +1,8 @@
-"""
-Created on Aug 5, 2019 BY @zaiqiao
-
-------
-add datasets under leave-one-out splitting
--- Updated on 2020.01.17 BY @zaiqiao
-------
-
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset fetching and dataset pre-processing functions.
-
-Some codes are modelfied based on github.com/microsoft/recommenders
-
-@zaiqiao: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-
-import sys
-
-sys.path.append("../")
-import os
-import math
-import random
 import numpy as np
-import sklearn
-import warnings
-import pandas as pd
 from scipy.sparse import coo_matrix
 from utils.constants import *
-
-pd.options.mode.chained_assignment = None
-
-from utils.unigramTable import UnigramTable
-from datasets.dataset import load_split_dataset, load_item_fea_dic, load_user_fea_dic
+from utils.aliasTable import AliasTable
+from datasets.dataset import load_split_dataset, load_item_fea_dic
 
 
 class Dataset(object):
@@ -52,41 +23,50 @@ class Dataset(object):
         self.train = self._data_processing(train, test[0])
         self.validate = self._reindex_list(validate)
         self.test = self._reindex_list(test)
-        self.item_sampler = UnigramTable(
+        self.item_sampler = AliasTable(
             self.train[DEFAULT_ITEM_COL].value_counts().to_dict()
         )
-        self.user_sampler = UnigramTable(
+        self.user_sampler = AliasTable(
             self.train[DEFAULT_USER_COL].value_counts().to_dict()
         )
         self.init_user_fea(config)
         self.init_item_fea(config)
-        
-    def generate_train_data(self):
-        train_data = self.train.groupby(['col_user','col_item']).size().to_frame('col_rating').reset_index()
-        n = self.n_users
-        m = self.n_items
-        user_record = train_data.col_user.tolist()
-        movie_record = train_data.col_item.tolist()
-        ratings_record = train_data.col_rating.tolist()
-        rating_matrix = np.zeros([n,m])
-        sigma_matrix = np.zeros([n,m])
-        for i in range(len(user_record)):
-            rating_matrix[user_record[i]-1,movie_record[i]-1] = ratings_record[i]
-            sigma_matrix[user_record[i]-1,movie_record[i]-1] = 1
-        # load test_data
-        print('data load finish')
-        return sigma_matrix, rating_matrix
-    
-    def generate_sparse_train_data(self):
-        train_data = self.train.groupby(['col_user','col_item']).size().to_frame('col_rating').reset_index()
-        n = self.n_users
-        m = self.n_items
-        user_record = train_data.col_user.tolist()
-        movie_record = train_data.col_item.tolist()
-        ratings_record = train_data.col_rating.tolist()
-        print('data load finish')
-        return coo_matrix((ratings_record, (user_record, movie_record)))
 
+    def generate_train_data(self):
+        train_data = (
+            self.train.groupby(["col_user", "col_item"])
+            .size()
+            .to_frame("col_rating")
+            .reset_index()
+        )
+        n = self.n_users
+        m = self.n_items
+        user_record = train_data.col_user.tolist()
+        movie_record = train_data.col_item.tolist()
+        ratings_record = train_data.col_rating.tolist()
+        rating_matrix = np.zeros([n, m])
+        sigma_matrix = np.zeros([n, m])
+        for i in range(len(user_record)):
+            rating_matrix[user_record[i] - 1, movie_record[i] - 1] = ratings_record[i]
+            sigma_matrix[user_record[i] - 1, movie_record[i] - 1] = 1
+        # load test_data
+        print("data load finish")
+        return sigma_matrix, rating_matrix
+
+    def generate_sparse_train_data(self):
+        train_data = (
+            self.train.groupby(["col_user", "col_item"])
+            .size()
+            .to_frame("col_rating")
+            .reset_index()
+        )
+        n = self.n_users
+        m = self.n_items
+        user_record = train_data.col_user.tolist()
+        movie_record = train_data.col_item.tolist()
+        ratings_record = train_data.col_rating.tolist()
+        print("data load finish")
+        return coo_matrix((ratings_record, (user_record, movie_record)))
 
     def _data_processing(self, train, test, implicit=True):
         """ process the dataset to reindex userID and itemID, also set rating as implicit feedback
@@ -206,7 +186,7 @@ class Dataset(object):
         #         df_reindex.columns = [DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL]
 
         return df
-    
+
     def get_random_rep(self, raw_num, dim):
         return np.random.normal(size=(raw_num, dim))
 
@@ -342,7 +322,11 @@ class Dataset(object):
                 (item_fea_list1, item_fea_list2, item_fea_list3, rand_item_fea), axis=1
             )
         else:
-            print("[ERROR]: CANNOT support feature type {}! intialize with random feature".format(fea_type))
+            print(
+                "[ERROR]: CANNOT support feature type {}! intialize with random feature".format(
+                    fea_type
+                )
+            )
             self.item_feature = self.get_random_rep(self.n_items, self.random_dim)
 
     def init_user_fea(self, config):

@@ -1,15 +1,3 @@
-"""
-Created on Aug 5, 2019
-Updated on XX,2019 BY xxx@
-
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset fetching and dataset pre-processing functions.
-
-@author: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-import os
-import sys
 import argparse
 from ray import tune
 from train_engine import TrainEngine
@@ -46,7 +34,7 @@ def parse_args():
         "--percent",
         nargs="?",
         type=float,
-        help="The percentage of the subset of the dataset, only availbe on instacart dataset.",
+        help="The percentage of the subset of the data set, only available on instacart data set.",
     )
     parser.add_argument(
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
@@ -55,7 +43,7 @@ def parse_args():
         "--temp_train",
         nargs="?",
         type=int,
-        help="IF this value >0, then the model will be trained based on the temporal feeding, else use normal trainning. Same as the time step.",
+        help="IF value >0, then the model will be trained based on the temporal feeding, else use normal trainning",
     )
     parser.add_argument(
         "--use_bias", nargs="?", type=int, help="",
@@ -63,7 +51,7 @@ def parse_args():
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
-    parser.add_argument("--lr", nargs="?", type=float, help="Intial learning rate.")
+    parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
     parser.add_argument("--num_epoch", nargs="?", type=int, help="Number of max epoch.")
 
     parser.add_argument(
@@ -80,7 +68,7 @@ update hyperparameters from command line
 
 def update_args(config, args):
     #     print(vars(args))
-    print("Received parameters form comand line:")
+    print("Received parameters form command line:")
     for k, v in vars(args).items():
         if v != None:
             config[k] = v

@@ -1,6 +1,5 @@
-import math
 import numpy as np
-import numpy
+
 
 class AliasTable:
     """
@@ -22,7 +21,7 @@ class AliasTable:
         """
         vocab_size = len(obj_freq)
         self.vocab_size = vocab_size
-        
+
         if type(obj_freq) == list:  # obj_freq can be a list
             if len(np.array(obj_freq).shape) != 1:
                 raise ValueError("Error: obj_freq is not 1-dim")
@@ -31,9 +30,9 @@ class AliasTable:
             total = np.sum(list(obj_freq.values()))
         else:
             raise ValueError("Error: obj_freq is invalid")
-        
+
         probs = []
-        index2Label = [] # used to transform an index to label in dict
+        index2Label = []  # used to transform an index to label in dict
         if type(obj_freq) == list:
             for i in range(len(obj_freq)):
                 probs.append(obj_freq[i] / total)
@@ -44,23 +43,23 @@ class AliasTable:
                 i += 1
                 probs.append(freq / total)
                 index2Label.append(obj)
-                
+
         table_size = vocab_size
-        prob_arr = np.zeros(table_size) # Probability Array
-        alias_arr = np.zeros(table_size, dtype=np.int) # Alias Array
+        prob_arr = np.zeros(table_size)  # Probability Array
+        alias_arr = np.zeros(table_size, dtype=np.int)  # Alias Array
         print("Filling alias table")
-        
+
         # Sort the data into the outcomes with probabilities
         # that are larger and smaller than 1/K.
-        smaller = [] # save columns that are smaller than 1
-        larger  = [] # save columns that are larger than 1
+        smaller = []  # save columns that are smaller than 1
+        larger = []  # save columns that are larger than 1
         for index, prob in enumerate(probs):
-            prob_arr[index] = table_size * prob # probability * vocab_size
+            prob_arr[index] = table_size * prob  # probability * vocab_size
             if prob_arr[index] < 1.0:
                 smaller.append(index)
             else:
                 larger.append(index)
-                
+
         # Loop though and create little binary mixtures that
         # appropriately allocate the larger outcomes over the
         # overall uniform mixture.
@@ -68,7 +67,7 @@ class AliasTable:
             small = smaller.pop()
             large = larger.pop()
 
-            alias_arr[small] = large # Fill Alias with the large
+            alias_arr[small] = large  # Fill Alias with the large
             prob_arr[large] = prob_arr[large] - (1.0 - prob_arr[small])
 
             if prob_arr[large] < 1.0:
@@ -78,7 +77,7 @@ class AliasTable:
         self.prob_arr = prob_arr
         self.alias_arr = alias_arr
         self.index2Label = index2Label
-    
+
     def sample(self, count, obj_num=1, no_repeat=False):
         """Draw sample(s) from AliasTable
 
@@ -104,7 +103,9 @@ class AliasTable:
                     samples.append(self.index2Label[self.alias_arr[i]])
             if no_repeat:
                 if count > self.vocab_size:
-                    raise ValueError("Error: count>vocab_size!! Skip no_repeat parameter")
+                    raise ValueError(
+                        "Error: count>vocab_size!! Skip no_repeat parameter"
+                    )
                     return samples
                 samples = set(samples)
                 while len(samples) < count:

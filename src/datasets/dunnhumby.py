@@ -1,23 +1,7 @@
-"""
-Created on 2020.02.17 BY @zaiqiao
-
-------
-
-@zaiqiao: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-import sys
 import os
-import math
-import random
 import numpy as np
 import pandas as pd
-import sklearn
-
-sys.path.append("../")
-
 from utils.constants import *
-from utils.unigramTable import UnigramTable
 
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
 
@@ -171,6 +155,10 @@ def load_item_fea_dic(data_base_dir, fea_type="w2c"):
 def load_leave_one_item(root_dir=par_abs_dir, max_id=0):
     leave_one_out_dir = "datasets/dunnhumby/leave_one_item"
     data_file = os.path.join(root_dir, leave_one_out_dir)
+    if not os.path.exists(data_file):
+        raise RuntimeError(
+            f"please download the dataset by your self and put it into {data_file}"
+        )
     print("loading dunnhumby dataset using leave_one_item split")
     return load_data(data_file, max_id, leave_one_item=True)
 
@@ -178,6 +166,10 @@ def load_leave_one_item(root_dir=par_abs_dir, max_id=0):
 def load_leave_one_out(root_dir=par_abs_dir, max_id=0):
     leave_one_out_dir = "datasets/dunnhumby/leave_one_basket"
     data_file = os.path.join(root_dir, leave_one_out_dir)
+    if not os.path.exists(data_file):
+        raise RuntimeError(
+            f"please download the dataset by your self and put it into {data_file}"
+        )
     print("loading dunnhumby dataset using leave_one_out split")
     return load_data(data_file, max_id)
 
@@ -185,6 +177,10 @@ def load_leave_one_out(root_dir=par_abs_dir, max_id=0):
 def load_leave_one_basket(root_dir=par_abs_dir, max_id=0):
     leave_one_out_dir = "datasets/dunnhumby/leave_one_basket"
     data_file = os.path.join(root_dir, leave_one_out_dir)
+    if not os.path.exists(data_file):
+        raise RuntimeError(
+            f"please download the dataset by your self and put it into {data_file}"
+        )
     print("loading dunnhumby dataset using leave_one_basket split")
     return load_data(data_file, max_id)
 
@@ -192,5 +188,9 @@ def load_leave_one_basket(root_dir=par_abs_dir, max_id=0):
 def load_temporal(root_dir=par_abs_dir, max_id=0):
     temporal_dir = "datasets/dunnhumby/temporal"
     data_file = os.path.join(root_dir, temporal_dir)
+    if not os.path.exists(data_file):
+        raise RuntimeError(
+            f"please download the dataset by your self and put it into {data_file}"
+        )
     print("loading dunnhumby dataset using temporal split")
     return load_data(data_file, max_id)

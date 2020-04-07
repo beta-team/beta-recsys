@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from utils.constants import *
 from functools import wraps, lru_cache
 from sklearn.metrics import (
     mean_squared_error,
@@ -8,15 +9,6 @@ from sklearn.metrics import (
     explained_variance_score,
     roc_auc_score,
     log_loss,
-)
-
-from src.utils.constants import (
-    DEFAULT_USER_COL,
-    DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
-    DEFAULT_PREDICTION_COL,
-    DEFAULT_K,
-    DEFAULT_THRESHOLD,
 )
 
 
@@ -58,6 +50,7 @@ class PandasHash:
         else:
             hashable += tuple(self.pandas_object.name)
         return hash(hashable)
+
 
 def has_columns(df, columns):
     """Check if DataFrame has necessary columns
@@ -108,6 +101,7 @@ def has_same_base_dtype(df_1, df_2, columns=None):
 
     return result
 
+
 def lru_cache_df(maxsize, typed=False):
     """Least-recently-used cache decorator
     Args:
@@ -145,6 +139,7 @@ def lru_cache_df(maxsize, typed=False):
         return wrapper
 
     return decorating_function
+
 
 def check_column_dtypes(func):
     """Checks columns of DataFrame inputs
@@ -710,7 +705,9 @@ def map_at_k(
 
     # calculate reciprocal rank of items for each user and sum them up
     df_hit_sorted = df_hit.copy()
-    df_hit_sorted["rr"] = (df_hit_sorted.groupby(col_user).cumcount() + 1) / df_hit_sorted["rank"]
+    df_hit_sorted["rr"] = (
+        df_hit_sorted.groupby(col_user).cumcount() + 1
+    ) / df_hit_sorted["rank"]
     df_hit_sorted = df_hit_sorted.groupby(col_user).agg({"rr": "sum"}).reset_index()
 
     df_merge = pd.merge(df_hit_sorted, df_hit_count, on=col_user)

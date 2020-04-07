@@ -1,12 +1,3 @@
-"""
-Created on Feb 4, 2020 BY @zaiqiao
-
-Monitoring resources, and record in tesnorboard
-
-@zaiqiao: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-
 from threading import Thread
 import GPUtil
 import cpuinfo
@@ -20,6 +11,7 @@ class Monitor(Thread):
     """
     initialize monitor, log_dir and gpu_id are needed.
     """
+
     def __init__(self, log_dir, delay=1, gpu_id=0, verbose=False):
         super(Monitor, self).__init__()
 
@@ -70,7 +62,7 @@ class Monitor(Thread):
                 + "Total_GPU_memory: {:.3f}GB;".format(self.GPU_memoryTotal),
                 0,
             )
-            
+
         if verbose:
             devices_status()
         self.start()

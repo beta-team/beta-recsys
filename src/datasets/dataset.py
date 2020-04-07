@@ -2,9 +2,9 @@ import numpy as np
 from datasets import dunnhumby, tafeng, movielens
 
 
-## to do
 def load_user_fea_dic(config, fea_type):
     pass
+
 
 def load_item_fea_dic(config, fea_type):
     """
@@ -95,8 +95,8 @@ def load_split_dataset(config):
         if config["data_split"] == "temporal":
             train_df, validate_df, test_df = movielens.load_temporal(root_dir=root_dir)
         elif (
-            config["data_split"] == "leave_one_item"
-            or config["data_split"] == "leave_one_out"
+                config["data_split"] == "leave_one_item"
+                or config["data_split"] == "leave_one_out"
         ):
             train_df, validate_df, test_df = movielens.load_leave_one_out(
                 root_dir=root_dir

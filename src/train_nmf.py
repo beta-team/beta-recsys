@@ -1,16 +1,15 @@
-from datetime import datetime
 import sys
 import os
-from tqdm import tqdm
 import json
 import argparse
 import pandas as pd
-import numpy as np
+from datetime import datetime
+from tqdm import tqdm
 from models.gmf import GMFEngine
 from models.mlp import MLPEngine
 from models.neumf import NeuMFEngine
 from datasets.nmf_data_utils import SampleGenerator
-from utils.evaluation import save_result
+from utils.common_util import *
 from utils.monitor import Monitor
 from utils import data_util
 from utils import logger
@@ -47,7 +46,7 @@ def parse_args():
         "--temp_train",
         nargs="?",
         type=int,
-        help="IF this value >0, then the model will be trained based on the temporal feeding, else use normal trainning. Same as the time step.",
+        help="IF value >0, then the model will be trained based on the temporal feeding, else use normal trainning",
     )
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
@@ -84,8 +83,8 @@ if __name__ == "__main__":
     with open(config_file) as config_params:
         config = json.load(config_params)
     time_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-    root_dir = config["root_dir"]
     common_config = config["common_config"]
+    root_dir = common_config["root_dir"]
     update_args(common_config, args)
     common_config["model"] = config["model"]
     common_config["model_str"] = (
@@ -99,7 +98,7 @@ if __name__ == "__main__":
     mlp_config = config["mlp_config"]
     neumf_config = config["neumf_config"]
     config.update(common_config)
-    
+
     print(config)
 
     result_file = root_dir + common_config["result_dir"] + common_config["result_file"]
@@ -112,12 +111,11 @@ if __name__ == "__main__":
     logger.init_std_logger(log_file)
     my_monitor = Monitor(log_dir=run_file)
 
-
     """
     Loading dataset
     """
 
-    train_df, validate_df, test_df = dataset.load(config)
+    train_df, validate_df, test_df = dataset.load_split_dataset(config)
 
     print(len(train_df.index), len(validate_df[0].index), len(test_df[0].index))
 
@@ -130,12 +128,7 @@ if __name__ == "__main__":
         len(test_df[0].index),
     )
 
-    data = data_util.Dataset(
-        data_str=common_config["dataset"],
-        train=train_df,
-        validate=validate_df,
-        test=test_df,
-    )
+    data = data_util.Dataset(common_config)
 
     common_config["num_users"] = data.n_users
     common_config["num_items"] = data.n_items

@@ -1,6 +1,3 @@
-import sys
-
-sys.path.append("../")
 import torch
 from models.torch_engine import Engine
 

@@ -53,10 +53,6 @@ class UnigramTable:
                     i += 1
         self.table = table
 
-    def sample(self, count):
-        indices = np.random.randint(low=0, high=len(self.table), size=count)
-        return [self.table[i] for i in indices]
-
     def sample(self, count, obj_num=1, no_repeat=False):
         nd_samples = []
         for i in range(obj_num):
