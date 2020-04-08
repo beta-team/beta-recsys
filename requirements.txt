@@ -1,4 +1,4 @@
-pytorch
+torch
 numpy
 tqdm
 pytest
