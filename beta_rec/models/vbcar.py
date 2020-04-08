@@ -1,6 +1,6 @@
-from models.torch_engine import Engine
-from utils.constants import *
-from utils.common_util import *
+from beta_rec.models.torch_engine import Engine
+from beta_rec.utils.constants import *
+from beta_rec.utils.common_util import *
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

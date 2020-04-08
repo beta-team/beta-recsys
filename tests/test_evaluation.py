@@ -3,13 +3,13 @@ import pandas as pd
 import pytest
 from mock import Mock
 from sklearn.preprocessing import minmax_scale
-from src.utils.constants import (
+from beta_rec.utils.constants import (
     DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_PREDICTION_COL,
 )
-from src.utils.evaluation import (
+from beta_rec.utils.evaluation import (
     check_column_dtypes,
     merge_rating_true_pred,
     merge_ranking_true_pred,

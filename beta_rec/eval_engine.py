@@ -1,11 +1,8 @@
-import torch
-import numpy as np
-import pandas as pd
 from threading import Thread
 from threading import Lock
-import utils.evaluation as eval_model
-from utils.constants import *
-from utils.common_util import *
+import beta_rec.utils.evaluation as eval_model
+from beta_rec.utils.constants import *
+from beta_rec.utils.common_util import *
 from tensorboardX import SummaryWriter
 import socket
 from prometheus_client import start_http_server, Gauge
@@ -122,7 +119,7 @@ def test_eval_worker(testEngine, eval_data_df, prediction, TOP_K=[5, 10, 20]):
     return test_result_dic
 
 
-class TestEngine(object):
+class EvalEngine(object):
     def __init__(self, config):
         self.config = config  # model configuration, should be a dic
         self.metrics = config["metrics"]

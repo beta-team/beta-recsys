@@ -1,19 +1,17 @@
 import sys
-import os
 import json
 import argparse
-import pandas as pd
 from datetime import datetime
 from tqdm import tqdm
-from models.gmf import GMFEngine
-from models.mlp import MLPEngine
-from models.neumf import NeuMFEngine
-from datasets.nmf_data_utils import SampleGenerator
-from utils.common_util import *
-from utils.monitor import Monitor
-from utils import data_util
-from utils import logger
-from datasets import dataset
+from beta_rec.models.gmf import GMFEngine
+from beta_rec.models.mlp import MLPEngine
+from beta_rec.models.neumf import NeuMFEngine
+from beta_rec.datasets.nmf_data_utils import SampleGenerator
+from beta_rec.utils.common_util import *
+from beta_rec.utils.monitor import Monitor
+from beta_rec.utils import data_util
+from beta_rec.utils import logger
+from beta_rec.datasets import dataset
 
 
 def parse_args():

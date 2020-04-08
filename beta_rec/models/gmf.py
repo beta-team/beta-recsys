@@ -1,5 +1,5 @@
 import torch
-from models.torch_engine import Engine
+from beta_rec.models.torch_engine import Engine
 
 
 class GMF(torch.nn.Module):

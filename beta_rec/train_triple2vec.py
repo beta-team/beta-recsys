@@ -1,7 +1,7 @@
 import argparse
 from ray import tune
-from train_engine import TrainEngine
-from models.triple2vec import Triple2vecEngine
+from beta_rec.train_engine import TrainEngine
+from beta_rec.models.triple2vec import Triple2vecEngine
 
 
 def parse_args():

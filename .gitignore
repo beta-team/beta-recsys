@@ -29,6 +29,7 @@
 .coverage
 coverage.xml
 .idea/
+.pytest_cache/
 logs/
 results/
 checkpoints/

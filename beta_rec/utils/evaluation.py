@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from utils.constants import *
+from beta_rec.utils.constants import *
 from functools import wraps, lru_cache
 from sklearn.metrics import (
     mean_squared_error,

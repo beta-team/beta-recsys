@@ -1,7 +1,7 @@
 import torch
-from models.gmf import GMF
-from models.mlp import MLP
-from models.torch_engine import Engine
+from beta_rec.models.gmf import GMF
+from beta_rec.models.mlp import MLP
+from beta_rec.models.torch_engine import Engine
 
 
 class NeuMF(torch.nn.Module):

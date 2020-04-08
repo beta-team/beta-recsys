@@ -1,10 +1,10 @@
 import sys
 import argparse
 from ray import tune
-from train_engine import TrainEngine, print_dict
-from models.vbcar import VBCAREngine
-from utils.monitor import Monitor
-from utils.constants import *
+from beta_rec.train_engine import TrainEngine, print_dict
+from beta_rec.models.vbcar import VBCAREngine
+from beta_rec.utils.monitor import Monitor
+from beta_rec.utils.constants import *
 from tqdm import tqdm
 
 

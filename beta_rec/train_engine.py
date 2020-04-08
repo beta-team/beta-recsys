@@ -4,12 +4,12 @@ import GPUtil
 import string
 from tqdm import tqdm
 from datetime import datetime
-from test_engine import TestEngine
-from utils import logger, data_util
-from utils.monitor import Monitor
-from utils.constants import *
-from utils.common_util import *
-from utils.triple_sampler import Sampler
+from beta_rec.eval_engine import EvalEngine
+from beta_rec.utils import logger, data_util
+from beta_rec.utils.monitor import Monitor
+from beta_rec.utils.constants import *
+from beta_rec.utils.common_util import *
+from beta_rec.utils.triple_sampler import Sampler
 
 import torch
 from torch.utils.data import DataLoader
@@ -91,7 +91,7 @@ class TrainEngine(object):
         print_dict(config)
         self.config = config
         self.gpu_id = self.get_gpu()
-        self.test_engine = TestEngine(self.config)
+        self.test_engine = EvalEngine(self.config)
         """
         monitoring resources of this application
         """

@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from src.datasets.data_split import *
+from beta_rec.datasets.data_split import *
 
 
 def generate_temporal_testdata():

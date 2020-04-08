@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.sparse import coo_matrix
-from utils.constants import *
-from utils.aliasTable import AliasTable
-from datasets.dataset import load_split_dataset, load_item_fea_dic
+from beta_rec.utils.constants import *
+from beta_rec.utils.aliasTable import AliasTable
+from beta_rec.datasets.dataset import load_split_dataset, load_item_fea_dic
 
 
 class Dataset(object):

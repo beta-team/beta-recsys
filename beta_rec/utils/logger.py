@@ -1,21 +1,3 @@
-"""
-Created on Aug 5, 2019 BY @zaiqiao
-
-(1) init_logger
-basic logger
-
-(2) init_std_logger
-Easy tools to record all the std output into files.
-
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset fetching and dataset pre-processing functions.
-
-Some codes are modelfied based on github.com/microsoft/recommenders
-
-@zaiqiao: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-
 import logging
 import sys
 from datetime import datetime

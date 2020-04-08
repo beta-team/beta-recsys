@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from models.torch_engine import Engine
+from beta_rec.models.torch_engine import Engine
 
 
 class Triple2vec(nn.Module):

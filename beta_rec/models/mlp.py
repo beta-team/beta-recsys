@@ -1,6 +1,6 @@
 import torch
-from models.gmf import GMF
-from models.torch_engine import Engine
+from beta_rec.models.gmf import GMF
+from beta_rec.models.torch_engine import Engine
 
 
 class MLP(torch.nn.Module):
