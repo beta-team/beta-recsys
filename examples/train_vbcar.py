@@ -1,4 +1,7 @@
 import sys
+
+sys.path.append("../")
+
 import argparse
 from ray import tune
 from beta_rec.train_engine import TrainEngine, print_dict
