@@ -1,9 +1,9 @@
 { 
     "model":"neumf",
     "config_id":"default",
-    "root_dir":"../",
-    "common_config":{ 
-      "dataset":"ml-1m",
+    "common_config":{
+      "root_dir":"../",
+      "dataset":"dunnhumby",
       "data_split":"temporal",
       "temp_train":0,
       "emb_dim":32,
