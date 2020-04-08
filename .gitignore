@@ -34,6 +34,7 @@ logs/
 results/
 checkpoints/
 datasets/
+!beta_rec/datasets/
 runs/
 samples/
 
