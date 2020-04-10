@@ -1,8 +1,9 @@
 import os
 import requests
 
-def download_file(url, store_path):
+def download_file(url, store_file_path):
     """Download the raw dataset file
+
     Download the dataset with the given url and save to the store_path
     Args:
         url: the url that can be downloaded the dataset file.
@@ -11,16 +12,16 @@ def download_file(url, store_path):
         the archive format of the suffix
     """
     filename = url.split("/")[-1]
-    filepath = os.path.join(store_path, filename)
     print(f'Start downloading file {filename}...')
     file_data = requests.get(url, allow_redirects=True).content
-    with open(filepath, 'wb') as handler:
+    with open(store_file_path, 'wb') as handler:
         handler.write(file_data)
-    print(f'Success loading file {filename} into {filepath}')
+    print(f'Success loading file {filename} to {store_file_path}')
 
 
 def get_format(suffix):
     """ Get the archive format
+
     Get the archive format of the archive file with its suffix
     Args:
         suffix: suffix of the archive file

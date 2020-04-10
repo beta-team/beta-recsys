@@ -3,15 +3,10 @@ import numpy as np
 import pandas as pd
 
 from beta_rec.utils.constants import *
-from beta_rec.datasets.dataset_base import DatasetBase
+from beta_rec.datasets.dataset_base import DatasetBase, ML_100K_URL, ML_1M_URL, ML_25M_URL
 
 # indicators of the colunmn name
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
-
-# dataset download url
-ml_100k_url = r'http://files.grouplens.org/datasets/movielens/ml-100k.zip'
-ml_1m_url = r'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
-ml_25m_url = r'http://files.grouplens.org/datasets/movielens/ml-25m.zip'
 
 # raw dataset
 ml_1m_raw_dir = "datasets/ml-1m/raw/ratings.dat"
@@ -106,17 +101,19 @@ def load_temporal(root_dir=par_abs_dir, max_id=0):
 class Movielens_100k(DatasetBase):
     def __init__(self):
         """Movielens 100k
+
         Movielens 100k dataset.
         """
-        super().__init__(ml_100k_url, 'ml_100k')
+        super().__init__('ml_100k', url=ML_100K_URL)
     
     def preprocess(self):
         """Preprocess the raw file
+
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.download_path, self.download_filename.split('.')[0], 'u.data')
+        file_name = os.path.join(self.raw_path, self.dataset_name, 'u.data')
         if not os.path.exists(file_name):
             self.download()
 
@@ -126,15 +123,16 @@ class Movielens_100k(DatasetBase):
             sep='\s+',
             names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL]
         )
-        self.save_dataframe_as_npz(data, self.processed_file_path)
+        self.save_dataframe_as_npz(data, os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
 
 
 class Movielens_1m(DatasetBase):
     def __init__(self):
         """Movielens 1m
+
         Movielens 1m dataset.
         """
-        super().__init__(ml_1m_url, 'ml_1m')
+        super().__init__('ml_1m', url=ML_1M_URL)
     
     def preprocess(self):
         """Preprocess the raw file
@@ -142,7 +140,7 @@ class Movielens_1m(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.download_path, self.download_filename.split('.')[0], 'ratings.dat')
+        file_name = os.path.join(self.raw_path, self.dataset_name, 'ratings.dat')
         if not os.path.exists(file_name):
             self.download()
 
@@ -152,23 +150,25 @@ class Movielens_1m(DatasetBase):
             sep='::',
             names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL]
         )
-        self.save_dataframe_as_npz(data, self.processed_file_path)
+        self.save_dataframe_as_npz(data, os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
 
 
 class Movielens_25m(DatasetBase):
     def __init__(self):
         """Movielens 25m
+
         Movielens 25m dataset.
         """
-        super().__init__(ml_25m_url, 'ml_25m')
+        super().__init__('ml_25m', url=ML_25M_URL)
     
     def preprocess(self):
         """Preprocess the raw file
+
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.download_path, self.download_filename.split('.')[0], 'ratings.csv')
+        file_name = os.path.join(self.raw_path, self.dataset_name, 'ratings.csv')
         if not os.path.exists(file_name):
             self.download()
 
@@ -179,4 +179,4 @@ class Movielens_25m(DatasetBase):
             skiprows=[0],
             names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL]
         )
-        self.save_dataframe_as_npz(data, self.processed_file_path)
+        self.save_dataframe_as_npz(data, os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
