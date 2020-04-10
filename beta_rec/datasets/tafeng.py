@@ -1,7 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
+
 from beta_rec.utils.constants import *
+from beta_rec.datasets.dataset_base import DatasetBase
 
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
 
@@ -98,3 +100,40 @@ def load_temporal(root_dir=par_abs_dir, max_id=0, test_percent=None):
         data_file = os.path.join(data_file, str(test_percent))
         print("split percent:", test_percent)
     return load_data(data_file, max_id)
+
+
+class Tafeng(DatasetBase):
+    def __init__(self):
+        """Tafeng
+        Tafeng dataset.
+        The dataset can not be download by the url,
+        you need to down the dataset by 'https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download'
+        then put it into the directory `tafeng/raw`
+        """
+        super().__init__(None,\
+            'tafeng',\
+            download_filename='ta-feng-grocery-dataset.zip',\
+            manual_download_url='https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download'
+        )
+
+    def preprocess(self):
+        """Preprocess the raw file
+        Preprocess the file downloaded via the url,
+        convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory
+        """
+        file_name = os.path.join(self.download_path, 'ta_feng_all_months_merged.csv')
+        if not os.path.exists(file_name):
+            self.download()
+        data = pd.read_table(
+            file_name,
+            sep=',',
+            usecols=[0, 1, 5, 6],
+            names=[DEFAULT_TIMESTAMP_COL, DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL],
+            header=0
+        )
+
+        data[DEFAULT_TIMESTAMP_COL] = pd.to_datetime(data[DEFAULT_TIMESTAMP_COL])
+        data[DEFAULT_TIMESTAMP_COL] = data[DEFAULT_TIMESTAMP_COL].map(lambda x: x.timestamp())
+
+        self.save_dataframe_as_npz(data, self.processed_file_path)

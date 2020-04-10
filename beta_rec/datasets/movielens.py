@@ -1,10 +1,17 @@
 import os
 import numpy as np
 import pandas as pd
+
 from beta_rec.utils.constants import *
+from beta_rec.datasets.dataset_base import DatasetBase
 
 # indicators of the colunmn name
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
+
+# dataset download url
+ml_100k_url = r'http://files.grouplens.org/datasets/movielens/ml-100k.zip'
+ml_1m_url = r'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
+ml_25m_url = r'http://files.grouplens.org/datasets/movielens/ml-25m.zip'
 
 # raw dataset
 ml_1m_raw_dir = "datasets/ml-1m/raw/ratings.dat"
@@ -94,3 +101,82 @@ def load_temporal(root_dir=par_abs_dir, max_id=0):
     data_file = os.path.join(root_dir, ml_1m_temporal_dir)
     print("loading ml-1m dataset using temporal split")
     return load_data(data_file, max_id)
+
+
+class Movielens_100k(DatasetBase):
+    def __init__(self):
+        """Movielens 100k
+        Movielens 100k dataset.
+        """
+        super().__init__(ml_100k_url, 'ml_100k')
+    
+    def preprocess(self):
+        """Preprocess the raw file
+        Preprocess the file downloaded via the url,
+        convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory
+        """
+        file_name = os.path.join(self.download_path, self.download_filename.split('.')[0], 'u.data')
+        if not os.path.exists(file_name):
+            self.download()
+
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep='\s+',
+            names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL]
+        )
+        self.save_dataframe_as_npz(data, self.processed_file_path)
+
+
+class Movielens_1m(DatasetBase):
+    def __init__(self):
+        """Movielens 1m
+        Movielens 1m dataset.
+        """
+        super().__init__(ml_1m_url, 'ml_1m')
+    
+    def preprocess(self):
+        """Preprocess the raw file
+        Preprocess the file downloaded via the url,
+        convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory
+        """
+        file_name = os.path.join(self.download_path, self.download_filename.split('.')[0], 'ratings.dat')
+        if not os.path.exists(file_name):
+            self.download()
+
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep='::',
+            names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL]
+        )
+        self.save_dataframe_as_npz(data, self.processed_file_path)
+
+
+class Movielens_25m(DatasetBase):
+    def __init__(self):
+        """Movielens 25m
+        Movielens 25m dataset.
+        """
+        super().__init__(ml_25m_url, 'ml_25m')
+    
+    def preprocess(self):
+        """Preprocess the raw file
+        Preprocess the file downloaded via the url,
+        convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory
+        """
+        file_name = os.path.join(self.download_path, self.download_filename.split('.')[0], 'ratings.csv')
+        if not os.path.exists(file_name):
+            self.download()
+
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep=',',
+            skiprows=[0],
+            names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL]
+        )
+        self.save_dataframe_as_npz(data, self.processed_file_path)
