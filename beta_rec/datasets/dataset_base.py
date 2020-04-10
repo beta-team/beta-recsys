@@ -25,6 +25,7 @@ class DatasetBase(object):
         Args:
             dataset_name: the dataset name that a folder can be created with.
             url: the url that can be downloaded the dataset file.
+            manual_download_url: the url that users need to download manually
         """
         self.url = url
         self.manual_download_url = manual_download_url if manual_download_url else url
@@ -61,7 +62,6 @@ class DatasetBase(object):
             raise RuntimeError(f'please download the dataset by your self via {self.manual_download_url} and put it into {self.raw_path} after decompression')
 
         download_file_name = os.path.join(self.raw_path, os.path.splitext(os.path.basename(self.url))[0])
-        print(f'get {download_file_name}')
         file_format = self.url.split('.')[-1]
         raw_file_path = os.path.join(self.raw_path, f'{self.dataset_name}.{file_format}')
 
