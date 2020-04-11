@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from beta_rec.utils.constants import *
-from beta_rec.datasets.dataset_base import DatasetBase
+from beta_rec.datasets.dataset_base import DatasetBase, TAFENG_URL
 
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
 
@@ -105,24 +105,24 @@ def load_temporal(root_dir=par_abs_dir, max_id=0, test_percent=None):
 class Tafeng(DatasetBase):
     def __init__(self):
         """Tafeng
+
         Tafeng dataset.
         The dataset can not be download by the url,
         you need to down the dataset by 'https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download'
         then put it into the directory `tafeng/raw`
         """
-        super().__init__(None,\
-            'tafeng',\
-            download_filename='ta-feng-grocery-dataset.zip',\
+        super().__init__('tafeng',\
             manual_download_url='https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download'
         )
 
     def preprocess(self):
         """Preprocess the raw file
+
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.download_path, 'ta_feng_all_months_merged.csv')
+        file_name = os.path.join(self.raw_path, 'ta_feng_all_months_merged.csv')
         if not os.path.exists(file_name):
             self.download()
         data = pd.read_table(
@@ -136,4 +136,4 @@ class Tafeng(DatasetBase):
         data[DEFAULT_TIMESTAMP_COL] = pd.to_datetime(data[DEFAULT_TIMESTAMP_COL])
         data[DEFAULT_TIMESTAMP_COL] = data[DEFAULT_TIMESTAMP_COL].map(lambda x: x.timestamp())
 
-        self.save_dataframe_as_npz(data, self.processed_file_path)
+        self.save_dataframe_as_npz(data, os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
