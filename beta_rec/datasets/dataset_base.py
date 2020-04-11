@@ -5,7 +5,7 @@ import numpy as np
 
 from beta_rec.utils.constants import *
 from beta_rec.utils.download import download_file, get_format
-
+from beta_rec.datasets.data_split import data_split
 
 # download_url
 ML_100K_URL = r'http://files.grouplens.org/datasets/movielens/ml-100k.zip'
@@ -22,6 +22,7 @@ class DatasetBase(object):
 
         This is an beta dataset which can derive to other dataset.
         Several directory that store the dataset file would be created in the initial process.
+
         Args:
             dataset_name: the dataset name that a folder can be created with.
             url: the url that can be downloaded the dataset file.
@@ -54,9 +55,9 @@ class DatasetBase(object):
             print(f'please download the dataset by your self via {self.manual_download_url} and put it into {self.raw_path} after decompression')
 
     def download(self):
-        """Download the raw dataset
+        """Download the raw dataset.
 
-        Download the dataset with the given url and unpack the file
+        Download the dataset with the given url and unpack the file.
         """
         if not self.url:
             raise RuntimeError(f'please download the dataset by your self via {self.manual_download_url} and put it into {self.raw_path} after decompression')
@@ -76,14 +77,14 @@ class DatasetBase(object):
                 os.rename(download_file_name, os.path.join(self.raw_path, f'{self.dataset_name}.{download_file_name.split(".")[-1]}'))
 
     def preprocess(self):
-        '''Preprocess the raw file
+        """Preprocess the raw file.
 
         A virtual function that needs to be implement in the dervied class.
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
-        '''
-        pass
+        and save in the processed directory.
+        """
+        raise RuntimeError(f'please implement this function!')
 
     def load_interaction(self):
         """Load the user-item interaction
@@ -97,9 +98,9 @@ class DatasetBase(object):
         return data
 
     def save_dataframe_as_npz(self, data, data_file):
-        """Save dataframe
+        """Save Dataframe in compressed format
 
-        Save and convert the dataframe to npz file.
+        Save and convert the Dataframe to npz file.
         """
         user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=np.long)
         item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=np.long)
@@ -123,9 +124,9 @@ class DatasetBase(object):
             )
 
     def get_dataframe_from_npz(self, data_file):
-        """Get the dataframe from npz file
+        """Get the Dataframe from npz file
 
-        Get the dataframe from npz file
+        Get the Dataframe from npz file
         """
         np_data = np.load(data_file)
         if "timestamp" in np_data:
@@ -146,3 +147,194 @@ class DatasetBase(object):
                 }
             )
         return data
+
+    def make_leave_one_out(self, random=False, n_negative=2, test_copy=10):
+        """generate split data with leave_one_out.
+
+        Generate split data with leave_one_out method.
+
+        Args:
+            random: bool. Whether randomly leave one item as testing.
+            n_negative:  Number of negative samples for testing and validation data.
+            test_copy: int. Default 10. The number of testing and validation copies.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        data = self.load_interaction()
+        result = data_split(data, split_type="leave_one_out", test_rate=0, random=random, n_negative=n_negative,
+                            save_dir=self.processed_path, test_copy=test_copy)
+        return result
+
+    def make_leave_one_basket(self, random=False, n_negative=2, test_copy=10):
+        """generate split data with leave_one_basket.
+
+        Generate split data with leave_one_basket method.
+
+        Args:
+            random: bool. Whether randomly leave one basket as testing.
+            n_negative:  Number of negative samples for testing and validation data.
+            test_copy: int. Default 10. The number of testing and validation copies.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        data = self.load_interaction()
+        if DEFAULT_ORDER_COL not in data.columns:
+            raise RuntimeError("This dataset doesn't have an ORDER_COL")
+
+        result = data_split(data, split_type="leave_one_basket", test_rate=0, random=random, n_negative=n_negative,
+                            save_dir=self.processed_path, test_copy=test_copy)
+        return result
+
+    def make_random_split(self, test_rate=0.1, random=False, n_negative=2, by_user=False, test_copy=10):
+        """generate split data with random_split.
+
+        Generate split data with random_split method
+
+        Args:
+            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+            random: bool. Whether randomly leave one basket as testing.
+            n_negative:  Number of negative samples for testing and validation data.
+            by_user: bool. Default False.
+                    - Ture: user-based split,
+                    - False: global split,
+            test_copy: int. Default 10. The number of testing and validation copies.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        data = self.load_interaction()
+        result = data_split(data, split_type="random", test_rate=test_rate, random=random, n_negative=n_negative,
+                            save_dir=self.processed_path, by_user=by_user, test_copy=test_copy)
+        return result
+
+    def make_random_basket_split(self, test_rate=0.1, random=False, n_negative=2, by_user=False, test_copy=10):
+        """generate split data with random_basket_split.
+
+        Generate split data with random_basket_split method.
+
+        Args:
+            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+            random: bool. Whether randomly leave one basket as testing.
+            n_negative:  Number of negative samples for testing and validation data.
+            by_user: bool. Default False.
+                    - Ture: user-based split,
+                    - False: global split,
+            test_copy: int. Default 10. The number of testing and validation copies.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        data = self.load_interaction()
+        if DEFAULT_ORDER_COL not in data.columns:
+            raise RuntimeError("This dataset doesn't have an ORDER_COL")
+
+        result = data_split(data, split_type="random_basket", test_rate=test_rate, random=random,
+                            n_negative=n_negative, save_dir=self.processed_path, by_user=by_user, test_copy=test_copy)
+        return result
+
+    def make_temporal_split(self, test_rate=0.1, n_negative=2, by_user=False, test_copy=10):
+        """generate split data with temporal_split.
+
+        Generate split data with temporal_split method.
+
+        Args:
+            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+            n_negative:  Number of negative samples for testing and validation data.
+            by_user: bool. Default False.
+                    - Ture: user-based split,
+                    - False: global split,
+            test_copy: int. Default 10. The number of testing and validation copies.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        data = self.load_interaction()
+        result = data_split(data, split_type="temporal", test_rate=test_rate, n_negative=n_negative,
+                            save_dir=self.processed_path, by_user=by_user, test_copy=test_copy)
+        return result
+
+    def make_temporal_basket_split(self, test_rate=0.1, n_negative=2, by_user=False, test_copy=10):
+        """generate split data with temporal_basket_split.
+
+        Generate split data with temporal_basket_split method.
+
+        Args:
+            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+            n_negative:  Number of negative samples for testing and validation data.
+            by_user: bool. Default False.
+                    - True: user-based split,
+                    - False: global split,
+            test_copy: int. Default 10. The number of testing and validation copies.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        data = self.load_interaction()
+        if DEFAULT_ORDER_COL not in data.columns:
+            raise RuntimeError("This dataset doesn't have an ORDER_COL")
+
+        result = data_split(data, split_type="temporal_basket", test_rate=test_rate, n_negative=n_negative,
+                            save_dir=self.processed_path, by_user=by_user, test_copy=test_copy)
+        return result
+
+    def load_leave_one_out(self):
+        """load split data generated by leave_out_out without random select.
+
+        Load split data generated by leave_out_out without random select from Onedrive.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        raise RuntimeError(f'please implement this function!')
+
+    def load_leave_one_basket(self):
+        """load split date generated by leave_one_basket without random select.
+
+        Load split data generated by leave_one_basket without random select from Onedrive.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        raise RuntimeError(f'please implement this function!')
+
+    def load_random_split(self):
+        """load split date generated by random_split.
+
+        Load split data generated by random_split from Onedrive, with test_rate = 0.1 and by_user = False.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        raise RuntimeError(f'please implement this function!')
+
+    def load_random_basket_split(self):
+        """load split date generated by random_basket_split.
+
+        Load split data generated by random_basket_split from Onedrive, with test_rate = 0.1 and by_user = False.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        raise RuntimeError(f'please implement this function!')
+
+    def load_temporal_split(self):
+        """load split date generated by temporal_split.
+
+        Load split data generated by temporal_split from Onedrive, with test_rate = 0.1 and by_user = False.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        raise RuntimeError(f'please implement this function!')
+
+    def load_temporal_basket_split(self):
+        """load split date generated by temporal_basket_split.
+
+        Load split data generated by temporal_basket_split from Onedrive, with test_rate = 0.1 and by_user = False.
+
+        Returns:
+            Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        """
+        raise RuntimeError(f'please implement this function!')

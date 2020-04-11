@@ -7,3 +7,5 @@ pytest-cov
 pandas
 mock
 sklearn
+aiofiles
+aiohttp

@@ -107,11 +107,11 @@ class Movielens_100k(DatasetBase):
         super().__init__('ml_100k', url=ML_100K_URL)
     
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, 'u.data')
         if not os.path.exists(file_name):
@@ -121,7 +121,9 @@ class Movielens_100k(DatasetBase):
             file_name,
             header=None,
             sep='\s+',
+            engine='python',
             names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL]
+            
         )
         self.save_dataframe_as_npz(data, os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
 
@@ -135,10 +137,11 @@ class Movielens_1m(DatasetBase):
         super().__init__('ml_1m', url=ML_1M_URL)
     
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
+
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, 'ratings.dat')
         if not os.path.exists(file_name):
@@ -162,11 +165,11 @@ class Movielens_25m(DatasetBase):
         super().__init__('ml_25m', url=ML_25M_URL)
     
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, 'ratings.csv')
         if not os.path.exists(file_name):
