@@ -1,5 +1,6 @@
 import os
 import requests
+from beta_rec.utils.onedrive import OneDrive
 
 def download_file(url, store_file_path):
     """Download the raw dataset file
@@ -34,3 +35,8 @@ def get_format(suffix):
     if suffix not in format_map:
         return suffix
     return format_map[suffix]
+
+
+def download_file_from_onedrive(url, path):
+    folder = OneDrive(url=url, path=path)
+    folder.download()
