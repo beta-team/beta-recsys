@@ -1,12 +1,23 @@
 import numpy as np
 from scipy.sparse import coo_matrix
 from beta_rec.utils.constants import *
+from beta_rec.utils.common_util import get_random_rep
 from beta_rec.utils.aliasTable import AliasTable
 from beta_rec.datasets.dataset import load_split_dataset, load_item_fea_dic
 
 
 class Dataset(object):
+    """
+        Base Dataset class for all the model
+    """
+
     def __init__(self, config):
+        """
+        Constructor
+
+        Args:
+            config:
+        """
         self.config = config
         self.n_users = 0
         self.n_items = 0
@@ -19,6 +30,7 @@ class Dataset(object):
             self.random_dim = config["random_dim"]
 
         # data preprocessing for training and test data
+        # To be replaced with new data method
         train, test, validate = load_split_dataset(config)
         self.train = self._data_processing(train, test[0])
         self.validate = self._reindex_list(validate)
@@ -33,6 +45,13 @@ class Dataset(object):
         self.init_item_fea(config)
 
     def generate_train_data(self):
+        """ Generate a rating matrix
+
+        Returns:
+            (sigma_matrix, rating_matrix)
+            sigma_matrix with rating being 1
+            rating_matrix with rating being the real rating
+        """
         train_data = (
             self.train.groupby(["col_user", "col_item"])
             .size()
@@ -187,9 +206,6 @@ class Dataset(object):
 
         return df
 
-    def get_random_rep(self, raw_num, dim):
-        return np.random.normal(size=(raw_num, dim))
-
     def init_item_fea(self, config):
         """
         initialize item feature
@@ -205,7 +221,7 @@ class Dataset(object):
         )
 
         if fea_type == "random":
-            self.item_feature = self.get_random_rep(self.n_items, self.random_dim)
+            self.item_feature = get_random_rep(self.n_items, self.random_dim)
         elif fea_type == "one_hot":
             item_fea_dic = load_item_fea_dic(config, fea_type="one_hot")
             self.item_feature = np.array(
@@ -222,28 +238,28 @@ class Dataset(object):
                 [item_fea_dic[self.id2item[k]] for k in np.arange(self.n_items)]
             )
         elif fea_type == "random_one_hot" or fea_type == "one_hot_random":
-            rand_item_fea = self.get_random_rep(self.n_items, 512)
+            rand_item_fea = get_random_rep(self.n_items, 512)
             item_fea_dic = load_item_fea_dic(config, fea_type="one_hot")
             item_fea_list = np.array(
                 [item_fea_dic[self.id2item[k]] for k in np.arange(self.n_items)]
             )
             self.item_feature = np.concatenate((item_fea_list, rand_item_fea), axis=1)
         elif fea_type == "random_cate" or fea_type == "cate_random":
-            rand_item_fea = self.get_random_rep(self.n_items, 512)
+            rand_item_fea = get_random_rep(self.n_items, 512)
             item_fea_dic = load_item_fea_dic(config, fea_type="cate")
             item_fea_list = np.array(
                 [item_fea_dic[self.id2item[k]] for k in np.arange(self.n_items)]
             )
             self.item_feature = np.concatenate((item_fea_list, rand_item_fea), axis=1)
         elif fea_type == "random_word2vec" or fea_type == "word2vec_random":
-            rand_item_fea = self.get_random_rep(self.n_items, 512)
+            rand_item_fea = get_random_rep(self.n_items, 512)
             item_fea_dic = load_item_fea_dic(config, fea_type="word2vec")
             item_fea_list = np.array(
                 [item_fea_dic[self.id2item[k]] for k in np.arange(self.n_items)]
             )
             self.item_feature = np.concatenate((item_fea_list, rand_item_fea), axis=1)
         elif fea_type == "random_bert" or fea_type == "bert_random":
-            rand_item_fea = self.get_random_rep(self.n_items, 512)
+            rand_item_fea = get_random_rep(self.n_items, 512)
             item_fea_dic = load_item_fea_dic(config, fea_type="bert")
             item_fea_list = np.array(
                 [item_fea_dic[self.id2item[k]] for k in np.arange(self.n_items)]
@@ -265,7 +281,7 @@ class Dataset(object):
             or fea_type == "one_hot_random_word2vec"
             or fea_type == "random_word2vec_one_hot"
         ):
-            rand_item_fea = self.get_random_rep(self.n_items, 512)
+            rand_item_fea = get_random_rep(self.n_items, 512)
             item_fea_dic1 = load_item_fea_dic(config, fea_type="one_hot")
             item_fea_dic2 = load_item_fea_dic(config, fea_type="word2vec")
             item_fea_list1 = np.array(
@@ -305,7 +321,7 @@ class Dataset(object):
             or fea_type == "one_hot_word2vec_bert_random"
             or fea_type == "random_one_hot_word2vec_bert"
         ):
-            rand_item_fea = self.get_random_rep(self.n_items, 512)
+            rand_item_fea = get_random_rep(self.n_items, 512)
             item_fea_dic1 = load_item_fea_dic(config, fea_type="one_hot")
             item_fea_dic2 = load_item_fea_dic(config, fea_type="word2vec")
             item_fea_dic3 = load_item_fea_dic(config, fea_type="bert")
@@ -327,7 +343,7 @@ class Dataset(object):
                     fea_type
                 )
             )
-            self.item_feature = self.get_random_rep(self.n_items, self.random_dim)
+            self.item_feature = get_random_rep(self.n_items, self.random_dim)
 
     def init_user_fea(self, config):
         """
@@ -341,10 +357,10 @@ class Dataset(object):
 
         print("init user featrue for dataset:", config["dataset"], " type:", fea_type)
         if fea_type == "random":
-            self.user_feature = self.get_random_rep(self.n_users, self.random_dim)
+            self.user_feature = get_random_rep(self.n_users, self.random_dim)
         else:
             print(
                 "[ERROR]: CANNOT support other feature type, use 'random' user featrue instead!"
             )
-            self.user_feature = self.get_random_rep(self.n_users, self.random_dim)
+            self.user_feature = get_random_rep(self.n_users, self.random_dim)
             # load_user_fea(config)

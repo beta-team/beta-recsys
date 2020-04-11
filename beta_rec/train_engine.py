@@ -1,43 +1,44 @@
 import sys
+import os
 import json
 import GPUtil
 import string
+import random
 from tqdm import tqdm
 from datetime import datetime
 from beta_rec.eval_engine import EvalEngine
 from beta_rec.utils import logger, data_util
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.constants import *
-from beta_rec.utils.common_util import *
+from beta_rec.utils.common_util import set_seed, initialize_folders, dict2str
 from beta_rec.utils.triple_sampler import Sampler
 
 import torch
 from torch.utils.data import DataLoader
 
-set_seed(2020)
-
-
-def print_dict(dic):
-    print("-" * 80)
-    print(
-        "Configs: \n"
-        + "\n".join([str(k) + ":\t" + str(v) for k, v in dic.items()])
-        + "\n"
-    )
-    print("-" * 80)
-
 
 class TrainEngine(object):
     """
-    Initialize configs
-    Input with config dic, which is from the command line parameters
+    Training engine for all the models.
+    - Loading parameters from json files
+    - Initialize system folders, model name and the paths to be save
+    - Initialize resource monitor
+    - Initialize random seed
+    - Initialize logging
+
     """
 
     def __init__(self, config):
+        """
+        Initialing
+        Args:
+            config: dict. configs received from command line. Should have the config["config_file"].
+        """
         # obtain abspath for the project
         if "root_dir" not in config:
-            UTILS_ROOT = os.path.dirname(os.path.abspath(__file__))
-            config["root_dir"] = os.path.abspath(os.path.join(UTILS_ROOT, ".."))
+            file_dir = os.path.dirname(os.path.abspath(__file__))
+            config["root_dir"] = os.path.abspath(os.path.join(file_dir, ".."))
+
         # load config file from json
         with open(config["config_file"]) as config_params:
             print("loading config file", config["config_file"])
@@ -57,6 +58,10 @@ class TrainEngine(object):
             + random_str
         )
 
+        set_seed(config["seed"] if "seed" in config else 2020)
+
+        initialize_folders()
+
         # log file
         config["log_file"] = os.path.join(
             config["root_dir"], config["log_dir"], config["model_run_id"]
@@ -65,7 +70,9 @@ class TrainEngine(object):
         """
         Logging
         """
-        logging = logger.init_std_logger(config["log_file"])
+        logger.init_std_logger(config["log_file"])
+        print("python version:", sys.version)
+        print("pytorch version:", torch.__version__)
 
         """
         file paths to be saved
@@ -86,9 +93,8 @@ class TrainEngine(object):
             config["root_dir"], config["result_dir"], config["result_file"]
         )
         print("Performance result will save in file:", config["result_file"])
-        print("python version:", sys.version)
-        print("pytorch version:", torch.__version__)
-        print_dict(config)
+
+        dict2str("Config", config)
         self.config = config
         self.gpu_id = self.get_gpu()
         self.test_engine = EvalEngine(self.config)
@@ -97,23 +103,24 @@ class TrainEngine(object):
         """
         self.build_dataset()
 
-    """
-     Get a gpu id list sorted by the most available memory
-    """
-
     def get_gpu(self):
-        DEVICE_ID_LIST = GPUtil.getAvailable(
+        """
+            Get a gpu id list sorted by the most available memory
+        Returns:
+            None
+        """
+        gpu_id_list = GPUtil.getAvailable(
             order="memory", limit=3
         )  # get the fist gpu with the lowest load
-        if len(DEVICE_ID_LIST) < 1:
+        if len(gpu_id_list) < 1:
             gpu_id = None
             device_str = "cpu"
         else:
-            gpu_id = DEVICE_ID_LIST[0]
+            gpu_id = gpu_id_list[0]
             # need to set 0 if ray only specify 1 gpu
             if "CUDA_VISIBLE_DEVICES" in os.environ:
                 if len(os.environ["CUDA_VISIBLE_DEVICES"].split()) == 1:
-                    #                     gpu_id = int(os.environ["CUDA_VISIBLE_DEVICES"])
+                    #  gpu_id = int(os.environ["CUDA_VISIBLE_DEVICES"])
                     gpu_id = 0
                     print("Find only one gpu with id: ", gpu_id)
                     device_str = "cuda:" + str(gpu_id)
@@ -121,13 +128,15 @@ class TrainEngine(object):
             else:
                 print("Get a gpu id list sorted by the most available memory:", gpu_id)
                 device_str = "cuda:" + str(gpu_id)
-            # os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
         self.config["device_str"] = device_str
         return gpu_id
 
     def sample_triple(self):
         """
-        Sample triples or load triples samples from files
+        Sample triples or load triples samples from files. Only applicable for basket based recommenders
+        Returns:
+            None
+
         """
         # need to be specified if need samples
         self.config["sample_dir"] = os.path.join(
@@ -152,6 +161,12 @@ class TrainEngine(object):
             self.train_data = my_sampler.sample()
 
     def build_dataset(self):
+        """
+            Example for build dataset
+        Returns:
+
+
+        """
         self.data = data_util.Dataset(self.config)
         self.train_data = self.data.train
         self.config["n_users"] = self.data.n_users
@@ -186,7 +201,9 @@ class TrainEngine(object):
 
     def train(self):
         assert hasattr(self, "engine"), "Please specify the exact model engine !"
-        monitor = Monitor(log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id)
+        self.monitor = Monitor(
+            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+        )
         """
         init model
         """
@@ -219,7 +236,7 @@ class TrainEngine(object):
             lr = self.config["lr"] * (0.5 ** (epoch // 10))
             for param_group in self.engine.optimizer.param_groups:
                 param_group["lr"] = lr
-        self.config["run_time"] = monitor.stop()
+        self.config["run_time"] = self.monitor.stop()
         return best_performance
 
     def temporal_train(self):
@@ -241,14 +258,14 @@ class TrainEngine(object):
                 test_result = self.engine.evaluate(self.data.test[0], epoch_id=epoch)
                 self.engine.record_performance(result, test_result, epoch_id=epoch)
                 if result[self.config["validate_metric"]] > best_performance:
-                    print_dict(result)
+                    dict2str(result)
                     self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"])
                     best_performance = result[self.config["validate_metric"]]
                 """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
                 lr = self.config["lr"] * (0.5 ** (epoch // 10))
-                for param_group in engine.optimizer.param_groups:
+                for param_group in self.engine.optimizer.param_groups:
                     param_group["lr"] = lr
-        self.config["run_time"] = monitor.stop()
+        self.config["run_time"] = self.monitor.stop()
         return best_performance
 
     def test(self):

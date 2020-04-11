@@ -8,6 +8,11 @@ from beta_rec.models.triple2vec import Triple2vecEngine
 
 
 def parse_args():
+    """
+    Parse args from command line
+    Returns:
+
+    """
     parser = argparse.ArgumentParser(description="Run Triple2vec..")
     parser.add_argument(
         "--config_file",
@@ -64,22 +69,35 @@ def parse_args():
     return parser.parse_args()
 
 
-"""
-update hyperparameters from command line
-"""
-
-
 def update_args(config, args):
-    #     print(vars(args))
+    """Update config parameters by the received parameters from command line
+
+    Args:
+        config (dict): Initial dict of the parameters from JOSN config file.
+        args (object): An argparse Argument object with attributes being the parameters to be updated.
+
+    Returns:
+        None
+    """
     print("Received parameters form command line:")
     for k, v in vars(args).items():
-        if v != None:
+        if v is not None:
             config[k] = v
             print(k, "\t", v)
 
 
 class Triple2vec_train(TrainEngine):
+    """ An instance class from the TrainEngine base class
+
+    """
+
     def __init__(self, config):
+        """Constructor
+
+        Args:
+            config (dict): All the parameters for the model
+        """
+
         self.config = config
         super(Triple2vec_train, self).__init__(self.config)
         self.sample_triple()
@@ -87,6 +105,14 @@ class Triple2vec_train(TrainEngine):
 
 
 def tune_train(config):
+    """Train the model with a hypyer-parameter tuner (ray)
+
+    Args:
+        config (dict): All the parameters for the model
+
+    Returns:
+
+    """
     triple2vec = Triple2vec_train(config)
     best_performance = triple2vec.train()
     tune.track.log(best_ndcg=best_performance)
