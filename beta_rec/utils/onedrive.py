@@ -7,11 +7,14 @@ import os
 
 
 class OneDrive:
-    """
-    Downloads shared file/folder to localhost with persisted structure.
+    """Download shared file/folder to localhost with persisted structure.
+
+    Download shared file/folder from Onedrive without authentication.
+
     params:
     `str:url`: url to the shared one drive folder or file
     `str:path`: local filesystem path
+
     methods:
     `download() -> None`: fire async download of all files found in URL
     """
@@ -33,10 +36,20 @@ class OneDrive:
         )
 
     def _token(self, url):
-        return "u!" + b64encode(url.encode()).decode()
+        result = "u!" + b64encode(url.encode()).decode()
+        result = result.rstrip("=")
+        result = result.replace("/", "_")
+        result = result.replace("+", "-")
+        return result
 
     def _traverse_url(self, url, name=""):
-        """ Traverse the folder tree and store leaf urls with filenames """
+        """Traverse the folder tree and store leaf urls with filename.
+
+        Get all the shared files given the url
+
+        Args:
+            url: the shared link of files/folder
+        """
 
         r = self.session.get(f"{self.prefix}{self._token(url)}{self.suffix}").json()
         name = name + os.sep + r["name"]
