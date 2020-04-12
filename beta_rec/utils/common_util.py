@@ -5,20 +5,64 @@ import numpy as np
 import torch
 import pandas as pd
 
-UTILS_ROOT = os.path.dirname(os.path.abspath(__file__))
-BASE_DIR = os.path.abspath(os.path.join(UTILS_ROOT, "..", ".."))
 
-configs = BASE_DIR + "/configs/"
-datasets = BASE_DIR + "/datasets/"
-checkpoints = BASE_DIR + "/checkpoints/"
-results = BASE_DIR + "/results/"
-logs = BASE_DIR + "/logs/"
-samples = BASE_DIR + "/samples/"
-runs = BASE_DIR + "/runs/"
+def dict2str(tag, dic):
+    """
+    A better format to print a dictionary
+    Args:
+        tag: str. A name for this dictionary
+        dic: dict.
 
-for DIR in [configs, datasets, checkpoints, results, samples, logs, runs]:
-    if not os.path.exists(DIR):
-        os.makedirs(DIR)
+    Returns:
+        None
+    """
+
+    dic_str = (
+        tag
+        + ": \n"
+        + "\n".join([str(k) + ":\t" + str(v) for k, v in dic.items()])
+        + "\n"
+    )
+    print("-" * 80)
+    print(dic_str)
+    print("-" * 80)
+    return dic_str
+
+
+def initialize_folders():
+    """
+    Initialize the whole directory structure of the project
+    Returns:
+        None
+
+    """
+    UTILS_ROOT = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.abspath(os.path.join(UTILS_ROOT, "..", ".."))
+
+    configs = BASE_DIR + "/configs/"
+    datasets = BASE_DIR + "/datasets/"
+    checkpoints = BASE_DIR + "/checkpoints/"
+    results = BASE_DIR + "/results/"
+    logs = BASE_DIR + "/logs/"
+    samples = BASE_DIR + "/samples/"
+    runs = BASE_DIR + "/runs/"
+
+    for DIR in [configs, datasets, checkpoints, results, samples, logs, runs]:
+        if not os.path.exists(DIR):
+            os.makedirs(DIR)
+
+
+def get_random_rep(raw_num, dim):
+    """
+    Generate a random embedding from a normal (Gaussian) distribution.
+    Args:
+        raw_num: Number of raw to be generated.
+        dim: The dimension of the embeddings.
+    Returns:
+        ndarray or scalar
+        Drawn samples from the normal distribution.
+    """
+    return np.random.normal(size=(raw_num, dim))
 
 
 def timeit(method):
@@ -31,6 +75,8 @@ def timeit(method):
         @timeit
         def method(self):
             pass
+    Returns:
+        None
     
     """
 
@@ -81,6 +127,9 @@ def set_seed(seed):
 
     Args:
         seed: A global random seed.
+
+    Returns:
+        None
 
     """
     if type(seed) != int:

@@ -1,14 +1,17 @@
 import sys
+
 sys.path.append("../")
+import os
 import json
 import argparse
+import pandas as pd
 from datetime import datetime
 from tqdm import tqdm
 from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.neumf import NeuMFEngine
 from beta_rec.datasets.nmf_data_utils import SampleGenerator
-from beta_rec.utils.common_util import *
+from beta_rec.utils.common_util import save_to_csv
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils import data_util
 from beta_rec.utils import logger
@@ -16,6 +19,11 @@ from beta_rec.datasets import dataset
 
 
 def parse_args():
+    """
+        Parse args from command line
+        Returns:
+
+    """
     parser = argparse.ArgumentParser(description="Run neumf..")
     parser.add_argument(
         "--config_file",
@@ -68,7 +76,15 @@ update hyperparameters from command line
 
 
 def update_args(config, args):
-    #     print(vars(args))
+    """Update config parameters by the received parameters from command line
+
+        Args:
+            config (dict): Initial dict of the parameters from JOSN config file.
+            args (object): An argparse Argument object with attributes being the parameters to be updated.
+
+        Returns:
+            None
+    """
     for k, v in vars(args).items():
         if v != None:
             config[k] = v
@@ -333,4 +349,4 @@ if __name__ == "__main__":
         result["time"] = [run_time]
         result.update(result_para)
         result_df = pd.DataFrame(result)
-        save_result(result_df, result_file)
+        save_to_csv(result_df, result_file)

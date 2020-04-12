@@ -1,10 +1,9 @@
 import sys
 
 sys.path.append("../")
-
 import argparse
 from ray import tune
-from beta_rec.train_engine import TrainEngine, print_dict
+from beta_rec.train_engine import TrainEngine, dict2str
 from beta_rec.models.vbcar import VBCAREngine
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.constants import *
@@ -12,6 +11,11 @@ from tqdm import tqdm
 
 
 def parse_args():
+    """
+        Parse args from command line
+        Returns:
+
+    """
     parser = argparse.ArgumentParser(description="Run VBCAR..")
     parser.add_argument(
         "--config_file",
@@ -76,7 +80,15 @@ update hyperparameters from command line
 
 
 def update_args(config, args):
-    #     print(vars(args))
+    """Update config parameters by the received parameters from command line
+
+        Args:
+            config (dict): Initial dict of the parameters from JOSN config file.
+            args (object): An argparse Argument object with attributes being the parameters to be updated.
+
+        Returns:
+            None
+    """
     print("Received parameters form comand line:")
     for k, v in vars(args).items():
         if v is not None:
@@ -85,7 +97,15 @@ def update_args(config, args):
 
 
 class VBCAR_train(TrainEngine):
+    """ An instance class from the TrainEngine base class
+
+    """
     def __init__(self, config):
+        """Constructor
+
+                Args:
+                    config (dict): All the parameters for the model
+        """
         self.config = config
         super(VBCAR_train, self).__init__(self.config)
         self.sample_triple()
@@ -116,7 +136,7 @@ class VBCAR_train(TrainEngine):
             self.engine.record_performance(result, test_result, epoch_id=epoch)
             if result[self.config["validate_metric"]] > best_performance:
                 n_no_update = 0
-                print_dict(result)
+                dict2str(result)
                 self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"])
                 best_performance = result[self.config["validate_metric"]]
             else:
