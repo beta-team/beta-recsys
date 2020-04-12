@@ -3,7 +3,12 @@ import numpy as np
 import pandas as pd
 
 from beta_rec.utils.constants import *
-from beta_rec.datasets.dataset_base import DatasetBase, ML_100K_URL, ML_1M_URL, ML_25M_URL
+from beta_rec.datasets.dataset_base import DatasetBase
+
+# download_url
+ML_100K_URL = r'http://files.grouplens.org/datasets/movielens/ml-100k.zip'
+ML_1M_URL = r'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
+ML_25M_URL = r'http://files.grouplens.org/datasets/movielens/ml-25m.zip'
 
 # indicators of the colunmn name
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
@@ -14,7 +19,6 @@ ml_1m_raw_dir = "datasets/ml-1m/raw/ratings.dat"
 ml_1m_temporal_dir = "datasets/ml-1m/temporal"
 # dataset dir under leave-one-out split
 ml_1m_l1o_dir = os.path.join(par_abs_dir, "datasets/ml-1m/leave_one_out")
-
 
 def load_data(data_dir, max_id=0):
     loaded = np.load(os.path.join(data_dir, "train.npz"))

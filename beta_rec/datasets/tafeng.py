@@ -3,8 +3,10 @@ import numpy as np
 import pandas as pd
 
 from beta_rec.utils.constants import *
-from beta_rec.datasets.dataset_base import DatasetBase, TAFENG_URL
+from beta_rec.datasets.dataset_base import DatasetBase
 
+# download_url
+TAFENG_URL = r'https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download'
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
 
 

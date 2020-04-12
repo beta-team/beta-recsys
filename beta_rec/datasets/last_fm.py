@@ -2,7 +2,10 @@ import os
 import pandas as pd
 
 from beta_rec.utils.constants import *
-from beta_rec.datasets.dataset_base import DatasetBase, LAST_FM_URL
+from beta_rec.datasets.dataset_base import DatasetBase
+
+# download_url
+LAST_FM_URL = r'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
 
 
 class LastFM(DatasetBase):
