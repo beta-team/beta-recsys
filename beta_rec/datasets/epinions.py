@@ -2,7 +2,10 @@ import os
 import pandas as pd
 
 from beta_rec.utils.constants import *
-from beta_rec.datasets.dataset_base import DatasetBase, EPINIONS_URL
+from beta_rec.datasets.dataset_base import DatasetBase
+
+# download_url
+EPINIONS_URL = r'http://www.trustlet.org/datasets/downloaded_epinions/ratings_data.txt.bz2'
 
 
 class Epinions(DatasetBase):

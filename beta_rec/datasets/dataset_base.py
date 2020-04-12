@@ -7,14 +7,6 @@ from beta_rec.utils.constants import *
 from beta_rec.utils.download import download_file, get_format
 from beta_rec.datasets.data_split import data_split
 
-# download_url
-ML_100K_URL = r'http://files.grouplens.org/datasets/movielens/ml-100k.zip'
-ML_1M_URL = r'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
-ML_25M_URL = r'http://files.grouplens.org/datasets/movielens/ml-25m.zip'
-EPINIONS_URL = r'http://www.trustlet.org/datasets/downloaded_epinions/ratings_data.txt.bz2'
-TAFENG_URL = r'https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download'
-LAST_FM_URL = r'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
-
 
 class DatasetBase(object):
     def __init__(self, dataset_name, url=None, manual_download_url=None):
