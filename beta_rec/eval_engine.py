@@ -172,7 +172,6 @@ class EvalEngine(object):
         self.init_prometheus_client()
         print("Initializing test engine ...")
 
-
     def predict(self, data_df, model):
         """ Make prediction for a trained model
 
