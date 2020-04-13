@@ -16,7 +16,7 @@
          "map_at_k"
       ],
       "validate_metric": "ndcg_at_k@10",
-      "device":"gpu",
+      "device_str":"gpu",
       "optimizer":"adam",
       "lr":1e-3,
       "num_epoch":50,
