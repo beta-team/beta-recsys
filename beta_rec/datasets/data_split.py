@@ -429,7 +429,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
     return data
 
 
-def data_split(
+def split_data(
         data,
         split_type,
         test_rate,
@@ -517,7 +517,7 @@ def generate_random_data(n_interaction, user_id, item_id):
     return data
 
 
-def generate_parameterized_path(test_rate, random, n_negative, by_user, test_copy):
+def generate_parameterized_path(test_rate=0.1, random=False, n_negative=100, by_user=False, test_copy=10):
     """Generate parameterized path.
 
     Encode parameters into path to differentiate different split parameters
