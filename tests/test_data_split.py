@@ -367,3 +367,9 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[0, 1], 0)
         self.assertEqual(tp_test.iloc[0, 2], 100)
         self.assertEqual(tp_test.iloc[0, 3], 10)
+
+    def test_generate_parameterized_path(self):
+        path1 = generate_parameterized_path(test_rate=0.1, random=False, n_negative=2, by_user=False, test_copy=10)
+        self.assertEqual(path1, "010_0_2_0_10")
+        path2 = generate_parameterized_path(test_rate=0.227, random=True, n_negative=2, by_user=True, test_copy=10)
+        self.assertEqual(path2, "023_1_2_1_10")

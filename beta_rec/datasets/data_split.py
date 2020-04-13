@@ -131,7 +131,7 @@ def feed_neg_sample(data, negative_num, item_sampler):
     return total_interact
 
 
-def save_data(data, base_dir, data_split="leave_one_basket", suffix="train.npz"):
+def save_data(data, base_dir, data_split="leave_one_basket", parameterized_dir=None, suffix="train.npz"):
     """save Dataframe to compressed npz
 
     Args:
@@ -154,6 +154,11 @@ def save_data(data, base_dir, data_split="leave_one_basket", suffix="train.npz")
     data_file = os.path.join(base_dir, data_split)
     if not os.path.exists(data_file):
         os.makedirs(data_file)
+
+    data_file = os.path.join(data_file, parameterized_dir)
+    if not os.path.exists(data_file):
+        os.makedirs(data_file)
+
     data_file = os.path.join(data_file, suffix)
 
     if DEFAULT_ORDER_COL in data.columns:
@@ -203,7 +208,7 @@ def random_split(data, test_rate=0.1, by_user=False):
                 interactions[train_size:], DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
-                interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+                interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
             ] = "validate"
 
     else:
@@ -219,7 +224,7 @@ def random_split(data, test_rate=0.1, by_user=False):
             interactions[train_size:], DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
-            interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+            interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
         ] = "validate"
     return data
 
@@ -252,7 +257,7 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
-                    orders[train_size - validate_size : train_size]
+                    orders[train_size - validate_size: train_size]
                 ),
                 DEFAULT_FLAG_COL,
             ] = "validate"
@@ -269,7 +274,7 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
-                orders[train_size - validate_size : train_size]
+                orders[train_size - validate_size: train_size]
             ),
             DEFAULT_FLAG_COL,
         ] = "validate"
@@ -355,7 +360,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
                 interactions[train_size:], DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rateof the total orders to be the test set
             data.loc[
-                interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+                interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
             ] = "validate"
 
     else:
@@ -369,7 +374,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
             interactions[train_size:], DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
-            interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+            interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
         ] = "validate"
     return data
 
@@ -402,7 +407,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
-                    orders[train_size - validate_size : train_size]
+                    orders[train_size - validate_size: train_size]
                 ),
                 DEFAULT_FLAG_COL,
             ] = "validate"
@@ -417,7 +422,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
-                orders[train_size - validate_size : train_size]
+                orders[train_size - validate_size: train_size]
             ),
             DEFAULT_FLAG_COL,
         ] = "validate"
@@ -425,14 +430,14 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
 
 
 def data_split(
-    data,
-    split_type,
-    test_rate,
-    random=False,
-    n_negative=100,
-    save_dir=None,
-    by_user=False,
-    test_copy=10,
+        data,
+        split_type,
+        test_rate,
+        random=False,
+        n_negative=100,
+        save_dir=None,
+        by_user=False,
+        test_copy=10,
 ):
     """Data split methods
 
@@ -445,7 +450,7 @@ def data_split(
                         - leave_one_basket
                         - temporal
                         - temporal_basket
-        random: bool.  Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        random: bool. Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         n_negative: Number of negative samples for testing and validation data.
         save_dir: str. Default None. If specified, the split data will be saved to the dir.
@@ -480,13 +485,16 @@ def data_split(
     tp_test = data[data[DEFAULT_FLAG_COL] == "test"]
     if save_dir is None:
         return data
-    save_data(tp_train, save_dir, split_type, "train.npz")
+
+    parameterized_path = generate_parameterized_path(test_rate, random, n_negative, by_user, test_copy)
+
+    save_data(tp_train, save_dir, split_type, parameterized_path, "train.npz")
     item_sampler = AliasTable(data[DEFAULT_ITEM_COL].value_counts().to_dict())
     for i in range(test_copy):
         tp_validate_new = feed_neg_sample(tp_validate, n_negative, item_sampler)
         tp_test_new = feed_neg_sample(tp_test, n_negative, item_sampler)
-        save_data(tp_validate_new, save_dir, split_type, "valid_" + str(i) + ".npz")
-        save_data(tp_test_new, save_dir, split_type, "test_" + str(i) + ".npz")
+        save_data(tp_validate_new, save_dir, split_type, parameterized_path, "valid_" + str(i) + ".npz")
+        save_data(tp_test_new, save_dir, split_type, parameterized_path, "test_" + str(i) + ".npz")
     return data
 
 
@@ -507,3 +515,35 @@ def generate_random_data(n_interaction, user_id, item_id):
     }
     data = pd.DataFrame(data)
     return data
+
+
+def generate_parameterized_path(test_rate, random, n_negative, by_user, test_copy):
+    """Generate parameterized path.
+
+    Encode parameters into path to differentiate different split parameters
+
+    Args:
+        test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+        random: bool. Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        n_negative: Number of negative samples for testing and validation data.
+        by_user: bool. Default False.
+                    - True: user-based split,
+                    - False: global split,
+        test_copy: int. Default 10. The number of testing and validation copies.
+
+    Returns:
+        A string that encodes parameters.
+    """
+    test_rate *= 100
+    test_rate = round(test_rate)
+    test_rate_str = "0" + str(test_rate)
+
+    random_str = "0" if random is False else "1"
+
+    n_negative_str = str(n_negative)
+
+    by_user_str = "0" if by_user is False else "1"
+
+    test_copy_str = str(test_copy)
+
+    return test_rate_str + "_" + random_str + "_" + n_negative_str + "_" + by_user_str + "_" + test_copy_str
