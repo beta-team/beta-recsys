@@ -6,8 +6,8 @@ class GMF(torch.nn.Module):
     def __init__(self, config):
         super(GMF, self).__init__()
         self.config = config
-        self.num_users = config["num_users"]
-        self.num_items = config["num_items"]
+        self.num_users = config["n_users"]
+        self.num_items = config["n_items"]
         self.latent_dim = config["latent_dim"]
 
         self.embedding_user = torch.nn.Embedding(
@@ -79,7 +79,7 @@ class GMFEngine(Engine):
         """Loading weights from trained GMF model"""
         gmf_model = GMF(self.config)
         self.resume_checkpoint(
-            self.config["checkpoint_dir"] + self.config["save_name"], gmf_model
+            self.config["model_ckp_file"] + self.config["save_name"], gmf_model
         )
         self.model.embedding_user.weight.data = gmf_model.embedding_user.weight.data
         self.model.embedding_item.weight.data = gmf_model.embedding_item.weight.data
