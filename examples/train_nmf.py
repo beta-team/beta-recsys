@@ -105,6 +105,9 @@ if __name__ == "__main__":
     common_config["model_str"] = (
         config["model"] + "_" + config["config_id"] + "_" + time_str
     )
+
+    if not os.path.exists(root_dir + common_config["checkpoint_dir"]):
+        os.mkdir(root_dir + common_config["checkpoint_dir"])
     common_config["checkpoint_dir"] = (
         root_dir + common_config["checkpoint_dir"] + common_config["model_str"] + "/"
     )
