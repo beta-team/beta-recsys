@@ -1,18 +1,37 @@
 import numpy as np
-from beta_rec.datasets import dunnhumby, tafeng, movielens
+from beta_rec.datasets.movielens import Movielens_100k, Movielens_1m, Movielens_25m
+from beta_rec.datasets.dunnhumby import Dunnhumby
+from beta_rec.datasets.tafeng import Tafeng
+from beta_rec.datasets.last_fm import LastFM
+from beta_rec.datasets.epinions import Epinions
+
 
 
 def load_user_fea_dic(config, fea_type):
+    """ TO BE DONE
+
+    Args:
+        config (dict): Dictionary of configuration
+        fea_type (str): A string describing the feature type. Options:
+
+    Returns:
+
+    """
     pass
 
 
 def load_item_fea_dic(config, fea_type):
-    """
-    Load item_feature_one.csv item_feature_w2v.csv item_feature_bert.csv
+    """ Load item feature
 
-    Returns
-    -------
-    item_feature dict.
+    Args:
+        config (dict): Dictionary of configuration
+        fea_type (str): A string describing the feature type. Options:
+            - one_hot
+            - word2vec
+            - bert
+            - cate
+    Returns:
+        dict: A dictionary with key being the item_id and value being the numpy array of feature vector
 
     """
     data_str = config["dataset"]
@@ -51,57 +70,23 @@ def load_item_fea_dic(config, fea_type):
 
 
 def load_split_dataset(config):
-    """
-    Loading dataset
-    """
-    root_dir = config["root_dir"]
-    if "test_percent" not in config:
-        test_percent = None
-    else:
-        test_percent = config["test_percent"]
-    if config["dataset"] == "dunnhumby":
-        if config["data_split"] == "temporal":
-            train_df, validate_df, test_df = dunnhumby.load_temporal(root_dir=root_dir)
-        elif config["data_split"] == "leave_one_item":
-            train_df, validate_df, test_df = dunnhumby.load_leave_one_item(
-                root_dir=root_dir
-            )
-        elif config["data_split"] == "leave_one_basket":
-            train_df, validate_df, test_df = dunnhumby.load_leave_one_basket(
-                root_dir=root_dir
-            )
-        else:
-            train_df, validate_df, test_df = dunnhumby.load_leave_one_out(
-                root_dir=root_dir
-            )
-    elif config["dataset"] == "tafeng":
-        if config["data_split"] == "temporal":
-            train_df, validate_df, test_df = tafeng.load_temporal(
-                root_dir=root_dir, test_percent=test_percent
-            )
-        elif config["data_split"] == "leave_one_item":
-            train_df, validate_df, test_df = tafeng.load_leave_one_item(
-                root_dir=root_dir
-            )
-        elif config["data_split"] == "leave_one_basket":
-            train_df, validate_df, test_df = tafeng.load_leave_one_basket(
-                root_dir=root_dir
-            )
-        else:
-            train_df, validate_df, test_df = tafeng.load_leave_one_out(
-                root_dir=root_dir
-            )
-    elif config["dataset"] == "movielens" or config["dataset"] == "ml-1m":
-        if config["data_split"] == "temporal":
-            train_df, validate_df, test_df = movielens.load_temporal(root_dir=root_dir)
-        elif (
-                config["data_split"] == "leave_one_item"
-                or config["data_split"] == "leave_one_out"
-        ):
-            train_df, validate_df, test_df = movielens.load_leave_one_out(
-                root_dir=root_dir
-            )
-    else:
-        print("get the wrong dataset or data_split.")
+    """Loading dataset
 
-    return train_df, validate_df, test_df
+    Args:
+        config (dict): Dictionary of configuration
+
+    Returns:
+
+
+    """
+    dataset_mapping = {
+        "ml_100k": Movielens_100k,
+        "ml_1m": Movielens_1m,
+        "ml_25m": Movielens_25m,
+        "last_fm": LastFM,
+        "tafeng": Tafeng,
+        "epinions": Epinions,
+        "dunnhumby": Dunnhumby,
+    }
+    dataset = dataset_mapping[config["dataset"]]()
+    return dataset.load_split(config)
