@@ -20,7 +20,7 @@ def generate_data():
         DEFAULT_USER_COL: [0, 0, 0, 0, 1, 1, 1, 2, 2, 2],
         DEFAULT_ORDER_COL: [0, 1, 2, 2, 3, 4, 5, 6, 7, 8],
         DEFAULT_TIMESTAMP_COL: [100, 200, 300, 300, 400, 500, 600, 700, 800, 900],
-        DEFAULT_ITEM_COL: [10, 20, 20, 30, 40, 50, 40, 60, 60, 10],
+        DEFAULT_ITEM_COL: [10, 20, 15, 30, 40, 50, 45, 65, 60, 10],
         DEFAULT_RATING_COL: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     }
     data = pd.DataFrame(data)
@@ -198,7 +198,7 @@ class TestDataSplit(unittest.TestCase):
 
     def test_leave_one_item(self):
         testdata = generate_data()
-
+        print(testdata)
         data = leave_one_out(testdata)
         # check shape
         self.assertEqual(data.shape[0], 10)
@@ -216,7 +216,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_validate.iloc[0, 0], 0)
         self.assertEqual(tp_validate.iloc[0, 1], 2)
         self.assertEqual(tp_validate.iloc[0, 2], 300)
-        self.assertEqual(tp_validate.iloc[0, 3], 20)
+        self.assertEqual(tp_validate.iloc[0, 3], 15)
         self.assertEqual(tp_validate.iloc[1, 0], 1)
         self.assertEqual(tp_validate.iloc[1, 1], 4)
         self.assertEqual(tp_validate.iloc[1, 2], 500)
@@ -234,7 +234,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[1, 0], 1)
         self.assertEqual(tp_test.iloc[1, 1], 5)
         self.assertEqual(tp_test.iloc[1, 2], 600)
-        self.assertEqual(tp_test.iloc[1, 3], 40)
+        self.assertEqual(tp_test.iloc[1, 3], 45)
         self.assertEqual(tp_test.iloc[2, 0], 2)
         self.assertEqual(tp_test.iloc[2, 1], 8)
         self.assertEqual(tp_test.iloc[2, 2], 900)
@@ -274,7 +274,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[0, 0], 0)
         self.assertEqual(tp_test.iloc[0, 1], 2)
         self.assertEqual(tp_test.iloc[0, 2], 300)
-        self.assertEqual(tp_test.iloc[0, 3], 20)
+        self.assertEqual(tp_test.iloc[0, 3], 15)
         self.assertEqual(tp_test.iloc[1, 0], 0)
         self.assertEqual(tp_test.iloc[1, 1], 2)
         self.assertEqual(tp_test.iloc[1, 2], 300)
@@ -282,7 +282,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[2, 0], 1)
         self.assertEqual(tp_test.iloc[2, 1], 5)
         self.assertEqual(tp_test.iloc[2, 2], 600)
-        self.assertEqual(tp_test.iloc[2, 3], 40)
+        self.assertEqual(tp_test.iloc[2, 3], 45)
         self.assertEqual(tp_test.iloc[3, 0], 2)
         self.assertEqual(tp_test.iloc[3, 1], 8)
         self.assertEqual(tp_test.iloc[3, 2], 900)
@@ -369,7 +369,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[0, 3], 10)
 
     def test_generate_parameterized_path(self):
-        path1 = generate_parameterized_path(test_rate=0.1, random=False, n_negative=2, by_user=False, test_copy=10)
-        self.assertEqual(path1, "010_0_2_0_10")
-        path2 = generate_parameterized_path(test_rate=0.227, random=True, n_negative=2, by_user=True, test_copy=10)
-        self.assertEqual(path2, "023_1_2_1_10")
+        path1 = generate_parameterized_path(test_rate=0, random=False, n_negative=100, by_user=True)
+        self.assertEqual(path1, "by_user_n_neg_100")
+        path2 = generate_parameterized_path(test_rate=0.1, random=False, n_negative=100, by_user=False)
+        self.assertEqual(path2, "global_test_rate_10_n_neg_100")
