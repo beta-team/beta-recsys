@@ -54,8 +54,8 @@ class TrainEngine(object):
             + config["config_id"]
             + "_"
             + timestamp_str
-            + "_"
-            + random_str
+            # + "_"
+            # + random_str
         )
 
         set_seed(config["seed"] if "seed" in config else 2020)
@@ -85,8 +85,9 @@ class TrainEngine(object):
         config["model_ckp_file"] = os.path.join(
             config["root_dir"],
             config["checkpoint_dir"],
-            config["model_run_id"] + ".model",
+            config["model_run_id"] + "/" #".model",
         )
+        os.mkdir(config["model_ckp_file"])
         print("Model checkpoint will save in file:", config["model_ckp_file"])
 
         config["result_file"] = os.path.join(
