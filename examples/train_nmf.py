@@ -79,7 +79,7 @@ def update_args(config, args):
     """Update config parameters by the received parameters from command line
 
         Args:
-            config (dict): Initial dict of the parameters from JOSN config file.
+            config (dict): Initial dict of the parameters from JSON config file.
             args (object): An argparse Argument object with attributes being the parameters to be updated.
 
         Returns:
@@ -88,7 +88,7 @@ def update_args(config, args):
     for k, v in vars(args).items():
         if v != None:
             config[k] = v
-            print("Received parameters form comand line:", k, v)
+            print("Received parameters form command line:", k, v)
 
 
 if __name__ == "__main__":
