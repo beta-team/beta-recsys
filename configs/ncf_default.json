@@ -1,0 +1,41 @@
+{
+    "model": "ncf",
+    "config_id": "default",
+    "root_dir": "../",
+    "dataset": "dunnhumby",
+    "data_split": "temporal",
+    "temp_train": 0,
+    "percent": 1,
+    "emb_dim": 32,
+    "num_negative": 4,
+    "batch_size": 1024,
+    "metrics": ["ndcg_at_k", "precision_at_k", "recall_at_k", "map_at_k"],
+    "validate_metric": "ndcg_at_k@10",
+    "device_str": "gpu",
+    "optimizer": "adam",
+    "lr": 1e-3,
+    "num_epoch": 50,
+    "result_file": "result.csv",
+    "log_dir": "logs/",
+    "result_dir": "results/",
+    "checkpoint_dir": "checkpoints/",
+    "dataset_dir": "datasets/",
+    "run_dir": "runs/",
+    "gmf_config": {"name": "gmf", "latent_dim": 16, "save_name": "gmf.model"},
+    "mlp_config": {
+        "name": "mlp",
+        "latent_dim": 16,
+        "layers": [32, 64, 32, 16, 8],
+        "save_name": "mlp.model",
+        "pretrain_gmf": "gmf.model"
+    },
+    "neumf_config": {
+        "name": "ncf",
+        "latent_dim_gmf": 16,
+        "latent_dim_mlp": 16,
+        "layers": [32, 64, 32, 8],
+        "pretrain_gmf": "gmf.model",
+        "pretrain_mlp": "mlp.model",
+        "save_name": "ncf.model"
+    }
+}

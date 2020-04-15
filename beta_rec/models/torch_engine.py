@@ -3,7 +3,7 @@ import pandas as pd
 import torch
 from tensorboardX import SummaryWriter
 import beta_rec.utils.evaluation as eval_model
-from beta_rec.utils.constants import *
+import beta_rec.utils.constants as Constants
 
 
 def dict2str(dic):

@@ -1,3 +1,4 @@
+requests
 prometheus_client
 tensorboardX
 ray

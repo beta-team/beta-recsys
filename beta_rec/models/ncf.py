@@ -8,8 +8,8 @@ class NeuMF(torch.nn.Module):
     def __init__(self, config):
         super(NeuMF, self).__init__()
         self.config = config
-        self.num_users = config["num_users"]
-        self.num_items = config["num_items"]
+        self.num_users = config["n_users"]
+        self.num_items = config["n_items"]
         self.latent_dim_gmf = config["latent_dim_gmf"]
         self.latent_dim_mlp = config["latent_dim_mlp"]
 
@@ -112,7 +112,7 @@ class NeuMFEngine(Engine):
         mlp_model = MLP(self.mlp_config)
 
         self.resume_checkpoint(
-            self.config["checkpoint_dir"] + self.config["pretrain_mlp"], mlp_model
+            self.config["model_ckp_file"] + self.config["pretrain_mlp"], mlp_model
         )
 
         self.model.embedding_user_mlp.weight.data = mlp_model.embedding_user.weight.data
@@ -122,7 +122,7 @@ class NeuMFEngine(Engine):
 
         gmf_model = GMF(self.gmf_config)
         self.resume_checkpoint(
-            self.config["checkpoint_dir"] + self.config["pretrain_gmf"], gmf_model
+            self.config["model_ckp_file"] + self.config["pretrain_gmf"], gmf_model
         )
         self.model.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
         self.model.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
