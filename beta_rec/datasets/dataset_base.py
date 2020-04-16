@@ -161,6 +161,10 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item(data, min_u_c=0, min_i_c=3)
+
+        if DEFAULT_TIMESTAMP_COL not in data.columns:
+            raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
+
         result = split_data(
             data,
             split_type="leave_one_out",
@@ -197,6 +201,10 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item_order(data, min_u_c=0, min_o_c=3, min_i_c=0)
+
+        if DEFAULT_TIMESTAMP_COL not in data.columns:
+            raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
+
         if DEFAULT_ORDER_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an ORDER_COL")
 
