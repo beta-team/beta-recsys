@@ -8,7 +8,7 @@ from beta_rec.utils.aliasTable import AliasTable
 from beta_rec.utils.constants import *
 
 
-def fiter_by_count(df, group_col, filter_col, num):
+def filter_by_count(df, group_col, filter_col, num):
     """Filter out the group_col column values that have a less than num count of filter_col
 
     Args:
@@ -50,11 +50,11 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
     while True:
         # Filter out users that have less than min_i_c interactions (items)
         if min_i_c > 0:
-            df = fiter_by_count(df, DEFAULT_USER_COL, DEFAULT_ITEM_COL, min_i_c)
+            df = filter_by_count(df, DEFAULT_USER_COL, DEFAULT_ITEM_COL, min_i_c)
 
         # Filter out items that have less than min_u_c users
         if min_u_c > 0:
-            df = fiter_by_count(df, DEFAULT_ITEM_COL, DEFAULT_USER_COL, min_u_c)
+            df = filter_by_count(df, DEFAULT_ITEM_COL, DEFAULT_USER_COL, min_u_c)
 
         new_n_interact = len(df.index)
         if n_interact != new_n_interact:
@@ -91,15 +91,15 @@ def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
     while True:
         # Filter out users by that have less than min_o_c purchased orders
         if min_o_c > 0:
-            df = fiter_by_count(df, DEFAULT_USER_COL, DEFAULT_ORDER_COL, min_o_c)
+            df = filter_by_count(df, DEFAULT_USER_COL, DEFAULT_ORDER_COL, min_o_c)
 
         # Filter out users that have less than min_i_c interactions (items)
         if min_i_c > 0:
-            df = fiter_by_count(df, DEFAULT_USER_COL, DEFAULT_ITEM_COL, min_i_c)
+            df = filter_by_count(df, DEFAULT_USER_COL, DEFAULT_ITEM_COL, min_i_c)
 
         # Filter out items that have less than min_u_c users
         if min_u_c > 0:
-            df = fiter_by_count(df, DEFAULT_ITEM_COL, DEFAULT_USER_COL, min_u_c)
+            df = filter_by_count(df, DEFAULT_ITEM_COL, DEFAULT_USER_COL, min_u_c)
 
         new_n_interact = len(df.index)
         if n_interact != new_n_interact:
@@ -374,8 +374,6 @@ def leave_one_out(data, random=False):
     data[DEFAULT_FLAG_COL] = "train"
     if random:
         data = sklearn.utils.shuffle(data)
-    else:
-        data.sort_values(by=[DEFAULT_TIMESTAMP_COL], inplace=True)
 
     users = data[DEFAULT_USER_COL].unique()
     for u in tqdm(users):
