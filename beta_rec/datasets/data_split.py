@@ -374,6 +374,8 @@ def leave_one_out(data, random=False):
     data[DEFAULT_FLAG_COL] = "train"
     if random:
         data = sklearn.utils.shuffle(data)
+    else:
+        data.sort_values(by=[DEFAULT_TIMESTAMP_COL], inplace=True)
 
     users = data[DEFAULT_USER_COL].unique()
     for u in tqdm(users):
