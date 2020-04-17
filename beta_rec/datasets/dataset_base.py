@@ -1,5 +1,6 @@
 import os
 import shutil
+import pandas as pd
 from beta_rec.utils.constants import *
 from beta_rec.utils.common_util import (
     get_dataframe_from_npz,
@@ -162,6 +163,9 @@ class DatasetBase(object):
             data = self.load_interaction()
             data = filter_user_item(data, min_u_c=0, min_i_c=3)
 
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
         if DEFAULT_TIMESTAMP_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
 
@@ -201,6 +205,9 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item_order(data, min_u_c=0, min_o_c=3, min_i_c=0)
+
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
 
         if DEFAULT_TIMESTAMP_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
@@ -249,6 +256,10 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item(data, min_u_c=10, min_i_c=10)
+
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
         result = split_data(
             data,
             split_type="random",
@@ -290,6 +301,10 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item_order(data, min_u_c=10, min_o_c=10, min_i_c=10)
+
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
         if DEFAULT_ORDER_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an ORDER_COL")
 
@@ -334,6 +349,10 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item(data, min_u_c=10, min_i_c=10)
+
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
         result = split_data(
             data,
             split_type="temporal",
@@ -376,6 +395,9 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item_order(data, min_u_c=10, min_o_c=10, min_i_c=10)
+            
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
 
         if DEFAULT_ORDER_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an ORDER_COL")
