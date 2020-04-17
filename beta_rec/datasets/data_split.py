@@ -30,7 +30,7 @@ def filter_by_count(df, group_col, filter_col, num):
 
 
 def filter_user_item(df, min_u_c=5, min_i_c=5):
-    """filter data by the minimum purcharce number of items and users
+    """filter data by the minimum purchase number of items and users
 
     Args:
         df: DataFrame of interactions
@@ -68,7 +68,7 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
 
 
 def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
-    """ filter data by the minimum purcharce number of items and users
+    """ filter data by the minimum purchase number of items and users
 
     Args:
         df: DataFrame of interactions
@@ -271,7 +271,8 @@ def random_split(data, test_rate=0.1, by_user=False):
                     - Ture: user-based split,
                     - False: global split,
 
-    Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
+    Returns:
+        Dataframe that have already by labeled by a col with "train", "test" or "valid".
     """
     print("random_split")
     data[DEFAULT_FLAG_COL] = "train"
@@ -313,12 +314,13 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
 
     Args:
         data: Dataframe. of interactions.
-        test_rate: percentage of the test data. Note that percentage of the vidation data will be the same as testing.
+        test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
 
-    Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
+    Returns:
+        Dataframe that have already by labeled by a col with "train", "test" or "valid".
     """
     print("random_basket_split")
     data[DEFAULT_FLAG_COL] = "train"

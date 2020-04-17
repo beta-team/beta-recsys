@@ -1,5 +1,6 @@
 import os
 import shutil
+import pandas as pd
 from beta_rec.utils.constants import *
 from beta_rec.utils.common_util import (
     get_dataframe_from_npz,
@@ -112,7 +113,7 @@ class DatasetBase(object):
     def preprocess(self):
         """Preprocess the raw file.
 
-        A virtual function that needs to be implement in the dervied class.
+        A virtual function that needs to be implement in the derived class.
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory.
@@ -162,6 +163,9 @@ class DatasetBase(object):
             data = self.load_interaction()
             data = filter_user_item(data, min_u_c=0, min_i_c=3)
 
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
         if DEFAULT_TIMESTAMP_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
 
@@ -202,6 +206,9 @@ class DatasetBase(object):
             data = self.load_interaction()
             data = filter_user_item_order(data, min_u_c=0, min_o_c=3, min_i_c=0)
 
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
         if DEFAULT_TIMESTAMP_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
 
@@ -237,7 +244,7 @@ class DatasetBase(object):
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
 
@@ -249,6 +256,10 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item(data, min_u_c=10, min_i_c=10)
+
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
         result = split_data(
             data,
             split_type="random",
@@ -278,7 +289,7 @@ class DatasetBase(object):
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
 
@@ -290,6 +301,10 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item_order(data, min_u_c=10, min_o_c=10, min_i_c=10)
+
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
         if DEFAULT_ORDER_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an ORDER_COL")
 
@@ -322,7 +337,7 @@ class DatasetBase(object):
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
 
@@ -334,6 +349,13 @@ class DatasetBase(object):
         if data is None:
             data = self.load_interaction()
             data = filter_user_item(data, min_u_c=10, min_i_c=10)
+
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
+        if DEFAULT_TIMESTAMP_COL not in data.columns:
+            raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
+
         result = split_data(
             data,
             split_type="temporal",
@@ -377,6 +399,12 @@ class DatasetBase(object):
             data = self.load_interaction()
             data = filter_user_item_order(data, min_u_c=10, min_o_c=10, min_i_c=10)
 
+        if not isinstance(data, pd.DataFrame):
+            raise RuntimeError("data is not a type of DataFrame")
+
+        if DEFAULT_TIMESTAMP_COL not in data.columns:
+            raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
+
         if DEFAULT_ORDER_COL not in data.columns:
             raise RuntimeError("This dataset doesn't have an ORDER_COL")
 
@@ -418,7 +446,7 @@ class DatasetBase(object):
 
         processed_leave_one_out_path = os.path.join(processed_leave_one_out_path, parameterized_path)
         if not os.path.exists(processed_leave_one_out_path):
-            if random is False and n_negative == 2:
+            if random is False and n_negative == 100:
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(url=self.processed_leave_one_out_url, path=processed_leave_one_out_path)
                 folder.download()
@@ -438,7 +466,6 @@ class DatasetBase(object):
         return train_data, valid_data, test_data
 
     def load_leave_one_basket(self, random=False, n_negative=100, test_copy=10):
-
         """load split date generated by leave_one_basket without random select.
 
         Load split data generated by leave_one_basket without random select from Onedrive.
@@ -455,7 +482,7 @@ class DatasetBase(object):
         """
 
         processed_leave_one_basket_path = os.path.join(
-            self.data_spit_dir, "leave_one_basket"
+            self.processed_path, "leave_one_basket"
         )
         if not os.path.exists(processed_leave_one_basket_path):
             os.mkdir(processed_leave_one_basket_path)
@@ -490,7 +517,8 @@ class DatasetBase(object):
         Load split data generated by random_split from Onedrive, with test_rate = 0.1 and by_user = False.
 
         Args:
-            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as
+                        test data.
             random: bool. Whether randomly leave one basket as testing.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
@@ -541,11 +569,12 @@ class DatasetBase(object):
         Load split data generated by random_basket_split from Onedrive, with test_rate = 0.1 and by_user = False.
 
         Args:
-            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as
+                        test data.
             random: bool. Whether randomly leave one basket as testing.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
             test_copy: int. Default 10. The number of testing and validation copies.
 
@@ -593,10 +622,11 @@ class DatasetBase(object):
         Load split data generated by temporal_split from Onedrive, with test_rate = 0.1 and by_user = False.
 
         Args:
-            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as
+                        test data.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
             test_copy: int. Default 10. The number of testing and validation copies.
 
@@ -644,7 +674,8 @@ class DatasetBase(object):
         Load split data generated by temporal_basket_split from Onedrive, with test_rate = 0.1 and by_user = False.
 
         Args:
-            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
+            test_rate: percentage of the test data. Note that percentage of the validation data will be the same as
+                        test data.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
                     - True: user-based split,
@@ -658,7 +689,7 @@ class DatasetBase(object):
         """
 
         processed_temporal_basket_split_path = os.path.join(
-            self.data_spit_dir, "temporal_basket"
+            self.processed_path, "temporal_basket"
         )
         if not os.path.exists(processed_temporal_basket_split_path):
             os.mkdir(processed_temporal_basket_split_path)
