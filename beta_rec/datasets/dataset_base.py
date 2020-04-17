@@ -418,7 +418,7 @@ class DatasetBase(object):
 
         processed_leave_one_out_path = os.path.join(processed_leave_one_out_path, parameterized_path)
         if not os.path.exists(processed_leave_one_out_path):
-            if random is False and n_negative == 2:
+            if random is False and n_negative == 100:
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(url=self.processed_leave_one_out_url, path=processed_leave_one_out_path)
                 folder.download()
@@ -455,7 +455,7 @@ class DatasetBase(object):
         """
 
         processed_leave_one_basket_path = os.path.join(
-            self.data_spit_dir, "leave_one_basket"
+            self.processed_path, "leave_one_basket"
         )
         if not os.path.exists(processed_leave_one_basket_path):
             os.mkdir(processed_leave_one_basket_path)
@@ -658,7 +658,7 @@ class DatasetBase(object):
         """
 
         processed_temporal_basket_split_path = os.path.join(
-            self.data_spit_dir, "temporal_basket"
+            self.processed_path, "temporal_basket"
         )
         if not os.path.exists(processed_temporal_basket_split_path):
             os.mkdir(processed_temporal_basket_split_path)
