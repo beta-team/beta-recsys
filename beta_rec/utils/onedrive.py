@@ -94,6 +94,10 @@ class OneDrive:
             )
 
     def download(self):
+        """Download files from Onedrive
+
+        Download files from Onedrive with the given share link
+        """
         print("Traversing public folder\n")
         self.to_download = []
         self.downloaded = 0
