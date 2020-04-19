@@ -36,6 +36,9 @@ class OneDrive:
         )
 
     def _token(self, url):
+        """ Decode share link
+
+        """
         result = "u!" + b64encode(url.encode()).decode()
         result = result.rstrip("=")
         result = result.replace("/", "_")
