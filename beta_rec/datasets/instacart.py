@@ -109,10 +109,10 @@ class Instacart(DatasetBase):
         # Standardize the columns' name.
         prior_transactions.rename(
             columns = {
-                "user_id"               : DEFAULT_USER_COL,
-                "order_id"              : DEFAULT_ORDER_COL,
-                "product_id"            : DEFAULT_ITEM_COL,
-                "rating"                : DEFAULT_RATING_COL, 
+                "user_id"                : DEFAULT_USER_COL,
+                "order_id"               : DEFAULT_ORDER_COL,
+                "product_id"             : DEFAULT_ITEM_COL,
+                "rating"                 : DEFAULT_RATING_COL, 
                 #"aisle_id"              : "aisle_id",
                 #"department_id"         : "department_id",
                 #"add_to_cart_order"     : "add_to_cart_order",
