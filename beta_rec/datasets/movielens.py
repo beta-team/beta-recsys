@@ -10,6 +10,11 @@ ML_100K_URL = r'http://files.grouplens.org/datasets/movielens/ml-100k.zip'
 ML_1M_URL = r'http://files.grouplens.org/datasets/movielens/ml-1m.zip'
 ML_25M_URL = r'http://files.grouplens.org/datasets/movielens/ml-25m.zip'
 
+# processed data url
+ML_100K_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugQv5e7RhKZbpKyZc?e=HXgq2F'
+ML_100K_RANDOM_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugTd1ov3Nk1uH3AeR?e=gsW55A'
+ML_100K_TEMPORAL_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugSGdGO26HVzUs4g7?e=5kt6TM'
+
 # indicators of the colunmn name
 par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
 
@@ -108,7 +113,10 @@ class Movielens_100k(DatasetBase):
 
         Movielens 100k dataset.
         """
-        super().__init__('ml_100k', url=ML_100K_URL)
+        super().__init__('ml_100k', url=ML_100K_URL,
+                         processed_leave_one_out_url=ML_100K_LEAVE_ONE_OUT_URL,
+                         processed_random_split_url=ML_100K_RANDOM_URL,
+                         processed_temporal_split_url=ML_100K_TEMPORAL_URL)
     
     def preprocess(self):
         """Preprocess the raw file.

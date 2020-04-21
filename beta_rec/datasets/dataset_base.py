@@ -6,6 +6,7 @@ from beta_rec.utils.common_util import (
     get_dataframe_from_npz,
     save_dataframe_as_npz,
     timeit,
+    un_zip
 )
 from beta_rec.utils.download import download_file, get_format
 from beta_rec.utils.onedrive import OneDrive
@@ -29,6 +30,12 @@ class DatasetBase(object):
             url=None,
             root_dir=default_root_dir,
             manual_download_url=None,
+            processed_leave_one_out_url="",
+            processed_leave_one_basket_url="",
+            processed_random_split_url="",
+            processed_random_basket_split_url="",
+            processed_temporal_split_url="",
+            processed_temporal_basket_split_url=""
     ):
         """Dataset base that any other datasets need to inherit from
 
@@ -42,6 +49,13 @@ class DatasetBase(object):
         """
         self.url = url
         self.manual_download_url = manual_download_url if manual_download_url else url
+
+        self.processed_leave_one_out_url = processed_leave_one_out_url
+        self.processed_leave_one_basket_url = processed_leave_one_basket_url
+        self.processed_random_split_url = processed_random_split_url
+        self.processed_random_basket_split_url = processed_random_basket_split_url
+        self.processed_temporal_split_url = processed_temporal_split_url
+        self.processed_temporal_basket_split_url = processed_temporal_basket_split_url
 
         self.dataset_name = dataset_name
         # compatible method for the previous version
@@ -444,11 +458,12 @@ class DatasetBase(object):
         parameterized_path = generate_parameterized_path(test_rate=0, random=random, n_negative=n_negative,
                                                          by_user=False)
 
+        download_path = processed_leave_one_out_path
         processed_leave_one_out_path = os.path.join(processed_leave_one_out_path, parameterized_path)
         if not os.path.exists(processed_leave_one_out_path):
             if random is False and n_negative == 100:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_leave_one_out_url, path=processed_leave_one_out_path)
+                folder = OneDrive(url=self.processed_leave_one_out_url, path=download_path)
                 folder.download()
             else:
                 # make
@@ -481,12 +496,12 @@ class DatasetBase(object):
 
         parameterized_path = generate_parameterized_path(test_rate=0, random=random, n_negative=n_negative,
                                                          by_user=False)
-
+        download_path = processed_leave_one_basket_path
         processed_leave_one_basket_path = os.path.join(processed_leave_one_basket_path, parameterized_path)
         if not os.path.exists(processed_leave_one_basket_path):
             if random is False and n_negative == 100:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_leave_one_basket_url, path=processed_leave_one_basket_path)
+                folder = OneDrive(url=self.processed_leave_one_basket_url, path=download_path)
                 folder.download()
             else:
                 # make
@@ -524,13 +539,14 @@ class DatasetBase(object):
 
         parameterized_path = generate_parameterized_path(test_rate=test_rate, random=random, n_negative=n_negative,
                                                          by_user=by_user)
-
+        download_path = processed_random_split_path
         processed_random_split_path = os.path.join(processed_random_split_path, parameterized_path)
         if not os.path.exists(processed_random_split_path):
             if test_rate == 0.1 and random is False and n_negative == 100 and by_user is False:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_random_split_url, path=processed_random_split_path)
+                folder = OneDrive(url=self.processed_random_split_url, path=download_path)
                 folder.download()
+                un_zip(processed_random_split_path)
             else:
                 # make
                 self.make_random_split(test_rate=test_rate, random=random, n_negative=n_negative, by_user=by_user,
@@ -569,11 +585,12 @@ class DatasetBase(object):
         parameterized_path = generate_parameterized_path(test_rate=test_rate, random=random, n_negative=n_negative,
                                                          by_user=by_user)
 
+        download_path = processed_random_basket_split_path
         processed_random_basket_split_path = os.path.join(processed_random_basket_split_path, parameterized_path)
         if not os.path.exists(processed_random_basket_split_path):
             if test_rate == 0.1 and random is False and n_negative == 100 and by_user is False:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_random_basket_split_url, path=processed_random_basket_split_path)
+                folder = OneDrive(url=self.processed_random_basket_split_url, path=download_path)
                 folder.download()
             else:
                 # make
@@ -614,11 +631,12 @@ class DatasetBase(object):
         parameterized_path = generate_parameterized_path(test_rate=test_rate, random=False, n_negative=n_negative,
                                                          by_user=by_user)
 
+        download_path = processed_temporal_split_path
         processed_temporal_split_path = os.path.join(processed_temporal_split_path, parameterized_path)
         if not os.path.exists(processed_temporal_split_path):
             if test_rate == 0.1 and n_negative == 100 and by_user is False:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_temporal_split_url, path=processed_temporal_split_path)
+                folder = OneDrive(url=self.processed_temporal_split_url, path=download_path)
                 folder.download()
             else:
                 # make
@@ -657,12 +675,13 @@ class DatasetBase(object):
         parameterized_path = generate_parameterized_path(test_rate=test_rate, random=False, n_negative=n_negative,
                                                          by_user=by_user)
 
+        download_path = processed_temporal_basket_split_path
         processed_temporal_basket_split_path = os.path.join(processed_temporal_basket_split_path, parameterized_path)
         if not os.path.exists(processed_temporal_basket_split_path):
             if test_rate == 0.1 and n_negative == 100 and by_user is False:
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(url=self.processed_temporal_basket_split_url,
-                                  path=processed_temporal_basket_split_path)
+                                  path=download_path)
                 folder.download()
             else:
                 # make
