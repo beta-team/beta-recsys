@@ -372,7 +372,6 @@ def leave_one_out(data, random=False):
     Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
     """
     print("leave_one_out")
-    data = filter_user_item(data, min_u_c=0, min_i_c=3)
     data[DEFAULT_FLAG_COL] = "train"
     if random:
         data = sklearn.utils.shuffle(data)
