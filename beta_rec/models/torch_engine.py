@@ -144,13 +144,11 @@ class Engine(object):
 
     def save_checkpoint(self, model_dir):
         assert hasattr(self, "model"), "Please specify the exact model !"
-        model_dir = os.path.join(model_dir, "model.ckp")
         torch.save(self.model.state_dict(), model_dir)
 
     # to do
     def resume_checkpoint(self, model_dir, model=None):
         assert hasattr(self, "model"), "Please specify the exact model !"
-        model_dir = os.path.join(model_dir, "model.ckp")
         print("loading model from:", model_dir)
         state_dict = torch.load(
             model_dir, map_location=self.device
