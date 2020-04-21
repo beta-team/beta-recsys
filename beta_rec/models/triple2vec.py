@@ -118,7 +118,6 @@ class Triple2vecEngine(Engine):
         self.model.train()
         total_loss = 0
         for batch_id, sample in enumerate(train_loader):
-            assert isinstance(sample, torch.LongTensor)
             pos_u = torch.tensor(
                 [triple[0] for triple in sample], dtype=torch.int64, device=self.device,
             )
