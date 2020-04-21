@@ -36,6 +36,9 @@ class OneDrive:
         )
 
     def _token(self, url):
+        """ Decode share link
+
+        """
         result = "u!" + b64encode(url.encode()).decode()
         result = result.rstrip("=")
         result = result.replace("/", "_")
@@ -94,6 +97,10 @@ class OneDrive:
             )
 
     def download(self):
+        """Download files from Onedrive
+
+        Download files from Onedrive with the given share link
+        """
         print("Traversing public folder\n")
         self.to_download = []
         self.downloaded = 0

@@ -6,6 +6,7 @@ from ray import tune
 from beta_rec.train_engine import TrainEngine, dict2str
 from beta_rec.models.vbcar import VBCAREngine
 from beta_rec.utils.monitor import Monitor
+from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import *
 from tqdm import tqdm
 
@@ -74,32 +75,11 @@ def parse_args():
     return parser.parse_args()
 
 
-"""
-update hyperparameters from command line
-"""
-
-
-def update_args(config, args):
-    """Update config parameters by the received parameters from command line
-
-        Args:
-            config (dict): Initial dict of the parameters from JOSN config file.
-            args (object): An argparse Argument object with attributes being the parameters to be updated.
-
-        Returns:
-            None
-    """
-    print("Received parameters form comand line:")
-    for k, v in vars(args).items():
-        if v is not None:
-            config[k] = v
-            print(k, "\t", v)
-
-
 class VBCAR_train(TrainEngine):
     """ An instance class from the TrainEngine base class
 
     """
+
     def __init__(self, config):
         """Constructor
 

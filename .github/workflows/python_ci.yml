@@ -19,7 +19,7 @@ jobs:
         last_commit_log=$(git log -1 --pretty=format:"%s")
         echo "last commit log: $last_commit_log"
 
-        feat="feat:[[:space:]].*$"
+        feat="[#[0-9]+][[:space:]]feat:[[:space:]].*$"
         fix="fix:[[:space:]].*$"
         test="test:[[:space:]].*$"
         chore="chore:[[:space:]].*$"

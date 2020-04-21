@@ -4,6 +4,96 @@ import time
 import numpy as np
 import torch
 import pandas as pd
+import zipfile
+from beta_rec.utils.constants import *
+
+
+def update_args(config, args):
+    """Update config parameters by the received parameters from command line
+
+    Args:
+        config (dict): Initial dict of the parameters from JOSN config file.
+        args (object): An argparse Argument object with attributes being the parameters to be updated.
+
+    Returns:
+        None
+    """
+    print("Received parameters form command line:")
+    for k, v in vars(args).items():
+        if v is not None:
+            config[k] = v
+            print(k, "\t", v)
+
+
+def save_dataframe_as_npz(data, data_file):
+    """ Save DataFrame in compressed format
+    Save and convert the DataFrame to npz file.
+    Args:
+        data (DataFrame): DataFrame to be saved
+        data_file: Target file path
+
+    Returns:
+
+    """
+    user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=np.long)
+    item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=np.long)
+    ratings = data[DEFAULT_RATING_COL].to_numpy(dtype=np.float32)
+    columns_dic = {
+        "user_ids": user_ids,
+        "item_ids": item_ids,
+        "ratings": ratings,
+    }
+    if DEFAULT_ORDER_COL in data.columns:
+        order_ids = data[DEFAULT_ORDER_COL].to_numpy(dtype=np.long)
+        columns_dic["order_ids"] = order_ids
+    if DEFAULT_TIMESTAMP_COL in data.columns:
+        timestamps = data[DEFAULT_TIMESTAMP_COL].to_numpy(dtype=np.long)
+        columns_dic["timestamps"] = timestamps
+    np.savez_compressed(data_file, **columns_dic)
+
+
+def get_dataframe_from_npz(data_file):
+    """Get the DataFrame from npz file
+
+    Get the DataFrame from npz file
+
+    Args:
+        data_file: File path
+
+    Returns:
+        DataFrame
+    """
+    np_data = np.load(data_file)
+    data_dic = {
+        DEFAULT_USER_COL: np_data["user_ids"],
+        DEFAULT_ITEM_COL: np_data["item_ids"],
+        DEFAULT_RATING_COL: np_data["ratings"],
+    }
+    if "timestamps" in np_data:
+        data_dic[DEFAULT_TIMESTAMP_COL] = np_data["timestamps"]
+    if "order_ids" in np_data:
+        data_dic[DEFAULT_ORDER_COL] = np_data["order_ids"]
+    data = pd.DataFrame(data_dic)
+    return data
+
+
+def un_zip(file_name, target_dir=None):
+    """ Unzip zip files
+
+    Args:
+        file_name: zip file path.
+
+    Returns:
+        None
+
+    """
+    if target_dir is None:
+        target_dir = os.path.dirname(file_name)
+    zip_file = zipfile.ZipFile(file_name)
+    for names in zip_file.namelist():
+        print(f"unzip file {names} ...")
+        zip_file.extract(names, target_dir)
+    zip_file.close()
 
 
 def dict2str(tag, dic):
@@ -36,20 +126,20 @@ def initialize_folders():
         None
 
     """
-    UTILS_ROOT = os.path.dirname(os.path.abspath(__file__))
-    BASE_DIR = os.path.abspath(os.path.join(UTILS_ROOT, "..", ".."))
+    utils_root = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.abspath(os.path.join(utils_root, "..", ".."))
 
-    configs = BASE_DIR + "/configs/"
-    datasets = BASE_DIR + "/datasets/"
-    checkpoints = BASE_DIR + "/checkpoints/"
-    results = BASE_DIR + "/results/"
-    logs = BASE_DIR + "/logs/"
-    samples = BASE_DIR + "/samples/"
-    runs = BASE_DIR + "/runs/"
+    configs = base_dir + "/configs/"
+    datasets = base_dir + "/datasets/"
+    checkpoints = base_dir + "/checkpoints/"
+    results = base_dir + "/results/"
+    logs = base_dir + "/logs/"
+    samples = base_dir + "/samples/"
+    runs = base_dir + "/runs/"
 
-    for DIR in [configs, datasets, checkpoints, results, samples, logs, runs]:
-        if not os.path.exists(DIR):
-            os.makedirs(DIR)
+    for dir in [configs, datasets, checkpoints, results, samples, logs, runs]:
+        if not os.path.exists(dir):
+            os.makedirs(dir)
 
 
 def get_random_rep(raw_num, dim):

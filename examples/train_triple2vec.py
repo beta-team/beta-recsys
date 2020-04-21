@@ -5,6 +5,7 @@ import argparse
 from ray import tune
 from beta_rec.train_engine import TrainEngine
 from beta_rec.models.triple2vec import Triple2vecEngine
+from beta_rec.utils.common_util import update_args
 
 
 def parse_args():
@@ -67,23 +68,6 @@ def parse_args():
     )
     parser.add_argument("--optimizer", nargs="?", type=str, help="OPTI")
     return parser.parse_args()
-
-
-def update_args(config, args):
-    """Update config parameters by the received parameters from command line
-
-    Args:
-        config (dict): Initial dict of the parameters from JOSN config file.
-        args (object): An argparse Argument object with attributes being the parameters to be updated.
-
-    Returns:
-        None
-    """
-    print("Received parameters form command line:")
-    for k, v in vars(args).items():
-        if v is not None:
-            config[k] = v
-            print(k, "\t", v)
 
 
 class Triple2vec_train(TrainEngine):
