@@ -4,6 +4,9 @@ import aiofiles
 import asyncio
 import aiohttp
 import os
+import nest_asyncio
+
+nest_asyncio.apply()
 
 
 class OneDrive:
@@ -88,7 +91,7 @@ class OneDrive:
 
         self.downloaded += 1
         progress = int(self.downloaded / len(self.to_download) * 100)
-        print(f"Download progress: {progress}%")
+        print(f"Download progress: {self.downloaded}/{len(self.to_download)}, {progress}%")
 
     async def _downloader(self):
         async with aiohttp.ClientSession() as session:

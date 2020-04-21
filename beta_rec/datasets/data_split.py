@@ -440,7 +440,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
 
             data.loc[
                 interactions[train_size:], DEFAULT_FLAG_COL,
-            ] = "test"  # the last test_rateof the total orders to be the test set
+            ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
             ] = "validate"
