@@ -1,7 +1,9 @@
+import os
 import numpy as np
 import pandas as pd
-from beta_rec.utils.constants import *
-from functools import wraps, lru_cache
+from functools import lru_cache, wraps
+
+
 from sklearn.metrics import (
     mean_squared_error,
     mean_absolute_error,
@@ -10,6 +12,28 @@ from sklearn.metrics import (
     roc_auc_score,
     log_loss,
 )
+
+DEFAULT_USER_COL = "col_user"
+DEFAULT_ITEM_COL = "col_item"
+DEFAULT_RATING_COL = "col_rating"
+DEFAULT_LABEL_COL = "col_label"
+DEFAULT_TIMESTAMP_COL = "col_timestamp"
+DEFAULT_PREDICTION_COL = "col_prediction"
+
+DEFAULT_K = 10
+DEFAULT_THRESHOLD = 10
+
+
+def save_result(result, result_file):
+    result_df = pd.DataFrame(result)
+    if os.path.exists(result_file):
+        print(result_file, " already exists, appending result to it")
+        total_result = pd.read_csv(result_file)
+        total_result = total_result.append(result_df)
+    else:
+        print("create new result_file:", result_file)
+        total_result = result_df
+    total_result.to_csv(result_file, index=False)
 
 
 class PandasHash:
@@ -32,6 +56,7 @@ class PandasHash:
         """Overwrite equality comparison
         Args:
             other (pd.DataFrame|pd.Series): pandas object to compare
+
         Returns:
             bool: whether other object is the same as this one
         """
@@ -40,6 +65,7 @@ class PandasHash:
 
     def __hash__(self):
         """Overwrite hash operator for use with pandas objects
+
         Returns:
             int: hashed value of object
         """
@@ -54,9 +80,11 @@ class PandasHash:
 
 def has_columns(df, columns):
     """Check if DataFrame has necessary columns
+
     Args:
         df (pd.DataFrame): DataFrame
         columns (list(str): columns to check for
+
     Returns:
         bool: True if DataFrame has specified columns
     """
@@ -72,17 +100,19 @@ def has_columns(df, columns):
 
 def has_same_base_dtype(df_1, df_2, columns=None):
     """Check if specified columns have the same base dtypes across both DataFrames
+
     Args:
         df_1 (pd.DataFrame): first DataFrame
         df_2 (pd.DataFrame): second DataFrame
         columns (list(str)): columns to check, None checks all columns
+
     Returns:
         bool: True if DataFrames columns have the same base dtypes
     """
 
     if columns is None:
         if any(set(df_1.columns).symmetric_difference(set(df_2.columns))):
-            print(
+            logger.error(
                 "Cannot test all columns because they are not all shared across DataFrames"
             )
             return False
@@ -96,14 +126,71 @@ def has_same_base_dtype(df_1, df_2, columns=None):
     result = True
     for column in columns:
         if df_1[column].dtype.type.__base__ != df_2[column].dtype.type.__base__:
-            print("Columns {} do not have the same base datatype".format(column))
+            logger.error("Columns {} do not have the same base datatype".format(column))
             result = False
 
     return result
 
 
+def check_column_dtypes(func):
+    """Checks columns of DataFrame inputs
+
+    This includes the checks on 
+        1. whether the input columns exist in the input DataFrames
+        2. whether the data types of col_user as well as col_item are matched in the two input DataFrames.
+
+    Args:
+        func (function): function that will be wrapped
+    """
+
+    @wraps(func)
+    def check_column_dtypes_wrapper(
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
+        *args,
+        **kwargs
+    ):
+        """Check columns of DataFrame inputs
+
+        Args:
+            rating_true (pd.DataFrame): True data
+            rating_pred (pd.DataFrame): Predicted data
+            col_user (str): column name for user
+            col_item (str): column name for item
+            col_rating (str): column name for rating
+            col_prediction (str): column name for prediction
+        """
+
+        if not has_columns(rating_true, [col_user, col_item, col_rating]):
+            raise ValueError("Missing columns in true rating DataFrame")
+        if not has_columns(rating_pred, [col_user, col_item, col_prediction]):
+            raise ValueError("Missing columns in predicted rating DataFrame")
+        if not has_same_base_dtype(
+            rating_true, rating_pred, columns=[col_user, col_item]
+        ):
+            raise ValueError("Columns in provided DataFrames are not the same datatype")
+
+        return func(
+            rating_true=rating_true,
+            rating_pred=rating_pred,
+            col_user=col_user,
+            col_item=col_item,
+            col_rating=col_rating,
+            col_prediction=col_prediction,
+            *args,
+            **kwargs
+        )
+
+    return check_column_dtypes_wrapper
+
+
 def lru_cache_df(maxsize, typed=False):
     """Least-recently-used cache decorator
+
     Args:
         maxsize (int|None): max size of cache, if set to None cache is boundless
         typed (bool): arguments of different types are cached separately
@@ -141,59 +228,6 @@ def lru_cache_df(maxsize, typed=False):
     return decorating_function
 
 
-def check_column_dtypes(func):
-    """Checks columns of DataFrame inputs
-    This includes the checks on: 
-    1. whether the input columns exist in the input DataFrames
-    2. whether the data types of col_user as well as col_item are matched in the two input DataFrames.
-    Args:
-        func (function): function that will be wrapped
-    """
-
-    @wraps(func)
-    def check_column_dtypes_wrapper(
-        rating_true,
-        rating_pred,
-        col_user=DEFAULT_USER_COL,
-        col_item=DEFAULT_ITEM_COL,
-        col_rating=DEFAULT_RATING_COL,
-        col_prediction=DEFAULT_PREDICTION_COL,
-        *args,
-        **kwargs
-    ):
-        """Check columns of DataFrame inputs
-        Args:
-            rating_true (pd.DataFrame): True data
-            rating_pred (pd.DataFrame): Predicted data
-            col_user (str): column name for user
-            col_item (str): column name for item
-            col_rating (str): column name for rating
-            col_prediction (str): column name for prediction
-        """
-
-        if not has_columns(rating_true, [col_user, col_item, col_rating]):
-            raise ValueError("Missing columns in true rating DataFrame")
-        if not has_columns(rating_pred, [col_user, col_item, col_prediction]):
-            raise ValueError("Missing columns in predicted rating DataFrame")
-        if not has_same_base_dtype(
-            rating_true, rating_pred, columns=[col_user, col_item]
-        ):
-            raise ValueError("Columns in provided DataFrames are not the same datatype")
-
-        return func(
-            rating_true=rating_true,
-            rating_pred=rating_pred,
-            col_user=col_user,
-            col_item=col_item,
-            col_rating=col_rating,
-            col_prediction=col_prediction,
-            *args,
-            **kwargs
-        )
-
-    return check_column_dtypes_wrapper
-
-
 @check_column_dtypes
 @lru_cache_df(maxsize=1)
 def merge_rating_true_pred(
@@ -214,9 +248,11 @@ def merge_rating_true_pred(
         col_item (str): column name for item
         col_rating (str): column name for rating
         col_prediction (str): column name for prediction
+
     Returns:
         np.array: Array with the true ratings
         np.array: Array with the predicted ratings
+
     """
 
     # pd.merge will apply suffixes to columns which have the same name across both dataframes
@@ -240,6 +276,7 @@ def rmse(
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate Root Mean Squared Error
+
     Args:
         rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs
         rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs
@@ -247,6 +284,7 @@ def rmse(
         col_item (str): column name for item
         col_rating (str): column name for rating
         col_prediction (str): column name for prediction
+
     Returns:
         float: Root mean squared error
     """
@@ -271,6 +309,7 @@ def mae(
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate Mean Absolute Error.
+
     Args:
         rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs
         rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs
@@ -278,6 +317,7 @@ def mae(
         col_item (str): column name for item
         col_rating (str): column name for rating
         col_prediction (str): column name for prediction
+
     Returns:
         float: Mean Absolute Error.
     """
@@ -302,6 +342,7 @@ def rsquared(
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate R squared
+
     Args:
         rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs
         rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs
@@ -334,6 +375,7 @@ def exp_var(
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate explained variance.
+
     Args:
         rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs
         rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs
@@ -341,6 +383,7 @@ def exp_var(
         col_item (str): column name for item
         col_rating (str): column name for rating
         col_prediction (str): column name for prediction
+
     Returns:
         float: Explained variance (min=0, max=1).
     """
@@ -367,12 +410,15 @@ def auc(
     """Calculate the Area-Under-Curve metric for implicit feedback typed
     recommender, where rating is binary and prediction is float number ranging
     from 0 to 1.
+
     https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_the_curve
+
     Note:
         The evaluation does not require a leave-one-out scenario.
         This metric does not calculate group-based AUC which considers the AUC scores
         averaged across users. It is also not limited to k. Instead, it calculates the
         scores on the entire prediction results regardless the users.
+
     Args:
         rating_true (pd.DataFrame): True data
         rating_pred (pd.DataFrame): Predicted data
@@ -380,6 +426,7 @@ def auc(
         col_item (str): column name for item
         col_rating (str): column name for rating
         col_prediction (str): column name for prediction
+
     Returns:
         float: auc_score (min=0, max=1)
     """
@@ -406,7 +453,9 @@ def logloss(
     """Calculate the logloss metric for implicit feedback typed
     recommender, where rating is binary and prediction is float number ranging
     from 0 to 1.
+
     https://en.wikipedia.org/wiki/Loss_functions_for_classification#Cross_entropy_loss_(Log_Loss)
+
     Args:
         rating_true (pd.DataFrame): True data
         rating_pred (pd.DataFrame): Predicted data
@@ -414,6 +463,7 @@ def logloss(
         col_item (str): column name for item
         col_rating (str): column name for rating
         col_prediction (str): column name for prediction
+
     Returns:
         float: log_loss_score (min=-inf, max=inf)
     """
@@ -443,6 +493,7 @@ def merge_ranking_true_pred(
     threshold=DEFAULT_THRESHOLD,
 ):
     """Filter truth and prediction data frames on common users
+
     Args:
         rating_true (pd.DataFrame): True DataFrame
         rating_pred (pd.DataFrame): Predicted DataFrame
@@ -453,10 +504,16 @@ def merge_ranking_true_pred(
         relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
         k (int): number of top k items per user (optional)
         threshold (float): threshold of top items per user (optional)
+
     Returns:
-        pd.DataFrame, pd.DataFrame, int: DataFrame of recommendation hits, sorted by `col_user` and `rank`
-        DataFrmae of hit counts vs actual relevant items per user number of unique user ids
+        pd.DataFrame, pd.DataFrame, int:
+            DataFrame of recommendation hits
+            DataFrmae of hit counts vs actual relevant items per user
+            number of unique user ids
     """
+
+    # make sure the true data have no negative items
+    rating_true = rating_true[rating_true[col_rating] >= 1]
 
     # Make sure the prediction and true data frames have the same set of users
     common_users = set(rating_true[col_user]).intersection(set(rating_pred[col_user]))
@@ -479,6 +536,9 @@ def merge_ranking_true_pred(
         col_user=col_user,
         col_rating=col_prediction,
         k=top_k,
+    )
+    df_hit["rank"] = df_hit.groupby(col_user)[col_prediction].rank(
+        method="first", ascending=False
     )
     df_hit = pd.merge(df_hit, rating_true_common, on=[col_user, col_item])[
         [col_user, col_item, "rank"]
@@ -508,12 +568,14 @@ def precision_at_k(
     threshold=DEFAULT_THRESHOLD,
 ):
     """Precision at K.
+
     Note:
-        We use the same formula to calculate precision@k as that in Spark.
-        More details can be found at
-        http://spark.apache.org/docs/2.1.1/api/python/pyspark.mllib.html#pyspark.mllib.evaluation.RankingMetrics.precisionAt
-        In particular, the maximum achievable precision may be < 1, if the number of items for a
-        user in rating_pred is less than k.
+    We use the same formula to calculate precision@k as that in Spark.
+    More details can be found at
+    http://spark.apache.org/docs/2.1.1/api/python/pyspark.mllib.html#pyspark.mllib.evaluation.RankingMetrics.precisionAt
+    In particular, the maximum achievable precision may be < 1, if the number of items for a
+    user in rating_pred is less than k.
+
     Args:
         rating_true (pd.DataFrame): True DataFrame
         rating_pred (pd.DataFrame): Predicted DataFrame
@@ -524,6 +586,7 @@ def precision_at_k(
         relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
         k (int): number of top k items per user
         threshold (float): threshold of top items per user (optional)
+
     Returns:
         float: precision at k (min=0, max=1)
     """
@@ -542,7 +605,6 @@ def precision_at_k(
 
     if df_hit.shape[0] == 0:
         return 0.0
-
     return (df_hit_count["hit"] / k).sum() / n_users
 
 
@@ -558,6 +620,7 @@ def recall_at_k(
     threshold=DEFAULT_THRESHOLD,
 ):
     """Recall at K.
+
     Args:
         rating_true (pd.DataFrame): True DataFrame
         rating_pred (pd.DataFrame): Predicted DataFrame
@@ -568,9 +631,10 @@ def recall_at_k(
         relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
         k (int): number of top k items per user
         threshold (float): threshold of top items per user (optional)
+
     Returns:
         float: recall at k (min=0, max=1). The maximum value is 1 even when fewer than 
-        k items exist for a user in rating_true.
+            k items exist for a user in rating_true.
     """
 
     df_hit, df_hit_count, n_users = merge_ranking_true_pred(
@@ -616,6 +680,7 @@ def ndcg_at_k(
         relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
         k (int): number of top k items per user
         threshold (float): threshold of top items per user (optional)
+
     Returns:
         float: nDCG at k (min=0, max=1).
     """
@@ -640,7 +705,7 @@ def ndcg_at_k(
     # relevance in this case is always 1
     df_dcg["dcg"] = 1 / np.log1p(df_dcg["rank"])
     # sum up discount gained to get discount cumulative gain
-    df_dcg = df_dcg.groupby(col_user, as_index=False, sort=False).agg({"dcg": "sum"})
+    df_dcg = df_dcg.groupby(col_user, as_index=False).agg({"dcg": "sum"})
     # calculate ideal discounted cumulative gain
     df_ndcg = pd.merge(df_dcg, df_hit_count, on=[col_user])
     df_ndcg["idcg"] = df_ndcg["actual"].apply(
@@ -663,17 +728,18 @@ def map_at_k(
     threshold=DEFAULT_THRESHOLD,
 ):
     """Mean Average Precision at k
-    
     The implementation of MAP is referenced from Spark MLlib evaluation metrics.
     https://spark.apache.org/docs/2.3.0/mllib-evaluation-metrics.html#ranking-systems
+
     A good reference can be found at:
     http://web.stanford.edu/class/cs276/handouts/EvaluationNew-handout-6-per.pdf
+
     Note:
         1. The evaluation function is named as 'MAP is at k' because the evaluation class takes top k items for
         the prediction items. The naming is different from Spark.
-        
         2. The MAP is meant to calculate Avg. Precision for the relevant items, so it is normalized by the number of
         relevant items in the ground truth data, instead of k.
+
     Args:
         rating_true (pd.DataFrame): True DataFrame
         rating_pred (pd.DataFrame): Predicted DataFrame
@@ -684,6 +750,7 @@ def map_at_k(
         relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
         k (int): number of top k items per user
         threshold (float): threshold of top items per user (optional)
+
     Returns:
         float: MAP at k (min=0, max=1).
     """
@@ -704,10 +771,8 @@ def map_at_k(
         return 0.0
 
     # calculate reciprocal rank of items for each user and sum them up
-    df_hit_sorted = df_hit.copy()
-    df_hit_sorted["rr"] = (
-        df_hit_sorted.groupby(col_user).cumcount() + 1
-    ) / df_hit_sorted["rank"]
+    df_hit_sorted = df_hit.sort_values([col_user, "rank"])
+    df_hit_sorted["rr"] = (df_hit.groupby(col_user).cumcount() + 1) / df_hit["rank"]
     df_hit_sorted = df_hit_sorted.groupby(col_user).agg({"rr": "sum"}).reset_index()
 
     df_merge = pd.merge(df_hit_sorted, df_hit_count, on=col_user)
@@ -720,40 +785,23 @@ def get_top_k_items(
     """Get the input customer-item-rating tuple in the format of Pandas
     DataFrame, output a Pandas DataFrame in the dense format of top k items
     for each user.
-    
     Note:
-        If it is implicit rating, just append a column of constants to be
+        if it is implicit rating, just append a column of constants to be
         ratings.
+
     Args:
         dataframe (pandas.DataFrame): DataFrame of rating data (in the format
         customerID-itemID-rating)
         col_user (str): column name for user
         col_rating (str): column name for rating
         k (int): number of items for each user
+
     Returns:
-        pd.DataFrame: DataFrame of top k items for each user, sorted by `col_user` and `rank`
+        pd.DataFrame: DataFrame of top k items for each user
     """
-    # Sort dataframe by col_user and (top k) col_rating
-    top_k_items = (
+
+    return (
         dataframe.groupby(col_user, as_index=False)
         .apply(lambda x: x.nlargest(k, col_rating))
         .reset_index(drop=True)
     )
-    # Add ranks
-    top_k_items["rank"] = top_k_items.groupby(col_user, sort=False).cumcount() + 1
-    return top_k_items
-
-
-"""Function name and function mapper.
-Useful when we have to serialize evaluation metric names
-and call the functions based on deserialized names"""
-metrics = {
-    rmse.__name__: rmse,
-    mae.__name__: mae,
-    rsquared.__name__: rsquared,
-    exp_var.__name__: exp_var,
-    precision_at_k.__name__: precision_at_k,
-    recall_at_k.__name__: recall_at_k,
-    ndcg_at_k.__name__: ndcg_at_k,
-    map_at_k.__name__: map_at_k,
-}

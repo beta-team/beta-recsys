@@ -117,7 +117,7 @@ class VBCAR_train(TrainEngine):
             if result[self.config["validate_metric"]] > best_performance:
                 n_no_update = 0
                 dict2str(result)
-                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"])
+                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"]+"model.ckp")
                 best_performance = result[self.config["validate_metric"]]
             else:
                 n_no_update += 1
