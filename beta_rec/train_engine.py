@@ -219,7 +219,7 @@ class TrainEngine(object):
             print("-" * 80)
             if epoch > 0 and self.test_engine.n_no_update == 0:
                 # previous epoch have already obtained better result
-                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"])
+                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"]+"model.cpk")
 
             if self.test_engine.n_no_update >= MAX_N_UPDATE:
                 print(
@@ -260,7 +260,7 @@ class TrainEngine(object):
                 self.engine.record_performance(result, test_result, epoch_id=epoch)
                 if result[self.config["validate_metric"]] > best_performance:
                     dict2str(result)
-                    self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"])
+                    self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"]+"model.cpk")
                     best_performance = result[self.config["validate_metric"]]
                 """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
                 lr = self.config["lr"] * (0.5 ** (epoch // 10))
