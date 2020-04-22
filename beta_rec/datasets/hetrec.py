@@ -5,6 +5,10 @@ from beta_rec.utils.common_util import un_zip, timeit
 from beta_rec.utils.constants import *
 from beta_rec.datasets.dataset_base import DatasetBase
 
+# Download URLs
+ML_2K_URL='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens-2k-v2.zip'
+DL_2K_URL='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
+LF_2K_URL='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
 
 class MovieLens_2k(DatasetBase):
     def __init__(self):
@@ -19,7 +23,7 @@ class MovieLens_2k(DatasetBase):
 
         super().__init__(
             'movielens-2k',
-            url='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens-2k-v2.zip',
+            url=ML_2K_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
@@ -84,7 +88,7 @@ class Delicious_2k(DatasetBase):
         
         super().__init__(
             'delicious-2k',
-            url='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip',
+            url=DL_2K_URL,
             processed_leave_one_out_url= "",
             processed_random_split_url= "",
             processed_temporal_split_url= "",
@@ -152,7 +156,7 @@ class LastFM_2k(DatasetBase):
 
         super().__init__(
             'lastfm-2k',
-            url='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip',
+            url=LF_2K_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
