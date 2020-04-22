@@ -465,6 +465,7 @@ class DatasetBase(object):
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(url=self.processed_leave_one_out_url, path=download_path)
                 folder.download()
+                un_zip(processed_leave_one_out_path + '.zip', download_path)
             else:
                 # make
                 self.make_leave_one_out(random=random, n_negative=n_negative, n_test=n_test)
@@ -503,6 +504,7 @@ class DatasetBase(object):
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(url=self.processed_leave_one_basket_url, path=download_path)
                 folder.download()
+                un_zip(processed_leave_one_basket_path + '.zip', download_path)
             else:
                 # make
                 self.make_leave_one_basket(random=random, n_negative=n_negative, n_test=n_test)
@@ -546,7 +548,7 @@ class DatasetBase(object):
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(url=self.processed_random_split_url, path=download_path)
                 folder.download()
-                un_zip(processed_random_split_path)
+                un_zip(processed_random_split_path + '.zip', download_path)
             else:
                 # make
                 self.make_random_split(test_rate=test_rate, random=random, n_negative=n_negative, by_user=by_user,
@@ -592,6 +594,7 @@ class DatasetBase(object):
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(url=self.processed_random_basket_split_url, path=download_path)
                 folder.download()
+                un_zip(processed_random_basket_split_path + '.zip', download_path)
             else:
                 # make
                 self.make_random_basket_split(test_rate=test_rate, random=random, n_negative=n_negative,
@@ -638,6 +641,7 @@ class DatasetBase(object):
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(url=self.processed_temporal_split_url, path=download_path)
                 folder.download()
+                un_zip(processed_temporal_split_path + '.zip', download_path)
             else:
                 # make
                 self.make_temporal_split(test_rate=test_rate, n_negative=n_negative,
@@ -683,6 +687,7 @@ class DatasetBase(object):
                 folder = OneDrive(url=self.processed_temporal_basket_split_url,
                                   path=download_path)
                 folder.download()
+                un_zip(processed_temporal_basket_split_path + '.zip', download_path)
             else:
                 # make
                 self.make_temporal_basket_split(test_rate=test_rate, n_negative=n_negative,
