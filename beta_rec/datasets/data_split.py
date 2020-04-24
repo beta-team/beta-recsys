@@ -379,8 +379,7 @@ def leave_one_out(data, random=False):
     if random:
         data = sklearn.utils.shuffle(data)
     else:
-        if DEFAULT_TIMESTAMP_COL in data.columns:
-            data.sort_values(by=[DEFAULT_TIMESTAMP_COL], inplace=True)
+        data.sort_values(by=[DEFAULT_TIMESTAMP_COL], inplace=True)
 
     users = data[DEFAULT_USER_COL].unique()
     for u in tqdm(users):
