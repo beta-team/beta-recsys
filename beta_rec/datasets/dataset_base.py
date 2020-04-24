@@ -181,7 +181,7 @@ class DatasetBase(object):
             raise RuntimeError("data is not a type of DataFrame")
 
         if DEFAULT_TIMESTAMP_COL not in data.columns:
-            raise RuntimeError("This dataset doesn't have an TIMESTAMP_COL")
+            random = True
 
         result = split_data(
             data,
