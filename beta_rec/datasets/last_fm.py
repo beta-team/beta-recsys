@@ -8,6 +8,7 @@ from beta_rec.datasets.dataset_base import DatasetBase
 LAST_FM_URL = r'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
 
 # processed data url
+LAST_FM_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugWWzMfP30dibhLE5?e=VeW8fM'
 LAST_FM_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugV8roce2jec5yVMs?e=7NpTIb'
 
 
