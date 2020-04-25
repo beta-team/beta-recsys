@@ -80,7 +80,7 @@ class Gowalla(DatasetBase):
             names=[DEFAULT_USER_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_ITEM_COL],
         )
         # Add rating column into the table.
-        prior_transactions.insert(2, "rating", 1)
+        prior_transactions.insert(2, "rating", 1.0)
 
         # Step 3: Process time columns and transform it into timestamp.
         prior_transactions[DEFAULT_TIMESTAMP_COL] = prior_transactions[DEFAULT_TIMESTAMP_COL].apply(
