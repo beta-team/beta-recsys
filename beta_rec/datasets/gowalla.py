@@ -38,7 +38,10 @@ class Gowalla(DatasetBase):
         950,327 edges. We have collected a total of 6,442,890 check-ins of these
         users over the period of Feb. 2009 - Oct. 2010.
 
-        The download link: https://snap.stanford.edu/data/loc-Gowalla.html.
+        If the dataset can not be download by the url,
+        you need to down the dataset by the link:
+            https://snap.stanford.edu/data/loc-Gowalla.html.
+        then put it into the directory `gowalla/raw` and unzip it.
         """
         super().__init__('gowalla', url=GOWALLA_CHECKIN_URL)
 
@@ -96,7 +99,7 @@ class Gowalla(DatasetBase):
         )
 
         # Check the validation of this table.
-        print(prior_transactions.head())
+        # print(prior_transactions.head())
 
         # Save data model.
         self.save_dataframe_as_npz(
