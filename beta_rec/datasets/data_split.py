@@ -199,14 +199,16 @@ def load_split_data(path, n_test=10):
     valid_data_li = []
     test_data_li = []
     for i in range(n_test):
-        print(f"valid_data_{i} statistics")
         valid_df = get_dataframe_from_npz(os.path.join(path, f"valid_{i}.npz"))
         valid_data_li.append(valid_df)
-        print(valid_df.agg(["count", "size", "nunique"]))
+        if i is 0:
+            print(f"valid_data_{i} statistics")
+            print(valid_df.agg(["count", "size", "nunique"]))
         test_df = get_dataframe_from_npz(os.path.join(path, f"test_{i}.npz"))
         test_data_li.append(test_df)
-        print(f"test_data_{i} statistics")
-        print(test_df.agg(["count", "size", "nunique"]))
+        if i is 0:
+            print(f"test_data_{i} statistics")
+            print(test_df.agg(["count", "size", "nunique"]))
     print("-" * 80)
     return train_data, valid_data_li, test_data_li
 
