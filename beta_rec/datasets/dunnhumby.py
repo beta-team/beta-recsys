@@ -5,6 +5,17 @@ from beta_rec.utils.common_util import un_zip, timeit
 from beta_rec.utils.constants import *
 from beta_rec.datasets.dataset_base import DatasetBase
 
+# download_url
+DUNNHUMBY_URL = r'https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip'
+
+# processed data url
+DUNNHUMBY_LEAVE_ONE_BASKET_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXCn99mGZw4uHaSg?e=GhmyCa'
+DUNNHUMBY_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXK8xN12i0O4K-dd?e=OG0Dl3'
+DUNNHUMBY_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXRLlZbQnYJbjY1d?e=aQ9LrF'
+DUNNHUMBY_RANDOM_BASKET_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXYbw7U3_M363CpM?e=DuyT3a'
+DUNNHUMBY_TEMPORAL_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXgd1VE2sX089Udc?e=S2eM7Q'
+DUNNHUMBY_TEMPORAL_BASKET_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXrmhlEvrEzYiX42?e=1RNidC'
+
 
 class Dunnhumby(DatasetBase):
     def __init__(self):
@@ -18,7 +29,13 @@ class Dunnhumby(DatasetBase):
         """
         super().__init__(
             "dunnhumby",
-            url="https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip",
+            url=DUNNHUMBY_URL,
+            processed_leave_one_basket_url=DUNNHUMBY_LEAVE_ONE_BASKET_URL,
+            processed_leave_one_out_url=DUNNHUMBY_LEAVE_ONE_OUT_URL,
+            processed_random_split_url=DUNNHUMBY_RANDOM_SPLIT_URL,
+            processed_random_basket_split_url=DUNNHUMBY_RANDOM_BASKET_SPLIT_URL,
+            processed_temporal_split_url=DUNNHUMBY_TEMPORAL_SPLIT_URL,
+            processed_temporal_basket_split_url=DUNNHUMBY_TEMPORAL_BASKET_SPLIT_URL,
         )
         self.load_temporal_split = self.load_temporal_basket_split
 

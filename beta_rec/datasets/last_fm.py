@@ -7,6 +7,10 @@ from beta_rec.datasets.dataset_base import DatasetBase
 # download_url
 LAST_FM_URL = r'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
 
+# processed data url
+LAST_FM_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugWWzMfP30dibhLE5?e=VeW8fM'
+LAST_FM_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugV8roce2jec5yVMs?e=7NpTIb'
+
 
 class LastFM(DatasetBase):
     def __init__(self):
@@ -14,7 +18,9 @@ class LastFM(DatasetBase):
 
         Last.FM dataset.
         """
-        super().__init__('last_fm', url=LAST_FM_URL)
+        super().__init__('last_fm', url=LAST_FM_URL,
+                         processed_leave_one_out_url=LAST_FM_LEAVE_ONE_OUT_URL,
+                         processed_random_split_url=LAST_FM_RANDOM_SPLIT_URL)
     
     def preprocess(self):
         """Preprocess the raw file

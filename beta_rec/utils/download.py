@@ -31,6 +31,7 @@ def get_format(suffix):
     """
     format_map = {
         'bz2': 'bztar',
+        'gz2': 'gztar',
     }
     if suffix not in format_map:
         return suffix

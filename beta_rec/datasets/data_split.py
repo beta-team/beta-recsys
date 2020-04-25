@@ -201,12 +201,12 @@ def load_split_data(path, n_test=10):
     for i in range(n_test):
         valid_df = get_dataframe_from_npz(os.path.join(path, f"valid_{i}.npz"))
         valid_data_li.append(valid_df)
-        if i is 0:
+        if i == 0:
             print(f"valid_data_{i} statistics")
             print(valid_df.agg(["count", "size", "nunique"]))
         test_df = get_dataframe_from_npz(os.path.join(path, f"test_{i}.npz"))
         test_data_li.append(test_df)
-        if i is 0:
+        if i == 0:
             print(f"test_data_{i} statistics")
             print(test_df.agg(["count", "size", "nunique"]))
     print("-" * 80)
@@ -441,7 +441,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
 
             data.loc[
                 interactions[train_size:], DEFAULT_FLAG_COL,
-            ] = "test"  # the last test_rateof the total orders to be the test set
+            ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
             ] = "validate"

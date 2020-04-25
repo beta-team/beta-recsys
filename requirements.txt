@@ -15,3 +15,4 @@ scikit-learn==0.22.2.post1
 gputil==1.4.0
 aiofiles
 aiohttp
+nest_asyncio
