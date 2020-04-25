@@ -2,7 +2,7 @@
     "model": "VBCAR",
     "config_id":"default",
     "root_dir":"../",
-    "dataset": "ml_100k",
+    "dataset": "dunnhumby",
     "data_split":"temporal",
     "data_split_comment":"options:temporal leave_one_out",
     "temp_train":0,

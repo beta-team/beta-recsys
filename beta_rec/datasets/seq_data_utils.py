@@ -6,6 +6,20 @@ from torch.utils.data import Dataset
 
 
 def reindex_items(train_data, valid_data=None, test_data=None):
+    """Reindex the item ids.
+
+    Item ids are reindexed from 1. "0" is left for padding.
+
+    Args:
+        train_data (pandas.DataFrame): Training set.
+        valid_data (pandas.DataFrame): Validation set.
+        test_data (pandas.DataFrame): Test set.
+        
+    Returns:
+        train_data (pandas.DataFrame): Reindexed training set.
+        valid_data (pandas.DataFrame): Reindexed validation set.
+        test_data (pandas.DataFrame): Reindexed test set.
+    """
     train_data = train_data.sort_values(by=['col_user', 'col_timestamp'])
     test_data = test_data.sort_values(by=['col_user', 'col_timestamp'])
 
@@ -41,10 +55,13 @@ def reindex_items(train_data, valid_data=None, test_data=None):
 
 
 def create_seq_db(data):
-    """
-    Convert interactions of a user to a sequence.
+    """Convert interactions of a user to a sequence.
     
-    :param data: the dataset to be transformed
+    Args:
+        data (pandas.DataFrame): The dataset to be transformed.
+    
+    Returns:
+        result (pandas.DataFrame): Transformed dataset with "col_user" and "col_sequence".
     """
     # group by user id and concat item id
     groups = data.groupby('col_user')
@@ -58,10 +75,14 @@ def create_seq_db(data):
 
 
 def dataset_to_seq_target_format(data):
-    """
-    Convert a list of sequences to (seq,target) format.
+    """Convert a list of sequences to (seq,target) format.
     
-    :param data: the dataset to be transformed
+    Args:
+        data (pandas.DataFrame): The dataset to be transformed.
+    
+    Returns:
+        out_seqs (List): Context sequence.
+        labs (List): Labels of the context sequence, each element is the last item in the origin sequence.
     """
 
     iseqs = data['col_sequence']
@@ -78,8 +99,7 @@ def dataset_to_seq_target_format(data):
     return (out_seqs, labs)
 
 class SeqDataset(Dataset):
-    """
-    define the pytorch Dataset class for sequential datasets.
+    """Define the pytorch Dataset class for sequential datasets.
     """
     def __init__(self, data,print_info=True):
         self.data = data
@@ -99,12 +119,20 @@ class SeqDataset(Dataset):
 
 
 def collate_fn(data):
-    """
+    """Pad the sequences.
     This function will be used to pad the sessions to max length
-       in the batch and transpose the batch from 
-       batch_size x max_seq_len to max_seq_len x batch_size.
-       It will return padded vectors, labels and lengths of each session (before padding)
-       It will be used in the Dataloader
+    in the batch and transpose the batch from 
+    batch_size x max_seq_len to max_seq_len x batch_size.
+    It will return padded vectors, labels and lengths of each session (before padding)
+    It will be used in the Dataloader
+    
+    Args:
+        data (pytorch Dataset): Sequential dataset.
+    
+    Returns:
+        padded_sesss (Tensor): Padded vectors.
+        labels (Tensor): Target item.
+        lens (list): Lengths of each padded vector.
     """
     data.sort(key=lambda x: len(x[0]), reverse=True)
     lens = [len(sess) for sess, label in data]

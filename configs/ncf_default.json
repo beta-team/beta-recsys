@@ -2,7 +2,7 @@
     "model": "ncf",
     "config_id": "default",
     "root_dir": "../",
-    "dataset": "ml_100k",
+    "dataset": "dunnhumby",
     "data_split": "temporal",
     "temp_train": 0,
     "percent": 1,
