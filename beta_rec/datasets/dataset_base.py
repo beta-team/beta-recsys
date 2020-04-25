@@ -81,7 +81,8 @@ class DatasetBase(object):
 
         if not url:
             print(
-                f"please download the dataset by your self via {self.manual_download_url} and put it into {self.raw_path} after decompression"
+                f"please download the dataset by your self via {self.manual_download_url}, rename to "
+                f"{self.dataset_name} and put it into {self.raw_path} after decompression "
             )
 
     @timeit
@@ -92,7 +93,8 @@ class DatasetBase(object):
         """
         if not self.url:
             raise RuntimeError(
-                f"please download the dataset by your self via {self.manual_download_url} and put it into {self.raw_path} after decompression"
+                f"please download the dataset by your self via {self.manual_download_url}, rename to "
+                f"{self.dataset_name} and put it into {self.raw_path} after decompression"
             )
 
         download_file_name = os.path.join(
