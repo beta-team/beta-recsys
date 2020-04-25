@@ -8,6 +8,8 @@ from beta_rec.datasets.dataset_base import DatasetBase
 # download_url
 TAFENG_URL = r"https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download"
 
+# processed data url
+TAFENG_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugWbXQ__YWqF9v_7x?e=NjX5VQ'
 
 class Tafeng(DatasetBase):
     def __init__(self):
@@ -30,7 +32,7 @@ class Tafeng(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.raw_path, "ta_feng_all_months_merged.csv")
+        file_name = os.path.join(self.raw_path, self.dataset_name, "ta_feng_all_months_merged.csv")
         if not os.path.exists(file_name):
             self.download()
         data = pd.read_table(
