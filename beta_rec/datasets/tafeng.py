@@ -9,7 +9,10 @@ from beta_rec.datasets.dataset_base import DatasetBase
 TAFENG_URL = r"https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download"
 
 # processed data url
+TAFENG_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugWw1iWQHgI2NNbuM?e=LwEbEc'
 TAFENG_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugWbXQ__YWqF9v_7x?e=NjX5VQ'
+TAFENG_TEMPORAL_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugWp1Y1JefMXZr0ng?e=OoAgwD'
+
 
 class Tafeng(DatasetBase):
     def __init__(self):
@@ -22,7 +25,8 @@ class Tafeng(DatasetBase):
         """
         super().__init__(
             "tafeng",
-            manual_download_url="https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download",
+            manual_download_url=TAFENG_URL,
+            processed_random_split_url=TAFENG_RANDOM_SPLIT_URL
         )
 
     def preprocess(self):

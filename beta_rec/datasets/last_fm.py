@@ -18,7 +18,9 @@ class LastFM(DatasetBase):
 
         Last.FM dataset.
         """
-        super().__init__('last_fm', url=LAST_FM_URL, processed_random_split_url=LAST_FM_RANDOM_SPLIT_URL)
+        super().__init__('last_fm', url=LAST_FM_URL,
+                         processed_leave_one_out_url=LAST_FM_LEAVE_ONE_OUT_URL,
+                         processed_random_split_url=LAST_FM_RANDOM_SPLIT_URL)
     
     def preprocess(self):
         """Preprocess the raw file
