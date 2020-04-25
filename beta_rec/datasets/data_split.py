@@ -199,7 +199,6 @@ def load_split_data(path, n_test=10):
     valid_data_li = []
     test_data_li = []
     for i in range(n_test):
-
         valid_df = get_dataframe_from_npz(os.path.join(path, f"valid_{i}.npz"))
         valid_data_li.append(valid_df)
         if i == 0:

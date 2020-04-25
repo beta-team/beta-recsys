@@ -29,7 +29,7 @@ class Dunnhumby(DatasetBase):
         """
         super().__init__(
             "dunnhumby",
-            url=DUNNHUMBY_URLp,
+            url=DUNNHUMBY_URL,
             processed_leave_one_basket_url=DUNNHUMBY_LEAVE_ONE_BASKET_URL,
             processed_leave_one_out_url=DUNNHUMBY_LEAVE_ONE_OUT_URL,
             processed_random_split_url=DUNNHUMBY_RANDOM_SPLIT_URL,
