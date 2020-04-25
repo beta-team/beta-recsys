@@ -22,10 +22,9 @@ class Instacart(DatasetBase):
         """
         super().__init__(
             'instacart',
-            url = 'https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz'
+            url='https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz'
         )
 
-    
     def preprocess(self):
         """Preprocess the raw file
 
@@ -33,7 +32,7 @@ class Instacart(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        
+
         # If raw file doesn't exist, download it into your database.
         file_zip_name = os.path.join(self.raw_path, "instacart.zip")
         if not os.path.exists(file_zip_name):
@@ -41,7 +40,7 @@ class Instacart(DatasetBase):
             self.download()
 
         # Process raw file
-        path_name = os.path.join(self.raw_path, self.dataset_name)  
+        path_name = os.path.join(self.raw_path, self.dataset_name)
         # orders_table, containing order_id, user_id, and time.
         # orders_products_table, containing product_id, order_id, and reordered info.
         orders_data = os.path.join(path_name, "orders.csv")
@@ -52,12 +51,12 @@ class Instacart(DatasetBase):
         orders_table = pd.read_csv(
             orders_data,
             usecols=[
-                "order_id", 
-                "user_id", 
-                #"eval_set",
-                #"order_number",
-                #"order_dow",
-                "order_hour_of_day", 
+                "order_id",
+                "user_id",
+                # "eval_set",
+                # "order_number",
+                # "order_dow",
+                "order_hour_of_day",
                 "days_since_prior_order"
             ]
         )
@@ -66,10 +65,10 @@ class Instacart(DatasetBase):
         orders_products_table = pd.read_csv(
             orders_products_data,
             usecols=[
-                "order_id", 
-                "product_id", 
-                #"add_to_cart_order", 
-                #"reordered"
+                "order_id",
+                "product_id",
+                # "add_to_cart_order",
+                # "reordered"
             ],
         )
 
@@ -87,8 +86,8 @@ class Instacart(DatasetBase):
         # Merge all the four datasets according to order_id, products_id.
         prior_transactions = orders_products_table.merge(
             orders_table,
-            left_on = "order_id",
-            right_on = "order_id",
+            left_on="order_id",
+            right_on="order_id",
         )
 
         # Merge the products_table
@@ -103,31 +102,33 @@ class Instacart(DatasetBase):
 
         # Process time datas
         virtual_date = datetime.datetime.strptime("2020-04-21 00:00", "%Y-%m-%d %H:%M")
-        prior_transactions["days_since_prior_order"] = prior_transactions["days_since_prior_order"].apply(lambda t: (virtual_date + datetime.timedelta(days=t)).timestamp())
+        prior_transactions["days_since_prior_order"] = prior_transactions["days_since_prior_order"].apply(
+            lambda t: (virtual_date + datetime.timedelta(days=t)).timestamp())
         prior_transactions = prior_transactions.drop(["order_hour_of_day"], axis=1)
 
         # Standardize the columns' name.
         prior_transactions.rename(
-            columns = {
-                "user_id"                : DEFAULT_USER_COL,
-                "order_id"               : DEFAULT_ORDER_COL,
-                "product_id"             : DEFAULT_ITEM_COL,
-                "rating"                 : DEFAULT_RATING_COL, 
-                #"aisle_id"              : "aisle_id",
-                #"department_id"         : "department_id",
-                #"add_to_cart_order"     : "add_to_cart_order",
-                #"reordered"             : "reordered",
-                #"order_hour_of_day"     : "order_hour_of_day",
-                "days_since_prior_order" : DEFAULT_TIMESTAMP_COL,
-                #"time"                  : DEFAULT_TIMESTAMP_COL,
+            columns={
+                "user_id": DEFAULT_USER_COL,
+                "order_id": DEFAULT_ORDER_COL,
+                "product_id": DEFAULT_ITEM_COL,
+                "rating": DEFAULT_RATING_COL,
+                # "aisle_id"              : "aisle_id",
+                # "department_id"         : "department_id",
+                # "add_to_cart_order"     : "add_to_cart_order",
+                # "reordered"             : "reordered",
+                # "order_hour_of_day"     : "order_hour_of_day",
+                "days_since_prior_order": DEFAULT_TIMESTAMP_COL,
+                # "time"                  : DEFAULT_TIMESTAMP_COL,
             },
-            inplace = True,
+            inplace=True,
         )
 
         # Check the validation of this table.
         # print(prior_transactions.head(10))
 
         # save processed data into the disk.
-        self.save_dataframe_as_npz(prior_transactions, os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
-        
+        self.save_dataframe_as_npz(prior_transactions,
+                                   os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
+
         print("Done.")

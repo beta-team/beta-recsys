@@ -11,6 +11,7 @@ TAFENG_URL = r"https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/dow
 # processed data url
 TAFENG_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugWbXQ__YWqF9v_7x?e=NjX5VQ'
 
+
 class Tafeng(DatasetBase):
     def __init__(self):
         """Tafeng
@@ -22,7 +23,8 @@ class Tafeng(DatasetBase):
         """
         super().__init__(
             "tafeng",
-            manual_download_url="https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download",
+            manual_download_url=TAFENG_URL,
+            processed_random_split_url=TAFENG_RANDOM_SPLIT_URL
         )
 
     def preprocess(self):
