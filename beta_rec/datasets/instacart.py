@@ -25,7 +25,7 @@ class Instacart(DatasetBase):
         """
         super().__init__(
             'instacart',
-            url=INSTACART_URL
+            url=INSTACART_URL,
         )
 
     def preprocess(self):
@@ -61,7 +61,7 @@ class Instacart(DatasetBase):
             usecols=[
                 "order_id", 
                 "user_id",
-                "order_hour_of_day", 
+                "order_hour_of_day",
                 "days_since_prior_order"
             ]
         )
@@ -78,8 +78,8 @@ class Instacart(DatasetBase):
         # Step 3: Merge the two tables above.
         prior_transactions = orders_products_table.merge(
             orders_table,
-            left_on = "order_id",
-            right_on = "order_id",
+            left_on="order_id",
+            right_on="order_id",
         )
 
         # Step 5: Add additional columns [rating, timestamp].
@@ -88,7 +88,8 @@ class Instacart(DatasetBase):
 
         # Create virtual timestamp and add to the merge table.
         virtual_date = datetime.datetime.strptime("2020-04-21 00:00", "%Y-%m-%d %H:%M")
-        prior_transactions["days_since_prior_order"] = prior_transactions["days_since_prior_order"].apply(lambda t: (virtual_date + datetime.timedelta(days=t)).timestamp())
+        prior_transactions["days_since_prior_order"] = prior_transactions["days_since_prior_order"].apply(
+            lambda t: (virtual_date + datetime.timedelta(days=t)).timestamp())
         prior_transactions = prior_transactions.drop(["order_hour_of_day"], axis=1)
 
         # Step 6: Rename columns and save data model.
@@ -100,13 +101,14 @@ class Instacart(DatasetBase):
                 "rating": DEFAULT_RATING_COL,
                 "days_since_prior_order": DEFAULT_TIMESTAMP_COL,
             },
-            inplace = True,
+            inplace=True,
         )
 
         # Check the validation of this table.
         # print(prior_transactions.head(10))
 
         # save processed data into the disk.
-        self.save_dataframe_as_npz(prior_transactions, os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
-        
+        self.save_dataframe_as_npz(prior_transactions,
+                                   os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
+
         print("Done.")
