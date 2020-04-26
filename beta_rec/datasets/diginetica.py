@@ -53,7 +53,7 @@ class Diginetica(DatasetBase):
         and save in the processed directory
 
         Download datasets if not existed.
-        yoochoose_name: yoochoose-buys.dat
+        diginetica_name: train-item-views.csv
 
         1. Download gowalla dataset if this dataset is not existed.
         2. Load diginetica <diginetica-item-views> table from 'train-item-views.csv'.
