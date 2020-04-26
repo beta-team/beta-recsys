@@ -79,7 +79,6 @@ class Diginetica(DatasetBase):
                 DEFAULT_ITEM_COL,
                 DEFAULT_TIMESTAMP_COL,
             ],
-            nrows=10,
         )
 
         # Step 3: Add rating column and create timestamp column.
