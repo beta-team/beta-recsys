@@ -165,7 +165,7 @@ class Movielens_100k(DatasetBase):
         
         Returns:
             user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors
-            item_feat (numpy.ndarray): The first column is the itm id, rest column are feat vectors
+            item_feat (numpy.ndarray): The first column is the item id, rest column are feat vectors
         
         """
         print(f"Making user and item feature vactors for dataset {self.dataset_name}")
