@@ -87,4 +87,9 @@ jobs:
         git remote -v
         git add .
         git commit -m "Auto Generate Documentation By CI"
-        git push --force "https://${{secrets.REPO_TOKEN}}@github.com/beta-team/docs.git" master:master
+        # git push --force "https://${{secrets.REPO_TOKEN}}@github.com/beta-team/docs.git" master:master
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.REPO_TOKEN }}
+        repository: beta-team/docs
