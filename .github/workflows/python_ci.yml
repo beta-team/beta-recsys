@@ -79,7 +79,6 @@ jobs:
       run: |
         git clone https://github.com/beta-team/docs.git docs
         cd docs
-        git checkout master
         cp -rf ../html/* ./
         pwd
         ls -a
