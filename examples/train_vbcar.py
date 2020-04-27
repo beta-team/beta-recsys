@@ -1,6 +1,4 @@
 import sys
-
-sys.path.append("../")
 import argparse
 from ray import tune
 from beta_rec.train_engine import TrainEngine, dict2str
@@ -9,6 +7,7 @@ from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import *
 from tqdm import tqdm
+sys.path.append("../")
 
 
 def parse_args():
@@ -117,7 +116,7 @@ class VBCAR_train(TrainEngine):
             if result[self.config["validate_metric"]] > best_performance:
                 n_no_update = 0
                 dict2str(result)
-                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"]+"model.ckp")
+                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"] + "model.ckp")
                 best_performance = result[self.config["validate_metric"]]
             else:
                 n_no_update += 1
