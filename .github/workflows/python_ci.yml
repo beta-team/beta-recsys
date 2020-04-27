@@ -86,4 +86,4 @@ jobs:
         ls -a
         git add .
         git commit -m "Auto Generate Documentation By CI"
-        git push --force "https://${{secrets.REPO_TOKEN}}@github.com/beta-team/docs.git" master:master
+        git push --force "https://leungyukshing:${{secrets.REPO_TOKEN}}@github.com/beta-team/docs.git" master:master
