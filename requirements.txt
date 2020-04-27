@@ -16,3 +16,5 @@ gputil==1.4.0
 aiofiles
 aiohttp
 nest_asyncio
+livelossplot
+cornac
