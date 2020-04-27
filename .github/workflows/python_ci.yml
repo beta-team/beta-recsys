@@ -60,6 +60,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pdoc3==0.7.5
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -70,3 +71,17 @@ jobs:
       run: |
         python -m pytest --cov-report=xml --cov=./tests/
 
+    - name: Generate Documentation
+      run: |
+        pdoc3 --html .
+    - name: Push Documentation to Remote Repository 
+      run: |
+        git clone https://github.com/beta-team/docs.git html
+        cd html
+        git checkout master
+        cp -rf ../html/* ./
+        pwd
+        ls -a
+        git add .
+        git commit -m "Auto Generate Documentation By CI"
+        git push --force "hhtps://${{secrets.REPO_TOKEN}}@github.com/beta-team/docs.git" master:master
