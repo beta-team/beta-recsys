@@ -290,7 +290,7 @@ class TestDataSplit(unittest.TestCase):
 
     def my_shuffle_side_effect(*args, **kwargs):
         a = args[1]
-        first, last = a[0], a[len(a) - 1]
+        _, last = a[0], a[len(a) - 1]
         temp = a[0].copy()
         a[0] = last
         a[len(a) - 1] = temp

@@ -6,7 +6,6 @@ from beta_rec.datasets.last_fm import LastFM
 from beta_rec.datasets.epinions import Epinions
 
 
-
 def load_user_fea_dic(config, fea_type):
     """ TO BE DONE
 
