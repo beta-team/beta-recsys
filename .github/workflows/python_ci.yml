@@ -84,6 +84,7 @@ jobs:
         cp -rf ../html/* ./
         pwd
         ls -a
+        git remote -v
         git add .
         git commit -m "Auto Generate Documentation By CI"
         git push --force "https://${{secrets.REPO_TOKEN}}@github.com/beta-team/docs.git" master:master
