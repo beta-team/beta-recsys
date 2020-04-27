@@ -18,4 +18,4 @@ aiohttp
 nest_asyncio
 livelossplot
 cornac
-cpuinfo
+py-cpuinfo
