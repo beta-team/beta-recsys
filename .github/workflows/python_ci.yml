@@ -77,6 +77,8 @@ jobs:
         pdoc3 --html .
     - name: Push Documentation to Remote Repository 
       run: |
+        git config --global user.name leungyukshing
+        git config --global user.email jacky14.liang@gmail.com
         git clone https://github.com/beta-team/docs.git docs
         cd docs
         cp -rf ../html/* ./
