@@ -78,11 +78,17 @@ if __name__ == "__main__":
     dataset.preprocess()
     train, vad, test = dataset.load_leave_one_out(n_test=1)
     # ToDo: Please define the directory to store the adjacent matrix
+<<<<<<< HEAD
     data_loader = Data(path=dataset.dataset_dir,train=train, test=test[0], vad=vad[0],batch_size=int(config["batch_size"]))
     plain_adj, norm_adj, mean_adj = data_loader.get_adj_mat()
     norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj)
     vad = data_loader.vad
     test = data_loader.test
+=======
+    data_loader = Data(path=dataset.dataset_dir,df=train, batch_size=int(config["batch_size"]))
+    plain_adj, norm_adj, mean_adj = data_loader.get_adj_mat()
+    norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj)
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
 
     config["norm_adj"] = norm_adj
     config["num_batch"] = data_loader.n_train // config["batch_size"] + 1
@@ -96,8 +102,13 @@ if __name__ == "__main__":
         engine.train_an_epoch(epoch_id=epoch, user=users,pos_i=pos_items,neg_i=neg_items)
     # ToDo: Please enable early stop, log, time monitor
         counter+=1
+<<<<<<< HEAD
         if counter % 1 == 0:
             result = engine.evaluate(eval_data_df=vad,epoch_id=epoch)
+=======
+        if counter % 10 == 0:
+            result = engine.evaluate(eval_data_df=vad[0],epoch_id=epoch)
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
             print(result)
     # ToDo: Please save model and result file
 

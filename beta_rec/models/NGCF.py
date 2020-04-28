@@ -8,9 +8,12 @@ from beta_rec.datasets.NGCF_data_utils import Data
 
 
 class NGCF(torch.nn.Module):
+<<<<<<< HEAD
     """Model initialisation, embedding generation and prediction of NGCF
 
     """
+=======
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
     def __init__(self, config):
         super(NGCF, self).__init__()
         self.config = config
@@ -24,7 +27,11 @@ class NGCF(torch.nn.Module):
         self.Bi_weights = nn.ModuleList()
         self.dropout_list = list(config['mess_dropout'])
         self.layer_size = [self.emb_dim] + self.layer_size
+<<<<<<< HEAD
         # Create GNN layers
+=======
+
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         for i in range(self.n_layers):
             self.GC_weights.append(nn.Linear(self.layer_size[i], self.layer_size[i + 1]))
             self.Bi_weights.append(nn.Linear(self.layer_size[i], self.layer_size[i + 1]))
@@ -35,11 +42,15 @@ class NGCF(torch.nn.Module):
         self.init_emb()
 
     def init_emb(self):
+<<<<<<< HEAD
         # Initialise users and items' embeddings
+=======
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         nn.init.xavier_uniform_(self.user_embedding.weight)
         nn.init.xavier_uniform_(self.item_embedding.weight)
 
     def forward(self, norm_adj):
+<<<<<<< HEAD
         """ Perform GNN function on users and item embeddings
         Args:
             norm_adj (torch sparse tensor): the norm adjacent matrix of the user-item interaction matrix
@@ -47,6 +58,8 @@ class NGCF(torch.nn.Module):
             u_g_embeddings (tensor): processed user embeddings
             i_g_embeddings (tensor): processed item embeddings
         """
+=======
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         ego_embeddings = torch.cat((self.user_embedding.weight, self.item_embedding.weight), dim=0)
         all_embeddings = [ego_embeddings]
 
@@ -66,6 +79,7 @@ class NGCF(torch.nn.Module):
         return u_g_embeddings, i_g_embeddings
 
     def predict(self, users, items):
+<<<<<<< HEAD
         """ Model prediction: dot product of users and items embeddings
         Args:
             users (int):  user id
@@ -73,6 +87,8 @@ class NGCF(torch.nn.Module):
         Return:
             scores (int): dot product
         """
+=======
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
 
@@ -82,16 +98,26 @@ class NGCF(torch.nn.Module):
 
 
 class NGCFEngine(Engine):
+<<<<<<< HEAD
 # A class includes train an epoch and train a batch of NGCF
     def __init__(self, config):
         self.config = config
         self.model = NGCF(config)
+=======
+    def __init__(self, config):
+        self.config = config
+        self.model = NGCF(config)
+        """
+        regs is regularisation
+        """
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         self.regs = config["regs"]
         self.decay = self.regs[0]
         self.batch_size = config["batch_size"]
         self.norm_adj = config["norm_adj"]
         self.num_batch = config["num_batch"]
 
+<<<<<<< HEAD
         super(NGCFEngine, self).__init__(config)
 
     def train_single_batch(self, batch_data):
@@ -101,6 +127,14 @@ class NGCFEngine(Engine):
         Return:
             loss (float): batch loss
         """
+=======
+        # self.data_loader = Data.__init__(path=config["path"],batch_size=config["batch_size"])
+        # self.plain_adj, self.norm_adj, self.mean_adj = self.data_loader.get_adj_mat()
+
+        super(NGCFEngine, self).__init__(config)
+
+    def train_single_batch(self, batch_data):
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
         norm_adj = self.norm_adj
@@ -123,6 +157,7 @@ class NGCFEngine(Engine):
         return loss
 
     def train_an_epoch(self, epoch_id,user,pos_i,neg_i):
+<<<<<<< HEAD
         """ Generate batch data for each batch
         Args:
             epoch_id (int):
@@ -130,6 +165,8 @@ class NGCFEngine(Engine):
             pos_i (list):
             neg_i (list):
         """
+=======
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0.0
@@ -144,12 +181,20 @@ class NGCFEngine(Engine):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def bpr_loss(self, users, pos_items, neg_items):
+<<<<<<< HEAD
         # Calculate BPR loss
+=======
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         pos_scores = torch.sum(torch.mul(users, pos_items), dim=1)
         neg_scores = torch.sum(torch.mul(users, neg_items), dim=1)
 
         regularizer = 1./2*(users**2).sum() + 1./2*(pos_items**2).sum() + 1./2*(neg_items**2).sum()
 
+<<<<<<< HEAD
+=======
+        # regularizer = np.sum([1./2*(ele**2).sum() for ele in (users, pos_items, neg_items)])
+
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         regularizer = regularizer / self.batch_size
 
         maxi = F.logsigmoid(pos_scores - neg_scores)
@@ -157,5 +202,8 @@ class NGCFEngine(Engine):
 
         emb_loss = self.decay * regularizer
         reg_loss = 0.0
+<<<<<<< HEAD
 
+=======
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         return mf_loss, emb_loss, reg_loss

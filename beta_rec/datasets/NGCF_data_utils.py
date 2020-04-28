@@ -2,6 +2,7 @@ import numpy as np
 import random as rd
 import scipy.sparse as sp
 from time import time
+<<<<<<< HEAD
 from collections import defaultdict
 from itertools import count
 import pandas as pd
@@ -13,10 +14,21 @@ class Data(object):
         self.batch_size = batch_size
         self.path = path
         self.df = train
+=======
+
+class Data(object):
+    def __init__(self, path,df, batch_size):
+        self.batch_size = batch_size
+        self.path = path
+        self.df = df
+
+        #get number of users and items
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         self.n_users, self.n_items = 0, 0
         self.n_train = 0
         self.neg_pools = {}
 
+<<<<<<< HEAD
         self.uid_map = defaultdict(count().__next__)
         self.iid_map = defaultdict(count().__next__)
         self.uids = np.array([self.uid_map[uid] for uid in self.df["col_user"].values], dtype=np.int32)
@@ -26,19 +38,38 @@ class Data(object):
         self.n_items = len(set(self.iids))
 
         self.print_statistics()
+=======
+        self.exist_users = list(set(self.df['col_user']))
+        self.n_users = max(self.df['col_user'])+1
+        self.n_items = max(self.df['col_item'])+1
+
+        self.print_statistics()
+
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
         self.R = sp.dok_matrix((self.n_users, self.n_items), dtype=np.float32)
         self.R_Item_Interacts = sp.dok_matrix((self.n_items, self.n_items), dtype=np.float32)
 
         self.train_items = {}
 
+<<<<<<< HEAD
         for u in self.exist_users:
             index = list(np.where(self.uids == u)[0])
             i = self.iids[index]
+=======
+        user_np = np.array(self.df['col_user'])
+        item_np = np.array(self.df['col_item'])
+        print(max(self.df['col_item']))
+        print(self.n_items)
+        for u in self.exist_users:
+            index = list(np.where(user_np==u)[0])
+            i = item_np[index]
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
             self.train_items[u] = i
             for item in i:
                 self.R[u,item] = 1
                 self.n_train += 1
 
+<<<<<<< HEAD
         self.test = self.reindex(test)
         self.vad = self.reindex(vad)
 
@@ -58,6 +89,8 @@ class Data(object):
 
         return pd.DataFrame(list(zip(re_uids,re_iids,ratings)),columns=['col_user','col_item','col_rating'])
 
+=======
+>>>>>>> 78c8c26c9cefb1481d12f9b2ca98d26ed37ed5fc
     def get_adj_mat(self):
         try:
             t1 = time()
