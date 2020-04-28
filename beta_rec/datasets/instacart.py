@@ -1,8 +1,6 @@
 import os
 import datetime
-import numpy as np
 import pandas as pd
-from beta_rec.utils.common_util import un_zip, timeit
 from beta_rec.utils.constants import *
 from beta_rec.datasets.dataset_base import DatasetBase
 

@@ -1,14 +1,14 @@
 import os
 import csv
 import pandas as pd
-from beta_rec.utils.common_util import un_zip, timeit
 from beta_rec.utils.constants import *
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URLs
-ML_2K_URL='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens-2k-v2.zip'
-DL_2K_URL='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
-LF_2K_URL='http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
+ML_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens-2k-v2.zip'
+DL_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
+LF_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
+
 
 class MovieLens_2k(DatasetBase):
     def __init__(self):
@@ -71,6 +71,7 @@ class MovieLens_2k(DatasetBase):
 
         print("Done.")
 
+
 class Delicious_2k(DatasetBase):
     def __init__(self):
         """delicious-2k
@@ -89,9 +90,9 @@ class Delicious_2k(DatasetBase):
         super().__init__(
             'delicious-2k',
             url=DL_2K_URL,
-            processed_leave_one_out_url= "",
-            processed_random_split_url= "",
-            processed_temporal_split_url= "",
+            processed_leave_one_out_url="",
+            processed_random_split_url="",
+            processed_temporal_split_url="",
         )
 
     def preprocess(self):
@@ -139,6 +140,7 @@ class Delicious_2k(DatasetBase):
         )
         
         print("Done.")
+
 
 class LastFM_2k(DatasetBase):
     def __init__(self):
