@@ -49,11 +49,11 @@ class TrainEngine(object):
         timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
         random_str = "".join([random.choice(string.ascii_lowercase) for n in range(4)])
         config["model_run_id"] = (
-            config["model"]
-            + "_"
-            + config["config_id"]
-            + "_"
-            + timestamp_str
+                config["model"]
+                + "_"
+                + config["config_id"]
+                + "_"
+                + timestamp_str
             # + "_"
             # + random_str
         )
@@ -85,7 +85,7 @@ class TrainEngine(object):
         config["model_ckp_file"] = os.path.join(
             config["root_dir"],
             config["checkpoint_dir"],
-            config["model_run_id"] + "/" #".model",
+            config["model_run_id"] + "/"  # ".model",
         )
         os.mkdir(config["model_ckp_file"])
         print("Model checkpoint will save in file:", config["model_ckp_file"])
@@ -144,18 +144,18 @@ class TrainEngine(object):
             self.config["root_dir"], self.config["sample_dir"]
         )
         sample_file = (
-            self.config["sample_dir"]
-            + "triple_"
-            + self.config["dataset"]
-            + "_"
-            + str(self.config["percent"] * 100)
-            + "_"
-            + str(self.config["n_sample"])
-            + "_"
-            + str(self.config["temp_train"])
-            + ".csv"
+                self.config["sample_dir"]
+                + "triple_"
+                + self.config["dataset"]
+                + "_"
+                + str(self.config["percent"] * 100)
+                + "_"
+                + str(self.config["n_sample"])
+                + "_"
+                + str(self.config["temp_train"])
+                + ".csv"
         )
-        my_sampler = Sampler(self.data.train, sample_file, self.config["n_sample"],)
+        my_sampler = Sampler(self.data.train, sample_file, self.config["n_sample"], )
         if self.config["temp_train"] and self.config["data_split"] == "temporal":
             self.train_data = my_sampler.sample_by_time(self.config["temp_train"])
         else:
@@ -219,7 +219,7 @@ class TrainEngine(object):
             print("-" * 80)
             if epoch > 0 and self.test_engine.n_no_update == 0:
                 # previous epoch have already obtained better result
-                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"]+"model.cpk")
+                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"] + "model.cpk")
 
             if self.test_engine.n_no_update >= MAX_N_UPDATE:
                 print(
@@ -260,7 +260,7 @@ class TrainEngine(object):
                 self.engine.record_performance(result, test_result, epoch_id=epoch)
                 if result[self.config["validate_metric"]] > best_performance:
                     dict2str(result)
-                    self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"]+"model.cpk")
+                    self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"] + "model.cpk")
                     best_performance = result[self.config["validate_metric"]]
                 """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
                 lr = self.config["lr"] * (0.5 ** (epoch // 10))

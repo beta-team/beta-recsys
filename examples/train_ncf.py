@@ -1,6 +1,4 @@
 import sys
-
-sys.path.append("../")
 import argparse
 import pandas as pd
 from tqdm import tqdm
@@ -11,6 +9,8 @@ from beta_rec.models.ncf import NeuMFEngine
 from beta_rec.datasets.nmf_data_utils import SampleGenerator
 from beta_rec.utils.common_util import save_to_csv
 from beta_rec.utils.monitor import Monitor
+
+sys.path.append("../")
 
 
 def parse_args():
@@ -81,7 +81,7 @@ def update_args(config, args):
             None
     """
     for k, v in vars(args).items():
-        if v != None:
+        if v is not None:
             config[k] = v
             print("Received parameters form comand line:", k, v)
 
@@ -111,7 +111,7 @@ class NCF_train(TrainEngine):
         self.config["mlp_config"].update(common_config)
         self.config["neumf_config"].update(common_config)
 
-    def train_epoch(self, engine, save_dir, temporal=False, time_step=0, t = 0):
+    def train_epoch(self, engine, save_dir, temporal=False, time_step=0, t=0):
         epoch_bar = tqdm(range(self.config["num_epoch"]), file=sys.stdout)
         best_performance = 0
         for epoch in epoch_bar:
@@ -149,17 +149,16 @@ class NCF_train(TrainEngine):
         # Train GMF
         self.gmf_engine = GMFEngine(self.config["gmf_config"])
         self.gmf_save_dir = (
-            self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
+                self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
         )
         self.train_epoch(engine=self.gmf_engine, save_dir=self.gmf_save_dir)
-
 
         # Train MLP
         self.mlp_engine = MLPEngine(
             self.config["mlp_config"], gmf_config=self.config["gmf_config"]
         )
         self.mlp_save_dir = (
-            self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
+                self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
         )
         self.train_epoch(engine=self.mlp_engine, save_dir=self.mlp_save_dir)
 
@@ -170,12 +169,11 @@ class NCF_train(TrainEngine):
             mlp_config=self.config["mlp_config"],
         )
         self.neumf_save_dir = (
-            self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
+                self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
         )
         self.train_epoch(engine=self.neumf_engine, save_dir=self.neumf_save_dir)
 
         self.config["run_time"] = self.monitor.stop()
-
 
     def temporal_train(self):
         self.monitor = Monitor(
@@ -186,17 +184,19 @@ class NCF_train(TrainEngine):
         for t in range(time_step):
             self.gmf_engine = GMFEngine(self.config["gmf_config"])
             self.gmf_save_dir = (
-                self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
+                    self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
             )
-            self.train_epoch(engine=self.gmf_engine, save_dir=self.gmf_save_dir, temporal=True,time_step=time_step,t=t)
+            self.train_epoch(engine=self.gmf_engine, save_dir=self.gmf_save_dir, temporal=True, time_step=time_step,
+                             t=t)
 
             self.mlp_engine = MLPEngine(
                 self.config["mlp_config"], gmf_config=self.config["gmf_config"]
             )
             self.mlp_save_dir = (
-                self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
+                    self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
             )
-            self.train_epoch(engine=self.mlp_engine, save_dir=self.mlp_save_dir, temporal=True,time_step=time_step,t=t)
+            self.train_epoch(engine=self.mlp_engine, save_dir=self.mlp_save_dir, temporal=True, time_step=time_step,
+                             t=t)
 
             self.neumf_engine = NeuMFEngine(
                 self.config["neumf_config"],
@@ -204,9 +204,10 @@ class NCF_train(TrainEngine):
                 mlp_config=self.config["mlp_config"],
             )
             self.neumf_save_dir = (
-                self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
+                    self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
             )
-            self.train_epoch(engine=self.neumf_engine, save_dir=self.neumf_save_dir, temporal=True,time_step=time_step,t=t)
+            self.train_epoch(engine=self.neumf_engine, save_dir=self.neumf_save_dir, temporal=True, time_step=time_step,
+                             t=t)
 
         self.config["run_time"] = self.monitor.stop()
 
