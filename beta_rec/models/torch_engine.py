@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import os
 import torch
 from tensorboardX import SummaryWriter
 import beta_rec.utils.evaluation as eval_model
@@ -9,9 +8,9 @@ import beta_rec.utils.constants as Constants
 
 def dict2str(dic):
     dic_str = (
-        "Configs: \n"
-        + "\n".join([str(k) + ":\t" + str(v) for k, v in dic.items()])
-        + "\n"
+            "Configs: \n"
+            + "\n".join([str(k) + ":\t" + str(v) for k, v in dic.items()])
+            + "\n"
     )
     print(dic_str)
     return dic_str
@@ -104,10 +103,10 @@ class Engine(object):
         ratings = eval_data_df[Constants.DEFAULT_RATING_COL].to_numpy()
         prediction = np.array(
             self.model.predict(user_ids, item_ids)
-            .flatten()
-            .to(torch.device("cpu"))
-            .detach()
-            .numpy()
+                .flatten()
+                .to(torch.device("cpu"))
+                .detach()
+                .numpy()
         )
 
         pred_df = pd.DataFrame(

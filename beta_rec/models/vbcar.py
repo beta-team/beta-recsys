@@ -71,7 +71,7 @@ class VBCAR(nn.Module):
 
     def kl_div(self, dis1, dis2=None, neg=False):
         mean1, std1 = dis1
-        if dis2 == None:
+        if dis2 is None:
             mean2 = torch.zeros(mean1.size(), device=self.device)
             std2 = torch.ones(std1.size(), device=self.device)
         else:
@@ -149,7 +149,7 @@ class VBCAR(nn.Module):
 
         i_2_score = -1 * (torch.sum(i_2_pos_score) + torch.sum(i_2_neg_score))
 
-        GEN = (u_score + i_1_score + i_2_score) / (self.batch_size)
+        GEN = (u_score + i_1_score + i_2_score) / self.batch_size
         KLD = (
             self.kl_div(pos_u_dis)
             + self.kl_div(pos_i_1_dis)
@@ -157,7 +157,7 @@ class VBCAR(nn.Module):
             + self.kl_div(neg_u_dis)
             + self.kl_div(neg_i_1_dis)
             + self.kl_div(neg_i_2_dis)
-        ) / (self.batch_size)
+        ) / self.batch_size
         self.kl_loss = KLD.item()
         #         return GEN/ (3 * self.batch_size)
         return (1 - self.alpha) * (GEN) + (self.alpha * KLD)

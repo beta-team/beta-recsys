@@ -18,7 +18,7 @@ class Monitor(Thread):
         DEVICE_ID_LIST = GPUtil.getAvailable(
             order="memory", limit=1
         )  # get the fist gpu with the lowest load
-        if len(DEVICE_ID_LIST) < 1 or gpu_id == None:
+        if len(DEVICE_ID_LIST) < 1 or gpu_id is None:
             self.hasgpu = False
         else:
             self.hasgpu = True
@@ -110,13 +110,13 @@ class Monitor(Thread):
 
     def stop(self):
         self.run_time = time.time() - self.start_time
-        print("Program running time:%d seconds" % (self.run_time))
+        print("Program running time:%d seconds" % self.run_time)
         self.stopped = True
         return self.run_time
 
 
 def print_gpu_stat(gpu_id=None):
-    if gpu_id == None:
+    if gpu_id is None:
         gpu_ids = GPUtil.getAvailable(limit=10)
         for gpu_id in gpu_ids:
             GPU = GPUtil.getGPUs()[gpu_id]
@@ -162,7 +162,7 @@ def print_cpu_stat():
 
 def print_mem_stat(memoryInfo=None):
     # Main memory info
-    if memoryInfo == None:
+    if memoryInfo is None:
         memoryInfo = (
             psutil.virtual_memory()
         )  # svmem(total, available, percent, used, free, active, inactive, buffers, cached, shared, slab)
