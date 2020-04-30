@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ORDER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, \
     DEFAULT_TIMESTAMP_COL, DEFAULT_FLAG_COL
-from beta_rec.datasets.data_split import  temporal_basket_split, leave_one_out, leave_one_basket, \
+from beta_rec.datasets.data_split import temporal_split, temporal_basket_split, leave_one_out, leave_one_basket, \
     random_split, random_basket_split, generate_parameterized_path
 import pandas as pd
 
