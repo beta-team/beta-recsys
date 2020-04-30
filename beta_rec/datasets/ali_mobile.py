@@ -1,7 +1,6 @@
 import os
 import time
 import pandas as pd
-from beta_rec.utils.constants import *
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL

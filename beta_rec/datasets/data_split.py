@@ -5,7 +5,8 @@ import os
 import sklearn
 from tqdm import tqdm
 from beta_rec.utils.aliasTable import AliasTable
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ORDER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, \
+    DEFAULT_TIMESTAMP_COL, DEFAULT_FLAG_COL
 
 
 def filter_by_count(df, group_col, filter_col, num):
