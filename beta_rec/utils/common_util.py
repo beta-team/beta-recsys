@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import pandas as pd
 import zipfile
+from functools import wraps
 from beta_rec.utils.constants import *
 
 
@@ -156,8 +157,7 @@ def get_random_rep(raw_num, dim):
 
 
 def timeit(method):
-    """
-    Decorator for tracking the execution time for the specific method
+    """Decorator for tracking the execution time for the specific method
     Args:
         method: The method need to timeit.
 
@@ -167,10 +167,9 @@ def timeit(method):
             pass
     Returns:
         None
-    
     """
-
-    def timed(*args, **kw):
+    @wraps(method)
+    def wrapper(*args, **kw):
         ts = time.time()
         result = method(*args, **kw)
         te = time.time()
@@ -185,7 +184,7 @@ def timeit(method):
             )
         return result
 
-    return timed
+    return wrapper
 
 
 def save_to_csv(result, result_file):
