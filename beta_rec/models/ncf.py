@@ -115,8 +115,8 @@ class NeuMFEngine(Engine):
             self.config["model_ckp_file"] + self.config["pretrain_mlp"], mlp_model
         )
 
-        self.model.embedding_user_mlp.weight.data = mlp_model.embedding_user.weight.dataset
-        self.model.embedding_item_mlp.weight.data = mlp_model.embedding_item.weight.dataset
+        self.model.embedding_user_mlp.weight.data = mlp_model.embedding_user.weight.data
+        self.model.embedding_item_mlp.weight.data = mlp_model.embedding_item.weight.data
         #         for idx in range(len(self.fc_layers)):
         #             self.model.fc_layers[idx].weight.data = mlp_model.fc_layers[idx].weight.data
 
@@ -124,13 +124,13 @@ class NeuMFEngine(Engine):
         self.resume_checkpoint(
             self.config["model_ckp_file"] + self.config["pretrain_gmf"], gmf_model
         )
-        self.model.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.dataset
-        self.model.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.dataset
+        self.model.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
+        self.model.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
 
         self.model.affine_output.weight.data = 0.5 * torch.cat(
-            [mlp_model.affine_output.weight.dataset, gmf_model.affine_output.weight.dataset],
+            [mlp_model.affine_output.weight.data, gmf_model.affine_output.weight.data],
             dim=-1,
         )
         self.model.affine_output.bias.data = 0.5 * (
-                mlp_model.affine_output.bias.dataset + gmf_model.affine_output.bias.dataset
+            mlp_model.affine_output.bias.data + gmf_model.affine_output.bias.data
         )
