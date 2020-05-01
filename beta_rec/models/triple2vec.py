@@ -47,8 +47,8 @@ class Triple2vec(nn.Module):
         u_pos_score = F.logsigmoid(u_pos_score)
 
         u_neg_score = (
-            torch.bmm(emb_u_neg, emb_u.unsqueeze(2)).squeeze()
-            + self.user_bias(neg_u).squeeze()
+            torch.bmm(emb_u_neg, emb_u.unsqueeze(2)).squeeze() +
+            self.user_bias(neg_u).squeeze()
         )
         u_neg_score = F.logsigmoid(-1 * u_neg_score)
         u_score = -1 * (torch.sum(u_pos_score) + torch.sum(u_neg_score))
@@ -61,8 +61,8 @@ class Triple2vec(nn.Module):
         i_1_pos_score = F.logsigmoid(i_1_pos_score)
 
         i_1_neg_score = (
-            torch.bmm(emb_i_1_neg, emb_i_1.unsqueeze(2)).squeeze()
-            + self.item_bias(neg_i_1).squeeze()
+            torch.bmm(emb_i_1_neg, emb_i_1.unsqueeze(2)).squeeze() +
+            self.item_bias(neg_i_1).squeeze()
         )
         i_1_neg_score = F.logsigmoid(-1 * i_1_neg_score)
 
@@ -76,8 +76,8 @@ class Triple2vec(nn.Module):
         i_2_pos_score = F.logsigmoid(i_2_pos_score)
 
         i_2_neg_score = (
-            torch.bmm(emb_i_2_neg, emb_i_2.unsqueeze(2)).squeeze()
-            + self.item_bias(neg_i_2).squeeze()
+            torch.bmm(emb_i_2_neg, emb_i_2.unsqueeze(2)).squeeze() +
+            self.item_bias(neg_i_2).squeeze()
         )
         i_2_neg_score = F.logsigmoid(-1 * i_2_neg_score)
 

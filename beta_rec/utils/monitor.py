@@ -58,8 +58,8 @@ class Monitor(Thread):
             )  # Total gpu memory amount in GB
             self.writer.add_text(
                 "device/GPU",
-                "Current GPU (ID:{:d}) name:{:s} ".format(self.gpu_id, self.GPU.name)
-                + "Total_GPU_memory: {:.3f}GB;".format(self.GPU_memoryTotal),
+                "Current GPU (ID:{:d}) name:{:s} ".format(self.gpu_id, self.GPU.name) +
+                "Total_GPU_memory: {:.3f}GB;".format(self.GPU_memoryTotal),
                 0,
             )
 
