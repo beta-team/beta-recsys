@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_ORDER_COL, DEFAULT_USER_COL, DEFAULT_TIMESTAMP_COL
 
 
 class Sampler(object):

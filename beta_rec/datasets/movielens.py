@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # download_url
@@ -74,8 +74,8 @@ class Movielens_100k(DatasetBase):
 
     def make_fea_vec(self):
         """Make feature vectors for users and items.
-        1. For items (movies), we use the last 19 fields as feature, which are the genres, 
-        with 1 indicateing the movie is of that genre, and 0 indicateing it is not; 
+        1. For items (movies), we use the last 19 fields as feature, which are the genres,
+        with 1 indicateing the movie is of that genre, and 0 indicateing it is not;
         movies can be in several genres at once.
         
         2. For users, we construct one_hot encoding for age, gender and occupation as their
@@ -130,10 +130,10 @@ class Movielens_100k(DatasetBase):
         A = []
         for i in data.index:
             A.append(
-                [data.loc[i][0]]
-                + list(data.loc[i]["age_one_hot"])
-                + list(data.loc[i]["col_2_one_hot"])
-                + list(data.loc[i]["col_3_one_hot"])
+                [data.loc[i][0]] +
+                list(data.loc[i]["age_one_hot"]) +
+                list(data.loc[i]["col_2_one_hot"]) +
+                list(data.loc[i]["col_3_one_hot"])
             )
         user_feat = np.stack(A)
 
@@ -147,16 +147,16 @@ class Movielens_100k(DatasetBase):
     def load_fea_vec(self):
         """Loading feature vectors for users and items.
         1. For items (movies), we use the last 19 fields as feature, which are the genres, 
-        with 1 indicateing the movie is of that genre, and 0 indicateing it is not; 
+        with 1 indicating the movie is of that genre, and 0 indicating it is not;
         movies can be in several genres at once.
-        
+
         2. For users, we construct one_hot encoding for age, gender and occupation as their
         feature, where ages are categorized into 8 groups.
-        
+
         Returns:
             user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors
             item_feat (numpy.ndarray): The first column is the itm id, rest column are feat vectors
-        
+
         """
         if not os.path.exists(self.dataset_dir):
             self.preprocess()

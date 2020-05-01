@@ -1,7 +1,8 @@
 import os
 import datetime
 import pandas as pd
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ORDER_COL, DEFAULT_ITEM_COL, \
+    DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
@@ -23,7 +24,7 @@ class Instacart(DatasetBase):
         then put it into the directory `instacart/raw`, unzip this file and rename the directory in 'instacart'.
 
         Instacart dataset is used to predict when users buy
-        product for the next time, we construct it with structure [order_id, product_id] => 
+        product for the next time, we construct it with structure [order_id, product_id] =>
         """
         super().__init__(
             'instacart',
@@ -63,7 +64,7 @@ class Instacart(DatasetBase):
         orders_table = pd.read_csv(
             orders_data,
             usecols=[
-                "order_id", 
+                "order_id",
                 "user_id",
                 "order_hour_of_day",
                 "days_since_prior_order"
@@ -74,7 +75,7 @@ class Instacart(DatasetBase):
         orders_products_table = pd.read_csv(
             orders_products_data,
             usecols=[
-                "order_id", 
+                "order_id",
                 "product_id",
             ],
         )
@@ -98,7 +99,7 @@ class Instacart(DatasetBase):
 
         # Step 6: Rename columns and save data model.
         prior_transactions.rename(
-            columns = {
+            columns={
                 "user_id": DEFAULT_USER_COL,
                 "order_id": DEFAULT_ORDER_COL,
                 "product_id": DEFAULT_ITEM_COL,
