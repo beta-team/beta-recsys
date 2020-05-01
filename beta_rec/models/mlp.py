@@ -62,7 +62,7 @@ class MLPEngine(Engine):
         self.gmf_config = gmf_config
         super(MLPEngine, self).__init__(config)
         self.model.to(self.device)
-        if gmf_config != None:
+        if gmf_config is None:
             self.load_pretrain_weights()
 
     def train_single_batch(self, users, items, ratings):
