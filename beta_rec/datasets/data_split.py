@@ -124,11 +124,11 @@ def feed_neg_sample(data, negative_num, item_sampler):
     """feed_neg_sample
 
     Args:
-        data: Dataframe. of interactions.
+        data: DataFrame. of interactions.
         negative_num: int. number of negative items.
         item_sampler: polynomial sampler.
 
-    Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
+    Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     interact_status = (
         data.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].apply(set).reset_index()
@@ -140,18 +140,26 @@ def feed_neg_sample(data, negative_num, item_sampler):
     for index, user_items in interact_status.iterrows():
         u = int(user_items[DEFAULT_USER_COL])
         items = set(user_items[DEFAULT_ITEM_COL])  # item set for user u
+        item_li = list(items)
         n_items = len(items)  # number of positive item for user u
         sample_neg_items = set(
             item_sampler.sample(negative_num + n_items, 1, True)
         )  # first sample negative_num+n_items items
         sample_neg_items = list(sample_neg_items - items)[:negative_num]
         # filter the positive items and truncate the first negative_num
-        df_items = np.append(list(items), sample_neg_items)
-
-        df_users = np.array([1] * (negative_num + n_items), dtype=np.long) * u
-        df_ones = np.ones(n_items, dtype=np.long)
+        df_items = np.append(item_li, sample_neg_items)
+        df_users = np.array([u] * (negative_num + n_items), dtype=np.long)
+        df_scores = []
+        # get the rating scores.
+        for item in item_li:
+            df_scores.append(
+                data.loc[
+                    (data[DEFAULT_USER_COL] == u) & (data[DEFAULT_ITEM_COL] == item),
+                    DEFAULT_RATING_COL,
+                ].to_numpy()[0]
+            )
         df_zeros = np.zeros(negative_num, dtype=np.long)
-        ratings = np.append(df_ones, df_zeros)
+        ratings = np.append(df_scores, df_zeros)
 
         df = pd.DataFrame(
             {
@@ -161,13 +169,12 @@ def feed_neg_sample(data, negative_num, item_sampler):
             }
         )
         total_interact = total_interact.append(df)
-
     # shuffle interactions to avoid all the negative samples being together
     total_interact = sklearn.utils.shuffle(total_interact)
     return total_interact
 
 
-def get_dataframe_from_npz(data_file):
+def get_DataFrame_from_npz(data_file):
     """Get the DataFrame from npz file
 
     Get the DataFrame from npz file
@@ -190,8 +197,10 @@ def load_split_data(path, n_test=10):
     """Load split DataFrame from a specified path
 
     Args:
-        path:
-        n_test: number of testing and validation datasets
+        path: split data path
+        n_test: number of testing and validation datasets.
+                If n_test==0, will load the original (no negative items) valid and test datasets.
+
 
     Returns:
         train_data: DataFrame of training interaction,
@@ -200,7 +209,7 @@ def load_split_data(path, n_test=10):
 
     """
     train_file = os.path.join(path, "train.npz")
-    train_data = get_dataframe_from_npz(train_file)
+    train_data = get_DataFrame_from_npz(train_file)
     print("-" * 80)
     print("train_data statistics")
     print(
@@ -211,10 +220,32 @@ def load_split_data(path, n_test=10):
             disable_numparse=True,
         )
     )
+    if not n_test:
+        valid_df = get_DataFrame_from_npz(os.path.join(path, f"valid.npz"))
+        test_df = get_DataFrame_from_npz(os.path.join(path, f"test.npz"))
+        print(f"valid_data statistics")
+        print(
+            tabulate(
+                valid_df.agg(["count", "nunique"]),
+                headers=valid_df.columns,
+                tablefmt="psql",
+            )
+        )
+        print(f"test_data statistics")
+        print(
+            tabulate(
+                test_df.agg(["count", "nunique"]),
+                headers=test_df.columns,
+                tablefmt="psql",
+            )
+        )
+        print("-" * 80)
+        return train_data, valid_df, test_df
+
     valid_data_li = []
     test_data_li = []
     for i in range(n_test):
-        valid_df = get_dataframe_from_npz(os.path.join(path, f"valid_{i}.npz"))
+        valid_df = get_DataFrame_from_npz(os.path.join(path, f"valid_{i}.npz"))
         valid_data_li.append(valid_df)
         if i == 0:
             print(f"valid_data_{i} statistics")
@@ -225,7 +256,7 @@ def load_split_data(path, n_test=10):
                     tablefmt="psql",
                 )
             )
-        test_df = get_dataframe_from_npz(os.path.join(path, f"test_{i}.npz"))
+        test_df = get_DataFrame_from_npz(os.path.join(path, f"test_{i}.npz"))
         test_data_li.append(test_df)
         if i == 0:
             print(f"test_data_{i} statistics")
@@ -247,7 +278,7 @@ def save_split_data(
     parameterized_dir=None,
     suffix="train.npz",
 ):
-    """save Dataframe to compressed npz
+    """save DataFrame to compressed npz
 
     Args:
         parameterized_dir: data_split parameter string
@@ -294,14 +325,14 @@ def random_split(data, test_rate=0.1, by_user=False):
     """random_basket_split
 
     Args:
-        data: Dataframe. of interactions.
+        data: DataFrame. of interactions.
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
                     - Ture: user-based split,
                     - False: global split,
 
     Returns:
-        Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     print("random_split")
     data[DEFAULT_FLAG_COL] = "train"
@@ -342,14 +373,14 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
     """random_basket_split
 
     Args:
-        data: Dataframe. of interactions.
+        data: DataFrame. of interactions.
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
                     - True: user-based split,
                     - False: global split,
 
     Returns:
-        Dataframe that have already by labeled by a col with "train", "test" or "valid".
+        DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     print("random_basket_split")
     data[DEFAULT_FLAG_COL] = "train"
@@ -395,10 +426,10 @@ def leave_one_out(data, random=False):
     """leave_one_out split
 
     Args:
-        data: Dataframe. of interactions.
+        data: DataFrame. of interactions.
         random: bool.  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket
 
-    Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
+    Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     print("leave_one_out")
     data[DEFAULT_FLAG_COL] = "train"
@@ -420,10 +451,10 @@ def leave_one_basket(data, random=False):
     """leave_one_basket split
 
     Args:
-        data: Dataframe. of interactions.
+        data: DataFrame. of interactions.
         random: bool.  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket
 
-    Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
+    Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     print("leave_one_basket")
     data[DEFAULT_FLAG_COL] = "train"
@@ -446,13 +477,13 @@ def temporal_split(data, test_rate=0.1, by_user=False):
     """temporal_split
 
     Args:
-        data: Dataframe. of interactions.
+        data: DataFrame. of interactions.
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
                     - Ture: user-based split,
                     - False: global split,
 
-    Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
+    Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     print("temporal_split")
     data[DEFAULT_FLAG_COL] = "train"
@@ -493,13 +524,13 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
     """temporal_basket_split
 
     Args:
-        data: Dataframe. of interactions. must have a col DEFAULT_ORDER_COL
+        data: DataFrame. of interactions. must have a col DEFAULT_ORDER_COL
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
                     - Ture: user-based split,
                     - False: global split,
 
-    Returns: Dataframe that have already by labeled by a col with "train", "test" or "valid".
+    Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     print("temporal_split_basket")
     data[DEFAULT_FLAG_COL] = "train"
@@ -552,7 +583,7 @@ def split_data(
     """Data split methods
 
     Args:
-        data: Dataframe. of interactions.
+        data: DataFrame. of interactions.
         split_type: str. options can be:
                         - random
                         - random_basket
@@ -570,7 +601,7 @@ def split_data(
         n_test: int. Default 10. The number of testing and validation copies.
 
     Returns:
-        Dataframe. The split data. Note that the returned data will not have negative samples.
+        DataFrame. The split data. Note that the returned data will not have negative samples.
 
     """
     print(f"Splitting data by {split_type} ...")
@@ -600,6 +631,9 @@ def split_data(
     )
 
     save_split_data(tp_train, save_dir, split_type, parameterized_path, "train.npz")
+    # keep the original validation and test sets.
+    save_split_data(tp_validate, save_dir, split_type, parameterized_path, "valid.npz")
+    save_split_data(tp_test, save_dir, split_type, parameterized_path, "test.npz")
     item_sampler = AliasTable(data[DEFAULT_ITEM_COL].value_counts().to_dict())
     for i in range(n_test):
         tp_validate_new = feed_neg_sample(tp_validate, n_negative, item_sampler)

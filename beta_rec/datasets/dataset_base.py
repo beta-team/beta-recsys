@@ -1,12 +1,13 @@
 import os
 import shutil
 import pandas as pd
+from tabulate import tabulate
 from beta_rec.utils.constants import *
 from beta_rec.utils.common_util import (
     get_dataframe_from_npz,
     save_dataframe_as_npz,
     timeit,
-    un_zip
+    un_zip,
 )
 from beta_rec.utils.download import download_file, get_format
 from beta_rec.utils.onedrive import OneDrive
@@ -25,17 +26,17 @@ default_root_dir = os.path.abspath(
 
 class DatasetBase(object):
     def __init__(
-            self,
-            dataset_name,
-            url=None,
-            root_dir=default_root_dir,
-            manual_download_url=None,
-            processed_leave_one_out_url="",
-            processed_leave_one_basket_url="",
-            processed_random_split_url="",
-            processed_random_basket_split_url="",
-            processed_temporal_split_url="",
-            processed_temporal_basket_split_url=""
+        self,
+        dataset_name,
+        url=None,
+        root_dir=default_root_dir,
+        manual_download_url=None,
+        processed_leave_one_out_url="",
+        processed_leave_one_basket_url="",
+        processed_random_split_url="",
+        processed_random_basket_split_url="",
+        processed_temporal_split_url="",
+        processed_temporal_basket_split_url="",
     ):
         """Dataset base that any other datasets need to inherit from
 
@@ -149,7 +150,14 @@ class DatasetBase(object):
         data = get_dataframe_from_npz(processed_file_path)
         print("-" * 80)
         print("raw interaction statistics")
-        print(data.agg(["count", "size", "nunique"]))
+        print(
+            tabulate(
+                data.agg(["count", "nunique"]),
+                headers=data.columns,
+                tablefmt="psql",
+                disable_numparse=True,
+            )
+        )
         print("-" * 80)
         return data
 
@@ -244,7 +252,7 @@ class DatasetBase(object):
 
     @timeit
     def make_random_split(
-            self, data=None, test_rate=0.1, n_negative=100, by_user=False, n_test=10
+        self, data=None, test_rate=0.1, n_negative=100, by_user=False, n_test=10
     ):
         """generate split data with random_split.
 
@@ -289,7 +297,7 @@ class DatasetBase(object):
 
     @timeit
     def make_random_basket_split(
-            self, data=None, test_rate=0.1, n_negative=100, by_user=False, n_test=10
+        self, data=None, test_rate=0.1, n_negative=100, by_user=False, n_test=10
     ):
         """generate split data with random_basket_split.
 
@@ -337,7 +345,7 @@ class DatasetBase(object):
 
     @timeit
     def make_temporal_split(
-            self, data=None, test_rate=0.1, n_negative=100, by_user=False, n_test=10
+        self, data=None, test_rate=0.1, n_negative=100, by_user=False, n_test=10
     ):
         """generate split data with temporal_split.
 
@@ -385,7 +393,7 @@ class DatasetBase(object):
 
     @timeit
     def make_temporal_basket_split(
-            self, data=None, test_rate=0.1, n_negative=100, by_user=False, n_test=10
+        self, data=None, test_rate=0.1, n_negative=100, by_user=False, n_test=10
     ):
         """generate split data with temporal_basket_split.
 
@@ -444,6 +452,7 @@ class DatasetBase(object):
             random: bool. Whether randomly leave one item as testing.
             n_negative:  Number of negative samples for testing and validation data.
             n_test: int. Default 10. The number of testing and validation copies.
+                    If n_test==0, will load the original (no negative items) valid and test datasets.
 
         Returns:
             train_data (DataFrame): Interaction for training.
@@ -457,20 +466,27 @@ class DatasetBase(object):
         if not os.path.exists(processed_leave_one_out_path):
             os.mkdir(processed_leave_one_out_path)
 
-        parameterized_path = generate_parameterized_path(test_rate=0, random=random, n_negative=n_negative,
-                                                         by_user=False)
+        parameterized_path = generate_parameterized_path(
+            test_rate=0, random=random, n_negative=n_negative, by_user=False
+        )
 
         download_path = processed_leave_one_out_path
-        processed_leave_one_out_path = os.path.join(processed_leave_one_out_path, parameterized_path)
+        processed_leave_one_out_path = os.path.join(
+            processed_leave_one_out_path, parameterized_path
+        )
         if not os.path.exists(processed_leave_one_out_path):
             if random is False and n_negative == 100:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_leave_one_out_url, path=download_path)
+                folder = OneDrive(
+                    url=self.processed_leave_one_out_url, path=download_path
+                )
                 folder.download()
-                un_zip(processed_leave_one_out_path + '.zip', download_path)
+                un_zip(processed_leave_one_out_path + ".zip", download_path)
             else:
                 # make
-                self.make_leave_one_out(random=random, n_negative=n_negative, n_test=n_test)
+                self.make_leave_one_out(
+                    random=random, n_negative=n_negative, n_test=n_test
+                )
 
         # load data from local storage
         return load_split_data(processed_leave_one_out_path, n_test=n_test)
@@ -484,6 +500,7 @@ class DatasetBase(object):
             random: bool. Whether randomly leave one basket as testing.
             n_negative:  Number of negative samples for testing and validation data.
             n_test: int. Default 10. The number of testing and validation copies.
+                    If n_test==0, will load the original (no negative items) valid and test datasets.
 
         Returns:
             train_data (DataFrame): Interaction for training.
@@ -497,24 +514,33 @@ class DatasetBase(object):
         if not os.path.exists(processed_leave_one_basket_path):
             os.mkdir(processed_leave_one_basket_path)
 
-        parameterized_path = generate_parameterized_path(test_rate=0, random=random, n_negative=n_negative,
-                                                         by_user=False)
+        parameterized_path = generate_parameterized_path(
+            test_rate=0, random=random, n_negative=n_negative, by_user=False
+        )
         download_path = processed_leave_one_basket_path
-        processed_leave_one_basket_path = os.path.join(processed_leave_one_basket_path, parameterized_path)
+        processed_leave_one_basket_path = os.path.join(
+            processed_leave_one_basket_path, parameterized_path
+        )
         if not os.path.exists(processed_leave_one_basket_path):
             if random is False and n_negative == 100:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_leave_one_basket_url, path=download_path)
+                folder = OneDrive(
+                    url=self.processed_leave_one_basket_url, path=download_path
+                )
                 folder.download()
-                un_zip(processed_leave_one_basket_path + '.zip', download_path)
+                un_zip(processed_leave_one_basket_path + ".zip", download_path)
             else:
                 # make
-                self.make_leave_one_basket(random=random, n_negative=n_negative, n_test=n_test)
+                self.make_leave_one_basket(
+                    random=random, n_negative=n_negative, n_test=n_test
+                )
 
         # load data from local storage
         return load_split_data(processed_leave_one_basket_path, n_test=n_test)
 
-    def load_random_split(self, test_rate=0.1, random=False, n_negative=100, by_user=False, n_test=10):
+    def load_random_split(
+        self, test_rate=0.1, random=False, n_negative=100, by_user=False, n_test=10
+    ):
         """load split date generated by random_split.
 
         Load split data generated by random_split from Onedrive, with test_rate = 0.1 and by_user = False.
@@ -528,6 +554,7 @@ class DatasetBase(object):
                     - Ture: user-based split,
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
+                    If n_test==0, will load the original (no negative items) valid and test datasets.
 
         Returns:
             train_data (DataFrame): Interaction for training.
@@ -535,31 +562,46 @@ class DatasetBase(object):
             test_data list(DataFrame): List of interactions for testing
         """
 
-        processed_random_split_path = os.path.join(
-            self.processed_path, "random"
-        )
+        processed_random_split_path = os.path.join(self.processed_path, "random")
         if not os.path.exists(processed_random_split_path):
             os.mkdir(processed_random_split_path)
 
-        parameterized_path = generate_parameterized_path(test_rate=test_rate, random=random, n_negative=n_negative,
-                                                         by_user=by_user)
+        parameterized_path = generate_parameterized_path(
+            test_rate=test_rate, random=random, n_negative=n_negative, by_user=by_user
+        )
         download_path = processed_random_split_path
-        processed_random_split_path = os.path.join(processed_random_split_path, parameterized_path)
+        processed_random_split_path = os.path.join(
+            processed_random_split_path, parameterized_path
+        )
         if not os.path.exists(processed_random_split_path):
-            if test_rate == 0.1 and random is False and n_negative == 100 and by_user is False:
+            if (
+                test_rate == 0.1
+                and random is False
+                and n_negative == 100
+                and by_user is False
+            ):
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_random_split_url, path=download_path)
+                folder = OneDrive(
+                    url=self.processed_random_split_url, path=download_path
+                )
                 folder.download()
-                un_zip(processed_random_split_path + '.zip', download_path)
+                un_zip(processed_random_split_path + ".zip", download_path)
             else:
                 # make
-                self.make_random_split(test_rate=test_rate, random=random, n_negative=n_negative, by_user=by_user,
-                                       n_test=n_test)
+                self.make_random_split(
+                    test_rate=test_rate,
+                    random=random,
+                    n_negative=n_negative,
+                    by_user=by_user,
+                    n_test=n_test,
+                )
 
         # load data from local storage
         return load_split_data(processed_random_split_path, n_test=n_test)
 
-    def load_random_basket_split(self, test_rate=0.1, random=False, n_negative=100, by_user=False, n_test=10):
+    def load_random_basket_split(
+        self, test_rate=0.1, random=False, n_negative=100, by_user=False, n_test=10
+    ):
         """load split date generated by random_basket_split.
 
         Load split data generated by random_basket_split from Onedrive, with test_rate = 0.1 and by_user = False.
@@ -573,6 +615,7 @@ class DatasetBase(object):
                     - True: user-based split,
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
+                    If n_test==0, will load the original (no negative items) valid and test datasets.
 
         Returns:
             train_data (DataFrame): Interaction for training.
@@ -586,27 +629,43 @@ class DatasetBase(object):
         if not os.path.exists(processed_random_basket_split_path):
             os.mkdir(processed_random_basket_split_path)
 
-        parameterized_path = generate_parameterized_path(test_rate=test_rate, random=random, n_negative=n_negative,
-                                                         by_user=by_user)
+        parameterized_path = generate_parameterized_path(
+            test_rate=test_rate, random=random, n_negative=n_negative, by_user=by_user
+        )
 
         download_path = processed_random_basket_split_path
-        processed_random_basket_split_path = os.path.join(processed_random_basket_split_path, parameterized_path)
+        processed_random_basket_split_path = os.path.join(
+            processed_random_basket_split_path, parameterized_path
+        )
         if not os.path.exists(processed_random_basket_split_path):
-            if test_rate == 0.1 and random is False and n_negative == 100 and by_user is False:
+            if (
+                test_rate == 0.1
+                and random is False
+                and n_negative == 100
+                and by_user is False
+            ):
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_random_basket_split_url, path=download_path)
+                folder = OneDrive(
+                    url=self.processed_random_basket_split_url, path=download_path
+                )
                 folder.download()
-                un_zip(processed_random_basket_split_path + '.zip', download_path)
+                un_zip(processed_random_basket_split_path + ".zip", download_path)
             else:
                 # make
-                self.make_random_basket_split(test_rate=test_rate, random=random, n_negative=n_negative,
-                                              by_user=by_user,
-                                              n_test=n_test)
+                self.make_random_basket_split(
+                    test_rate=test_rate,
+                    random=random,
+                    n_negative=n_negative,
+                    by_user=by_user,
+                    n_test=n_test,
+                )
 
         # load data from local storage
         return load_split_data(processed_random_basket_split_path, n_test=n_test)
 
-    def load_temporal_split(self, test_rate=0.1, n_negative=100, by_user=False, n_test=10):
+    def load_temporal_split(
+        self, test_rate=0.1, n_negative=100, by_user=False, n_test=10
+    ):
         """load split date generated by temporal_split.
 
         Load split data generated by temporal_split from Onedrive, with test_rate = 0.1 and by_user = False.
@@ -619,6 +678,7 @@ class DatasetBase(object):
                     - True: user-based split,
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
+                    If n_test==0, will load the original (no negative items) valid and test datasets.
 
         Returns:
             train_data (DataFrame): Interaction for training.
@@ -626,33 +686,42 @@ class DatasetBase(object):
             test_data list(DataFrame): List of interactions for testing
         """
 
-        processed_temporal_split_path = os.path.join(
-            self.processed_path, "temporal"
-        )
+        processed_temporal_split_path = os.path.join(self.processed_path, "temporal")
 
         if not os.path.exists(processed_temporal_split_path):
             os.mkdir(processed_temporal_split_path)
 
-        parameterized_path = generate_parameterized_path(test_rate=test_rate, random=False, n_negative=n_negative,
-                                                         by_user=by_user)
+        parameterized_path = generate_parameterized_path(
+            test_rate=test_rate, random=False, n_negative=n_negative, by_user=by_user
+        )
 
         download_path = processed_temporal_split_path
-        processed_temporal_split_path = os.path.join(processed_temporal_split_path, parameterized_path)
+        processed_temporal_split_path = os.path.join(
+            processed_temporal_split_path, parameterized_path
+        )
         if not os.path.exists(processed_temporal_split_path):
             if test_rate == 0.1 and n_negative == 100 and by_user is False:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_temporal_split_url, path=download_path)
+                folder = OneDrive(
+                    url=self.processed_temporal_split_url, path=download_path
+                )
                 folder.download()
-                un_zip(processed_temporal_split_path + '.zip', download_path)
+                un_zip(processed_temporal_split_path + ".zip", download_path)
             else:
                 # make
-                self.make_temporal_split(test_rate=test_rate, n_negative=n_negative,
-                                         by_user=by_user, n_test=n_test)
+                self.make_temporal_split(
+                    test_rate=test_rate,
+                    n_negative=n_negative,
+                    by_user=by_user,
+                    n_test=n_test,
+                )
 
         # load data from local storage
         return load_split_data(processed_temporal_split_path, n_test=n_test)
 
-    def load_temporal_basket_split(self, test_rate=0.1, n_negative=100, by_user=False, n_test=10):
+    def load_temporal_basket_split(
+        self, test_rate=0.1, n_negative=100, by_user=False, n_test=10
+    ):
         """load split date generated by temporal_basket_split.
 
         Load split data generated by temporal_basket_split from Onedrive, with test_rate = 0.1 and by_user = False.
@@ -665,6 +734,7 @@ class DatasetBase(object):
                     - True: user-based split,
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
+                    If n_test==0, will load the original (no negative items) valid and test datasets.
 
         Returns:
             train_data (DataFrame): Interaction for training.
@@ -678,22 +748,30 @@ class DatasetBase(object):
         if not os.path.exists(processed_temporal_basket_split_path):
             os.mkdir(processed_temporal_basket_split_path)
 
-        parameterized_path = generate_parameterized_path(test_rate=test_rate, random=False, n_negative=n_negative,
-                                                         by_user=by_user)
+        parameterized_path = generate_parameterized_path(
+            test_rate=test_rate, random=False, n_negative=n_negative, by_user=by_user
+        )
 
         download_path = processed_temporal_basket_split_path
-        processed_temporal_basket_split_path = os.path.join(processed_temporal_basket_split_path, parameterized_path)
+        processed_temporal_basket_split_path = os.path.join(
+            processed_temporal_basket_split_path, parameterized_path
+        )
         if not os.path.exists(processed_temporal_basket_split_path):
             if test_rate == 0.1 and n_negative == 100 and by_user is False:
                 # default parameters, can be downloaded from Onedrive
-                folder = OneDrive(url=self.processed_temporal_basket_split_url,
-                                  path=download_path)
+                folder = OneDrive(
+                    url=self.processed_temporal_basket_split_url, path=download_path
+                )
                 folder.download()
-                un_zip(processed_temporal_basket_split_path + '.zip', download_path)
+                un_zip(processed_temporal_basket_split_path + ".zip", download_path)
             else:
                 # make
-                self.make_temporal_basket_split(test_rate=test_rate, n_negative=n_negative,
-                                                by_user=by_user, n_test=n_test)
+                self.make_temporal_basket_split(
+                    test_rate=test_rate,
+                    n_negative=n_negative,
+                    by_user=by_user,
+                    n_test=n_test,
+                )
 
         # load data from local storage
         return load_split_data(processed_temporal_basket_split_path, n_test=n_test)
