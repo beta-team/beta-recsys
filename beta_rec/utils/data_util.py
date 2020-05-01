@@ -1,9 +1,38 @@
 import numpy as np
 from scipy.sparse import coo_matrix
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+)
 from beta_rec.utils.common_util import get_random_rep
 from beta_rec.utils.aliasTable import AliasTable
 from beta_rec.datasets.dataset import load_split_dataset, load_item_fea_dic
+
+
+def intersect_train_test(train, test):
+    """ Get the intersect lists of users and items that exist in both train and test
+
+    Args:
+        train (DataFrame):
+        test (DataFrame):
+
+    Returns:
+        users (list): users list
+        items (list): items list
+
+    """
+    users = list(
+        set(train[DEFAULT_USER_COL].unique().flatten()).intersection(
+            set(test[DEFAULT_USER_COL].unique().flatten())
+        )
+    )
+    items = list(
+        set(train[DEFAULT_ITEM_COL].unique().flatten()).intersection(
+            set(test[DEFAULT_ITEM_COL].unique().flatten())
+        )
+    )
+    return users, items
 
 
 class Dataset(object):
@@ -12,8 +41,7 @@ class Dataset(object):
     """
 
     def __init__(self, config):
-        """
-        Constructor
+        """Constructor
 
         Args:
             config:
@@ -28,7 +56,6 @@ class Dataset(object):
             self.sub_set = config["sub_set"]
         if "random_dim" in config:
             self.random_dim = config["random_dim"]
-
         # data preprocessing for training and test data
         # To be replaced with new data method
         train, test, validate = load_split_dataset(config)
@@ -45,7 +72,7 @@ class Dataset(object):
         self.init_item_fea(config)
 
     def generate_train_data(self):
-        """ Generate a rating matrix
+        """ Generate a rating matrix for interactions
 
         Returns:
             (sigma_matrix, rating_matrix)
@@ -54,7 +81,7 @@ class Dataset(object):
         """
         train_data = (
             self.train.groupby(["col_user", "col_item"])
-            .size()
+            .sum()
             .to_frame("col_rating")
             .reset_index()
         )
@@ -73,9 +100,15 @@ class Dataset(object):
         return sigma_matrix, rating_matrix
 
     def generate_sparse_train_data(self):
+        """Generate a sparse matrix for interactions.
+
+        Returns:
+            coo_matrix
+        """
+
         train_data = (
             self.train.groupby(["col_user", "col_item"])
-            .size()
+            .sum()
             .to_frame("col_rating")
             .reset_index()
         )
@@ -100,22 +133,10 @@ class Dataset(object):
             list: train and test pandas.DataFrame Dataset, which have been reindexed.
         
         """
-
-        users_ser = list(
-            set(train[DEFAULT_USER_COL].unique().flatten()).intersection(
-                set(test[DEFAULT_USER_COL].unique().flatten())
-            )
-        )
-        items_ser = list(
-            set(train[DEFAULT_ITEM_COL].unique().flatten()).intersection(
-                set(test[DEFAULT_ITEM_COL].unique().flatten())
-            )
-        )
+        users_ser, items_ser = intersect_train_test(train, test)
         self.n_users = -1
         self.n_items = -1
-
         while self.n_users != len(users_ser) or self.n_items != len(items_ser):
-
             test = test[
                 test[DEFAULT_USER_COL].isin(users_ser)
                 & test[DEFAULT_ITEM_COL].isin(items_ser)
@@ -124,23 +145,12 @@ class Dataset(object):
                 train[DEFAULT_USER_COL].isin(users_ser)
                 & train[DEFAULT_ITEM_COL].isin(items_ser)
             ]
-
-            print("n_users reduce from", self.n_users, " to:", len(users_ser))
-            print("n_items reduce from", self.n_items, " to:", len(items_ser))
-
             self.n_users = len(users_ser)
             self.n_items = len(items_ser)
-
-            users_ser = list(
-                set(train[DEFAULT_USER_COL].unique().flatten()).intersection(
-                    set(test[DEFAULT_USER_COL].unique().flatten())
-                )
-            )
-            items_ser = list(
-                set(train[DEFAULT_ITEM_COL].unique().flatten()).intersection(
-                    set(test[DEFAULT_ITEM_COL].unique().flatten())
-                )
-            )
+            users_ser, items_ser = intersect_train_test(train, test)
+        print(
+            f"After intersection of train and test sets, n_users:{self.n_users}, n_items:{self.n_items}."
+        )
         self.user_pool = users_ser
         self.item_pool = items_ser
 
@@ -158,8 +168,7 @@ class Dataset(object):
         return self._reindex(train, implicit)
 
     def _reindex_list(self, df_list):
-        """
-        _reindex for list of dataset. For example, validate and test can be a list for evaluation
+        """_reindex for list of dataset. For example, validate and test can be a list for evaluation
         
         """
         df_list_new = []
@@ -217,7 +226,7 @@ class Dataset(object):
             fea_type = "random"
         data_str = config["dataset"]
         print(
-            "loading item featrue for dataset:", data_str, " type:", fea_type,
+            "Loading item feature for dataset:", data_str, " type:", fea_type,
         )
 
         if fea_type == "random":

@@ -244,7 +244,7 @@ if __name__ == "__main__":
         data.train["col_rating"].to_numpy(),
     ]
 
-    train_data = cornac.data.Dataset(
+    train_data = cornac.dataset.Dataset(
         num_users,
         num_items,
         uid_map,

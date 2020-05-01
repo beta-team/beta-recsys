@@ -1,12 +1,19 @@
 import os
 import random
 import time
+from tabulate import tabulate
 import numpy as np
-import torch
 import pandas as pd
+import torch
 import zipfile
 from functools import wraps
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 
 
 def update_args(config, args):
@@ -25,7 +32,6 @@ def update_args(config, args):
             config[k] = v
             print(k, "\t", v)
 
-
 def save_dataframe_as_npz(data, data_file):
     """ Save DataFrame in compressed format
     Save and convert the DataFrame to npz file.
@@ -34,7 +40,7 @@ def save_dataframe_as_npz(data, data_file):
         data_file: Target file path
 
     Returns:
-
+        None
     """
     user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=np.long)
     item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=np.long)
@@ -59,10 +65,11 @@ def get_dataframe_from_npz(data_file):
     Get the DataFrame from npz file
 
     Args:
-        data_file: File path
+        data_file (str or Path): File path
 
     Returns:
-        DataFrame
+        DataFrame:
+
     """
     np_data = np.load(data_file)
     data_dic = {
@@ -82,7 +89,8 @@ def un_zip(file_name, target_dir=None):
     """ Unzip zip files
 
     Args:
-        file_name: zip file path.
+        file_name (str or Path): zip file path.
+        target_dir (str or Path): target path to be save the unzipped files.
 
     Returns:
         None
@@ -97,38 +105,36 @@ def un_zip(file_name, target_dir=None):
     zip_file.close()
 
 
-def dict2str(tag, dic):
-    """
-    A better format to print a dictionary
+def print_dict_as_table(dic, tag=None, columns=["keys", "values"]):
+    """Print a dictionary as table
+
     Args:
-        tag: str. A name for this dictionary
-        dic: dict.
+        dic (dict): dict object to be formatted.
+        tag (str): A name for this dictionary.
+        columns ([str,str]):  default ["keys", "values"]. columns name for keys and values.
+
+    Returns:
+        None
+
+    """
+    print("-" * 80)
+    if tag:
+        print(tag)
+    df = pd.DataFrame(dic.items(), columns=columns)
+    print(tabulate(df, headers=columns, tablefmt="psql"))
+    print("-" * 80)
+    return tabulate(df, headers=columns, tablefmt="psql")
+
+
+def initialize_folders(base_dir):
+    """ Initialize the whole directory structure of the project
+
+    Args:
+        base_dir (str): Root path of the project.
 
     Returns:
         None
     """
-
-    dic_str = (
-        tag
-        + ": \n"
-        + "\n".join([str(k) + ":\t" + str(v) for k, v in dic.items()])
-        + "\n"
-    )
-    print("-" * 80)
-    print(dic_str)
-    print("-" * 80)
-    return dic_str
-
-
-def initialize_folders():
-    """
-    Initialize the whole directory structure of the project
-    Returns:
-        None
-
-    """
-    utils_root = os.path.dirname(os.path.abspath(__file__))
-    base_dir = os.path.abspath(os.path.join(utils_root, "..", ".."))
 
     configs = base_dir + "/configs/"
     datasets = base_dir + "/datasets/"
@@ -168,6 +174,7 @@ def timeit(method):
     Returns:
         None
     """
+
     @wraps(method)
     def wrapper(*args, **kw):
         ts = time.time()

@@ -14,7 +14,7 @@
     "device_str": "gpu",
     "optimizer": "adam",
     "lr": 1e-3,
-    "num_epoch": 50,
+    "max_epoch": 50,
     "result_file": "result.csv",
     "log_dir": "logs/",
     "result_dir": "results/",

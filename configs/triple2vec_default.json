@@ -20,7 +20,7 @@
     "optimizer": "adam",
     "lr": 0.0005,
     "l2_regularization": 0.01,
-    "num_epoch": 120,
+    "max_epoch": 120,
     "result_file": "result.csv",
     "log_dir": "logs/",
     "result_dir": "results/",

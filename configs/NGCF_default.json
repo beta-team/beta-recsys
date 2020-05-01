@@ -9,7 +9,7 @@
   "optimizer":"adam",
   "mess_dropout": [0.1,0.1,0.1],
   "device_str" : "gpu",
-  "num_epoch": 50,
+  "max_epoch": 50,
   "result_file": "../results/ngcf.csv",
   "log_dir": "logs/",
   "result_dir": "results/",

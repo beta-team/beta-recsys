@@ -1,4 +1,7 @@
 import sys
+
+sys.path.append("../")
+
 import os
 import json
 import numpy as np
@@ -10,13 +13,12 @@ from beta_rec.datasets.NGCF_data_utils import Data
 from beta_rec.datasets.movielens import Movielens_100k
 from beta_rec.utils.common_util import save_to_csv
 
-sys.path.append("../")
-
 
 def parse_args():
-    """Parse args from command line.
-    Returns:
+    """ Parse args from command line
 
+        Returns:
+            args object.
     """
     parser = argparse.ArgumentParser(description="Run NGCF..")
     parser.add_argument(
@@ -26,12 +28,13 @@ def parse_args():
         default="../configs/NGCF_default.json",
         help="Specify the config file name. Only accept a file from ../configs/",
     )
-
+    # If the following settings are specified with command line,
+    # These settings will used to update the parameters received from the config file.
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
-    parser.add_argument("--num_epoch", nargs="?", type=int, help="Number of max epoch.")
+    parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
 
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
@@ -60,8 +63,9 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """
     sparse_mx = sparse_mx.tocoo().astype(np.float32)
     indices = torch.from_numpy(
-        np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64))
-    values = torch.from_numpy(sparse_mx.data)
+        np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64)
+    )
+    values = torch.from_numpy(sparse_mx.dataset)
     shape = torch.Size(sparse_mx.shape)
     return torch.sparse.FloatTensor(indices, values, shape)
 
@@ -90,8 +94,13 @@ if __name__ == "__main__":
     dataset.preprocess()
     train, vad, test = dataset.load_leave_one_out(n_test=1)
     # ToDo: Please define the directory to store the adjacent matrix
-    data_loader = Data(path=dataset.dataset_dir, train=train, test=test[0], vad=vad[0],
-                       batch_size=int(config["batch_size"]))
+    data_loader = Data(
+        path=dataset.dataset_dir,
+        train=train,
+        test=test[0],
+        vad=vad[0],
+        batch_size=int(config["batch_size"]),
+    )
     plain_adj, norm_adj, mean_adj = data_loader.get_adj_mat()
     norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj)
     vad = data_loader.vad
@@ -105,13 +114,15 @@ if __name__ == "__main__":
     config["num_items"] = data_loader.n_items
 
     engine = NGCFEngine(config)
-    save_dir = (config["checkpoint_dir"] + config["save_name"])
+    save_dir = config["checkpoint_dir"] + config["save_name"]
     ensureDir(save_dir)
     best_performance = 0
 
-    for epoch in range(config["num_epoch"]):
+    for epoch in range(config["max_epoch"]):
         users, pos_items, neg_items = data_loader.sample()
-        engine.train_an_epoch(epoch_id=epoch, user=users, pos_i=pos_items, neg_i=neg_items)
+        engine.train_an_epoch(
+            epoch_id=epoch, user=users, pos_i=pos_items, neg_i=neg_items
+        )
 
         result = engine.evaluate(eval_data_df=vad, epoch_id=epoch)
         test_result = engine.evaluate(eval_data_df=test, epoch_id=epoch)
@@ -130,7 +141,7 @@ if __name__ == "__main__":
         "emb_dim": [int(config["emb_dim"])],
         "lr": [config["lr"]],
         "batch_size": [int(config["batch_size"])],
-        "num_epoch": [config["num_epoch"]]
+        "max_epoch": [config["max_epoch"]],
     }
     result.update(result_para)
     result_df = pd.DataFrame(result)
