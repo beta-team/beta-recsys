@@ -6,6 +6,7 @@ import sklearn
 from tqdm import tqdm
 from tabulate import tabulate
 from beta_rec.utils.aliasTable import AliasTable
+from beta_rec.utils.common_util import get_dataframe_from_npz, save_dataframe_as_npz
 from beta_rec.utils.constants import (
     DEFAULT_USER_COL,
     DEFAULT_ORDER_COL,
@@ -52,7 +53,14 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
     print(f"filter_user_item under condition min_u_c={min_u_c}, min_i_c={min_i_c}")
     print("-" * 80)
     print("Dataset statistics before filter")
-    print(df.agg(["count", "size", "nunique"]))
+    print(
+        tabulate(
+            df.agg(["count", "nunique"]),
+            headers=df.columns,
+            tablefmt="psql",
+            disable_numparse=True,
+        )
+    )
     n_interact = len(df.index)
 
     while True:
@@ -70,7 +78,14 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
         else:
             break  # no change
     print("Dataset statistics after filter")
-    print(df.agg(["count", "size", "nunique"]))
+    print(
+        tabulate(
+            df.agg(["count", "nunique"]),
+            headers=df.columns,
+            tablefmt="psql",
+            disable_numparse=True,
+        )
+    )
     print("-" * 80)
     return df
 
@@ -93,7 +108,14 @@ def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
     )
     print("-" * 80)
     print("Dataset statistics before filter")
-    print(df.agg(["count", "size", "nunique"]))
+    print(
+        tabulate(
+            df.agg(["count", "nunique"]),
+            headers=df.columns,
+            tablefmt="psql",
+            disable_numparse=True,
+        )
+    )
     n_interact = len(df.index)
 
     while True:
@@ -115,7 +137,14 @@ def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
         else:
             break  # no change
     print("Dataset statistics after filter")
-    print(df.agg(["count", "size", "nunique"]))
+    print(
+        tabulate(
+            df.agg(["count", "nunique"]),
+            headers=df.columns,
+            tablefmt="psql",
+            disable_numparse=True,
+        )
+    )
     print("-" * 80)
     return df
 
@@ -174,25 +203,6 @@ def feed_neg_sample(data, negative_num, item_sampler):
     return total_interact
 
 
-def get_DataFrame_from_npz(data_file):
-    """Get the DataFrame from npz file
-
-    Get the DataFrame from npz file
-    """
-    np_data = np.load(data_file)
-    data_dic = {
-        DEFAULT_USER_COL: np_data["user_ids"],
-        DEFAULT_ITEM_COL: np_data["item_ids"],
-        DEFAULT_RATING_COL: np_data["ratings"],
-    }
-    if "timestamps" in np_data:
-        data_dic[DEFAULT_TIMESTAMP_COL] = np_data["timestamps"]
-    if "order_ids" in np_data:
-        data_dic[DEFAULT_ORDER_COL] = np_data["order_ids"]
-    data = pd.DataFrame(data_dic)
-    return data
-
-
 def load_split_data(path, n_test=10):
     """Load split DataFrame from a specified path
 
@@ -209,7 +219,7 @@ def load_split_data(path, n_test=10):
 
     """
     train_file = os.path.join(path, "train.npz")
-    train_data = get_DataFrame_from_npz(train_file)
+    train_data = get_dataframe_from_npz(train_file)
     print("-" * 80)
     print("train_data statistics")
     print(
@@ -221,8 +231,8 @@ def load_split_data(path, n_test=10):
         )
     )
     if not n_test:
-        valid_df = get_DataFrame_from_npz(os.path.join(path, f"valid.npz"))
-        test_df = get_DataFrame_from_npz(os.path.join(path, f"test.npz"))
+        valid_df = get_dataframe_from_npz(os.path.join(path, f"valid.npz"))
+        test_df = get_dataframe_from_npz(os.path.join(path, f"test.npz"))
         print(f"valid_data statistics")
         print(
             tabulate(
@@ -245,7 +255,7 @@ def load_split_data(path, n_test=10):
     valid_data_li = []
     test_data_li = []
     for i in range(n_test):
-        valid_df = get_DataFrame_from_npz(os.path.join(path, f"valid_{i}.npz"))
+        valid_df = get_dataframe_from_npz(os.path.join(path, f"valid_{i}.npz"))
         valid_data_li.append(valid_df)
         if i == 0:
             print(f"valid_data_{i} statistics")
@@ -256,7 +266,7 @@ def load_split_data(path, n_test=10):
                     tablefmt="psql",
                 )
             )
-        test_df = get_DataFrame_from_npz(os.path.join(path, f"test_{i}.npz"))
+        test_df = get_dataframe_from_npz(os.path.join(path, f"test_{i}.npz"))
         test_data_li.append(test_df)
         if i == 0:
             print(f"test_data_{i} statistics")
@@ -290,22 +300,6 @@ def save_split_data(
     Returns:
         None
     """
-    user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=np.long)
-    item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=np.long)
-    ratings = data[DEFAULT_RATING_COL].to_numpy(dtype=np.float32)
-    data_dic = {
-        "user_ids": user_ids,
-        "item_ids": item_ids,
-        "ratings": ratings,
-    }
-    if DEFAULT_ORDER_COL in data.columns:
-        order_ids = data[DEFAULT_ORDER_COL].to_numpy(dtype=np.long)
-        data_dic["order_ids"] = order_ids
-    if DEFAULT_TIMESTAMP_COL in data.columns:
-        timestamps = data[DEFAULT_TIMESTAMP_COL].to_numpy(dtype=np.long)
-        data_dic["timestamps"] = timestamps
-    else:
-        data_dic["timestamps"] = np.zeros_like(ratings)
 
     data_file = os.path.join(base_dir, data_split)
     if not os.path.exists(data_file):
@@ -317,7 +311,7 @@ def save_split_data(
 
     data_file = os.path.join(data_file, suffix)
 
-    np.savez_compressed(data_file, **data_dic)
+    save_dataframe_as_npz(data, data_file)
     print("Data is dumped in :", data_file)
 
 

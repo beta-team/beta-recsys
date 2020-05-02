@@ -32,6 +32,7 @@ def update_args(config, args):
             config[k] = v
             print(k, "\t", v)
 
+
 def save_dataframe_as_npz(data, data_file):
     """ Save DataFrame in compressed format
     Save and convert the DataFrame to npz file.
@@ -45,18 +46,20 @@ def save_dataframe_as_npz(data, data_file):
     user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=np.long)
     item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=np.long)
     ratings = data[DEFAULT_RATING_COL].to_numpy(dtype=np.float32)
-    columns_dic = {
+    data_dic = {
         "user_ids": user_ids,
         "item_ids": item_ids,
         "ratings": ratings,
     }
     if DEFAULT_ORDER_COL in data.columns:
         order_ids = data[DEFAULT_ORDER_COL].to_numpy(dtype=np.long)
-        columns_dic["order_ids"] = order_ids
+        data_dic["order_ids"] = order_ids
     if DEFAULT_TIMESTAMP_COL in data.columns:
         timestamps = data[DEFAULT_TIMESTAMP_COL].to_numpy(dtype=np.long)
-        columns_dic["timestamps"] = timestamps
-    np.savez_compressed(data_file, **columns_dic)
+        data_dic["timestamps"] = timestamps
+    else:
+        data_dic["timestamps"] = np.zeros_like(ratings)
+    np.savez_compressed(data_file, **data_dic)
 
 
 def get_dataframe_from_npz(data_file):
