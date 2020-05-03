@@ -26,11 +26,10 @@ def update_args(config, args):
     Returns:
         None
     """
-    print("Received parameters form command line:")
     for k, v in vars(args).items():
         if v is not None:
             config[k] = v
-            print(k, "\t", v)
+    print_dict_as_table(config, "Received parameters form command line (or default):")
 
 
 def save_dataframe_as_npz(data, data_file):

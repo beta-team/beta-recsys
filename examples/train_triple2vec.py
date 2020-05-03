@@ -77,7 +77,8 @@ class Triple2vec_train(TrainEngine):
 
         self.config = config
         super(Triple2vec_train, self).__init__(self.config)
-        self.sample_triple()
+        self.load_dataset()
+        self.train_data = self.dataset.sample_triple()
         self.engine = Triple2vecEngine(self.config)
 
 

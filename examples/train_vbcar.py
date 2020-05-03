@@ -87,7 +87,8 @@ class VBCAR_train(TrainEngine):
         """
         self.config = config
         super(VBCAR_train, self).__init__(self.config)
-        self.sample_triple()
+        self.load_dataset()
+        self.train_data = self.dataset.sample_triple()
         self.config["alpha_step"] = (1 - self.config["alpha"]) / (
             self.config["max_epoch"]
         )
@@ -110,14 +111,14 @@ class VBCAR_train(TrainEngine):
             print("-" * 80)
             data_loader = self.build_data_loader()
             self.engine.train_an_epoch(data_loader, epoch_id=epoch)
-            result = self.engine.evaluate(self.dataset.validate[0], epoch_id=epoch)
+            result = self.engine.evaluate(self.dataset.valid[0], epoch_id=epoch)
             test_result = self.engine.evaluate(self.dataset.test[0], epoch_id=epoch)
             self.engine.record_performance(result, test_result, epoch_id=epoch)
             if result[self.config["validate_metric"]] > best_performance:
                 n_no_update = 0
                 print_dict_as_table(result)
                 self.engine.save_checkpoint(
-                    model_dir=self.config["model_ckp_file"] + "model.ckp"
+                    model_dir=self.config["model_save_dir"] + "model.ckp"
                 )
                 best_performance = result[self.config["validate_metric"]]
             else:

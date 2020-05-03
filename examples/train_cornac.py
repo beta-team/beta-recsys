@@ -40,7 +40,7 @@ from beta_rec.utils.common_util import save_to_csv
 from beta_rec.utils import data_util
 from beta_rec.utils import logger
 import beta_rec.utils.constants as Constants
-from beta_rec.datasets import dataset
+from beta_rec.datasets import data_load
 import beta_rec.utils.evaluation as eval_model
 import beta_rec.utils.constants as Constants
 from scipy.sparse import csr_matrix

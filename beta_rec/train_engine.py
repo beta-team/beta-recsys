@@ -12,7 +12,6 @@ from beta_rec.utils import logger, data_util
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.common_util import set_seed, initialize_folders, print_dict_as_table
-from beta_rec.utils.triple_sampler import Sampler
 from torch.utils.data import DataLoader
 
 
@@ -135,7 +134,7 @@ class TrainEngine(object):
 
         Attributes:
             dataset (Dataset): A dataset containing DataFrame of train, validation and test.
-            train_data (DataLoader): Train DataLoader, need to be implement.
+            train_data (DataLoader): Extracted training data or train DataLoader, need to be implement.
             monitor (Monitor): An monitor object that monitor the computational resources.
             engine (Model Engine)
 
@@ -148,35 +147,8 @@ class TrainEngine(object):
         self.config = prepare_env(config)
         self.gpu_id, self.config["device_str"] = get_device()
         self.eval_engine = EvalEngine(self.config)
-        self.build_dataset()
 
-    def sample_triple(self):
-        """
-        Sample triples or load triples samples from files. Only applicable for basket based recommenders
-        Returns:
-            None
-
-        """
-        # need to be specified if need samples
-        self.config["sample_dir"] = os.path.join(
-            self.config["root_dir"], self.config["sample_dir"]
-        )
-        sample_file = (
-            self.config["sample_dir"]
-            + "triple_"
-            + self.config["dataset"]
-            + "_"
-            + str(self.config["percent"] * 100)
-            + "_"
-            + str(self.config["n_sample"])
-            + "_"
-            + str(self.config["temp_train"])
-            + ".csv"
-        )
-        my_sampler = Sampler(self.dataset.train, sample_file, self.config["n_sample"])
-        self.train_data = my_sampler.sample()
-
-    def build_dataset(self):
+    def load_dataset(self):
         """ Default implementation of building dataset
 
         Returns:
@@ -220,7 +192,7 @@ class TrainEngine(object):
             if epoch > 0 and self.eval_engine.n_no_update == 0:
                 # previous epoch have already obtained better result
                 self.engine.save_checkpoint(
-                    model_dir=self.config["model_save_dir"] + "model.cpk"
+                    model_dir=os.path.join(self.config["model_save_dir"], "model.cpk")
                 )
 
             if self.eval_engine.n_no_update >= MAX_N_UPDATE:
@@ -233,7 +205,7 @@ class TrainEngine(object):
             data_loader = self.build_data_loader()
             self.engine.train_an_epoch(data_loader, epoch_id=epoch)
             self.eval_engine.train_eval(
-                self.dataset.validate[0], self.dataset.test[0], self.engine.model, epoch
+                self.dataset.valid[0], self.dataset.test[0], self.engine.model, epoch
             )
             """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
             lr = self.config["lr"] * (0.5 ** (epoch // 10))

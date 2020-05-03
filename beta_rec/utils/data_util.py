@@ -1,4 +1,7 @@
+import os
 import numpy as np
+import pandas as pd
+from tabulate import tabulate
 from scipy.sparse import coo_matrix
 from beta_rec.utils.constants import (
     DEFAULT_USER_COL,
@@ -7,7 +10,11 @@ from beta_rec.utils.constants import (
 )
 from beta_rec.utils.common_util import get_random_rep
 from beta_rec.utils.aliasTable import AliasTable
-from beta_rec.datasets.dataset import load_split_dataset, load_item_fea_dic
+from beta_rec.utils.triple_sampler import Sampler
+from beta_rec.datasets.data_load import load_split_dataset, load_item_fea_dic
+
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
 def intersect_train_test(train, test):
@@ -58,9 +65,9 @@ class Dataset(object):
             self.random_dim = config["random_dim"]
         # data preprocessing for training and test data
         # To be replaced with new data method
-        train, test, validate = load_split_dataset(config)
-        self.train = self._data_processing(train, test[0])
-        self.validate = self._reindex_list(validate)
+        train, valid, test = load_split_dataset(config)
+        self.train = self._intersect_train_test(train, test[0])
+        self.valid = self._reindex_list(valid)
         self.test = self._reindex_list(test)
         self.item_sampler = AliasTable(
             self.train[DEFAULT_ITEM_COL].value_counts().to_dict()
@@ -68,8 +75,39 @@ class Dataset(object):
         self.user_sampler = AliasTable(
             self.train[DEFAULT_USER_COL].value_counts().to_dict()
         )
-        self.init_user_fea(config)
-        self.init_item_fea(config)
+
+    def sample_triple(self, dump=True, load_save=True):
+        """
+        Sample triples or load triples samples from files. Only applicable for basket based Recommender
+        Returns:
+            None
+
+        """
+        # need to be specified if need samples
+        self.config["sample_dir"] = os.path.join(
+            self.config["root_dir"], self.config["sample_dir"]
+        )
+
+        sample_file = (
+            self.config["sample_dir"]
+            + "triple_"
+            + self.config["dataset"]
+            + "_"
+            + str(self.config["percent"] * 100)
+            + "_"
+            + str(self.config["n_sample"])
+            + "_"
+            + str(self.config["temp_train"])
+            + ".csv"
+        )
+        my_sampler = Sampler(
+            self.train,
+            sample_file,
+            self.config["n_sample"],
+            dump=dump,
+            load_save=load_save,
+        )
+        return my_sampler.sample()
 
     def generate_train_data(self):
         """ Generate a rating matrix for interactions
@@ -120,7 +158,7 @@ class Dataset(object):
         print("data load finish")
         return coo_matrix((ratings_record, (user_record, movie_record)))
 
-    def _data_processing(self, train, test, implicit=True):
+    def _intersect_train_test(self, train, test, implicit=True):
         """ process the dataset to reindex userID and itemID, also set rating as implicit feedback
 
         Parameters:
@@ -145,11 +183,26 @@ class Dataset(object):
                 train[DEFAULT_USER_COL].isin(users_ser)
                 & train[DEFAULT_ITEM_COL].isin(items_ser)
             ]
-            self.n_users = len(users_ser)
-            self.n_items = len(items_ser)
+            self.n_users = train[DEFAULT_USER_COL].nunique()
+            self.n_items = train[DEFAULT_ITEM_COL].nunique()
             users_ser, items_ser = intersect_train_test(train, test)
+        print(f"After intersection, train statistics")
         print(
-            f"After intersection of train and test sets, n_users:{self.n_users}, n_items:{self.n_items}."
+            tabulate(
+                train.agg(["count", "nunique"]),
+                headers=test.columns,
+                tablefmt="psql",
+                disable_numparse=True,
+            )
+        )
+        print(f"After intersection, test statistics")
+        print(
+            tabulate(
+                test.agg(["count", "nunique"]),
+                headers=test.columns,
+                tablefmt="psql",
+                disable_numparse=True,
+            )
         )
         self.user_pool = users_ser
         self.item_pool = items_ser
@@ -354,17 +407,19 @@ class Dataset(object):
             )
             self.item_feature = get_random_rep(self.n_items, self.random_dim)
 
-    def init_user_fea(self, config):
+    def init_user_fea(self):
         """
         initialize user feature
 
         """
-        if "user_fea_type" in config:
-            fea_type = config["user_fea_type"]
+        if "user_fea_type" in self.config:
+            fea_type = self.config["user_fea_type"]
         else:
             fea_type = "random"
 
-        print("init user featrue for dataset:", config["dataset"], " type:", fea_type)
+        print(
+            "init user featrue for dataset:", self.config["dataset"], " type:", fea_type
+        )
         if fea_type == "random":
             self.user_feature = get_random_rep(self.n_users, self.random_dim)
         else:

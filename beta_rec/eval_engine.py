@@ -128,7 +128,6 @@ def test_eval_worker(testEngine, eval_data_df, prediction, k_li=[5, 10, 20]):
         "model": [testEngine.config["model"]],
         "dataset": [testEngine.config["dataset"]],
         "data_split": [testEngine.config["data_split"]],
-        "temp_train": [testEngine.config["temp_train"]],
         "emb_dim": [int(testEngine.config["emb_dim"])],
         "lr": [testEngine.config["lr"]],
         "batch_size": [int(testEngine.config["batch_size"])],

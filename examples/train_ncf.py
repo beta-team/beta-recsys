@@ -2,6 +2,7 @@ import sys
 
 sys.path.append("../")
 
+import os
 import argparse
 import pandas as pd
 from tqdm import tqdm
@@ -80,8 +81,8 @@ class NCF_train(TrainEngine):
 
         self.config = config
         super(NCF_train, self).__init__(self.config)
+        self.load_dataset()
         self.sample_generator = SampleGenerator(ratings=self.dataset.train)
-
         # update model config
         common_config = self.config.copy()
         common_config.pop("gmf_config")
@@ -109,8 +110,8 @@ class NCF_train(TrainEngine):
                     self.config["num_negative"], self.config["batch_size"]
                 )
             engine.train_an_epoch(train_loader, epoch_id=epoch)
-            """evaluate model on vilidate and test sets"""
-            result = engine.evaluate(self.dataset.validate[0], epoch_id=epoch)
+            """evaluate model on validation and test sets"""
+            result = engine.evaluate(self.dataset.valid[0], epoch_id=epoch)
             test_result = engine.evaluate(self.dataset.test[0], epoch_id=epoch)
             engine.record_performance(result, test_result, epoch_id=epoch)
             if result["ndcg_at_k@10"] > best_performance:
@@ -128,8 +129,8 @@ class NCF_train(TrainEngine):
 
         # Train GMF
         self.gmf_engine = GMFEngine(self.config["gmf_config"])
-        self.gmf_save_dir = (
-            self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
+        self.gmf_save_dir = os.path.join(
+            self.config["model_save_dir"], self.config["gmf_config"]["save_name"]
         )
         self.train_epoch(engine=self.gmf_engine, save_dir=self.gmf_save_dir)
 
@@ -137,8 +138,8 @@ class NCF_train(TrainEngine):
         self.mlp_engine = MLPEngine(
             self.config["mlp_config"], gmf_config=self.config["gmf_config"]
         )
-        self.mlp_save_dir = (
-            self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
+        self.mlp_save_dir = os.path.join(
+            self.config["model_save_dir"], self.config["mlp_config"]["save_name"]
         )
         self.train_epoch(engine=self.mlp_engine, save_dir=self.mlp_save_dir)
 
@@ -148,8 +149,8 @@ class NCF_train(TrainEngine):
             gmf_config=self.config["gmf_config"],
             mlp_config=self.config["mlp_config"],
         )
-        self.neumf_save_dir = (
-            self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
+        self.neumf_save_dir = os.path.join(
+            self.config["model_save_dir"], self.config["neumf_config"]["save_name"]
         )
         self.train_epoch(engine=self.neumf_engine, save_dir=self.neumf_save_dir)
 
@@ -164,7 +165,7 @@ class NCF_train(TrainEngine):
         for t in range(time_step):
             self.gmf_engine = GMFEngine(self.config["gmf_config"])
             self.gmf_save_dir = (
-                self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
+                self.config["model_save_dir"] + self.config["gmf_config"]["save_name"]
             )
             self.train_epoch(
                 engine=self.gmf_engine,
@@ -178,7 +179,7 @@ class NCF_train(TrainEngine):
                 self.config["mlp_config"], gmf_config=self.config["gmf_config"]
             )
             self.mlp_save_dir = (
-                self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
+                self.config["model_save_dir"] + self.config["mlp_config"]["save_name"]
             )
             self.train_epoch(
                 engine=self.mlp_engine,
@@ -194,7 +195,7 @@ class NCF_train(TrainEngine):
                 mlp_config=self.config["mlp_config"],
             )
             self.neumf_save_dir = (
-                self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
+                self.config["model_save_dir"] + self.config["neumf_config"]["save_name"]
             )
             self.train_epoch(
                 engine=self.neumf_engine,
