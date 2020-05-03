@@ -8,7 +8,7 @@ import numpy as np
 import argparse
 import torch
 import pandas as pd
-from beta_rec.models.NGCF import NGCFEngine
+from beta_rec.models.ngcf import NGCFEngine
 from beta_rec.datasets.NGCF_data_utils import Data
 from beta_rec.datasets.movielens import Movielens_100k
 from beta_rec.utils.common_util import save_to_csv

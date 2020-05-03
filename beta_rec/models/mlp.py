@@ -97,7 +97,7 @@ class MLPEngine(Engine):
         """Loading weights from trained GMF model"""
         gmf_model = GMF(self.gmf_config)
         self.resume_checkpoint(
-            self.config["model_ckp_file"] + self.config["pretrain_gmf"], gmf_model
+            self.config["model_save_dir"] + self.config["pretrain_gmf"], gmf_model
         )
         self.model.embedding_user.weight.data = gmf_model.embedding_user.weight.data
         self.model.embedding_item.weight.data = gmf_model.embedding_item.weight.data
