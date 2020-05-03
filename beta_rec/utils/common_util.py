@@ -16,6 +16,17 @@ from beta_rec.utils.constants import (
 )
 
 
+def ensureDir(dir_path):
+    """Ensure a dir exist, otherwise create
+
+    Args:
+        dir_path (str): the target dir
+    Return:
+    """
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+
+
 def update_args(config, args):
     """Update config parameters by the received parameters from command line
 
@@ -143,10 +154,10 @@ def initialize_folders(base_dir):
     checkpoints = base_dir + "/checkpoints/"
     results = base_dir + "/results/"
     logs = base_dir + "/logs/"
-    samples = base_dir + "/samples/"
+    processes = base_dir + "/processes/"
     runs = base_dir + "/runs/"
 
-    for dir in [configs, datasets, checkpoints, results, samples, logs, runs]:
+    for dir in [configs, datasets, checkpoints, results, processes, logs, runs]:
         if not os.path.exists(dir):
             os.makedirs(dir)
 

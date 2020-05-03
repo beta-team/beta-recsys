@@ -32,6 +32,6 @@
     "result_dir": "results/",
     "checkpoint_dir": "checkpoints/",
     "dataset_dir": "datasets/",
-    "sample_dir": "samples/",
+    "process_dir": "processes/",
     "run_dir": "runs/"
 }

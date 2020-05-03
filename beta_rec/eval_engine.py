@@ -174,11 +174,10 @@ class EvalEngine(object):
         )
         self.n_no_update = 0
         self.best_valid_performance = 0
-        self.tunable = ["model", "dataset", "percent"]
+        self.tunable = ["model", "dataset"]
         self.labels = (
             self.config["model"],
             self.config["dataset"],
-            self.config["percent"],
         )
         self.init_prometheus_client()
         print("Initializing test engine ...")

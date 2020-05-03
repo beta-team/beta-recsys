@@ -7,11 +7,11 @@ import json
 import numpy as np
 import argparse
 import torch
-import pandas as pd
+from beta_rec.train_engine import TrainEngine
 from beta_rec.models.ngcf import NGCFEngine
-from beta_rec.datasets.NGCF_data_utils import Data
-from beta_rec.datasets.movielens import Movielens_100k
-from beta_rec.utils.common_util import save_to_csv
+from beta_rec.utils.common_util import update_args, ensureDir
+from beta_rec.utils.constants import MAX_N_UPDATE
+from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
@@ -25,7 +25,7 @@ def parse_args():
         "--config_file",
         nargs="?",
         type=str,
-        default="../configs/NGCF_default.json",
+        default="../configs/ngcf_default.json",
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
@@ -42,22 +42,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def update_args(config, args):
-    """Update config parameters by the received parameters from command line
-
-        Args:
-            config (dict): Initial dict of the parameters from JOSN config file.
-            args (object): An argparse Argument object with attributes being the parameters to be updated.
-
-        Returns:
-            None
-    """
-    for k, v in vars(args).items():
-        if v is None:
-            config[k] = v
-            print("Received parameters form command line:", k, v)
-
-
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """Convert a scipy sparse matrix to a torch sparse tensor.
     """
@@ -65,21 +49,71 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     indices = torch.from_numpy(
         np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64)
     )
-    values = torch.from_numpy(sparse_mx.dataset)
+    values = torch.from_numpy(sparse_mx.data)
     shape = torch.Size(sparse_mx.shape)
     return torch.sparse.FloatTensor(indices, values, shape)
 
 
-def ensureDir(dir_path):
-    """Ensure a dir exist, otherwise create
+class NGCF_train(TrainEngine):
+    """ An instance class from the TrainEngine base class
 
-    Args:
-        dir_path (str): the target dir
-    Return:
     """
-    d = os.path.dirname(dir_path)
-    if not os.path.exists(d):
-        os.makedirs(d)
+
+    def __init__(self, config):
+        """Constructor
+
+        Args:
+            config (dict): All the parameters for the model
+        """
+
+        self.config = config
+        super(NGCF_train, self).__init__(self.config)
+        self.load_dataset()
+        self.build_data_loader()
+        self.engine = NGCFEngine(self.config)
+
+    def build_data_loader(self):
+        # ToDo: Please define the directory to store the adjacent matrix
+        plain_adj, norm_adj, mean_adj = self.dataset.get_adj_mat()
+        norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj)
+        self.config["norm_adj"] = norm_adj
+        self.config["num_batch"] = self.dataset.n_train // config["batch_size"] + 1
+        self.config["n_users"] = self.dataset.n_users
+        self.config["n_items"] = self.dataset.n_items
+
+    def train(self):
+        self.monitor = Monitor(
+            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+        )
+        self.model_dir = os.path.join(
+            self.config["model_save_dir"], self.config["save_name"]
+        )
+        for epoch in range(config["max_epoch"]):
+            print(f"Epoch {epoch} starts !")
+            print("-" * 80)
+            if epoch > 0 and self.eval_engine.n_no_update == 0:
+                # previous epoch have already obtained better result
+                self.engine.save_checkpoint(model_dir=self.model_dir)
+
+            if self.eval_engine.n_no_update >= MAX_N_UPDATE:
+                print(
+                    "Early stop criterion triggered, no performance update for {:} times".format(
+                        MAX_N_UPDATE
+                    )
+                )
+                break
+            users, pos_items, neg_items = self.dataset.sample(self.config["batch_size"])
+            self.engine.train_an_epoch(
+                epoch_id=epoch, user=users, pos_i=pos_items, neg_i=neg_items
+            )
+            self.eval_engine.train_eval(
+                self.dataset.valid[0], self.dataset.test[0], self.engine.model, epoch
+            )
+        self.config["run_time"] = self.monitor.stop()
+
+    def test(self):
+        self.engine.resume_checkpoint(model_dir=self.model_dir)
+        super(NGCF_train, self).test()
 
 
 if __name__ == "__main__":
@@ -88,61 +122,7 @@ if __name__ == "__main__":
     config_file = args.config_file
     with open(config_file) as config_params:
         config = json.load(config_params)
-
     update_args(config, args)
-    dataset = Movielens_100k()
-    dataset.preprocess()
-    train, vad, test = dataset.load_leave_one_out(n_test=1)
-    # ToDo: Please define the directory to store the adjacent matrix
-    data_loader = Data(
-        path=dataset.dataset_dir,
-        train=train,
-        test=test[0],
-        vad=vad[0],
-        batch_size=int(config["batch_size"]),
-    )
-    plain_adj, norm_adj, mean_adj = data_loader.get_adj_mat()
-    norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj)
-    vad = data_loader.vad
-    test = data_loader.test
-    plain_adj, norm_adj, mean_adj = data_loader.create_adj_mat()
-    norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj)
-
-    config["norm_adj"] = norm_adj
-    config["num_batch"] = data_loader.n_train // config["batch_size"] + 1
-    config["num_users"] = data_loader.n_users
-    config["num_items"] = data_loader.n_items
-
-    engine = NGCFEngine(config)
-    save_dir = config["checkpoint_dir"] + config["save_name"]
-    ensureDir(save_dir)
-    best_performance = 0
-
-    for epoch in range(config["max_epoch"]):
-        users, pos_items, neg_items = data_loader.sample()
-        engine.train_an_epoch(
-            epoch_id=epoch, user=users, pos_i=pos_items, neg_i=neg_items
-        )
-
-        result = engine.evaluate(eval_data_df=vad, epoch_id=epoch)
-        test_result = engine.evaluate(eval_data_df=test, epoch_id=epoch)
-        engine.record_performance(result, test_result, epoch_id=epoch)
-
-        if result["ndcg_at_k@5"] > best_performance:
-            engine.save_checkpoint(model_dir=save_dir)
-            best_performance = result["ndcg_at_k@5"]
-            print(best_performance)
-
-    engine.resume_checkpoint(model_dir=save_dir)
-
-    result = engine.evaluate(test, epoch_id=0)
-    print(result)
-    result_para = {
-        "emb_dim": [int(config["emb_dim"])],
-        "lr": [config["lr"]],
-        "batch_size": [int(config["batch_size"])],
-        "max_epoch": [config["max_epoch"]],
-    }
-    result.update(result_para)
-    result_df = pd.DataFrame(result)
-    save_to_csv(result_df, config["result_file"])
+    ngcf = NGCF_train(config)
+    ngcf.train()
+    ngcf.test()

@@ -11,7 +11,7 @@ from beta_rec.eval_engine import EvalEngine
 from beta_rec.utils import logger, data_util
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.constants import MAX_N_UPDATE
-from beta_rec.utils.common_util import set_seed, initialize_folders, print_dict_as_table
+from beta_rec.utils.common_util import set_seed, initialize_folders, print_dict_as_table, ensureDir
 from torch.utils.data import DataLoader
 
 
@@ -79,7 +79,7 @@ def prepare_env(config):
     config["model_save_dir"] = os.path.join(
         config["root_dir"], config["checkpoint_dir"], config["model_run_id"]
     )
-    os.mkdir(config["model_save_dir"])
+    ensureDir(config["model_save_dir"])
     print("Model checkpoint will save in file:", config["model_save_dir"])
 
     config["result_file"] = os.path.join(

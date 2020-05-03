@@ -13,8 +13,8 @@ class NGCF(torch.nn.Module):
     def __init__(self, config):
         super(NGCF, self).__init__()
         self.config = config
-        self.num_users = config["num_users"]
-        self.num_items = config["num_items"]
+        self.n_users = config["n_users"]
+        self.n_items = config["n_items"]
         self.emb_dim = config["emb_dim"]
         self.layer_size = config["layer_size"]
         self.n_layers = len(self.layer_size)
@@ -34,8 +34,8 @@ class NGCF(torch.nn.Module):
             )
             self.dropout.append(nn.Dropout(self.dropout_list[i]))
 
-        self.user_embedding = nn.Embedding(self.num_users, self.emb_dim)
-        self.item_embedding = nn.Embedding(self.num_items, self.emb_dim)
+        self.user_embedding = nn.Embedding(self.n_users, self.emb_dim)
+        self.item_embedding = nn.Embedding(self.n_items, self.emb_dim)
         self.init_emb()
 
     def init_emb(self):
@@ -69,7 +69,7 @@ class NGCF(torch.nn.Module):
 
         all_embeddings = torch.cat(all_embeddings, dim=1)
         u_g_embeddings, i_g_embeddings = torch.split(
-            all_embeddings, [self.num_users, self.num_items], dim=0
+            all_embeddings, [self.n_users, self.n_items], dim=0
         )
         return u_g_embeddings, i_g_embeddings
 
