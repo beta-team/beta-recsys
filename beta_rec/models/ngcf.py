@@ -2,37 +2,40 @@ import torch
 import torch.nn as nn
 import torch.sparse as sparse
 import torch.nn.functional as F
-import numpy as np
 from beta_rec.models.torch_engine import Engine
-from beta_rec.datasets.NGCF_data_utils import Data
 
 
 class NGCF(torch.nn.Module):
     """Model initialisation, embedding generation and prediction of NGCF
 
     """
+
     def __init__(self, config):
         super(NGCF, self).__init__()
         self.config = config
-        self.num_users = config["num_users"]
-        self.num_items = config["num_items"]
+        self.n_users = config["n_users"]
+        self.n_items = config["n_items"]
         self.emb_dim = config["emb_dim"]
-        self.layer_size = config['layer_size']
+        self.layer_size = config["layer_size"]
         self.n_layers = len(self.layer_size)
         self.dropout = nn.ModuleList()
         self.GC_weights = nn.ModuleList()
         self.Bi_weights = nn.ModuleList()
-        self.dropout_list = list(config['mess_dropout'])
+        self.dropout_list = list(config["mess_dropout"])
         self.layer_size = [self.emb_dim] + self.layer_size
         # Create GNN layers
 
         for i in range(self.n_layers):
-            self.GC_weights.append(nn.Linear(self.layer_size[i], self.layer_size[i + 1]))
-            self.Bi_weights.append(nn.Linear(self.layer_size[i], self.layer_size[i + 1]))
+            self.GC_weights.append(
+                nn.Linear(self.layer_size[i], self.layer_size[i + 1])
+            )
+            self.Bi_weights.append(
+                nn.Linear(self.layer_size[i], self.layer_size[i + 1])
+            )
             self.dropout.append(nn.Dropout(self.dropout_list[i]))
 
-        self.user_embedding = nn.Embedding(self.num_users, self.emb_dim)
-        self.item_embedding = nn.Embedding(self.num_items, self.emb_dim)
+        self.user_embedding = nn.Embedding(self.n_users, self.emb_dim)
+        self.item_embedding = nn.Embedding(self.n_items, self.emb_dim)
         self.init_emb()
 
     def init_emb(self):
@@ -48,7 +51,9 @@ class NGCF(torch.nn.Module):
             u_g_embeddings (tensor): processed user embeddings
             i_g_embeddings (tensor): processed item embeddings
         """
-        ego_embeddings = torch.cat((self.user_embedding.weight, self.item_embedding.weight), dim=0)
+        ego_embeddings = torch.cat(
+            (self.user_embedding.weight, self.item_embedding.weight), dim=0
+        )
         all_embeddings = [ego_embeddings]
 
         for i in range(self.n_layers):
@@ -63,7 +68,9 @@ class NGCF(torch.nn.Module):
             all_embeddings += [norm_embeddings]
 
         all_embeddings = torch.cat(all_embeddings, dim=1)
-        u_g_embeddings, i_g_embeddings = torch.split(all_embeddings, [self.num_users, self.num_items], dim=0)
+        u_g_embeddings, i_g_embeddings = torch.split(
+            all_embeddings, [self.n_users, self.n_items], dim=0
+        )
         return u_g_embeddings, i_g_embeddings
 
     def predict(self, users, items):
@@ -78,19 +85,22 @@ class NGCF(torch.nn.Module):
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
 
         with torch.no_grad():
-            scores = torch.mul(self.user_embedding(users_t),self.item_embedding(items_t)).sum(dim=1)
+            scores = torch.mul(
+                self.user_embedding(users_t), self.item_embedding(items_t)
+            ).sum(dim=1)
         return scores
 
 
 class NGCFEngine(Engine):
-# A class includes train an epoch and train a batch of NGCF
+    # A class includes train an epoch and train a batch of NGCF
     def __init__(self, config):
         self.config = config
         self.model = NGCF(config)
+
     def __init__(self, config):
         self.config = config
         self.model = NGCF(config)
-        self.regs = config["regs"] # reg is the regularisation
+        self.regs = config["regs"]  # reg is the regularisation
         self.decay = self.regs[0]
         self.batch_size = config["batch_size"]
         self.norm_adj = config["norm_adj"]
@@ -116,8 +126,9 @@ class NGCFEngine(Engine):
         pos_i_g_embeddings = ia_embeddings[pos_items]
         neg_i_g_embeddings = ia_embeddings[neg_items]
 
-        batch_mf_loss, batch_emb_loss, batch_reg_loss = self.bpr_loss(u_g_embeddings, pos_i_g_embeddings,
-                                                              neg_i_g_embeddings)
+        batch_mf_loss, batch_emb_loss, batch_reg_loss = self.bpr_loss(
+            u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings
+        )
 
         batch_loss = batch_mf_loss + batch_emb_loss + batch_reg_loss
 
@@ -126,7 +137,7 @@ class NGCFEngine(Engine):
         loss = batch_loss.item()
         return loss
 
-    def train_an_epoch(self, epoch_id,user,pos_i,neg_i):
+    def train_an_epoch(self, epoch_id, user, pos_i, neg_i):
         """ Generate batch data for each batch
         Args:
             epoch_id (int):
@@ -152,7 +163,11 @@ class NGCFEngine(Engine):
         pos_scores = torch.sum(torch.mul(users, pos_items), dim=1)
         neg_scores = torch.sum(torch.mul(users, neg_items), dim=1)
 
-        regularizer = 1./2*(users**2).sum() + 1./2*(pos_items**2).sum() + 1./2*(neg_items**2).sum()
+        regularizer = (
+            1.0 / 2 * (users ** 2).sum()
+            + 1.0 / 2 * (pos_items ** 2).sum()
+            + 1.0 / 2 * (neg_items ** 2).sum()
+        )
         regularizer = regularizer / self.batch_size
 
         maxi = F.logsigmoid(pos_scores - neg_scores)

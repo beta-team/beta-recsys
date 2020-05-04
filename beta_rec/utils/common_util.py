@@ -1,11 +1,30 @@
 import os
 import random
 import time
+from tabulate import tabulate
 import numpy as np
-import torch
 import pandas as pd
+import torch
 import zipfile
-from beta_rec.utils.constants import *
+from functools import wraps
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
+
+
+def ensureDir(dir_path):
+    """Ensure a dir exist, otherwise create
+
+    Args:
+        dir_path (str): the target dir
+    Return:
+    """
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
 
 def update_args(config, args):
@@ -18,11 +37,10 @@ def update_args(config, args):
     Returns:
         None
     """
-    print("Received parameters form command line:")
     for k, v in vars(args).items():
         if v is not None:
             config[k] = v
-            print(k, "\t", v)
+    print_dict_as_table(config, "Received parameters form command line (or default):")
 
 
 def save_dataframe_as_npz(data, data_file):
@@ -33,23 +51,25 @@ def save_dataframe_as_npz(data, data_file):
         data_file: Target file path
 
     Returns:
-
+        None
     """
     user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=np.long)
     item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=np.long)
     ratings = data[DEFAULT_RATING_COL].to_numpy(dtype=np.float32)
-    columns_dic = {
+    data_dic = {
         "user_ids": user_ids,
         "item_ids": item_ids,
         "ratings": ratings,
     }
     if DEFAULT_ORDER_COL in data.columns:
         order_ids = data[DEFAULT_ORDER_COL].to_numpy(dtype=np.long)
-        columns_dic["order_ids"] = order_ids
+        data_dic["order_ids"] = order_ids
     if DEFAULT_TIMESTAMP_COL in data.columns:
         timestamps = data[DEFAULT_TIMESTAMP_COL].to_numpy(dtype=np.long)
-        columns_dic["timestamps"] = timestamps
-    np.savez_compressed(data_file, **columns_dic)
+        data_dic["timestamps"] = timestamps
+    else:
+        data_dic["timestamps"] = np.zeros_like(ratings)
+    np.savez_compressed(data_file, **data_dic)
 
 
 def get_dataframe_from_npz(data_file):
@@ -58,10 +78,11 @@ def get_dataframe_from_npz(data_file):
     Get the DataFrame from npz file
 
     Args:
-        data_file: File path
+        data_file (str or Path): File path
 
     Returns:
-        DataFrame
+        DataFrame:
+
     """
     np_data = np.load(data_file)
     data_dic = {
@@ -81,7 +102,8 @@ def un_zip(file_name, target_dir=None):
     """ Unzip zip files
 
     Args:
-        file_name: zip file path.
+        file_name (str or Path): zip file path.
+        target_dir (str or Path): target path to be save the unzipped files.
 
     Returns:
         None
@@ -96,48 +118,46 @@ def un_zip(file_name, target_dir=None):
     zip_file.close()
 
 
-def dict2str(tag, dic):
-    """
-    A better format to print a dictionary
+def print_dict_as_table(dic, tag=None, columns=["keys", "values"]):
+    """Print a dictionary as table
+
     Args:
-        tag: str. A name for this dictionary
-        dic: dict.
+        dic (dict): dict object to be formatted.
+        tag (str): A name for this dictionary.
+        columns ([str,str]):  default ["keys", "values"]. columns name for keys and values.
+
+    Returns:
+        None
+
+    """
+    print("-" * 80)
+    if tag:
+        print(tag)
+    df = pd.DataFrame(dic.items(), columns=columns)
+    print(tabulate(df, headers=columns, tablefmt="psql"))
+    print("-" * 80)
+    return tabulate(df, headers=columns, tablefmt="psql")
+
+
+def initialize_folders(base_dir):
+    """ Initialize the whole directory structure of the project
+
+    Args:
+        base_dir (str): Root path of the project.
 
     Returns:
         None
     """
-
-    dic_str = (
-        tag
-        + ": \n"
-        + "\n".join([str(k) + ":\t" + str(v) for k, v in dic.items()])
-        + "\n"
-    )
-    print("-" * 80)
-    print(dic_str)
-    print("-" * 80)
-    return dic_str
-
-
-def initialize_folders():
-    """
-    Initialize the whole directory structure of the project
-    Returns:
-        None
-
-    """
-    utils_root = os.path.dirname(os.path.abspath(__file__))
-    base_dir = os.path.abspath(os.path.join(utils_root, "..", ".."))
 
     configs = base_dir + "/configs/"
     datasets = base_dir + "/datasets/"
     checkpoints = base_dir + "/checkpoints/"
     results = base_dir + "/results/"
     logs = base_dir + "/logs/"
-    samples = base_dir + "/samples/"
+    processes = base_dir + "/processes/"
     runs = base_dir + "/runs/"
 
-    for dir in [configs, datasets, checkpoints, results, samples, logs, runs]:
+    for dir in [configs, datasets, checkpoints, results, processes, logs, runs]:
         if not os.path.exists(dir):
             os.makedirs(dir)
 
@@ -156,8 +176,7 @@ def get_random_rep(raw_num, dim):
 
 
 def timeit(method):
-    """
-    Decorator for tracking the execution time for the specific method
+    """Decorator for tracking the execution time for the specific method
     Args:
         method: The method need to timeit.
 
@@ -167,10 +186,10 @@ def timeit(method):
             pass
     Returns:
         None
-    
     """
 
-    def timed(*args, **kw):
+    @wraps(method)
+    def wrapper(*args, **kw):
         ts = time.time()
         result = method(*args, **kw)
         te = time.time()
@@ -185,7 +204,7 @@ def timeit(method):
             )
         return result
 
-    return timed
+    return wrapper
 
 
 def save_to_csv(result, result_file):

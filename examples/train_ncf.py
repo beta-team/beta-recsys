@@ -1,4 +1,8 @@
 import sys
+
+sys.path.append("../")
+
+import os
 import argparse
 import pandas as pd
 from tqdm import tqdm
@@ -7,17 +11,15 @@ from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine
 from beta_rec.datasets.nmf_data_utils import SampleGenerator
-from beta_rec.utils.common_util import save_to_csv
+from beta_rec.utils.common_util import save_to_csv, update_args
 from beta_rec.utils.monitor import Monitor
-
-sys.path.append("../")
 
 
 def parse_args():
-    """
-        Parse args from command line
-        Returns:
+    """ Parse args from command line
 
+        Returns:
+            args object.
     """
     parser = argparse.ArgumentParser(description="Run NCF..")
     parser.add_argument(
@@ -28,7 +30,7 @@ def parse_args():
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
-    # these settings will be updated.
+    # These settings will used to update the parameters received from the config file.
     parser.add_argument(
         "--dataset",
         nargs="?",
@@ -54,7 +56,7 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Intial learning rate.")
-    parser.add_argument("--num_epoch", nargs="?", type=int, help="Number of max epoch.")
+    parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
 
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
@@ -63,27 +65,6 @@ def parse_args():
     parser.add_argument("--activator", nargs="?", type=str, help="activator")
     parser.add_argument("--alpha", nargs="?", type=float, help="ALPHA")
     return parser.parse_args()
-
-
-"""
-update hyperparameters from command line
-"""
-
-
-def update_args(config, args):
-    """Update config parameters by the received parameters from command line
-
-        Args:
-            config (dict): Initial dict of the parameters from JOSN config file.
-            args (object): An argparse Argument object with attributes being the parameters to be updated.
-
-        Returns:
-            None
-    """
-    for k, v in vars(args).items():
-        if v is not None:
-            config[k] = v
-            print("Received parameters form comand line:", k, v)
 
 
 class NCF_train(TrainEngine):
@@ -100,8 +81,8 @@ class NCF_train(TrainEngine):
 
         self.config = config
         super(NCF_train, self).__init__(self.config)
-        self.sample_generator = SampleGenerator(ratings=self.data.train)
-
+        self.load_dataset()
+        self.sample_generator = SampleGenerator(ratings=self.dataset.train)
         # update model config
         common_config = self.config.copy()
         common_config.pop("gmf_config")
@@ -112,7 +93,7 @@ class NCF_train(TrainEngine):
         self.config["neumf_config"].update(common_config)
 
     def train_epoch(self, engine, save_dir, temporal=False, time_step=0, t=0):
-        epoch_bar = tqdm(range(self.config["num_epoch"]), file=sys.stdout)
+        epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
         best_performance = 0
         for epoch in epoch_bar:
             print("Epoch {} starts !".format(epoch))
@@ -129,9 +110,9 @@ class NCF_train(TrainEngine):
                     self.config["num_negative"], self.config["batch_size"]
                 )
             engine.train_an_epoch(train_loader, epoch_id=epoch)
-            """evaluate model on vilidate and test sets"""
-            result = engine.evaluate(self.data.validate[0], epoch_id=epoch)
-            test_result = engine.evaluate(self.data.test[0], epoch_id=epoch)
+            """evaluate model on validation and test sets"""
+            result = engine.evaluate(self.dataset.valid[0], epoch_id=epoch)
+            test_result = engine.evaluate(self.dataset.test[0], epoch_id=epoch)
             engine.record_performance(result, test_result, epoch_id=epoch)
             if result["ndcg_at_k@10"] > best_performance:
                 print(result)
@@ -148,8 +129,8 @@ class NCF_train(TrainEngine):
 
         # Train GMF
         self.gmf_engine = GMFEngine(self.config["gmf_config"])
-        self.gmf_save_dir = (
-                self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
+        self.gmf_save_dir = os.path.join(
+            self.config["model_save_dir"], self.config["gmf_config"]["save_name"]
         )
         self.train_epoch(engine=self.gmf_engine, save_dir=self.gmf_save_dir)
 
@@ -157,8 +138,8 @@ class NCF_train(TrainEngine):
         self.mlp_engine = MLPEngine(
             self.config["mlp_config"], gmf_config=self.config["gmf_config"]
         )
-        self.mlp_save_dir = (
-                self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
+        self.mlp_save_dir = os.path.join(
+            self.config["model_save_dir"], self.config["mlp_config"]["save_name"]
         )
         self.train_epoch(engine=self.mlp_engine, save_dir=self.mlp_save_dir)
 
@@ -168,8 +149,8 @@ class NCF_train(TrainEngine):
             gmf_config=self.config["gmf_config"],
             mlp_config=self.config["mlp_config"],
         )
-        self.neumf_save_dir = (
-                self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
+        self.neumf_save_dir = os.path.join(
+            self.config["model_save_dir"], self.config["neumf_config"]["save_name"]
         )
         self.train_epoch(engine=self.neumf_engine, save_dir=self.neumf_save_dir)
 
@@ -184,19 +165,29 @@ class NCF_train(TrainEngine):
         for t in range(time_step):
             self.gmf_engine = GMFEngine(self.config["gmf_config"])
             self.gmf_save_dir = (
-                    self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
+                self.config["model_save_dir"] + self.config["gmf_config"]["save_name"]
             )
-            self.train_epoch(engine=self.gmf_engine, save_dir=self.gmf_save_dir, temporal=True, time_step=time_step,
-                             t=t)
+            self.train_epoch(
+                engine=self.gmf_engine,
+                save_dir=self.gmf_save_dir,
+                temporal=True,
+                time_step=time_step,
+                t=t,
+            )
 
             self.mlp_engine = MLPEngine(
                 self.config["mlp_config"], gmf_config=self.config["gmf_config"]
             )
             self.mlp_save_dir = (
-                    self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
+                self.config["model_save_dir"] + self.config["mlp_config"]["save_name"]
             )
-            self.train_epoch(engine=self.mlp_engine, save_dir=self.mlp_save_dir, temporal=True, time_step=time_step,
-                             t=t)
+            self.train_epoch(
+                engine=self.mlp_engine,
+                save_dir=self.mlp_save_dir,
+                temporal=True,
+                time_step=time_step,
+                t=t,
+            )
 
             self.neumf_engine = NeuMFEngine(
                 self.config["neumf_config"],
@@ -204,10 +195,15 @@ class NCF_train(TrainEngine):
                 mlp_config=self.config["mlp_config"],
             )
             self.neumf_save_dir = (
-                    self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
+                self.config["model_save_dir"] + self.config["neumf_config"]["save_name"]
             )
-            self.train_epoch(engine=self.neumf_engine, save_dir=self.neumf_save_dir, temporal=True, time_step=time_step,
-                             t=t)
+            self.train_epoch(
+                engine=self.neumf_engine,
+                save_dir=self.neumf_save_dir,
+                temporal=True,
+                time_step=time_step,
+                t=t,
+            )
 
         self.config["run_time"] = self.monitor.stop()
 
@@ -224,7 +220,7 @@ class NCF_train(TrainEngine):
             "lr": [self.config["lr"]],
             "batch_size": [int(self.config["batch_size"])],
             "optimizer": [self.config["optimizer"]],
-            "num_epoch": [self.config["num_epoch"]],
+            "max_epoch": [self.config["max_epoch"]],
             "remarks": [self.config["model_run_id"]],
         }
 
@@ -233,7 +229,7 @@ class NCF_train(TrainEngine):
         """
         self.neumf_engine.resume_checkpoint(model_dir=self.neumf_save_dir)
         for i in range(10):
-            result = self.neumf_engine.evaluate(self.data.test[i], epoch_id=0)
+            result = self.neumf_engine.evaluate(self.dataset.test[i], epoch_id=0)
             print(result)
             result["time"] = [self.config["run_time"]]
             result.update(result_para)

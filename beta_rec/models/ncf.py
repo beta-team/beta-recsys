@@ -112,7 +112,7 @@ class NeuMFEngine(Engine):
         mlp_model = MLP(self.mlp_config)
 
         self.resume_checkpoint(
-            self.config["model_ckp_file"] + self.config["pretrain_mlp"], mlp_model
+            self.config["model_save_dir"] + self.config["pretrain_mlp"], mlp_model
         )
 
         self.model.embedding_user_mlp.weight.data = mlp_model.embedding_user.weight.data
@@ -122,7 +122,7 @@ class NeuMFEngine(Engine):
 
         gmf_model = GMF(self.gmf_config)
         self.resume_checkpoint(
-            self.config["model_ckp_file"] + self.config["pretrain_gmf"], gmf_model
+            self.config["model_save_dir"] + self.config["pretrain_gmf"], gmf_model
         )
         self.model.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
         self.model.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data

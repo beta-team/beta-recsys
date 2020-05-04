@@ -1,17 +1,19 @@
 import sys
+
+sys.path.append("../")
+
 import argparse
 from ray import tune
 from beta_rec.train_engine import TrainEngine
 from beta_rec.models.triple2vec import Triple2vecEngine
 from beta_rec.utils.common_util import update_args
-sys.path.append("../")
 
 
 def parse_args():
-    """
-    Parse args from command line
-    Returns:
+    """ Parse args from command line
 
+        Returns:
+            args object.
     """
     parser = argparse.ArgumentParser(description="Run Triple2vec..")
     parser.add_argument(
@@ -22,7 +24,7 @@ def parse_args():
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
-    # these settings will be updated.
+    # These settings will used to update the parameters received from the config file.
     parser.add_argument(
         "--dataset",
         nargs="?",
@@ -48,20 +50,13 @@ def parse_args():
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
     parser.add_argument(
-        "--temp_train",
-        nargs="?",
-        type=int,
-        help="IF value >0, then the model will be trained based on the temporal feeding, else use normal trainning",
-    )
-    parser.add_argument(
         "--use_bias", nargs="?", type=int, help="",
     )
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
-    parser.add_argument("--num_epoch", nargs="?", type=int, help="Number of max epoch.")
-
+    parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
     )
@@ -73,7 +68,6 @@ class Triple2vec_train(TrainEngine):
     """ An instance class from the TrainEngine base class
 
     """
-
     def __init__(self, config):
         """Constructor
 
@@ -83,7 +77,8 @@ class Triple2vec_train(TrainEngine):
 
         self.config = config
         super(Triple2vec_train, self).__init__(self.config)
-        self.sample_triple()
+        self.load_dataset()
+        self.train_data = self.dataset.sample_triple()
         self.engine = Triple2vecEngine(self.config)
 
 
