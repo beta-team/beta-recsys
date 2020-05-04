@@ -137,22 +137,21 @@ class NGCFEngine(Engine):
         loss = batch_loss.item()
         return loss
 
-    def train_an_epoch(self, epoch_id, user, pos_i, neg_i):
+    def train_an_epoch(self, train_loader, epoch_id):
         """ Generate batch data for each batch
         Args:
             epoch_id (int):
-            user (list)
-            pos_i (list):
-            neg_i (list):
+            train_loader (function): user, pos_items and neg_items generator
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0.0
-        batch_data = (user, pos_i, neg_i)
 
         n_batch = self.num_batch
 
         for idx in range(n_batch):
+            users, pos_items, neg_items = train_loader.sample(self.batch_size)
+            batch_data = (users, pos_items, neg_items)
             loss = self.train_single_batch(batch_data)
             total_loss += loss
         print("[Training Epoch {}], Loss {}".format(epoch_id, loss))
