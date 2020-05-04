@@ -102,9 +102,10 @@ class NGCF_train(TrainEngine):
                     )
                 )
                 break
-            users, pos_items, neg_items = self.dataset.sample(self.config["batch_size"])
+
+            train_loader = self.dataset
             self.engine.train_an_epoch(
-                epoch_id=epoch, user=users, pos_i=pos_items, neg_i=neg_items
+                epoch_id=epoch, train_loader=train_loader
             )
             self.eval_engine.train_eval(
                 self.dataset.valid[0], self.dataset.test[0], self.engine.model, epoch
