@@ -121,22 +121,22 @@ if __name__ == "__main__":
 
     time_str = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_file = (
-            root_dir
-            + "logs/cornac"
-            + "_"
-            + config["dataset"]
-            + "_"
-            + config["data_split"]
-            + time_str
+            root_dir +
+            "logs/cornac" +
+            "_" +
+            config["dataset"] +
+            "_" +
+            config["data_split"] +
+            time_str
     )
     config["result_file"] = (
-            root_dir
-            + "results/cornac"
-            + "_"
-            + config["dataset"]
-            + "_"
-            + config["data_split"]
-            + ".csv"
+            root_dir +
+            "results/cornac" +
+            "_" +
+            config["dataset"] +
+            "_" +
+            config["data_split"] +
+            ".csv"
     )
     """
     init logger
