@@ -1,7 +1,8 @@
 import os
 import csv
 import pandas as pd
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_ORDER_COL, \
+    DEFAULT_TIMESTAMP_COL
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URLs
@@ -86,7 +87,7 @@ class Delicious_2k(DatasetBase):
             'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
         then put it into the directory `delicious-2k/raw
         """
-        
+
         super().__init__(
             'delicious-2k',
             url=DL_2K_URL,
@@ -138,7 +139,7 @@ class Delicious_2k(DatasetBase):
             prior_transactions,
             os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz')
         )
-        
+
         print("Done.")
 
 

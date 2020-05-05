@@ -2,7 +2,7 @@ import os
 import shutil
 import pandas as pd
 from tabulate import tabulate
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_TIMESTAMP_COL, DEFAULT_ORDER_COL
 from beta_rec.utils.common_util import (
     get_dataframe_from_npz,
     save_dataframe_as_npz,
@@ -29,7 +29,7 @@ class DatasetBase(object):
         self,
         dataset_name,
         url=None,
-        root_dir=default_root_dir,
+        root_dir=None,
         manual_download_url=None,
         processed_leave_one_out_url="",
         processed_leave_one_basket_url="",
@@ -62,6 +62,8 @@ class DatasetBase(object):
         # compatible method for the previous version
         self.save_dataframe_as_npz = save_dataframe_as_npz
         # create the root datasets directory
+        if not root_dir:
+            root_dir = default_root_dir
         self.dataset_dir = os.path.join(root_dir, "datasets")
         if not os.path.exists(self.dataset_dir):
             os.mkdir(self.dataset_dir)
