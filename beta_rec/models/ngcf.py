@@ -57,7 +57,7 @@ class NGCF(torch.nn.Module):
         all_embeddings = [ego_embeddings]
 
         for i in range(self.n_layers):
-            side_embeddings = torch.sparse.mm(norm_adj, ego_embeddings)
+            side_embeddings = sparse.mm(norm_adj, ego_embeddings)
             sum_embeddings = F.leaky_relu(self.GC_weights[i](side_embeddings))
             bi_embeddings = torch.mul(ego_embeddings, side_embeddings)
             bi_embeddings = F.leaky_relu(self.Bi_weights[i](bi_embeddings))

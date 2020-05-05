@@ -336,7 +336,7 @@ class Dataset(object):
         return df_list_new
 
     def _reindex(self, df, implicit=True):
-        """ 
+        """
         Process dataset to reindex userID and itemID, also set rating as implicit feedback
 
         Parameters:

@@ -121,8 +121,7 @@ if __name__ == "__main__":
 
     time_str = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_file = (
-            root_dir +
-            "logs/cornac" +
+            root_dir + "logs/cornac" +
             "_" +
             config["dataset"] +
             "_" +

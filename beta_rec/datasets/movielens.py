@@ -146,7 +146,7 @@ class Movielens_100k(DatasetBase):
 
     def load_fea_vec(self):
         """Loading feature vectors for users and items.
-        1. For items (movies), we use the last 19 fields as feature, which are the genres, 
+        1. For items (movies), we use the last 19 fields as feature, which are the genres,
         with 1 indicating the movie is of that genre, and 0 indicating it is not;
         movies can be in several genres at once.
 
