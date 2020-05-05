@@ -1,13 +1,3 @@
-"""
-Created on Aug 5, 2019
-Updated on XX,2019 BY xxx@
-
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset fetching and dataset pre-processing functions.
-
-@author: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
 import numpy as np
 import argparse
 import sys
