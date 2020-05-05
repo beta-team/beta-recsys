@@ -1,7 +1,8 @@
 import os
 import csv
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_ORDER_COL, \
+    DEFAULT_TIMESTAMP_COL
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URLs
