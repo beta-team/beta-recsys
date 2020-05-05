@@ -2,7 +2,7 @@ import os
 import shutil
 import pandas as pd
 from tabulate import tabulate
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_TIMESTAMP_COL, DEFAULT_ORDER_COL
 from beta_rec.utils.common_util import (
     get_dataframe_from_npz,
     save_dataframe_as_npz,

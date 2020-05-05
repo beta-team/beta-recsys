@@ -1,5 +1,4 @@
 import sys
-
 sys.path.append("../")
 
 import os
@@ -9,9 +8,11 @@ import argparse
 import torch
 from beta_rec.train_engine import TrainEngine
 from beta_rec.models.ngcf import NGCFEngine
-from beta_rec.utils.common_util import update_args, ensureDir
+from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
+
+
 
 
 def parse_args():

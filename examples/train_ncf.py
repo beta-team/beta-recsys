@@ -1,7 +1,6 @@
 import sys
 
 sys.path.append("../")
-
 import os
 import argparse
 import pandas as pd
@@ -13,6 +12,8 @@ from beta_rec.models.ncf import NeuMFEngine
 from beta_rec.datasets.nmf_data_utils import SampleGenerator
 from beta_rec.utils.common_util import save_to_csv, update_args
 from beta_rec.utils.monitor import Monitor
+
+
 
 
 def parse_args():
@@ -119,7 +120,7 @@ class NCF_train(TrainEngine):
                 engine.save_checkpoint(model_dir=save_dir)
                 best_performance = result["ndcg_at_k@10"]
                 print("save model to" + self.gmf_save_dir)
-                best_result = result
+                # best_result = result
         # save_result(result, result_file)
 
     def train(self):
