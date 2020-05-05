@@ -69,12 +69,12 @@ class Engine(object):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def evaluate(self, eval_data_df, epoch_id=0, TOP_K=10):
-        """ 
+        """
         evaluate the performance for all the eval_data_df.
 
 
         Parameters:
-                eval_data_df: Dataframe with column naming DEFAULT_USER_COL, DEFAULT_ITEM_COL 
+                eval_data_df: DataFrame with column naming DEFAULT_USER_COL, DEFAULT_ITEM_COL
                 and DEFAULT_RATING_COL
                 TOP_K: if not specified, DEFAULT_K =10
 
