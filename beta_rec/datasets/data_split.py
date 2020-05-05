@@ -239,6 +239,7 @@ def load_split_data(path, n_test=10):
                 valid_df.agg(["count", "nunique"]),
                 headers=valid_df.columns,
                 tablefmt="psql",
+                disable_numparse=True,
             )
         )
         print(f"test_data statistics")
@@ -247,6 +248,7 @@ def load_split_data(path, n_test=10):
                 test_df.agg(["count", "nunique"]),
                 headers=test_df.columns,
                 tablefmt="psql",
+                disable_numparse=True,
             )
         )
         print("-" * 80)
@@ -264,6 +266,7 @@ def load_split_data(path, n_test=10):
                     valid_df.agg(["count", "nunique"]),
                     headers=valid_df.columns,
                     tablefmt="psql",
+                    disable_numparse=True,
                 )
             )
         test_df = get_dataframe_from_npz(os.path.join(path, f"test_{i}.npz"))
@@ -275,6 +278,7 @@ def load_split_data(path, n_test=10):
                     test_df.agg(["count", "nunique"]),
                     headers=test_df.columns,
                     tablefmt="psql",
+                    disable_numparse=True,
                 )
             )
     print("-" * 80)
