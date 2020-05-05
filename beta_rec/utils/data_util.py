@@ -264,10 +264,10 @@ class Dataset(object):
         """ process the dataset to reindex userID and itemID, also set rating as implicit feedback
 
         Parameters:
-            train (pandas.DataFrame): training data with at least columns (col_user, col_item, col_rating) 
+            train (pandas.DataFrame): training data with at least columns (col_user, col_item, col_rating)
             test (pandas.DataFrame): test data with at least columns (col_user, col_item, col_rating)
                     test can be None, if so, we only process the training data
-            implicit (bool): if true, set rating>0 to rating = 1 
+            implicit (bool): if true, set rating>0 to rating = 1
 
         Returns:
             list: train and test pandas.DataFrame Dataset, which have been reindexed.
@@ -340,12 +340,12 @@ class Dataset(object):
         Process dataset to reindex userID and itemID, also set rating as implicit feedback
 
         Parameters:
-            df (pandas.DataFrame): dataframe with at least columns (col_user, col_item, col_rating) 
-            implicit (bool): if true, set rating>0 to rating = 1 
+            df (pandas.DataFrame): dataframe with at least columns (col_user, col_item, col_rating)
+            implicit (bool): if true, set rating>0 to rating = 1
 
         Returns:
             list: train and test pandas.DataFrame Dataset, which have been reindexed.
-        
+
         """
 
         # If testing dataset is None

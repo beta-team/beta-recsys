@@ -86,7 +86,7 @@ class Delicious_2k(DatasetBase):
             'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
         then put it into the directory `delicious-2k/raw
         """
-        
+
         super().__init__(
             'delicious-2k',
             url=DL_2K_URL,
@@ -138,7 +138,7 @@ class Delicious_2k(DatasetBase):
             prior_transactions,
             os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz')
         )
-        
+
         print("Done.")
 
 
