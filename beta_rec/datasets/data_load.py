@@ -4,7 +4,7 @@ from beta_rec.datasets.dunnhumby import Dunnhumby
 from beta_rec.datasets.tafeng import Tafeng
 from beta_rec.datasets.last_fm import LastFM
 from beta_rec.datasets.epinions import Epinions
-from beta_rec.datasets.instacart import Instacart
+from beta_rec.datasets.instacart import Instacart, Instacart_25
 
 
 def load_user_fea_dic(config, fea_type):
@@ -88,6 +88,7 @@ def load_split_dataset(config):
         "epinions": Epinions,
         "dunnhumby": Dunnhumby,
         "instacart": Instacart,
+        "instacart_25": Instacart_25,
     }
     dataset = dataset_mapping[config["dataset"]]()
     return dataset.load_split(config)
@@ -113,6 +114,7 @@ def load_user_item_feature(config):
         "epinions": Epinions,
         "dunnhumby": Dunnhumby,
         "instacart": Instacart,
+        "instacart_25": Instacart_25,
     }
     dataset = dataset_mapping[config["dataset"]]()
     return dataset.load_fea_vec()
