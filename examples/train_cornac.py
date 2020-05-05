@@ -8,10 +8,12 @@ are returned by dataset fetching and dataset pre-processing functions.
 @author: Zaiqiao Meng (zaiqiao.meng@gmail.com)
 
 """
-
 import numpy as np
 import argparse
 import sys
+
+sys.path.append("../")
+
 from datetime import datetime
 import cornac
 from beta_rec.utils.common_util import save_to_csv
@@ -21,7 +23,7 @@ import beta_rec.utils.evaluation as eval_model
 import beta_rec.utils.constants as Constants
 import pandas as pd
 
-sys.path.append("../")
+
 base_string = "abcdefghijklmnopqrstuvwxyz"
 
 config = {

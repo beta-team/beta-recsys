@@ -1,4 +1,6 @@
 import sys
+sys.path.append("../")
+
 import os
 import json
 import numpy as np
@@ -10,7 +12,7 @@ from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
-sys.path.append("../")
+
 
 
 def parse_args():
