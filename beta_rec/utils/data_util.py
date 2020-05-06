@@ -584,8 +584,8 @@ class Dataset(object):
         )
         adj_mat = adj_mat.tolil()
         R = self.R.tolil()
-        adj_mat[: self.n_users, self.n_users :] = R
-        adj_mat[self.n_users :, : self.n_users] = R.T
+        adj_mat[: self.n_users, self.n_users:] = R
+        adj_mat[self.n_users:, : self.n_users] = R.T
         adj_mat = adj_mat.todok()
         print("already create adjacency matrix", adj_mat.shape, time() - t1)
         t2 = time()
