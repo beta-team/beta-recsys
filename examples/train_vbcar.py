@@ -1,7 +1,10 @@
 import sys
+
 sys.path.append("../")
 
 import argparse
+import os
+import math
 from ray import tune
 from beta_rec.train_engine import TrainEngine, print_dict_as_table
 from beta_rec.models.vbcar import VBCAREngine
@@ -9,8 +12,6 @@ from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from tqdm import tqdm
-
-
 
 
 def parse_args():
@@ -96,49 +97,48 @@ class VBCAR_train(TrainEngine):
         self.engine = VBCAREngine(self.config)
 
     def train(self):
+        """Default train implementation
+
+        """
         assert hasattr(self, "engine"), "Please specify the exact model engine !"
-        monitor = Monitor(log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id)
-        """
-        init model
-        """
-        print("init model ...")
+        self.monitor = Monitor(
+            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+        )
         self.engine.data = self.dataset
-        print("strat traning... ")
-        best_performance = 0
-        n_no_update = 0
+        print("Start training... ")
         epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:
-            print("Epoch {} starts !".format(epoch))
+            print(f"Epoch {epoch} starts !")
             print("-" * 80)
-            data_loader = self.build_data_loader()
-            self.engine.train_an_epoch(data_loader, epoch_id=epoch)
-            result = self.engine.evaluate(self.dataset.valid[0], epoch_id=epoch)
-            test_result = self.engine.evaluate(self.dataset.test[0], epoch_id=epoch)
-            self.engine.record_performance(result, test_result, epoch_id=epoch)
-            if result[self.config["validate_metric"]] > best_performance:
-                n_no_update = 0
-                print_dict_as_table(result)
+            if epoch > 0 and self.eval_engine.n_no_update == 0:
+                # previous epoch have already obtained better result
                 self.engine.save_checkpoint(
-                    model_dir=self.config["model_save_dir"] + "model.ckp"
+                    model_dir=os.path.join(self.config["model_save_dir"], "model.cpk")
                 )
-                best_performance = result[self.config["validate_metric"]]
-            else:
-                n_no_update += 1
 
-            if n_no_update >= MAX_N_UPDATE:
+            if self.eval_engine.n_no_update >= MAX_N_UPDATE:
                 print(
                     "Early stop criterion triggered, no performance update for {:} times".format(
                         MAX_N_UPDATE
                     )
                 )
                 break
+            data_loader = self.build_data_loader()
+            self.engine.train_an_epoch(data_loader, epoch_id=epoch)
+            self.eval_engine.train_eval(
+                self.dataset.valid[0], self.dataset.test[0], self.engine.model, epoch
+            )
+            # anneal alpha
+            self.engine.model.alpha = min(
+                self.config["alpha"] + math.exp(epoch - self.config["max_epoch"] + 20),
+                1,
+            )
             """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
             lr = self.config["lr"] * (0.5 ** (epoch // 10))
-            self.engine.model.alpha += self.config["alpha_step"]
             for param_group in self.engine.optimizer.param_groups:
                 param_group["lr"] = lr
-        self.config["run_time"] = monitor.stop()
-        return best_performance
+        self.config["run_time"] = self.monitor.stop()
+        return self.eval_engine.best_valid_performance
 
 
 def tune_train(config):

@@ -43,17 +43,17 @@ class VBCAR(nn.Module):
     def init_feature(self, user_fea, item_fea):
         self.user_fea = user_fea
         self.item_fea = item_fea
-        self.user_fea_dim = user_fea.size()[1]
-        self.item_fea_dim = item_fea.size()[1]
+        self.user_fea_dim = user_fea.embedding_dim
+        self.item_fea_dim = item_fea.embedding_dim
 
     def user_encode(self, index):
-        x = self.user_fea[index]
+        x = self.user_fea(index)
         mu = self.fc_u_2_mu(self.act(self.fc_u_1_mu(x)))
         std = self.fc_u_2_std(self.act(self.fc_u_1_std(x)))
         return mu, std
 
     def item_encode(self, index):
-        x = self.item_fea[index]
+        x = self.item_fea(index)
         mu = self.fc_i_2_mu(self.act(self.fc_i_1_mu(x)))
         std = self.fc_i_2_std(self.act(self.fc_i_1_std(x)))
         return mu, std
@@ -178,17 +178,11 @@ class VBCAREngine(Engine):
         self.config = config
         self.model = VBCAR(config)
         if config["feature_type"] == "random":
-            user_fea = torch.randn(
-                config["n_users"],
-                self.config["late_dim"],
-                dtype=torch.float32,
-                device=torch.device(self.config["device_str"]),
+            user_fea = nn.Embedding(config["n_users"], self.config["late_dim"]).to(
+                torch.device(self.config["device_str"])
             )
-            item_fea = torch.randn(
-                config["n_items"],
-                self.config["late_dim"],
-                dtype=torch.float32,
-                device=torch.device(self.config["device_str"]),
+            item_fea = nn.Embedding(config["n_items"], self.config["late_dim"]).to(
+                torch.device(self.config["device_str"])
             )
         else:
             pass
