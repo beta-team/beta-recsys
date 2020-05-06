@@ -77,14 +77,14 @@ class Movielens_100k(DatasetBase):
         1. For items (movies), we use the last 19 fields as feature, which are the genres,
         with 1 indicateing the movie is of that genre, and 0 indicateing it is not;
         movies can be in several genres at once.
-        
+
         2. For users, we construct one_hot encoding for age, gender and occupation as their
         feature, where ages are categorized into 8 groups.
-        
+
         Returns:
             user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors
             item_feat (numpy.ndarray): The first column is the item id, rest column are feat vectors
-        
+
         """
         print(f"Making user and item feature vactors for dataset {self.dataset_name}")
         data = pd.read_table(

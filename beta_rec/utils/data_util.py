@@ -113,7 +113,7 @@ def get_D_inv(adj):
 
 def check_adj_if_equal(adj):
     """ Missing docs
-    
+
     Args:
         adj:
 
@@ -271,7 +271,7 @@ class Dataset(object):
 
         Returns:
             list: train and test pandas.DataFrame Dataset, which have been reindexed.
-        
+
         """
         users_ser, items_ser = intersect_train_test(train, test)
         self.n_users = -1
