@@ -13,8 +13,6 @@ from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
 
-
-
 def parse_args():
     """ Parse args from command line
 

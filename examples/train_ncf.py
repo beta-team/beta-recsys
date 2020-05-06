@@ -14,8 +14,6 @@ from beta_rec.utils.common_util import save_to_csv, update_args
 from beta_rec.utils.monitor import Monitor
 
 
-
-
 def parse_args():
     """ Parse args from command line
 

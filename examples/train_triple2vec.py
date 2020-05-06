@@ -8,8 +8,6 @@ from beta_rec.models.triple2vec import Triple2vecEngine
 from beta_rec.utils.common_util import update_args
 
 
-
-
 def parse_args():
     """ Parse args from command line
 
