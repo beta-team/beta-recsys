@@ -11,6 +11,7 @@ INSTACART_URL = 'https://s3.amazonaws.com/instacart-datasets/instacart_online_gr
 # processed data url
 INSTACART_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugX4W4zLO6Jkx8P-W?e=oKymnV'
 INSTACART_TEMPORAL_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZquggAblxVFSYeu3nzh?e=pzBaAa'
+INSTACART_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZquggLQynzcCWfNUdIg?e=HDhUjL'
 
 
 class Instacart(DatasetBase):
@@ -29,6 +30,7 @@ class Instacart(DatasetBase):
         super().__init__(
             'instacart',
             url=INSTACART_URL,
+            processed_leave_one_out_url=INSTACART_LEAVE_ONE_OUT_URL,
             processed_random_split_url=INSTACART_RANDOM_SPLIT_URL,
             processed_temporal_split_url=INSTACART_TEMPORAL_SPLIT_URL,
         )

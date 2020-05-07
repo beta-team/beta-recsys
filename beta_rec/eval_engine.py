@@ -4,7 +4,7 @@ import numpy as np
 from threading import Thread
 from threading import Lock
 import beta_rec.utils.evaluation as eval_model
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_PREDICTION_COL
 from beta_rec.utils.common_util import print_dict_as_table, save_to_csv, timeit
 from tensorboardX import SummaryWriter
 import socket
@@ -26,6 +26,7 @@ def detect_port(port, ip="127.0.0.1"):
                 connections.
         False -- otherwise.
     """
+    ready = True
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind((ip, port))
@@ -36,10 +37,10 @@ def detect_port(port, ip="127.0.0.1"):
         sock.listen(5)
         sock.close()
     except socket.error as e:
-        return False
-        if rais:
-            raise RuntimeError("The server is already running on port {0}".format(port))
-    return True
+        ready = False
+        raise RuntimeError("The server is already running on port {0}".format(port))
+    finally:
+        return ready
 
 
 def evaluate(data_df, predictions, metrics, k_li):

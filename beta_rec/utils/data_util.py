@@ -113,7 +113,7 @@ def get_D_inv(adj):
 
 def check_adj_if_equal(adj):
     """ Missing docs
-    
+
     Args:
         adj:
 
@@ -271,7 +271,7 @@ class Dataset(object):
 
         Returns:
             list: train and test pandas.DataFrame Dataset, which have been reindexed.
-        
+
         """
         users_ser, items_ser = intersect_train_test(train, test)
         self.n_users = -1
@@ -584,8 +584,8 @@ class Dataset(object):
         )
         adj_mat = adj_mat.tolil()
         R = self.R.tolil()
-        adj_mat[: self.n_users, self.n_users :] = R
-        adj_mat[self.n_users :, : self.n_users] = R.T
+        adj_mat[: self.n_users, self.n_users:] = R
+        adj_mat[self.n_users:, : self.n_users] = R.T
         adj_mat = adj_mat.todok()
         print("already create adjacency matrix", adj_mat.shape, time() - t1)
         t2 = time()
