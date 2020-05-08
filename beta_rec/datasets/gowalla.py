@@ -8,6 +8,9 @@ from beta_rec.datasets.dataset_base import DatasetBase
 GOWALLA_CHECKIN_URL = "https://snap.stanford.edu/data/loc-gowalla_totalCheckins.txt.gz"
 GOWALLA_EDGES_URL = "https://snap.stanford.edu/data/loc-gowalla_edges.txt.gz"
 
+# processed data url
+GOWALLA_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughJgziqB9ORAzcs5?e=wdHaxf"
+
 
 def process_time(standard_time=None):
     """Transform time format "xxxx-xx-xxTxx-xx-xxZ" into format "xxxx-xx-xx xx-xx-xx".
@@ -43,7 +46,10 @@ class Gowalla(DatasetBase):
             https://snap.stanford.edu/data/loc-Gowalla.html.
         then put it into the directory `gowalla/raw` and unzip it.
         """
-        super().__init__('gowalla', url=GOWALLA_CHECKIN_URL)
+        super().__init__('gowalla',
+                         url=GOWALLA_CHECKIN_URL,
+                         processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,
+                         )
 
     def preprocess(self):
         """Preprocess the raw file
