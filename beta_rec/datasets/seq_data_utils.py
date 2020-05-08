@@ -123,7 +123,7 @@ class SeqDataset(Dataset):
 def collate_fn(data):
     """Pad the sequences.
     This function will be used to pad the sessions to max length
-    in the batch and transpose the batch from 
+    in the batch and transpose the batch from
     batch_size x max_seq_len to max_seq_len x batch_size.
     It will return padded vectors, labels and lengths of each session (before padding)
     It will be used in the Dataloader

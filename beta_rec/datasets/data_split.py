@@ -347,7 +347,7 @@ def random_split(data, test_rate=0.1, by_user=False):
                 interactions[train_size:], DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
-                interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+                interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
             ] = "validate"
 
     else:
@@ -362,7 +362,7 @@ def random_split(data, test_rate=0.1, by_user=False):
             interactions[train_size:], DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
-            interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+            interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
         ] = "validate"
     return data
 
@@ -396,7 +396,7 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
-                    orders[train_size - validate_size : train_size]
+                    orders[train_size - validate_size: train_size]
                 ),
                 DEFAULT_FLAG_COL,
             ] = "validate"
@@ -413,7 +413,7 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
-                orders[train_size - validate_size : train_size]
+                orders[train_size - validate_size: train_size]
             ),
             DEFAULT_FLAG_COL,
         ] = "validate"
@@ -499,7 +499,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
                 interactions[train_size:], DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
-                interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+                interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
             ] = "validate"
 
     else:
@@ -513,7 +513,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
             interactions[train_size:], DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
-            interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+            interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
         ] = "validate"
     return data
 
@@ -546,7 +546,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
-                    orders[train_size - validate_size : train_size]
+                    orders[train_size - validate_size: train_size]
                 ),
                 DEFAULT_FLAG_COL,
             ] = "validate"
@@ -561,7 +561,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
-                orders[train_size - validate_size : train_size]
+                orders[train_size - validate_size: train_size]
             ),
             DEFAULT_FLAG_COL,
         ] = "validate"

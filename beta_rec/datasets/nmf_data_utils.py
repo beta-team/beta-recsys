@@ -69,9 +69,9 @@ class SampleGenerator(object):
         """return all negative items & 100 sampled negative items"""
         interact_status = (
             ratings.groupby(DEFAULT_USER_COL)[DEFAULT_ITEM_COL]
-                .apply(set)
-                .reset_index()
-                .rename(columns={DEFAULT_ITEM_COL: "interacted_items"})
+                   .apply(set)
+                   .reset_index()
+                   .rename(columns={DEFAULT_ITEM_COL: "interacted_items"})
         )
         interact_status["negative_items"] = interact_status["interacted_items"].apply(
             lambda x: self.item_pool - x
