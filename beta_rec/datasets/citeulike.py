@@ -165,3 +165,9 @@ class CiteULikeT(DatasetBase):
         )
 
         print("Done.")
+
+    def load_leave_one_out(self, random=False, n_negative=100, n_test=10):
+        if random is False:
+            raise RuntimeError("CiteULikeT doesn't have timestamp column, please use random=True as parameter")
+
+        self.load_leave_one_out(random, n_negative, n_test)
