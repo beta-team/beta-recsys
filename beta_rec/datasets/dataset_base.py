@@ -2,6 +2,7 @@ import os
 import shutil
 import pandas as pd
 from tabulate import tabulate
+from py7zr import unpack_7zarchive
 from beta_rec.utils.constants import DEFAULT_TIMESTAMP_COL, DEFAULT_ORDER_COL
 from beta_rec.utils.common_util import (
     get_dataframe_from_npz,
@@ -22,6 +23,9 @@ from beta_rec.datasets.data_split import (
 default_root_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 )
+
+# register 7z unpack
+shutil.register_unpack_format("7zip", ['.7z'], unpack_7zarchive)
 
 
 class DatasetBase(object):
