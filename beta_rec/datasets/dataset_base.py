@@ -37,6 +37,7 @@ class DatasetBase(object):
         processed_random_basket_split_url="",
         processed_temporal_split_url="",
         processed_temporal_basket_split_url="",
+        tips=None,
     ):
         """Dataset base that any other datasets need to inherit from
 
@@ -57,6 +58,11 @@ class DatasetBase(object):
         self.processed_random_basket_split_url = processed_random_basket_split_url
         self.processed_temporal_split_url = processed_temporal_split_url
         self.processed_temporal_basket_split_url = processed_temporal_basket_split_url
+
+        if tips is None:
+            tips = f"please download the dataset by your self via {self.manual_download_url}, rename to " + \
+                   f"{self.dataset_name} and put it into {self.raw_path} after decompression "
+        self.tips = tips
 
         self.dataset_name = dataset_name
         # compatible method for the previous version
@@ -83,10 +89,7 @@ class DatasetBase(object):
             os.mkdir(self.processed_path)
 
         if not url:
-            print(
-                f"please download the dataset by your self via {self.manual_download_url}, rename to "
-                f"{self.dataset_name} and put it into {self.raw_path} after decompression "
-            )
+            print(self.tips)
 
     @timeit
     def download(self):
@@ -95,10 +98,7 @@ class DatasetBase(object):
         Download the dataset with the given url and unpack the file.
         """
         if not self.url:
-            raise RuntimeError(
-                f"please download the dataset by your self via {self.manual_download_url}, rename to "
-                f"{self.dataset_name} and put it into {self.raw_path} after decompression"
-            )
+            raise RuntimeError(self.tips)
 
         download_file_name = os.path.join(
             self.raw_path, os.path.splitext(os.path.basename(self.url))[0]
