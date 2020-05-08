@@ -1,12 +1,19 @@
 import os
-import datetime
+import random
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ORDER_COL, DEFAULT_ITEM_COL, \
-    DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_FLAG_COL,
+)
+from beta_rec.utils.common_util import un_zip
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
-INSTACART_URL = 'https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz'
+INSTACART_URL = "https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz"
 
 # processed data url
 INSTACART_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugX4W4zLO6Jkx8P-W?e=oKymnV'
@@ -28,7 +35,7 @@ class Instacart(DatasetBase):
         product for the next time, we construct it with structure [order_id, product_id] =>
         """
         super().__init__(
-            'instacart',
+            "instacart",
             url=INSTACART_URL,
             processed_leave_one_out_url=INSTACART_LEAVE_ONE_OUT_URL,
             processed_random_split_url=INSTACART_RANDOM_SPLIT_URL,
@@ -51,71 +58,174 @@ class Instacart(DatasetBase):
         """
 
         # Step 1: Download instacart dataset if this dataset is not existed.
-        order_file_path = os.path.join(self.raw_path, self.dataset_name, "orders.csv")
-        order_product_file_path = os.path.join(self.raw_path, self.dataset_name, "order_products__train.csv")
-        if not os.path.exists(order_file_path) or not os.path.exists(order_product_file_path):
+
+        print("Start loading data from raw data")
+        order_products_prior_file = os.path.join(
+            self.raw_path, self.dataset_name, "order_products__prior.csv"
+        )
+        order_products_train_file = os.path.join(
+            self.raw_path, self.dataset_name, "order_products__train.csv"
+        )
+        if not os.path.exists(order_products_prior_file) or not os.path.exists(
+            order_products_train_file
+        ):
             print("Raw file doesn't exist, try to download it.")
             self.download()
 
-        # Step 2: Load <order> table and <order_products> table from "orders.csv" and "order_products__train.csv".
-        path_name = os.path.join(self.raw_path, self.dataset_name)
-        orders_data = os.path.join(path_name, "orders.csv")
-        orders_products_data = os.path.join(path_name, "order_products__train.csv")
+        orders_file = os.path.join(self.raw_path, self.dataset_name, "orders.csv")
 
-        # orders_table
-        orders_table = pd.read_csv(
-            orders_data,
-            usecols=[
-                "order_id",
-                "user_id",
-                "order_hour_of_day",
-                "days_since_prior_order"
-            ]
+        #  order_products__*.csv: order_id,product_id,add_to_cart_order,reordered
+        prior_products = pd.read_csv(
+            order_products_prior_file,
+            usecols=["order_id", "product_id", "add_to_cart_order"],
+        )
+        train_products = pd.read_csv(
+            order_products_train_file,
+            usecols=["order_id", "product_id", "add_to_cart_order"],
+        )
+        order_products = pd.concat([prior_products, train_products])
+
+        #  orders.csv:  order_id,user_id,eval_set,order_number,order_dow,order_hour_of_day,days_since_prior_order
+        orders = pd.read_csv(
+            orders_file, usecols=["user_id", "order_id", "order_number", "eval_set"]
         )
 
-        # orders_products_table
-        orders_products_table = pd.read_csv(
-            orders_products_data,
-            usecols=[
-                "order_id",
-                "product_id",
-            ],
+        user_products = order_products.merge(orders, how="left", on="order_id")
+
+        user_item_id = user_products.groupby(["user_id"]).count()
+
+        user_order_number = user_products.groupby(["user_id", "order_number"]).count()
+
+        order_addtocart_user = (
+            user_products.groupby(
+                ["order_id", "add_to_cart_order", "user_id", "product_id", "eval_set"]
+            )
+            .size()
+            .rename("ratings")
+            .reset_index()
         )
-
-        # Step 3: Merge the two tables above.
-        prior_transactions = orders_products_table.merge(
-            orders_table,
-            left_on="order_id",
-            right_on="order_id",
-        )
-
-        # Step 5: Add additional columns [rating, timestamp].
-        # Add rating columns into table.
-        prior_transactions.insert(3, "rating", 1)
-
-        # Create virtual timestamp and add to the merge table.
-        virtual_date = datetime.datetime.strptime("2020-04-21 00:00", "%Y-%m-%d %H:%M")
-        prior_transactions["days_since_prior_order"] = prior_transactions["days_since_prior_order"].apply(
-            lambda t: (virtual_date + datetime.timedelta(days=t)).timestamp())
-        prior_transactions = prior_transactions.drop(["order_hour_of_day"], axis=1)
-
-        # Step 6: Rename columns and save data model.
-        prior_transactions.rename(
+        order_addtocart_user.rename(
             columns={
-                "user_id": DEFAULT_USER_COL,
                 "order_id": DEFAULT_ORDER_COL,
+                "user_id": DEFAULT_USER_COL,
                 "product_id": DEFAULT_ITEM_COL,
-                "rating": DEFAULT_RATING_COL,
-                "days_since_prior_order": DEFAULT_TIMESTAMP_COL,
+                "ratings": DEFAULT_RATING_COL,
+                "eval_set": DEFAULT_FLAG_COL,
             },
             inplace=True,
         )
-
-        # Check the validation of this table.
-        # print(prior_transactions.head(10))
-
+        timestamp_col = {DEFAULT_TIMESTAMP_COL: order_addtocart_user.index}
+        order_addtocart_user = order_addtocart_user.assign(**timestamp_col)
+        print("Loading raw data completed")
         # save processed data into the disk.
-        self.save_dataframe_as_npz(prior_transactions,
-                                   os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz'))
+        self.save_dataframe_as_npz(
+            order_addtocart_user,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
 
-        print("Done.")
+
+class Instacart_25(DatasetBase):
+    def __init__(self):
+        """Instacart
+
+        Instacart dataset
+        If the dataset can not be download by the url,
+        you need to down the dataset by the link:
+            'https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz'
+        then put it into the directory `instacart/raw`, unzip this file and rename the directory in 'instacart'.
+
+        Instacart dataset is used to predict when users buy
+        product for the next time, we construct it with structure [order_id, product_id] =>
+        """
+        super().__init__(
+            "instacart_25",
+            url="https://www.kaggle.com/c/6644/download-all",
+            processed_random_split_url=INSTACART_RANDOM_SPLIT_URL,
+            processed_temporal_split_url=INSTACART_TEMPORAL_SPLIT_URL,
+        )
+
+    def preprocess(self):
+        """Preprocess the raw file
+
+        Preprocess the file downloaded via the url,
+        convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory
+
+        Download and load datasets
+        1. Download instacart dataset if this dataset is not existed.
+        2. Load <order> table and <order_products> table from "orders.csv" and "order_products__train.csv".
+        3. Merge the two tables above.
+        4. Add additional columns [rating, timestamp].
+        5. Rename columns and save data model.
+        """
+
+        # Step 1: Download instacart dataset if this dataset is not existed.
+
+        print("Start loading data from raw data")
+        order_products_prior_file = os.path.join(
+            self.raw_path, self.dataset_name, "order_products__prior.csv"
+        )
+        order_products_train_file = os.path.join(
+            self.raw_path, self.dataset_name, "order_products__train.csv"
+        )
+        if not os.path.exists(order_products_prior_file) or not os.path.exists(
+            order_products_train_file
+        ):
+            print("Raw file doesn't exist, try to download it.")
+            self.download()
+            file_name = os.path.join(self.raw_path, self.dataset_name + ".gz")
+            un_zip(file_name)
+
+        orders_file = os.path.join(self.raw_path, self.dataset_name, "orders.csv")
+
+        #  order_products__*.csv: order_id,product_id,add_to_cart_order,reordered
+        prior_products = pd.read_csv(
+            order_products_prior_file,
+            usecols=["order_id", "product_id", "add_to_cart_order"],
+        )
+        train_products = pd.read_csv(
+            order_products_train_file,
+            usecols=["order_id", "product_id", "add_to_cart_order"],
+        )
+        order_products = pd.concat([prior_products, train_products])
+
+        #  orders.csv:  order_id,user_id,eval_set,order_number,order_dow,order_hour_of_day,days_since_prior_order
+        orders = pd.read_csv(
+            orders_file, usecols=["user_id", "order_id", "order_number", "eval_set"]
+        )
+
+        user_products = order_products.merge(orders, how="left", on="order_id")
+
+        order_addtocart_user = (
+            user_products.groupby(
+                ["order_id", "add_to_cart_order", "user_id", "product_id", "eval_set"]
+            )
+            .size()
+            .rename("ratings")
+            .reset_index()
+        )
+        order_addtocart_user.rename(
+            columns={
+                "order_id": DEFAULT_ORDER_COL,
+                "user_id": DEFAULT_USER_COL,
+                "product_id": DEFAULT_ITEM_COL,
+                "ratings": DEFAULT_RATING_COL,
+                "eval_set": DEFAULT_FLAG_COL,
+            },
+            inplace=True,
+        )
+        timestamp_col = {DEFAULT_TIMESTAMP_COL: order_addtocart_user.index}
+        order_addtocart_user = order_addtocart_user.assign(**timestamp_col)
+        print("Start sampling 25% users from the raw data")
+        users = list(order_addtocart_user[DEFAULT_USER_COL].unique())
+        sampled_users = random.sample(users, int(len(users) * 0.25))
+        order_addtocart_user = order_addtocart_user[
+            order_addtocart_user[DEFAULT_USER_COL].isin(sampled_users)
+        ]
+
+        print("Loading raw data completed")
+        # save processed data into the disk.
+        self.save_dataframe_as_npz(
+            order_addtocart_user,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
