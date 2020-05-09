@@ -10,6 +10,7 @@ GOWALLA_EDGES_URL = "https://snap.stanford.edu/data/loc-gowalla_edges.txt.gz"
 
 # processed data url
 GOWALLA_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughJgziqB9ORAzcs5?e=wdHaxf"
+GOWALLA_TEMPORAL_SPLIT_UTL = "https://1drv.ms/u/s!AjMahLyQeZqughRfFX6k7Kj58NmI?e=iM5f3S"
 
 
 def process_time(standard_time=None):
@@ -49,6 +50,7 @@ class Gowalla(DatasetBase):
         super().__init__('gowalla',
                          url=GOWALLA_CHECKIN_URL,
                          processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,
+                         processed_temporal_split_url=GOWALLA_TEMPORAL_SPLIT_UTL,
                          )
 
     def preprocess(self):
