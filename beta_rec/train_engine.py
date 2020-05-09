@@ -184,7 +184,6 @@ class TrainEngine(object):
         )
         self.engine.data = self.dataset
         print("Start training... ")
-        best_performance = 0
         epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:
             print(f"Epoch {epoch} starts !")
@@ -212,7 +211,7 @@ class TrainEngine(object):
             for param_group in self.engine.optimizer.param_groups:
                 param_group["lr"] = lr
         self.config["run_time"] = self.monitor.stop()
-        return best_performance
+        return self.eval_engine.best_valid_performance
 
     def test(self):
         """Evaluate the performance for the testing sets based on the final model.

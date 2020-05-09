@@ -131,7 +131,7 @@ def print_dict_as_table(dic, tag=None, columns=["keys", "values"]):
 
     """
     print("-" * 80)
-    if tag:
+    if tag is not None:
         print(tag)
     df = pd.DataFrame(dic.items(), columns=columns)
     print(tabulate(df, headers=columns, tablefmt="psql"))
