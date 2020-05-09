@@ -63,11 +63,6 @@ class DatasetBase(object):
         self.processed_temporal_split_url = processed_temporal_split_url
         self.processed_temporal_basket_split_url = processed_temporal_basket_split_url
 
-        if tips is None:
-            tips = f"please download the dataset by your self via {self.manual_download_url}, rename to " + \
-                   f"{self.dataset_name} and put it into {self.raw_path} after decompression "
-        self.tips = tips
-
         self.dataset_name = dataset_name
         # compatible method for the previous version
         self.save_dataframe_as_npz = save_dataframe_as_npz
@@ -91,6 +86,11 @@ class DatasetBase(object):
         self.processed_path = os.path.join(self.dataset_dir, "processed")
         if not os.path.exists(self.processed_path):
             os.mkdir(self.processed_path)
+
+        if tips is None:
+            tips = f"please download the dataset by your self via {self.manual_download_url}, rename to " + \
+                   f"{self.dataset_name} and put it into {self.raw_path} after decompression "
+        self.tips = tips
 
         if not url:
             print(self.tips)
