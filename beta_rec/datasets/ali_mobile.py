@@ -7,6 +7,10 @@ from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT
 # Download URL
 ALIMOBILE_URL = "https://tianchi.aliyun.com/dataset/dataDetail?dataId=46"
 
+# processed data url
+ALIMOBILE_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughgIvkt5esnpJ3lV?e=bmT3ns"
+ALIMOBILE_TEMPORAL_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughqYQghbjw_MJqG5?e=9dkaed"
+
 
 def process_time(standard_time=None):
     """Transform time format "xxxx-xx-xxTxx-xx-xxZ" into format "xxxx-xx-xx xx-xx-xx".
@@ -35,7 +39,11 @@ class AliMobile(DatasetBase):
         you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46'
         then put it into the directory `ali_mobile/raw`
         """
-        super().__init__("ali_mobile", ALIMOBILE_URL)
+        super().__init__("ali_mobile",
+                         url=ALIMOBILE_URL,
+                         processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,
+                         processed_temporal_split_url=ALIMOBILE_TEMPORAL_SPLIT_URL,
+                         )
 
     def preprocess(self):
         """Preprocess the raw file

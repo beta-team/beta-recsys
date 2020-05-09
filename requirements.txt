@@ -21,4 +21,4 @@ cornac
 py-cpuinfo~=5.0.0
 psutil~=5.7.0
 tabulate~=0.8.7
-py7zr
+py7zr~=0.6
