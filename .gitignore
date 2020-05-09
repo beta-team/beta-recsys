@@ -40,3 +40,4 @@ runs/
 samples/
 html/
 processes/
+!/generate_yelp_dataset.py
