@@ -4,7 +4,7 @@ from beta_rec.datasets.dunnhumby import Dunnhumby
 from beta_rec.datasets.tafeng import Tafeng
 from beta_rec.datasets.last_fm import LastFM
 from beta_rec.datasets.epinions import Epinions
-
+from beta_rec.datasets.instacart import Instacart, Instacart_25
 
 
 def load_user_fea_dic(config, fea_type):
@@ -87,6 +87,34 @@ def load_split_dataset(config):
         "tafeng": Tafeng,
         "epinions": Epinions,
         "dunnhumby": Dunnhumby,
+        "instacart": Instacart,
+        "instacart_25": Instacart_25,
     }
     dataset = dataset_mapping[config["dataset"]]()
     return dataset.load_split(config)
+
+
+def load_user_item_feature(config):
+    """Loading features of users and items
+
+    Args:
+        config (dict): Dictionary of configuration
+
+    Returns:
+        user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors
+        item_feat (numpy.ndarray): The first column is the itm id, rest column are feat vectors
+
+    """
+    dataset_mapping = {
+        "ml_100k": Movielens_100k,
+        "ml_1m": Movielens_1m,
+        "ml_25m": Movielens_25m,
+        "last_fm": LastFM,
+        "tafeng": Tafeng,
+        "epinions": Epinions,
+        "dunnhumby": Dunnhumby,
+        "instacart": Instacart,
+        "instacart_25": Instacart_25,
+    }
+    dataset = dataset_mapping[config["dataset"]]()
+    return dataset.load_fea_vec()

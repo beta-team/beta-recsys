@@ -38,4 +38,5 @@ datasets/
 !beta_rec/datasets/
 runs/
 samples/
-!/generate_yelp_dataset.py
+html/
+processes/

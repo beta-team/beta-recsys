@@ -1,12 +1,18 @@
 import os
 import csv
 import pandas as pd
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
 CULA_URL = "https://github.com/js05212/citeulike-a"
 CULT_URL = "https://github.com/js05212/citeulike-t"
+
+# processed data url
+CULA_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZquggYnM5pZ_sGORKvf?e=oHgSbo"
+CULA_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugghhNR4XWzUiS501?e=zmVqcx"
+CULT_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZquggwTOwFEVQojKdyR?e=tTv3DX"
+CULT_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugg4Ncblkn_gPRxtu?e=YQwM2D"
 
 
 class CiteULikeA(DatasetBase):
@@ -21,9 +27,8 @@ class CiteULikeA(DatasetBase):
         super().__init__(
             'citeulike-a',
             url=CULA_URL,
-            processed_leave_one_out_url="",
-            processed_random_split_url="",
-            processed_temporal_split_url="",
+            processed_leave_one_out_url=CULA_LEAVE_ONE_OUT_URL,
+            processed_random_split_url=CULA_RANDOM_SPLIT_URL,
         )
 
     def preprocess(self):
@@ -98,9 +103,8 @@ class CiteULikeT(DatasetBase):
         super().__init__(
             'citeulike-t',
             url=CULT_URL,
-            processed_leave_one_out_url="",
-            processed_random_split_url="",
-            processed_temporal_split_url="",
+            processed_leave_one_out_url=CULT_LEAVE_ONE_OUT_URL,
+            processed_random_split_url=CULT_RANDOM_SPLIT_URL,
         )
 
     def preprocess(self):
@@ -161,3 +165,9 @@ class CiteULikeT(DatasetBase):
         )
 
         print("Done.")
+
+    def load_leave_one_out(self, random=False, n_negative=100, n_test=10):
+        if random is False:
+            raise RuntimeError("CiteULikeT doesn't have timestamp column, please use random=True as parameter")
+
+        self.load_leave_one_out(random, n_negative, n_test)

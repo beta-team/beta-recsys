@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL
@@ -15,7 +15,7 @@ class RetailRocket(DatasetBase):
         This data has been collected from a real-world e-commerce website. It is
         raw data without any content transformations, however, all values are
         hashed due to confidential issue. The purpose of publishing is to motivate
-        researches in the field of recommender systems with implicit feedback.
+        researches in the field of recommendation systems with implicit feedback.
 
         If the dataset can not be download by the url,
         you need to down the dataset by the link:

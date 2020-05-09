@@ -1,8 +1,8 @@
 import os
-import numpy as np
 import pandas as pd
 from beta_rec.utils.common_util import un_zip, timeit
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_ORDER_COL, DEFAULT_ITEM_COL, DEFAULT_USER_COL, DEFAULT_FLAG_COL, \
+    DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # download_url

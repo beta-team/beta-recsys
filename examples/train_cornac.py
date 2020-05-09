@@ -1,51 +1,20 @@
-"""
-Created on Aug 5, 2019
-Updated on XX,2019 BY xxx@
-
-Classes describing datasets of user-item interactions. Instances of these
-are returned by dataset fetching and dataset pre-processing functions.
-
-@author: Zaiqiao Meng (zaiqiao.meng@gmail.com)
-
-"""
-
 import numpy as np
-import pandas as pd
-import pickle
 import argparse
-import json
-import torch.optim as optim
-from torch import Tensor
-from torch.utils.data import DataLoader
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from tqdm import tqdm
-from livelossplot import PlotLosses
-import GPUtil
-import os
 import sys
-from datetime import datetime
 
 sys.path.append("../")
 
-import random
+from datetime import datetime
 import cornac
-from cornac.eval_methods.base_method import BaseMethod
-
-base_string = "abcdefghijklmnopqrstuvwxyz"
-from scipy.sparse import csr_matrix
-from beta_rec.utils.monitor import Monitor
-from beta_rec.utils.common_util import save_to_csv 
+from beta_rec.utils.common_util import save_to_csv
 from beta_rec.utils import data_util
 from beta_rec.utils import logger
-import beta_rec.utils.constants as Constants
-from beta_rec.datasets import dataset
 import beta_rec.utils.evaluation as eval_model
 import beta_rec.utils.constants as Constants
-from scipy.sparse import csr_matrix
 import pandas as pd
 
+
+base_string = "abcdefghijklmnopqrstuvwxyz"
 
 config = {
     "dataset": "ml_100k",
@@ -94,7 +63,7 @@ update hyperparameters from command line
 def update_args(config, args):
     #     print(vars(args))
     for k, v in vars(args).items():
-        if v != None:
+        if v is not None:
             config[k] = v
             print("Received parameters form comand line:", k, v)
 
@@ -144,22 +113,21 @@ if __name__ == "__main__":
 
     time_str = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_file = (
-        root_dir
-        + "logs/cornac"
-        + "_"
-        + config["dataset"]
-        + "_"
-        + config["data_split"]
-        + time_str
+            root_dir + "logs/cornac" +
+            "_" +
+            config["dataset"] +
+            "_" +
+            config["data_split"] +
+            time_str
     )
     config["result_file"] = (
-        root_dir
-        + "results/cornac"
-        + "_"
-        + config["dataset"]
-        + "_"
-        + config["data_split"]
-        + ".csv"
+            root_dir +
+            "results/cornac" +
+            "_" +
+            config["dataset"] +
+            "_" +
+            config["data_split"] +
+            ".csv"
     )
     """
     init logger
@@ -232,7 +200,7 @@ if __name__ == "__main__":
     models = [pop, mf, pmf, bpr, vaecf, nmf, neumf]
     # add our own eval
     data = data_util.Dataset(config)
-    
+
     num_users = data.n_users
     num_items = data.n_items
     uid_map = data.user2id
@@ -244,7 +212,7 @@ if __name__ == "__main__":
         data.train["col_rating"].to_numpy(),
     ]
 
-    train_data = cornac.data.Dataset(
+    train_data = cornac.dataset.Dataset(
         num_users,
         num_items,
         uid_map,
@@ -261,6 +229,6 @@ if __name__ == "__main__":
             "'\""
         ) + datetime.now().strftime("_%Y%m%d_%H%M%S")
         model.fit(train_data)
-#         for test_data in test_df_li:
-#             my_eval(test_data, model)
+        #         for test_data in test_df_li:
+        #             my_eval(test_data, model)
         my_eval(test_df_li[0], model)

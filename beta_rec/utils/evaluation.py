@@ -1,10 +1,8 @@
-import os
 import numpy as np
 import pandas as pd
 from functools import lru_cache, wraps
-from beta_rec.utils.constants import *
-
-
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_PREDICTION_COL, \
+    DEFAULT_K, DEFAULT_THRESHOLD
 from sklearn.metrics import (
     mean_squared_error,
     mean_absolute_error,

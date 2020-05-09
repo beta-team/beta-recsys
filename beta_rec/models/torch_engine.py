@@ -1,20 +1,14 @@
 import numpy as np
 import pandas as pd
-import os
 import torch
 from tensorboardX import SummaryWriter
 import beta_rec.utils.evaluation as eval_model
-import beta_rec.utils.constants as Constants
-
-
-def dict2str(dic):
-    dic_str = (
-        "Configs: \n"
-        + "\n".join([str(k) + ":\t" + str(v) for k, v in dic.items()])
-        + "\n"
-    )
-    print(dic_str)
-    return dic_str
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_PREDICTION_COL,
+)
 
 
 class Engine(object):
@@ -32,9 +26,6 @@ class Engine(object):
         self.model.to(self.device)
         print(self.model)
         self.writer = SummaryWriter(log_dir=config["run_dir"])  # tensorboard writer
-        self.writer.add_text(
-            "model/config", dict2str(config), 0,
-        )
         self.loss = torch.nn.BCELoss()
 
     def set_optimizer(self):
@@ -78,12 +69,12 @@ class Engine(object):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def evaluate(self, eval_data_df, epoch_id=0, TOP_K=10):
-        """ 
+        """
         evaluate the performance for all the eval_data_df.
 
 
         Parameters:
-                eval_data_df: Dataframe with column naming DEFAULT_USER_COL, DEFAULT_ITEM_COL 
+                eval_data_df: DataFrame with column naming DEFAULT_USER_COL, DEFAULT_ITEM_COL
                 and DEFAULT_RATING_COL
                 TOP_K: if not specified, DEFAULT_K =10
 
@@ -99,9 +90,9 @@ class Engine(object):
                  }
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
-        user_ids = eval_data_df[Constants.DEFAULT_USER_COL].to_numpy()
-        item_ids = eval_data_df[Constants.DEFAULT_ITEM_COL].to_numpy()
-        ratings = eval_data_df[Constants.DEFAULT_RATING_COL].to_numpy()
+        user_ids = eval_data_df[DEFAULT_USER_COL].to_numpy()
+        item_ids = eval_data_df[DEFAULT_ITEM_COL].to_numpy()
+        ratings = eval_data_df[DEFAULT_RATING_COL].to_numpy()
         prediction = np.array(
             self.model.predict(user_ids, item_ids)
             .flatten()
@@ -112,9 +103,9 @@ class Engine(object):
 
         pred_df = pd.DataFrame(
             {
-                Constants.DEFAULT_USER_COL: user_ids,
-                Constants.DEFAULT_ITEM_COL: item_ids,
-                Constants.DEFAULT_PREDICTION_COL: prediction,
+                DEFAULT_USER_COL: user_ids,
+                DEFAULT_ITEM_COL: item_ids,
+                DEFAULT_PREDICTION_COL: prediction,
             }
         )
 

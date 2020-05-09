@@ -1,6 +1,5 @@
 from beta_rec.models.torch_engine import Engine
-from beta_rec.utils.constants import *
-from beta_rec.utils.common_util import *
+from beta_rec.utils.common_util import timeit
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -44,17 +43,17 @@ class VBCAR(nn.Module):
     def init_feature(self, user_fea, item_fea):
         self.user_fea = user_fea
         self.item_fea = item_fea
-        self.user_fea_dim = user_fea.size()[1]
-        self.item_fea_dim = item_fea.size()[1]
+        self.user_fea_dim = user_fea.embedding_dim
+        self.item_fea_dim = item_fea.embedding_dim
 
     def user_encode(self, index):
-        x = self.user_fea[index]
+        x = self.user_fea(index)
         mu = self.fc_u_2_mu(self.act(self.fc_u_1_mu(x)))
         std = self.fc_u_2_std(self.act(self.fc_u_1_std(x)))
         return mu, std
 
     def item_encode(self, index):
-        x = self.item_fea[index]
+        x = self.item_fea(index)
         mu = self.fc_i_2_mu(self.act(self.fc_i_1_mu(x)))
         std = self.fc_i_2_std(self.act(self.fc_i_1_std(x)))
         return mu, std
@@ -71,7 +70,7 @@ class VBCAR(nn.Module):
 
     def kl_div(self, dis1, dis2=None, neg=False):
         mean1, std1 = dis1
-        if dis2 == None:
+        if dis2 is None:
             mean2 = torch.zeros(mean1.size(), device=self.device)
             std2 = torch.ones(std1.size(), device=self.device)
         else:
@@ -149,7 +148,7 @@ class VBCAR(nn.Module):
 
         i_2_score = -1 * (torch.sum(i_2_pos_score) + torch.sum(i_2_neg_score))
 
-        GEN = (u_score + i_1_score + i_2_score) / (self.batch_size)
+        GEN = (u_score + i_1_score + i_2_score) / self.batch_size
         KLD = (
             self.kl_div(pos_u_dis)
             + self.kl_div(pos_i_1_dis)
@@ -157,7 +156,7 @@ class VBCAR(nn.Module):
             + self.kl_div(neg_u_dis)
             + self.kl_div(neg_i_1_dis)
             + self.kl_div(neg_i_2_dis)
-        ) / (self.batch_size)
+        ) / self.batch_size
         self.kl_loss = KLD.item()
         #         return GEN/ (3 * self.batch_size)
         return (1 - self.alpha) * (GEN) + (self.alpha * KLD)
@@ -179,17 +178,11 @@ class VBCAREngine(Engine):
         self.config = config
         self.model = VBCAR(config)
         if config["feature_type"] == "random":
-            user_fea = torch.randn(
-                config["n_users"],
-                self.config["late_dim"],
-                dtype=torch.float32,
-                device=torch.device(self.config["device_str"]),
+            user_fea = nn.Embedding(config["n_users"], self.config["late_dim"]).to(
+                torch.device(self.config["device_str"])
             )
-            item_fea = torch.randn(
-                config["n_items"],
-                self.config["late_dim"],
-                dtype=torch.float32,
-                device=torch.device(self.config["device_str"]),
+            item_fea = nn.Embedding(config["n_items"], self.config["late_dim"]).to(
+                torch.device(self.config["device_str"])
             )
         else:
             pass

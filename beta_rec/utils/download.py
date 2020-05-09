@@ -1,6 +1,6 @@
-import os
 import requests
 from beta_rec.utils.onedrive import OneDrive
+
 
 def download_file(url, store_file_path):
     """Download the raw dataset file
@@ -8,7 +8,7 @@ def download_file(url, store_file_path):
     Download the dataset with the given url and save to the store_path
     Args:
         url: the url that can be downloaded the dataset file.
-        store_path: the path that stores the downloaded file
+        store_file_path: the path that stores the downloaded file
     Return:
         the archive format of the suffix
     """
@@ -32,6 +32,7 @@ def get_format(suffix):
     format_map = {
         'bz2': 'bztar',
         'gz2': 'gztar',
+        "gz": "gztar",
     }
     if suffix not in format_map:
         return suffix

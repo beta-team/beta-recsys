@@ -4,8 +4,8 @@ import numpy as np
 from threading import Thread
 from threading import Lock
 import beta_rec.utils.evaluation as eval_model
-from beta_rec.utils.constants import *
-from beta_rec.utils.common_util import dict2str, save_to_csv, timeit
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_PREDICTION_COL
+from beta_rec.utils.common_util import print_dict_as_table, save_to_csv, timeit
 from tensorboardX import SummaryWriter
 import socket
 from prometheus_client import start_http_server, Gauge
@@ -22,20 +22,27 @@ def detect_port(port, ip="127.0.0.1"):
         ip (str): Ip address
 
     Returns:
-
+        True -- it's possible to listen on this port for TCP/IPv4 or TCP/IPv6
+                connections.
+        False -- otherwise.
     """
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ready = True
     try:
-        s.connect((ip, int(port)))
-        s.shutdown(2)
-        print("{0} is opened".format(port))
-        return True
-    except:
-        print("{0} is closed".format(port))
-        return False
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind((ip, port))
+        sock.listen(5)
+        sock.close()
+        sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+        sock.bind(("::1", port))
+        sock.listen(5)
+        sock.close()
+    except socket.error as e:
+        ready = False
+        raise RuntimeError("The server is already running on port {0}".format(port))
+    finally:
+        return ready
 
 
-@timeit
 def evaluate(data_df, predictions, metrics, k_li):
     """ Evaluate the performance of a prection by different metrics
 
@@ -101,7 +108,11 @@ def train_eval_worker(
     ):
         testEngine.n_no_update = 0
         testEngine.best_performance = valid_result[testEngine.config["validate_metric"]]
-        print(valid_result)
+        print_dict_as_table(
+            valid_result,
+            tag=f"performance on validation at epoch {epoch}",
+            columns=["metrics", "values"],
+        )
     else:
         testEngine.n_no_update += 1
     lock_train_eval.release()
@@ -118,12 +129,11 @@ def test_eval_worker(testEngine, eval_data_df, prediction, k_li=[5, 10, 20]):
         "model": [testEngine.config["model"]],
         "dataset": [testEngine.config["dataset"]],
         "data_split": [testEngine.config["data_split"]],
-        "temp_train": [testEngine.config["temp_train"]],
         "emb_dim": [int(testEngine.config["emb_dim"])],
         "lr": [testEngine.config["lr"]],
         "batch_size": [int(testEngine.config["batch_size"])],
         "optimizer": [testEngine.config["optimizer"]],
-        "num_epoch": [testEngine.config["num_epoch"]],
+        "max_epoch": [testEngine.config["max_epoch"]],
         "model_run_id": [testEngine.config["model_run_id"]],
         "run_time": [testEngine.config["run_time"]],
     }
@@ -144,7 +154,7 @@ def test_eval_worker(testEngine, eval_data_df, prediction, k_li=[5, 10, 20]):
 
 
 class EvalEngine(object):
-    """A evaluation engine.
+    """The base evaluation engine.
 
     """
 
@@ -159,15 +169,16 @@ class EvalEngine(object):
         self.validate_metric = config["validate_metric"]
         self.writer = SummaryWriter(log_dir=config["run_dir"])  # tensorboard writer
         self.writer.add_text(
-            "model/config", dict2str("Config", config), 0,
+            "model/config",
+            pd.DataFrame(config.items(), columns=["parameters", "values"]).to_string(),
+            0,
         )
         self.n_no_update = 0
         self.best_valid_performance = 0
-        self.tunable = ["model", "dataset", "percent"]
+        self.tunable = ["model", "dataset"]
         self.labels = (
             self.config["model"],
             self.config["dataset"],
-            self.config["percent"],
         )
         self.init_prometheus_client()
         print("Initializing test engine ...")
@@ -180,6 +191,7 @@ class EvalEngine(object):
             model: A trained model
 
         Returns:
+            array: predicted scores
 
         """
         user_ids = data_df[DEFAULT_USER_COL].to_numpy()
@@ -204,6 +216,7 @@ class EvalEngine(object):
             k (int or list): top k result to be evaluate
 
         Returns:
+            None
 
         """
         valid_pred = self.predict(valid_data_df, model)
@@ -235,6 +248,10 @@ class EvalEngine(object):
             None
 
         """
+
+        if type(test_df_list) is not list:  # compatible for testing a single test set
+            test_df_list = [test_df_list]
+
         for i, test_data_df in enumerate(test_df_list):
             test_pred = self.predict(test_data_df, model)
             worker = Thread(
@@ -253,6 +270,7 @@ class EvalEngine(object):
             epoch_id (int): epoch_id
 
         Returns:
+            None
 
         """
         for metric in self.metrics:
