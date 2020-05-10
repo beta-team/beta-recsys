@@ -13,7 +13,7 @@ from beta_rec.utils.common_util import un_zip
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
-INSTACART_URL = "https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz"
+INSTACART_URL = "https://www.kaggle.com/c/instacart-market-basket-analysis/data"
 
 # processed data url
 INSTACART_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugX4W4zLO6Jkx8P-W?e=oKymnV'
