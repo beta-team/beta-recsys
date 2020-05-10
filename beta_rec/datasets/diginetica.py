@@ -43,7 +43,9 @@ class Diginetica(DatasetBase):
 
         Note: you also need unzip files in 'diginetica/raw/diginetica'.
         """
-        super().__init__('diginetica')
+        super().__init__('diginetica',
+                         manual_download_url=DIGINETICA_URL,
+                         )
 
     def preprocess(self):
         """Preprocess the raw file

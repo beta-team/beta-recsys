@@ -38,7 +38,7 @@ class YooChoose(DatasetBase):
             https://s3-eu-west-1.amazonaws.com/yc-rdata/yoochoose-data.7z.
         then put it into the directory `yoochoose/raw` and unzip it.
         """
-        super().__init__('yoochoose', YOOCHOOSE_URL)
+        super().__init__('yoochoose', url=YOOCHOOSE_URL)
 
     def preprocess(self):
         """Preprocess the raw file

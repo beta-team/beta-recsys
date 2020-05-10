@@ -18,7 +18,8 @@ class Epinions(DatasetBase):
 
         Epinions dataset.
         """
-        super().__init__('epinions', url=EPINIONS_URL,
+        super().__init__('epinions',
+                         url=EPINIONS_URL,
                          processed_leave_one_out_url=EPIONIONS_LEAVE_ONE_OUT_URL,
                          processed_random_split_url=EPIONIONS_RANDOM_SPLIT_URL)
 

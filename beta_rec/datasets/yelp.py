@@ -20,6 +20,7 @@ class Yelp(DatasetBase):
         """
         super().__init__(
             'yelp',
+            manual_download_url=YELP_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
