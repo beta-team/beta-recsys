@@ -40,7 +40,7 @@ class AliMobile(DatasetBase):
         then put it into the directory `ali_mobile/raw`
         """
         super().__init__("ali_mobile",
-                         url=ALIMOBILE_URL,
+                         manual_download_url=ALIMOBILE_URL,
                          processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,
                          processed_temporal_split_url=ALIMOBILE_TEMPORAL_SPLIT_URL,
                          )

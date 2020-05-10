@@ -22,7 +22,9 @@ class RetailRocket(DatasetBase):
             https://www.kaggle.com/retailrocket/ecommerce-dataset/download.
         then put it into the directory `retailrocket/raw` and unzip it.
         """
-        super().__init__("retailrocket", RETAIL_ROCKET_URL)
+        super().__init__("retailrocket",
+                         url=RETAIL_ROCKET_URL,
+                         )
 
     def preprocess(self):
         """Preprocess the raw file

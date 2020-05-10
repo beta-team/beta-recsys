@@ -26,7 +26,7 @@ class CiteULikeA(DatasetBase):
         """
         super().__init__(
             'citeulike-a',
-            url=CULA_URL,
+            manual_download_url=CULA_URL,
             processed_leave_one_out_url=CULA_LEAVE_ONE_OUT_URL,
             processed_random_split_url=CULA_RANDOM_SPLIT_URL,
         )
