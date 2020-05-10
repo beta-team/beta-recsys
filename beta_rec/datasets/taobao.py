@@ -24,7 +24,7 @@ class Taobao(DatasetBase):
         you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=649'
         then put it into the directory `taobao/raw`
         """
-        super().__init__("taobao", TAOBAO_URL)
+        super().__init__("taobao")
 
     def preprocess(self):
         """Preprocess the raw file
