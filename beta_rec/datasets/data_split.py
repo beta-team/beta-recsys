@@ -159,6 +159,9 @@ def feed_neg_sample(data, negative_num, item_sampler):
 
     Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
+    unique_list = list(data[DEFAULT_RATING_COL].unique())
+    unique_num = len(unique_list)
+
     interact_status = (
         data.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].apply(set).reset_index()
     )
@@ -179,14 +182,17 @@ def feed_neg_sample(data, negative_num, item_sampler):
         df_items = np.append(item_li, sample_neg_items)
         df_users = np.array([u] * (negative_num + n_items), dtype=np.long)
         df_scores = []
-        # get the rating scores.
-        for item in item_li:
-            df_scores.append(
-                data.loc[
-                    (data[DEFAULT_USER_COL] == u) & (data[DEFAULT_ITEM_COL] == item),
-                    DEFAULT_RATING_COL,
-                ].to_numpy()[0]
-            )
+        if unique_num != 1:
+            # get the rating scores.
+            for item in item_li:
+                df_scores.append(
+                    data.loc[
+                        (data[DEFAULT_USER_COL] == u) & (data[DEFAULT_ITEM_COL] == item),
+                        DEFAULT_RATING_COL,
+                    ].to_numpy()[0]
+                )
+        else:
+            df_scores = np.full(n_items, unique_list[0])
         df_zeros = np.zeros(negative_num, dtype=np.long)
         ratings = np.append(df_scores, df_zeros)
 
