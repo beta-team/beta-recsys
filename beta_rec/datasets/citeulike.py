@@ -40,8 +40,6 @@ class CiteULikeA(DatasetBase):
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "users.dat")
         if not os.path.exists(file_name):
-            self.tips = """
-            """
             self.download()
 
         # Load user-item rating matrix.
