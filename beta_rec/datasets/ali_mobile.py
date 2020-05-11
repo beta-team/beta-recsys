@@ -45,7 +45,7 @@ class AliMobile(DatasetBase):
         2. Put 'tianchi_mobile_recommend_train_user.zip' into the directory `ali_mobile/raw`,
         3. Unzip 'tianchi_mobile_recommend_train_user.zip',
         4. Rename 'tianchi_mobile_recommend_train_user.csv' to 'ali_mobile.csv'
-        4. Rerun this program.
+        4. Rerun this command.
         """
         super().__init__("ali_mobile",
                          manual_download_url=ALIMOBILE_URL,
