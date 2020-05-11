@@ -92,9 +92,6 @@ class DatasetBase(object):
                    f"{self.dataset_name} and put it into {self.raw_path} after decompression "
         self.tips = tips
 
-        if not url:
-            print(self.tips)
-
     @timeit
     def download(self):
         """Download the raw dataset.

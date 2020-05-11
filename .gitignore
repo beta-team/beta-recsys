@@ -41,3 +41,4 @@ samples/
 html/
 processes/
 !/generate_yelp_dataset.py
+!/test_download_tips.py

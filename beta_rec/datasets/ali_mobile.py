@@ -42,9 +42,9 @@ class AliMobile(DatasetBase):
         TIPS = """
         This dataset can not be downloaded by this url automatically, and you need to do:
         1. Download this dataset via 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46',
-        2. Put 'tianchi_mobile_recommend_train_user.zip' into the directory `ali_mobile/raw/ali_mobile`,
+        2. Put 'tianchi_mobile_recommend_train_user.zip' into the directory `ali_mobile/raw`,
         3. Unzip 'tianchi_mobile_recommend_train_user.zip',
-        4. Rename 'tianchi_mobile_recommend_train_user.csv' to 'AliMobile.csv'
+        4. Rename 'tianchi_mobile_recommend_train_user.csv' to 'ali_mobile.csv'
         4. Rerun this program.
         """
         super().__init__("ali_mobile",
@@ -74,7 +74,7 @@ class AliMobile(DatasetBase):
         if not os.path.exists(ali_mobile_path):
             self.download()
 
-        # Step 2: Load AliMobile <ali-mobile-interaction> table from 'AliMobile.csv.csv'.
+        # Step 2: Load AliMobile <ali-mobile-interaction> table from 'ali_mobile.csv.csv'.
         prior_transactions = pd.read_csv(
             ali_mobile_path,
             encoding="utf-8",
@@ -84,7 +84,7 @@ class AliMobile(DatasetBase):
             names=[
                 DEFAULT_USER_COL,
                 DEFAULT_ITEM_COL,
-                DEFAULT_TIMESTAMP_COL
+                DEFAULT_TIMESTAMP_COL,
             ],
         )
         # Add rating column into the dataset.
