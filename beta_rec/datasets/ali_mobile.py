@@ -39,10 +39,19 @@ class AliMobile(DatasetBase):
         you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46'
         then put it into the directory `ali_mobile/raw`
         """
+        TIPS = """
+        This dataset can not be downloaded by this url automatically, and you need to do:
+        1. Download this dataset via 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46',
+        2. Put 'tianchi_mobile_recommend_train_user.zip' into the directory `ali_mobile/raw/ali_mobile`,
+        3. Unzip 'tianchi_mobile_recommend_train_user.zip',
+        4. Rename 'tianchi_mobile_recommend_train_user.csv' to 'AliMobile.csv'
+        4. Rerun this program.
+        """
         super().__init__("ali_mobile",
                          manual_download_url=ALIMOBILE_URL,
                          processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,
                          processed_temporal_split_url=ALIMOBILE_TEMPORAL_SPLIT_URL,
+                         tips=TIPS
                          )
 
     def preprocess(self):
@@ -61,11 +70,11 @@ class AliMobile(DatasetBase):
         """
 
         # Step 1: Download AliMobile dataset if this dataset is not existed.
-        ali_mobile_path = os.path.join(self.raw_path, self.dataset_name, 'tianchi_mobile_recommend_train_user.csv')
+        ali_mobile_path = os.path.join(self.raw_path, 'ali_mobile.csv')
         if not os.path.exists(ali_mobile_path):
             self.download()
 
-        # Step 2: Load AliMobile <ali-mobile-interaction> table from 'tianchi_mobile_recommend_train_user.csv'.
+        # Step 2: Load AliMobile <ali-mobile-interaction> table from 'AliMobile.csv.csv'.
         prior_transactions = pd.read_csv(
             ali_mobile_path,
             encoding="utf-8",
