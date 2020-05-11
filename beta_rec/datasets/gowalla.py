@@ -48,7 +48,7 @@ class Gowalla(DatasetBase):
         then put it into the directory `gowalla/raw` and unzip it.
         """
         super().__init__('gowalla',
-                         url=GOWALLA_CHECKIN_URL,
+                         manual_download_url=GOWALLA_CHECKIN_URL,
                          processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,
                          processed_temporal_split_url=GOWALLA_TEMPORAL_SPLIT_UTL,
                          )
@@ -107,7 +107,7 @@ class Gowalla(DatasetBase):
         )
 
         # Check the validation of this table.
-        # print(prior_transactions.head())
+        print(prior_transactions.head())
 
         # Save data model.
         self.save_dataframe_as_npz(

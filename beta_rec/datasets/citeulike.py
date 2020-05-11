@@ -14,6 +14,23 @@ CULA_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugghhNR4XWzUiS501?e=zmVq
 CULT_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZquggwTOwFEVQojKdyR?e=tTv3DX"
 CULT_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugg4Ncblkn_gPRxtu?e=YQwM2D"
 
+# Tips
+CITEULIKEA_TIPS = """
+    CiteULikeA dataset can not be downloaded by this url automatically, and you need to do:
+    1. Download this dataset via 'https://github.com/js05212/citeulike-a',
+    2. Put 'users.dat' into the directory `citeulike-a/raw/citeulike-a`,
+    3. Rename 'users.dat' to 'citeulike_a.dat'
+    4. Rerun this program.
+"""
+
+CITEULIKET_TIPS = """
+    CiteULikeT dataset can not be downloaded by this url automatically, and you need to do:
+    1. Download this dataset via 'https://github.com/js05212/citeulike-t',
+    2. Put 'users.dat' into the directory `citeulike-t/raw/citeulike-t`,
+    3. Rename 'users.dat' to 'citeulike_t.dat'
+    4. Rerun this program.
+"""
+
 
 class CiteULikeA(DatasetBase):
     def __init__(self):
@@ -29,6 +46,7 @@ class CiteULikeA(DatasetBase):
             manual_download_url=CULA_URL,
             processed_leave_one_out_url=CULA_LEAVE_ONE_OUT_URL,
             processed_random_split_url=CULA_RANDOM_SPLIT_URL,
+            tips=CITEULIKEA_TIPS,
         )
 
     def preprocess(self):
@@ -38,7 +56,7 @@ class CiteULikeA(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.raw_path, self.dataset_name, "users.dat")
+        file_name = os.path.join(self.raw_path, self.dataset_name, "citeulike_a.dat")
         if not os.path.exists(file_name):
             self.download()
 
@@ -80,7 +98,7 @@ class CiteULikeA(DatasetBase):
         )
 
         # Check the validation of this table.
-        # print(prior_transactions.head())
+        print(prior_transactions.head())
 
         # Save this table.
         self.save_dataframe_as_npz(
@@ -98,13 +116,14 @@ class CiteULikeT(DatasetBase):
         CiteULike-T dataset.
         The dataset can not be download by the url,
         you need to down the dataset by 'https://github.com/js05212/citeulike-t'
-        then put it into the directory `citeulike-t/raw`
+        then put it into the directory `citeulike-t/raw/citeulike-t`
         """
         super().__init__(
             'citeulike-t',
-            url=CULT_URL,
+            manual_download_url=CULT_URL,
             processed_leave_one_out_url=CULT_LEAVE_ONE_OUT_URL,
             processed_random_split_url=CULT_RANDOM_SPLIT_URL,
+            tips=CITEULIKET_TIPS
         )
 
     def preprocess(self):
@@ -114,7 +133,7 @@ class CiteULikeT(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.raw_path, self.dataset_name, "users.dat")
+        file_name = os.path.join(self.raw_path, self.dataset_name, "citeulike_t.dat")
         if not os.path.exists(file_name):
             self.download()
 
@@ -156,7 +175,7 @@ class CiteULikeT(DatasetBase):
         )
 
         # Check the validation of this table.
-        # print(prior_transactions.head())
+        print(prior_transactions.head())
 
         # Save this table.
         self.save_dataframe_as_npz(

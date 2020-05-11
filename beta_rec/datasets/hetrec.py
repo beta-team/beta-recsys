@@ -62,7 +62,7 @@ class MovieLens_2k(DatasetBase):
         )
 
         # Check the validation of prior_transactions.
-        # print(prior_transactions.head())
+        print(prior_transactions.head())
 
         # Save data.
         self.save_dataframe_as_npz(
@@ -201,7 +201,7 @@ class LastFM_2k(DatasetBase):
         )
 
         # Check the validation of prior_transactions.
-        # print(prior_transactions.head())
+        print(prior_transactions.head())
 
         # Save data.
         self.save_dataframe_as_npz(
