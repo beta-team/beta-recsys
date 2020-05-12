@@ -1,4 +1,5 @@
 import os
+import gzip
 import shutil
 import pandas as pd
 from tabulate import tabulate
