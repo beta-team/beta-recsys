@@ -12,7 +12,7 @@ ALIMOBILE_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughgIvkt5esnpJ3lV?e
 ALIMOBILE_TEMPORAL_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughqYQghbjw_MJqG5?e=9dkaed"
 
 # Tips
-TIPS = """
+ALI_MOBILE_TIPS = """
 AliMobile dataset can not be downloaded by this url automatically, and you need to do:
     1. Download this dataset via 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46',
     2. Put 'tianchi_mobile_recommend_train_user.zip' into the directory `ali_mobile/raw`,
@@ -53,7 +53,7 @@ class AliMobile(DatasetBase):
                          manual_download_url=ALIMOBILE_URL,
                          processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,
                          processed_temporal_split_url=ALIMOBILE_TEMPORAL_SPLIT_URL,
-                         tips=TIPS
+                         tips=ALI_MOBILE_TIPS
                          )
 
     def preprocess(self):

@@ -47,11 +47,13 @@ class Gowalla(DatasetBase):
             https://snap.stanford.edu/data/loc-Gowalla.html.
         then put it into the directory `gowalla/raw` and unzip it.
         """
-        super().__init__('gowalla',
-                         manual_download_url=GOWALLA_CHECKIN_URL,
-                         processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,
-                         processed_temporal_split_url=GOWALLA_TEMPORAL_SPLIT_UTL,
-                         )
+        super().__init__(
+            'gowalla',
+            url=GOWALLA_CHECKIN_URL,
+            manual_download_url=GOWALLA_CHECKIN_URL,
+            processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,
+            processed_temporal_split_url=GOWALLA_TEMPORAL_SPLIT_UTL,
+        )
 
     def preprocess(self):
         """Preprocess the raw file
