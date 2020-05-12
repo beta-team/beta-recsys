@@ -24,7 +24,7 @@ class MovieLens_2k(DatasetBase):
 
         super().__init__(
             'movielens-2k',
-            url=ML_2K_URL,
+            manual_download_url=ML_2K_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
@@ -90,7 +90,7 @@ class Delicious_2k(DatasetBase):
 
         super().__init__(
             'delicious-2k',
-            url=DL_2K_URL,
+            manual_download_url=DL_2K_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
@@ -159,7 +159,7 @@ class LastFM_2k(DatasetBase):
 
         super().__init__(
             'lastfm-2k',
-            url=LF_2K_URL,
+            manual_download_url=LF_2K_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
