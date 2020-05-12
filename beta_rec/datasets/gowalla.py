@@ -48,7 +48,7 @@ class Gowalla(DatasetBase):
         then put it into the directory `gowalla/raw` and unzip it.
         """
         super().__init__('gowalla',
-                         manual_download_url=GOWALLA_CHECKIN_URL,
+                         url=GOWALLA_CHECKIN_URL,
                          processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,
                          processed_temporal_split_url=GOWALLA_TEMPORAL_SPLIT_UTL,
                          )

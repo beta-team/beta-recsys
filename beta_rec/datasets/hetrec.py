@@ -10,6 +10,14 @@ ML_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens
 DL_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
 LF_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
 
+# processed data url
+LF_2K_LEAVE_ONE_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugh0S50BjwNBDIVSi?e=ZSgjoB"
+LF_2K_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugh9SOy0tpGT-DyGO?e=djcSUS"
+LF_2K_RANDOM_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiE-a65YO3G7ziq4?e=XKla4F"
+LF_2K_RANDOM_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiM00QUQJYPWA5YE?e=s5o7By"
+LF_2K_TEMPORAL_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiWDnPcNDr-5Hyri?e=m8fqQa"
+LF_2K_TEMPORAL_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugic_tmXvkpxN_RE8?e=ZKuSbB"
+
 
 class MovieLens_2k(DatasetBase):
     def __init__(self):
@@ -160,9 +168,12 @@ class LastFM_2k(DatasetBase):
         super().__init__(
             'lastfm-2k',
             manual_download_url=LF_2K_URL,
-            processed_leave_one_out_url="",
-            processed_random_split_url="",
-            processed_temporal_split_url="",
+            processed_leave_one_basket_url=LF_2K_LEAVE_ONE_BASKET_URL,
+            processed_leave_one_out_url=LF_2K_LEAVE_ONE_OUT_URL,
+            processed_random_basket_split_url=LF_2K_RANDOM_BASKET_URL,
+            processed_random_split_url=LF_2K_RANDOM_URL,
+            processed_temporal_basket_split_url=LF_2K_TEMPORAL_BASKET_URL,
+            processed_temporal_split_url=LF_2K_TEMPORAL_URL,
         )
 
     def preprocess(self):

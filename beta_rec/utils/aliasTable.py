@@ -106,7 +106,6 @@ class AliasTable:
                     raise ValueError(
                         "Error: count>vocab_size!! Skip no_repeat parameter"
                     )
-                    return samples
                 samples = set(samples)
                 while len(samples) < count:
                     index = np.random.randint(low=0, high=len(self.prob_arr))
