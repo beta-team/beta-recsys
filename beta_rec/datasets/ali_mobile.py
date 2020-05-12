@@ -11,6 +11,16 @@ ALIMOBILE_URL = "https://tianchi.aliyun.com/dataset/dataDetail?dataId=46"
 ALIMOBILE_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughgIvkt5esnpJ3lV?e=bmT3ns"
 ALIMOBILE_TEMPORAL_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughqYQghbjw_MJqG5?e=9dkaed"
 
+# Tips
+TIPS = """
+AliMobile dataset can not be downloaded by this url automatically, and you need to do:
+    1. Download this dataset via 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46',
+    2. Put 'tianchi_mobile_recommend_train_user.zip' into the directory `ali_mobile/raw`,
+    3. Unzip 'tianchi_mobile_recommend_train_user.zip',
+    4. Rename 'tianchi_mobile_recommend_train_user.csv' to 'ali_mobile.csv'
+    5. Rerun this command.
+"""
+
 
 def process_time(standard_time=None):
     """Transform time format "xxxx-xx-xxTxx-xx-xxZ" into format "xxxx-xx-xx xx-xx-xx".
@@ -39,14 +49,7 @@ class AliMobile(DatasetBase):
         you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46'
         then put it into the directory `ali_mobile/raw`
         """
-        TIPS = """
-        This dataset can not be downloaded by this url automatically, and you need to do:
-        1. Download this dataset via 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46',
-        2. Put 'tianchi_mobile_recommend_train_user.zip' into the directory `ali_mobile/raw`,
-        3. Unzip 'tianchi_mobile_recommend_train_user.zip',
-        4. Rename 'tianchi_mobile_recommend_train_user.csv' to 'ali_mobile.csv'
-        4. Rerun this command.
-        """
+
         super().__init__("ali_mobile",
                          manual_download_url=ALIMOBILE_URL,
                          processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,

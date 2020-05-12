@@ -6,6 +6,15 @@ from beta_rec.datasets.dataset_base import DatasetBase
 # Download URL
 RETAIL_ROCKET_URL = "https://www.kaggle.com/retailrocket/ecommerce-dataset/download"
 
+# Tips
+RETAIL_ROCKET_TIPS = """
+    RetailRocket dataset can not be downloaded by this url automatically, and you need to do:
+    1. Download this dataset via 'https://www.kaggle.com/retailrocket/ecommerce-dataset/download',
+    2. Put 'ecommerce-dataset.zip' into the directory `retailrocket/raw`,
+    3. Unzip 'ecommerce-dataset.zip',
+    4. Rerun this program.
+"""
+
 
 class RetailRocket(DatasetBase):
     def __init__(self):
@@ -22,9 +31,11 @@ class RetailRocket(DatasetBase):
             https://www.kaggle.com/retailrocket/ecommerce-dataset/download.
         then put it into the directory `retailrocket/raw` and unzip it.
         """
-        super().__init__("retailrocket",
-                         url=RETAIL_ROCKET_URL,
-                         )
+        super().__init__(
+            "retailrocket",
+            manual_download_url=RETAIL_ROCKET_URL,
+            tips=RETAIL_ROCKET_TIPS,
+        )
 
     def preprocess(self):
         """Preprocess the raw file

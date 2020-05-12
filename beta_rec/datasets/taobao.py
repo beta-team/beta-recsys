@@ -6,6 +6,16 @@ from beta_rec.datasets.dataset_base import DatasetBase
 # Download URL
 TAOBAO_URL = "https://tianchi.aliyun.com/dataset/dataDetail?dataId=649"
 
+# Tips
+TAOBAO_TIPS = """
+    Taobao dataset can not be downloaded by this url automatically, and you need to do:
+    1. Download this dataset via 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=649',
+    2. Put 'UserBehavior.csv.zip' into the directory `retailrocket/raw/taobao`,
+    3. Unzip 'UserBehavior.csv.zip',
+    4. Rename 'UserBehavior.csv' into 'taobao.csv',
+    4. Rerun this program.
+"""
+
 
 class Taobao(DatasetBase):
     def __init__(self):
@@ -24,9 +34,11 @@ class Taobao(DatasetBase):
         you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=649'
         then put it into the directory `taobao/raw`
         """
-        super().__init__("taobao",
-                         manual_download_url=TAOBAO_URL,
-                         )
+        super().__init__(
+            "taobao",
+            manual_download_url=TAOBAO_URL,
+            tips=TAOBAO_TIPS,
+        )
 
     def preprocess(self):
         """Preprocess the raw file
@@ -39,16 +51,16 @@ class Taobao(DatasetBase):
         taobao_name: UserBehavior.csv
 
         1. Download taobao dataset if this dataset is not existed.
-        2. Load taobao <taobao-interaction> table from 'UserBehavior.csv'.
+        2. Load taobao <taobao-interaction> table from 'taobao.csv'.
         3. Save dataset model.
         """
 
         # Step 1: Download taobao dataset if this dataset is not existed.
-        taobao_path = os.path.join(self.raw_path, self.dataset_name, 'UserBehavior.csv')
+        taobao_path = os.path.join(self.raw_path, self.dataset_name, 'taobao.csv')
         if not os.path.exists(taobao_path):
             self.download()
 
-        # Step 2: Load taobao <taobao-interaction> table from 'UserBehavior.csv'.
+        # Step 2: Load taobao <taobao-interaction> table from 'taobao.csv'.
         prior_transactions = pd.read_csv(
             taobao_path,
             encoding="utf-8",
@@ -65,7 +77,7 @@ class Taobao(DatasetBase):
         prior_transactions.insert(2, "col_rating", 1.0)
 
         # Check the validation of this dataset.
-        # print(prior_transactions.head())
+        print(prior_transactions.head())
 
         # Step 3: Save dataset model.
         self.save_dataframe_as_npz(

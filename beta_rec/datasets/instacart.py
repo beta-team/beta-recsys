@@ -20,6 +20,15 @@ INSTACART_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugX4W4zLO6Jkx8P-W?
 INSTACART_TEMPORAL_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZquggAblxVFSYeu3nzh?e=pzBaAa'
 INSTACART_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZquggLQynzcCWfNUdIg?e=HDhUjL'
 
+# Tips
+INSTACART_TIPS = """
+    Instacart dataset can not be downloaded by this url automatically, and you need to do:
+    1. Download this dataset via 'https://www.kaggle.com/c/instacart-market-basket-analysis/data',
+    2. Put 'instacart-market-basket-analysis.zip' into the directory `instacart/raw/instacart`,
+    3. Unzip 'instacart-market-basket-analysis.zip',
+    4. Rerun this program.
+"""
+
 
 class Instacart(DatasetBase):
     def __init__(self):
@@ -36,10 +45,11 @@ class Instacart(DatasetBase):
         """
         super().__init__(
             "instacart",
-            url=INSTACART_URL,
+            manual_download_url=INSTACART_URL,
             processed_leave_one_out_url=INSTACART_LEAVE_ONE_OUT_URL,
             processed_random_split_url=INSTACART_RANDOM_SPLIT_URL,
             processed_temporal_split_url=INSTACART_TEMPORAL_SPLIT_URL,
+            tips=INSTACART_TIPS,
         )
 
     def preprocess(self):
@@ -139,7 +149,7 @@ class Instacart_25(DatasetBase):
         """
         super().__init__(
             "instacart_25",
-            url="https://www.kaggle.com/c/6644/download-all",
+            manual_download_url="https://www.kaggle.com/c/6644/download-all",
             processed_random_split_url=INSTACART_RANDOM_SPLIT_URL,
             processed_temporal_split_url=INSTACART_TEMPORAL_SPLIT_URL,
         )

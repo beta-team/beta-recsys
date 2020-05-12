@@ -8,6 +8,15 @@ from beta_rec.datasets.dataset_base import DatasetBase
 # Download URL.
 YELP_URL = "https://www.yelp.com/dataset"
 
+# Yelp
+YELP_TIPS = """
+    Yelp dataset can not be downloaded by this url automatically, and you need to do:
+    1. Download this dataset via 'https://www.yelp.com/dataset',
+    2. Put 'yelp-dataset.zip' into the directory `yelp/raw/yelp`,
+    3. Unzip 'yelp-dataset.zip',
+    4. Rerun this program.
+"""
+
 
 class Yelp(DatasetBase):
     def __init__(self):
@@ -16,7 +25,7 @@ class Yelp(DatasetBase):
         Yelp dataset.
         The dataset can not be download by the url,
         you need to down the dataset by 'https://www.yelp.com/dataset'
-        then put it into the directory `yelp/raw`
+        then put it into the directory `yelp/raw/yelp`
         """
         super().__init__(
             'yelp',
@@ -24,6 +33,7 @@ class Yelp(DatasetBase):
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
+            tips=YELP_TIPS,
         )
 
     def preprocess(self):
