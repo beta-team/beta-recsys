@@ -38,7 +38,7 @@ class Yelp(DatasetBase):
             self.download()
 
         """Load yelp json-format dataset into yelp dataframe.
-        
+
         1. Load json data in lists, we only use userID, businessID, stars, date in this file.
         2. Add lists into dataframe.
         3. Map fix-length string ID into int format.
