@@ -682,7 +682,7 @@ def ndcg_at_k(
     # relevance in this case is always 1
     df_dcg["dcg"] = 1 / np.log1p(df_dcg["rank"])
     # sum up discount gained to get discount cumulative gain
-    df_dcg = df_dcg.groupby(col_user, as_index=False).agg({"dcg": "sum"})
+    df_dcg = df_dcg.groupby(col_user, as_index=False, sort=False).agg({"dcg": "sum"})
     # calculate ideal discounted cumulative gain
     df_ndcg = pd.merge(df_dcg, df_hit_count, on=[col_user])
     df_ndcg["idcg"] = df_ndcg["actual"].apply(

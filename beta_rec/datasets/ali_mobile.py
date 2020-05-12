@@ -18,7 +18,7 @@ AliMobile dataset can not be downloaded by this url automatically, and you need 
     2. Put 'tianchi_mobile_recommend_train_user.zip' into the directory `ali_mobile/raw`,
     3. Unzip 'tianchi_mobile_recommend_train_user.zip',
     4. Rename 'tianchi_mobile_recommend_train_user.csv' to 'ali_mobile.csv'
-    5. Rerun this program.
+    5. Rerun this command.
 """
 
 
@@ -49,6 +49,7 @@ class AliMobile(DatasetBase):
         you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46'
         then put it into the directory `ali_mobile/raw`
         """
+
         super().__init__("ali_mobile",
                          manual_download_url=ALIMOBILE_URL,
                          processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,

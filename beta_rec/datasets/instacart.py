@@ -102,9 +102,9 @@ class Instacart(DatasetBase):
 
         user_products = order_products.merge(orders, how="left", on="order_id")
 
-        user_item_id = user_products.groupby(["user_id"]).count()
+        # user_item_id = user_products.groupby(["user_id"]).count()
 
-        user_order_number = user_products.groupby(["user_id", "order_number"]).count()
+        # user_order_number = user_products.groupby(["user_id", "order_number"]).count()
 
         order_addtocart_user = (
             user_products.groupby(
