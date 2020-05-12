@@ -111,9 +111,17 @@ class DatasetBase(object):
 
         if not os.path.exists(raw_file_path):
             download_file(self.url, raw_file_path)
-            shutil.unpack_archive(
-                raw_file_path, self.raw_path, format=get_format(file_format)
-            )
+
+            if file_format == "gz":
+                file_name = raw_file_path.replace(".gz", "")
+                with gzip.open(raw_file_path, "rb") as fin:
+                    with open(file_name, "wb") as fout:
+                        shutil.copyfileobj(fin, fout)
+            else:
+                shutil.unpack_archive(
+                    raw_file_path, self.raw_path, format=get_format(file_format)
+                )
+
             if not os.path.exists(download_file_name):
                 return
             elif os.path.isdir(download_file_name):
