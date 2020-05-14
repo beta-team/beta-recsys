@@ -26,6 +26,7 @@ def detect_port(port, ip="127.0.0.1"):
                 connections.
         False -- otherwise.
     """
+    ready = True
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind((ip, port))
@@ -36,10 +37,10 @@ def detect_port(port, ip="127.0.0.1"):
         sock.listen(5)
         sock.close()
     except socket.error as e:
-        return False
-        if rais:
-            raise RuntimeError("The server is already running on port {0}".format(port))
-    return True
+        ready = False
+        raise RuntimeError("The server is already running on port {0}".format(port))
+    finally:
+        return ready
 
 
 def evaluate(data_df, predictions, metrics, k_li):
