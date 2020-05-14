@@ -276,7 +276,6 @@ class EvalEngine(object):
 
         if type(test_df_list) is not list:  # compatible for testing a single test set
             test_df_list = [test_df_list]
-        test_df_list = [test_df_list[0]]
         for i, test_data_df in enumerate(test_df_list):
             test_pred = self.predict(test_data_df, model)
             worker = Thread(
