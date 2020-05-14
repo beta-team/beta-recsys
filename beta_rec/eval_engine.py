@@ -4,7 +4,7 @@ import numpy as np
 from threading import Thread
 from threading import Lock
 import beta_rec.utils.evaluation as eval_model
-from beta_rec.utils.constants import *
+from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_PREDICTION_COL
 from beta_rec.utils.common_util import print_dict_as_table, save_to_csv, timeit
 from tensorboardX import SummaryWriter
 import socket
