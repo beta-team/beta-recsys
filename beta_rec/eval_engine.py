@@ -97,6 +97,7 @@ def train_eval_worker(
     Returns:
 
     """
+    testEngine.n_worker += 1
     valid_result = evaluate(valid_df, valid_pred, testEngine.metrics, top_k)
     test_result = evaluate(test_df, test_pred, testEngine.metrics, top_k)
     lock_train_eval.acquire()  # need to be test
@@ -107,7 +108,12 @@ def train_eval_worker(
         > testEngine.best_valid_performance
     ):
         testEngine.n_no_update = 0
-        testEngine.best_performance = valid_result[testEngine.config["validate_metric"]]
+        print(
+            f"Current testEngine.best_valid_performance {testEngine.best_valid_performance}"
+        )
+        testEngine.best_valid_performance = valid_result[
+            testEngine.config["validate_metric"]
+        ]
         print_dict_as_table(
             valid_result,
             tag=f"performance on validation at epoch {epoch}",
@@ -115,6 +121,9 @@ def train_eval_worker(
         )
     else:
         testEngine.n_no_update += 1
+        print(f"number of epoches that have no update {testEngine.n_no_update}")
+
+    testEngine.n_worker -= 1
     lock_train_eval.release()
     # lock record and get best performance
     return valid_result, test_result
@@ -139,12 +148,23 @@ def test_eval_worker(testEngine, eval_data_df, prediction, k_li=[5, 10, 20]):
     }
     if "late_dim" in testEngine.config:
         result_para["late_dim"] = [int(testEngine.config["late_dim"])]
+    if "remark" in testEngine.config:
+        result_para["remark"] = [int(testEngine.config["remark"])]
     if "alpha" in testEngine.config:
-        result_para["alpha"] = [int(testEngine.config["alpha"])]
+        result_para["alpha"] = [testEngine.config["alpha"]]
     if "activator" in testEngine.config:
         result_para["activator"] = [testEngine.config["activator"]]
+    if "item_fea_type" in testEngine.config:
+        result_para["item_fea_type"] = [testEngine.config["item_fea_type"]]
+    if "n_sample" in testEngine.config:
+        result_para["n_sample"] = [testEngine.config["n_sample"]]
+    if "time_step" in testEngine.config:
+        result_para["time_step"] = [testEngine.config["time_step"]]
 
     test_result_dic = evaluate(eval_data_df, prediction, testEngine.metrics, k_li)
+    print_dict_as_table(
+        test_result_dic, tag=f"performance on test", columns=["metrics", "values"],
+    )
     test_result_dic.update(result_para)
     lock_test_eval.acquire()  # need to be test
     result_df = pd.DataFrame(test_result_dic)
@@ -173,6 +193,7 @@ class EvalEngine(object):
             pd.DataFrame(config.items(), columns=["parameters", "values"]).to_string(),
             0,
         )
+        self.n_worker = 0
         self.n_no_update = 0
         self.best_valid_performance = 0
         self.tunable = ["model", "dataset"]
@@ -182,6 +203,10 @@ class EvalEngine(object):
         )
         self.init_prometheus_client()
         print("Initializing test engine ...")
+
+    def flush(self):
+        self.n_no_update = 0
+        self.best_valid_performance = 0
 
     def predict(self, data_df, model):
         """ Make prediction for a trained model
@@ -251,7 +276,6 @@ class EvalEngine(object):
 
         if type(test_df_list) is not list:  # compatible for testing a single test set
             test_df_list = [test_df_list]
-
         for i, test_data_df in enumerate(test_df_list):
             test_pred = self.predict(test_data_df, model)
             worker = Thread(

@@ -11,7 +11,12 @@ from beta_rec.eval_engine import EvalEngine
 from beta_rec.utils import logger, data_util
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.constants import MAX_N_UPDATE
-from beta_rec.utils.common_util import set_seed, initialize_folders, print_dict_as_table, ensureDir
+from beta_rec.utils.common_util import (
+    set_seed,
+    initialize_folders,
+    print_dict_as_table,
+    ensureDir,
+)
 from torch.utils.data import DataLoader
 
 
@@ -145,7 +150,9 @@ class TrainEngine(object):
         self.monitor = None
         self.engine = None
         self.config = prepare_env(config)
-        self.gpu_id, self.config["device_str"] = get_device()
+        self.gpu_id, self.config["device_str"] = (
+            get_device() if self.config["device"] == "gpu" else (None, "cpu")
+        )
         self.eval_engine = EvalEngine(self.config)
 
     def load_dataset(self):
@@ -156,6 +163,8 @@ class TrainEngine(object):
 
         """
         self.dataset = data_util.Dataset(self.config)
+        self.config["item_fea"] = self.dataset.item_feature
+        self.config["user_fea"] = self.dataset.user_feature
         self.config["n_users"] = self.dataset.n_users
         self.config["n_items"] = self.dataset.n_items
 
