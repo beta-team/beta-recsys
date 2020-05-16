@@ -11,6 +11,11 @@ DL_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious
 LF_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
 
 # processed data url
+ML_2K_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugjLTDesYUMDz7m4-?e=YjAeFC"
+ML_2K_RANDOM_URL = "https://1drv.ms/u/s!AjMahLyQeZqugjQGQk6tnU_abBhJ?e=ewH1dM"
+ML_2K_TEMPORAL_URL = "https://1drv.ms/u/s!AjMahLyQeZqugja3hXLGo-74UziC?e=6MN7jh"
+DL_2K_LEAVE_ONE_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiwhklT9W7jC1jCs?e=aO2IZz"
+DL_2K_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugi6ZpsxBQ-6KbXmE?e=wTyIX7"
 LF_2K_LEAVE_ONE_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugh0S50BjwNBDIVSi?e=ZSgjoB"
 LF_2K_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugh9SOy0tpGT-DyGO?e=djcSUS"
 LF_2K_RANDOM_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiE-a65YO3G7ziq4?e=XKla4F"
