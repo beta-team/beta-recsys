@@ -26,7 +26,7 @@ default_root_dir = os.path.abspath(
 )
 
 # register 7z unpack
-shutil.register_unpack_format("7zip", ['.7z'], unpack_7zarchive)
+shutil.register_unpack_format("7zip", [".7z"], unpack_7zarchive)
 
 
 class DatasetBase(object):
@@ -89,8 +89,10 @@ class DatasetBase(object):
             os.mkdir(self.processed_path)
 
         if tips is None:
-            tips = f"please download the dataset by your self via {self.manual_download_url}, rename to " + \
-                   f"{self.dataset_name} and put it into {self.raw_path} after decompression "
+            tips = (
+                f"please download the dataset by your self via {self.manual_download_url}, rename to "
+                + f"{self.dataset_name} and put it into {self.raw_path} after decompression "
+            )
         self.tips = tips
 
     @timeit

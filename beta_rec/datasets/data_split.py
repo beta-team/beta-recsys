@@ -38,6 +38,21 @@ def filter_by_count(df, group_col, filter_col, num):
     return filter_df
 
 
+def check_data_available(data):
+    """ A simple notice showing that data interaction have
+
+    Args:
+        data (DataFrame): The filtered data interactions.
+
+    Returns:
+
+    """
+    if len(data.index) < 1:
+        raise RuntimeError(
+            "This dataset contains no interaction after filtering. Please check the default filter setup of this split!"
+        )
+
+
 def filter_user_item(df, min_u_c=5, min_i_c=5):
     """filter data by the minimum purchase number of items and users
 
@@ -77,6 +92,7 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
             n_interact = new_n_interact
         else:
             break  # no change
+    check_data_available(df)
     print("Dataset statistics after filter")
     print(
         tabulate(
@@ -136,6 +152,7 @@ def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
             n_interact = new_n_interact
         else:
             break  # no change
+    check_data_available(df)
     print("Dataset statistics after filter")
     print(
         tabulate(
@@ -187,7 +204,8 @@ def feed_neg_sample(data, negative_num, item_sampler):
             for item in item_li:
                 df_scores.append(
                     data.loc[
-                        (data[DEFAULT_USER_COL] == u) & (data[DEFAULT_ITEM_COL] == item),
+                        (data[DEFAULT_USER_COL] == u)
+                        & (data[DEFAULT_ITEM_COL] == item),
                         DEFAULT_RATING_COL,
                     ].to_numpy()[0]
                 )
@@ -353,7 +371,7 @@ def random_split(data, test_rate=0.1, by_user=False):
                 interactions[train_size:], DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
-                interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
+                interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
             ] = "validate"
 
     else:
@@ -368,7 +386,7 @@ def random_split(data, test_rate=0.1, by_user=False):
             interactions[train_size:], DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
-            interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
+            interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
         ] = "validate"
     return data
 
@@ -402,7 +420,7 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
-                    orders[train_size - validate_size: train_size]
+                    orders[train_size - validate_size : train_size]
                 ),
                 DEFAULT_FLAG_COL,
             ] = "validate"
@@ -419,7 +437,7 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
-                orders[train_size - validate_size: train_size]
+                orders[train_size - validate_size : train_size]
             ),
             DEFAULT_FLAG_COL,
         ] = "validate"
@@ -505,7 +523,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
                 interactions[train_size:], DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
-                interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
+                interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
             ] = "validate"
 
     else:
@@ -519,7 +537,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
             interactions[train_size:], DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
-            interactions[train_size - validate_size: train_size], DEFAULT_FLAG_COL,
+            interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
         ] = "validate"
     return data
 
@@ -552,7 +570,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
-                    orders[train_size - validate_size: train_size]
+                    orders[train_size - validate_size : train_size]
                 ),
                 DEFAULT_FLAG_COL,
             ] = "validate"
@@ -567,7 +585,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
-                orders[train_size - validate_size: train_size]
+                orders[train_size - validate_size : train_size]
             ),
             DEFAULT_FLAG_COL,
         ] = "validate"
