@@ -657,6 +657,16 @@ def split_data(
     save_split_data(tp_validate, save_dir, split_type, parameterized_path, "valid.npz")
     save_split_data(tp_test, save_dir, split_type, parameterized_path, "test.npz")
     item_sampler = AliasTable(data[DEFAULT_ITEM_COL].value_counts().to_dict())
+
+    valid_neg_max = (
+        tp_validate.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].count().max()
+    )
+    test_neg_max = tp_test.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].count().max()
+    if valid_neg_max < 100 or test_neg_max < 100:
+        raise RuntimeError(
+            f"This dataset do not have sufficient negative items for sampling! \nvalid_neg_max: {valid_neg_max}, "
+            + f"test_neg_max: {test_neg_max}\nPlease directly use valid.npz and test.npz."
+        )
     for i in range(n_test):
         tp_validate_new = feed_neg_sample(tp_validate, n_negative, item_sampler)
         tp_test_new = feed_neg_sample(tp_test, n_negative, item_sampler)
