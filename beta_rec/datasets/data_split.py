@@ -662,10 +662,10 @@ def split_data(
         tp_validate.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].count().max()
     )
     test_neg_max = tp_test.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].count().max()
-    if valid_neg_max < 100 or test_neg_max < 100:
+    if valid_neg_max < n_negative or test_neg_max < n_negative:
         raise RuntimeError(
             f"This dataset do not have sufficient negative items for sampling! \nvalid_neg_max: {valid_neg_max}, "
-            + f"test_neg_max: {test_neg_max}\nPlease directly use valid.npz and test.npz."
+            + f"test_neg_max: {test_neg_max} n_negative: {n_negative}\nPlease directly use valid.npz and test.npz."
         )
     for i in range(n_test):
         tp_validate_new = feed_neg_sample(tp_validate, n_negative, item_sampler)
