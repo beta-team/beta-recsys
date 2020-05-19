@@ -81,7 +81,7 @@ class Engine(object):
         Returns:
                 return the evaluation scores of the following metrics scores:MAP,NDCG,
                 Precision,Recall on value of k.
-                
+
                 example:
                 {'map_at_k': 0.5,
                  'NDCG@5': 0.5,

@@ -32,7 +32,7 @@ TOL = 0.0001
 def rating_true():
     return pd.DataFrame(
         {
-            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1,],
+            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
             DEFAULT_ITEM_COL: [
                 3,
                 1,
@@ -53,7 +53,7 @@ def rating_true():
                 1,
                 2,
             ],
-            DEFAULT_RATING_COL: [3, 5, 5, 3, 3, 1, 5, 5, 5, 4, 4, 3, 3, 3, 2, 1, 5, 4,],
+            DEFAULT_RATING_COL: [3, 5, 5, 3, 3, 1, 5, 5, 5, 4, 4, 3, 3, 3, 2, 1, 5, 4],
         }
     )
 
@@ -62,7 +62,7 @@ def rating_true():
 def rating_pred():
     return pd.DataFrame(
         {
-            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1,],
+            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
             DEFAULT_ITEM_COL: [
                 12,
                 10,
@@ -103,7 +103,7 @@ def rating_pred():
                 14,
                 13,
             ],
-            DEFAULT_RATING_COL: [3, 5, 5, 3, 3, 1, 5, 5, 5, 4, 4, 3, 3, 3, 2, 1, 5, 4,],
+            DEFAULT_RATING_COL: [3, 5, 5, 3, 3, 1, 5, 5, 5, 4, 4, 3, 3, 3, 2, 1, 5, 4],
         }
     )
 
@@ -112,7 +112,7 @@ def rating_pred():
 def rating_nohit():
     return pd.DataFrame(
         {
-            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1,],
+            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
             DEFAULT_ITEM_COL: [100] * 18,
             DEFAULT_PREDICTION_COL: [
                 12,
@@ -191,7 +191,6 @@ def test_merge_rating(rating_true, rating_pred):
 
 
 def test_merge_ranking(rating_true, rating_pred):
-
     data_hit, data_hit_count, n_users = merge_ranking_true_pred(
         rating_true,
         rating_pred,
@@ -214,24 +213,24 @@ def test_merge_ranking(rating_true, rating_pred):
 
 def test_python_rmse(rating_true, rating_pred):
     assert (
-        rmse(
-            rating_true=rating_true,
-            rating_pred=rating_true,
-            col_prediction=DEFAULT_RATING_COL,
-        )
-        == 0
+            rmse(
+                rating_true=rating_true,
+                rating_pred=rating_true,
+                col_prediction=DEFAULT_RATING_COL,
+            )
+            == 0
     )
     assert rmse(rating_true, rating_pred) == pytest.approx(7.254309, TOL)
 
 
 def test_python_mae(rating_true, rating_pred):
     assert (
-        mae(
-            rating_true=rating_true,
-            rating_pred=rating_true,
-            col_prediction=DEFAULT_RATING_COL,
-        )
-        == 0
+            mae(
+                rating_true=rating_true,
+                rating_pred=rating_true,
+                col_prediction=DEFAULT_RATING_COL,
+            )
+            == 0
     )
     assert mae(rating_true, rating_pred) == pytest.approx(6.375, TOL)
 
@@ -256,13 +255,13 @@ def test_python_exp_var(rating_true, rating_pred):
 
 def test_python_ndcg_at_k(rating_true, rating_pred, rating_nohit):
     assert (
-        ndcg_at_k(
-            rating_true=rating_true,
-            rating_pred=rating_true,
-            col_prediction=DEFAULT_RATING_COL,
-            k=10,
-        )
-        == 1
+            ndcg_at_k(
+                rating_true=rating_true,
+                rating_pred=rating_true,
+                col_prediction=DEFAULT_RATING_COL,
+                k=10,
+            )
+            == 1
     )
     assert ndcg_at_k(rating_true, rating_nohit, k=10) == 0.0
     assert ndcg_at_k(rating_true, rating_pred, k=10) == pytest.approx(0.38172, TOL)
@@ -270,13 +269,13 @@ def test_python_ndcg_at_k(rating_true, rating_pred, rating_nohit):
 
 def test_python_map_at_k(rating_true, rating_pred, rating_nohit):
     assert (
-        map_at_k(
-            rating_true=rating_true,
-            rating_pred=rating_true,
-            col_prediction=DEFAULT_RATING_COL,
-            k=10,
-        )
-        == 1
+            map_at_k(
+                rating_true=rating_true,
+                rating_pred=rating_true,
+                col_prediction=DEFAULT_RATING_COL,
+                k=10,
+            )
+            == 1
     )
     assert map_at_k(rating_true, rating_nohit, k=10) == 0.0
     assert map_at_k(rating_true, rating_pred, k=10) == pytest.approx(0.23613, TOL)
@@ -284,13 +283,13 @@ def test_python_map_at_k(rating_true, rating_pred, rating_nohit):
 
 def test_python_precision(rating_true, rating_pred, rating_nohit):
     assert (
-        precision_at_k(
-            rating_true=rating_true,
-            rating_pred=rating_true,
-            col_prediction=DEFAULT_RATING_COL,
-            k=10,
-        )
-        == 0.6
+            precision_at_k(
+                rating_true=rating_true,
+                rating_pred=rating_true,
+                col_prediction=DEFAULT_RATING_COL,
+                k=10,
+            )
+            == 0.6
     )
     assert precision_at_k(rating_true, rating_nohit, k=10) == 0.0
     assert precision_at_k(rating_true, rating_pred, k=10) == pytest.approx(0.26666, TOL)
@@ -304,14 +303,14 @@ def test_python_precision(rating_true, rating_pred, rating_nohit):
         }
     )
     assert (
-        precision_at_k(
-            rating_true=single_user,
-            rating_pred=single_user,
-            col_rating=DEFAULT_RATING_COL,
-            col_prediction=DEFAULT_RATING_COL,
-            k=3,
-        )
-        == 1
+            precision_at_k(
+                rating_true=single_user,
+                rating_pred=single_user,
+                col_rating=DEFAULT_RATING_COL,
+                col_prediction=DEFAULT_RATING_COL,
+                k=3,
+            )
+            == 1
     )
 
     same_items = pd.DataFrame(
@@ -322,25 +321,25 @@ def test_python_precision(rating_true, rating_pred, rating_nohit):
         }
     )
     assert (
-        precision_at_k(
-            rating_true=same_items,
-            rating_pred=same_items,
-            col_prediction=DEFAULT_RATING_COL,
-            k=3,
-        )
-        == 1
+            precision_at_k(
+                rating_true=same_items,
+                rating_pred=same_items,
+                col_prediction=DEFAULT_RATING_COL,
+                k=3,
+            )
+            == 1
     )
 
     # Check that if the sample size is smaller than k, the maximum precision can not be 1
     # if we do precision@5 when there is only 3 items, we can get a maximum of 3/5.
     assert (
-        precision_at_k(
-            rating_true=same_items,
-            rating_pred=same_items,
-            col_prediction=DEFAULT_RATING_COL,
-            k=5,
-        )
-        == 0.6
+            precision_at_k(
+                rating_true=same_items,
+                rating_pred=same_items,
+                col_prediction=DEFAULT_RATING_COL,
+                k=5,
+            )
+            == 0.6
     )
 
 

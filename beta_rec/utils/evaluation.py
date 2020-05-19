@@ -96,7 +96,7 @@ def has_same_base_dtype(df_1, df_2, columns=None):
         columns = df_1.columns
 
     if not (
-        has_columns(df=df_1, columns=columns) and has_columns(df=df_2, columns=columns)
+            has_columns(df=df_1, columns=columns) and has_columns(df=df_2, columns=columns)
     ):
         return False
 
@@ -112,7 +112,7 @@ def has_same_base_dtype(df_1, df_2, columns=None):
 def check_column_dtypes(func):
     """Checks columns of DataFrame inputs
 
-    This includes the checks on 
+    This includes the checks on
         1. whether the input columns exist in the input DataFrames
         2. whether the data types of col_user as well as col_item are matched in the two input DataFrames.
 
@@ -122,14 +122,14 @@ def check_column_dtypes(func):
 
     @wraps(func)
     def check_column_dtypes_wrapper(
-        rating_true,
-        rating_pred,
-        col_user=DEFAULT_USER_COL,
-        col_item=DEFAULT_ITEM_COL,
-        col_rating=DEFAULT_RATING_COL,
-        col_prediction=DEFAULT_PREDICTION_COL,
-        *args,
-        **kwargs
+            rating_true,
+            rating_pred,
+            col_user=DEFAULT_USER_COL,
+            col_item=DEFAULT_ITEM_COL,
+            col_rating=DEFAULT_RATING_COL,
+            col_prediction=DEFAULT_PREDICTION_COL,
+            *args,
+            **kwargs
     ):
         """Check columns of DataFrame inputs
 
@@ -147,7 +147,7 @@ def check_column_dtypes(func):
         if not has_columns(rating_pred, [col_user, col_item, col_prediction]):
             raise ValueError("Missing columns in predicted rating DataFrame")
         if not has_same_base_dtype(
-            rating_true, rating_pred, columns=[col_user, col_item]
+                rating_true, rating_pred, columns=[col_user, col_item]
         ):
             raise ValueError("Columns in provided DataFrames are not the same datatype")
 
@@ -208,16 +208,16 @@ def lru_cache_df(maxsize, typed=False):
 @check_column_dtypes
 @lru_cache_df(maxsize=1)
 def merge_rating_true_pred(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Join truth and prediction data frames on userID and itemID and return the true
     and predicted rated with the correct index.
-    
+
     Args:
         rating_true (pd.DataFrame): True data
         rating_pred (pd.DataFrame): Predicted data
@@ -245,12 +245,12 @@ def merge_rating_true_pred(
 
 
 def rmse(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate Root Mean Squared Error
 
@@ -278,12 +278,12 @@ def rmse(
 
 
 def mae(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate Mean Absolute Error.
 
@@ -311,12 +311,12 @@ def mae(
 
 
 def rsquared(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate R squared
 
@@ -327,7 +327,7 @@ def rsquared(
         col_item (str): column name for item
         col_rating (str): column name for rating
         col_prediction (str): column name for prediction
-    
+
     Returns:
         float: R squared (min=0, max=1).
     """
@@ -344,12 +344,12 @@ def rsquared(
 
 
 def exp_var(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate explained variance.
 
@@ -377,12 +377,12 @@ def exp_var(
 
 
 def auc(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate the Area-Under-Curve metric for implicit feedback typed
     recommender, where rating is binary and prediction is float number ranging
@@ -420,12 +420,12 @@ def auc(
 
 
 def logloss(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
 ):
     """Calculate the logloss metric for implicit feedback typed
     recommender, where rating is binary and prediction is float number ranging
@@ -459,15 +459,15 @@ def logloss(
 @check_column_dtypes
 @lru_cache_df(maxsize=1)
 def merge_ranking_true_pred(
-    rating_true,
-    rating_pred,
-    col_user,
-    col_item,
-    col_rating,
-    col_prediction,
-    relevancy_method,
-    k=DEFAULT_K,
-    threshold=DEFAULT_THRESHOLD,
+        rating_true,
+        rating_pred,
+        col_user,
+        col_item,
+        col_rating,
+        col_prediction,
+        relevancy_method,
+        k=DEFAULT_K,
+        threshold=DEFAULT_THRESHOLD,
 ):
     """Filter truth and prediction data frames on common users
 
@@ -534,15 +534,15 @@ def merge_ranking_true_pred(
 
 
 def precision_at_k(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
-    relevancy_method="top_k",
-    k=DEFAULT_K,
-    threshold=DEFAULT_THRESHOLD,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
+        relevancy_method="top_k",
+        k=DEFAULT_K,
+        threshold=DEFAULT_THRESHOLD,
 ):
     """Precision at K.
 
@@ -586,15 +586,15 @@ def precision_at_k(
 
 
 def recall_at_k(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
-    relevancy_method="top_k",
-    k=DEFAULT_K,
-    threshold=DEFAULT_THRESHOLD,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
+        relevancy_method="top_k",
+        k=DEFAULT_K,
+        threshold=DEFAULT_THRESHOLD,
 ):
     """Recall at K.
 
@@ -610,7 +610,7 @@ def recall_at_k(
         threshold (float): threshold of top items per user (optional)
 
     Returns:
-        float: recall at k (min=0, max=1). The maximum value is 1 even when fewer than 
+        float: recall at k (min=0, max=1). The maximum value is 1 even when fewer than
             k items exist for a user in rating_true.
     """
 
@@ -633,20 +633,20 @@ def recall_at_k(
 
 
 def ndcg_at_k(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
-    relevancy_method="top_k",
-    k=DEFAULT_K,
-    threshold=DEFAULT_THRESHOLD,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
+        relevancy_method="top_k",
+        k=DEFAULT_K,
+        threshold=DEFAULT_THRESHOLD,
 ):
     """Normalized Discounted Cumulative Gain (nDCG).
-    
+
     Info: https://en.wikipedia.org/wiki/Discounted_cumulative_gain
-    
+
     Args:
         rating_true (pd.DataFrame): True DataFrame
         rating_pred (pd.DataFrame): Predicted DataFrame
@@ -694,15 +694,15 @@ def ndcg_at_k(
 
 
 def map_at_k(
-    rating_true,
-    rating_pred,
-    col_user=DEFAULT_USER_COL,
-    col_item=DEFAULT_ITEM_COL,
-    col_rating=DEFAULT_RATING_COL,
-    col_prediction=DEFAULT_PREDICTION_COL,
-    relevancy_method="top_k",
-    k=DEFAULT_K,
-    threshold=DEFAULT_THRESHOLD,
+        rating_true,
+        rating_pred,
+        col_user=DEFAULT_USER_COL,
+        col_item=DEFAULT_ITEM_COL,
+        col_rating=DEFAULT_RATING_COL,
+        col_prediction=DEFAULT_PREDICTION_COL,
+        relevancy_method="top_k",
+        k=DEFAULT_K,
+        threshold=DEFAULT_THRESHOLD,
 ):
     """Mean Average Precision at k
     The implementation of MAP is referenced from Spark MLlib evaluation metrics.
@@ -757,7 +757,7 @@ def map_at_k(
 
 
 def get_top_k_items(
-    dataframe, col_user=DEFAULT_USER_COL, col_rating=DEFAULT_RATING_COL, k=DEFAULT_K
+        dataframe, col_user=DEFAULT_USER_COL, col_rating=DEFAULT_RATING_COL, k=DEFAULT_K
 ):
     """Get the input customer-item-rating tuple in the format of Pandas
     DataFrame, output a Pandas DataFrame in the dense format of top k items
@@ -780,8 +780,8 @@ def get_top_k_items(
     # Sort dataframe by col_user and (top k) col_rating
     top_k_items = (
         dataframe.groupby(col_user, as_index=False)
-            .apply(lambda x: x.nlargest(k, col_rating))
-            .reset_index(drop=True)
+                 .apply(lambda x: x.nlargest(k, col_rating))
+                 .reset_index(drop=True)
     )
     # Add ranks
     top_k_items["rank"] = top_k_items.groupby(col_user, sort=False).cumcount() + 1
