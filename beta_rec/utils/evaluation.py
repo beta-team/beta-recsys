@@ -777,8 +777,12 @@ def get_top_k_items(
         pd.DataFrame: DataFrame of top k items for each user
     """
 
-    return (
+    # Sort dataframe by col_user and (top k) col_rating
+    top_k_items = (
         dataframe.groupby(col_user, as_index=False)
-        .apply(lambda x: x.nlargest(k, col_rating))
-        .reset_index(drop=True)
+            .apply(lambda x: x.nlargest(k, col_rating))
+            .reset_index(drop=True)
     )
+    # Add ranks
+    top_k_items["rank"] = top_k_items.groupby(col_user, sort=False).cumcount() + 1
+    return top_k_items
