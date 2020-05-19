@@ -211,6 +211,11 @@ class EvalEngine(object):
         print("Initializing test engine ...")
 
     def flush(self):
+        """ Flush eval_engine
+
+        Returns:
+
+        """
         self.n_no_update = 0
         self.best_valid_performance = 0
 
