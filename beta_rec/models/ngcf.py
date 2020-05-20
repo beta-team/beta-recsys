@@ -93,9 +93,6 @@ class NGCF(torch.nn.Module):
 
 class NGCFEngine(Engine):
     # A class includes train an epoch and train a batch of NGCF
-    def __init__(self, config):
-        self.config = config
-        self.model = NGCF(config)
 
     def __init__(self, config):
         self.config = config

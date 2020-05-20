@@ -2,7 +2,12 @@ import os
 import json
 import time
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
@@ -28,7 +33,7 @@ class Yelp(DatasetBase):
         then put it into the directory `yelp/raw/yelp`
         """
         super().__init__(
-            'yelp',
+            "yelp",
             manual_download_url=YELP_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
@@ -43,7 +48,9 @@ class Yelp(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.raw_path, self.dataset_name, "yelp_academic_dataset_review.json")
+        file_name = os.path.join(
+            self.raw_path, self.dataset_name, "yelp_academic_dataset_review.json"
+        )
         if not os.path.exists(file_name):
             self.download()
 
@@ -56,7 +63,7 @@ class Yelp(DatasetBase):
         userList, itemList, starList, dateList = [], [], [], []
         userMap, itemMap = {}, {}
         userCnt, itemCnt = 0, 0
-        with open(file_name, 'r', encoding="utf-8") as fin:
+        with open(file_name, "r", encoding="utf-8") as fin:
             for line in fin:
                 line = json.loads(line)
                 user = str(line["user_id"])
@@ -82,20 +89,22 @@ class Yelp(DatasetBase):
                 starList.append(star)
                 dateList.append(timestamp)
 
-        prior_transactions = pd.DataFrame({
-            DEFAULT_USER_COL: userList,
-            DEFAULT_ITEM_COL: itemList,
-            DEFAULT_RATING_COL: starList,
-            DEFAULT_TIMESTAMP_COL: dateList,
-        })
+        prior_transactions = pd.DataFrame(
+            {
+                DEFAULT_USER_COL: userList,
+                DEFAULT_ITEM_COL: itemList,
+                DEFAULT_RATING_COL: starList,
+                DEFAULT_TIMESTAMP_COL: dateList,
+            }
+        )
 
         # Transfer fix-length string into num.
-        prior_transactions[DEFAULT_USER_COL] = prior_transactions[DEFAULT_USER_COL].apply(
-            lambda u: userMap[u]
-        )
-        prior_transactions[DEFAULT_ITEM_COL] = prior_transactions[DEFAULT_ITEM_COL].apply(
-            lambda i: itemMap[i]
-        )
+        prior_transactions[DEFAULT_USER_COL] = prior_transactions[
+            DEFAULT_USER_COL
+        ].apply(lambda u: userMap[u])
+        prior_transactions[DEFAULT_ITEM_COL] = prior_transactions[
+            DEFAULT_ITEM_COL
+        ].apply(lambda i: itemMap[i])
 
         # Check the validation of this table.
         print(prior_transactions.head())

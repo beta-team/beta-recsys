@@ -2,7 +2,12 @@ import os
 import numpy as np
 import pandas as pd
 
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # download_url
@@ -58,7 +63,7 @@ class Movielens_100k(DatasetBase):
         data = pd.read_table(
             file_name,
             header=None,
-            sep="\s+",
+            sep=r"\s+",
             engine="python",
             names=[
                 DEFAULT_USER_COL,
@@ -130,10 +135,10 @@ class Movielens_100k(DatasetBase):
         A = []
         for i in data.index:
             A.append(
-                [data.loc[i][0]] +
-                list(data.loc[i]["age_one_hot"]) +
-                list(data.loc[i]["col_2_one_hot"]) +
-                list(data.loc[i]["col_3_one_hot"])
+                [data.loc[i][0]]
+                + list(data.loc[i]["age_one_hot"])
+                + list(data.loc[i]["col_2_one_hot"])
+                + list(data.loc[i]["col_3_one_hot"])
             )
         user_feat = np.stack(A)
 

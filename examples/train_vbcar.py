@@ -6,7 +6,7 @@ import argparse
 import os
 import math
 from ray import tune
-from beta_rec.train_engine import TrainEngine, print_dict_as_table
+from beta_rec.train_engine import TrainEngine
 from beta_rec.models.vbcar import VBCAREngine
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.common_util import update_args

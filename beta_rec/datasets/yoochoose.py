@@ -1,7 +1,12 @@
 import os
 import csv
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL
@@ -38,7 +43,7 @@ class YooChoose(DatasetBase):
             https://s3-eu-west-1.amazonaws.com/yc-rdata/yoochoose-data.7z.
         then put it into the directory `yoochoose/raw` and unzip it.
         """
-        super().__init__('yoochoose', url=YOOCHOOSE_URL)
+        super().__init__("yoochoose", url=YOOCHOOSE_URL)
 
     def preprocess(self):
         """Preprocess the raw file
@@ -65,7 +70,7 @@ class YooChoose(DatasetBase):
             yoochoose_path,
             header=None,
             encoding="utf-8",
-            sep=',',
+            sep=",",
             quoting=csv.QUOTE_NONE,
             usecols=[0, 2, 3],
             names=[DEFAULT_USER_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_ITEM_COL],
