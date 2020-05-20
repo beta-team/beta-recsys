@@ -164,8 +164,9 @@ class Dataset(object):
         self.user_sampler = AliasTable(
             self.train[DEFAULT_USER_COL].value_counts().to_dict()
         )
-        self.init_item_fea()
-        self.init_user_fea()
+        if "item_fea_type" in self.config or "user_fea_type" in self.config:
+            self.init_item_fea()
+            self.init_user_fea()
 
     def sample_triple_time(self, dump=True, load_save=False):
         """

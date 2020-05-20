@@ -1,10 +1,15 @@
+import os
 import pandas as pd
 import torch
 import numpy as np
 from threading import Thread
 from threading import Lock
 import beta_rec.utils.evaluation as eval_model
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_PREDICTION_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_PREDICTION_COL,
+)
 from beta_rec.utils.common_util import print_dict_as_table, save_to_csv, timeit
 from tensorboardX import SummaryWriter
 import socket
@@ -32,10 +37,6 @@ def detect_port(port, ip="127.0.0.1"):
         sock.bind((ip, port))
         sock.listen(5)
         sock.close()
-        sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-        sock.bind(("::1", port))
-        sock.listen(5)
-        sock.close()
     except socket.error as e:
         ready = False
         raise RuntimeError("The server is already running on port {0}".format(port))
@@ -44,7 +45,7 @@ def detect_port(port, ip="127.0.0.1"):
 
 
 def evaluate(data_df, predictions, metrics, k_li):
-    """ Evaluate the performance of a prection by different metrics
+    """ Evaluate the performance of a prediction by different metrics
 
     Args:
         data_df (DataFrame): the dataset to be evaluated
@@ -119,9 +120,14 @@ def train_eval_worker(
             tag=f"performance on validation at epoch {epoch}",
             columns=["metrics", "values"],
         )
+        print_dict_as_table(
+            test_result,
+            tag=f"performance on testing at epoch {epoch}",
+            columns=["metrics", "values"],
+        )
     else:
         testEngine.n_no_update += 1
-        print(f"number of epoches that have no update {testEngine.n_no_update}")
+        print(f"number of epochs that have no update {testEngine.n_no_update}")
 
     testEngine.n_worker -= 1
     lock_train_eval.release()
@@ -149,7 +155,7 @@ def test_eval_worker(testEngine, eval_data_df, prediction, k_li=[5, 10, 20]):
     if "late_dim" in testEngine.config:
         result_para["late_dim"] = [int(testEngine.config["late_dim"])]
     if "remark" in testEngine.config:
-        result_para["remark"] = [int(testEngine.config["remark"])]
+        result_para["remark"] = [testEngine.config["remark"]]
     if "alpha" in testEngine.config:
         result_para["alpha"] = [testEngine.config["alpha"]]
     if "activator" in testEngine.config:
@@ -205,6 +211,11 @@ class EvalEngine(object):
         print("Initializing test engine ...")
 
     def flush(self):
+        """ Flush eval_engine
+
+        Returns:
+
+        """
         self.n_no_update = 0
         self.best_valid_performance = 0
 
@@ -314,8 +325,18 @@ class EvalEngine(object):
             None
 
         """
-        if detect_port(8003):  # check if the port is available
-            start_http_server(8003)
+        if "port" not in self.config:
+            port = 8003
+        else:
+            port = self.config["port"]
+        if detect_port(port):  # check if the port is available
+            print(f"port {port} is available. start_http_server.")
+            start_http_server(port)
+        else:
+            print(f"[Warning]: port {port} was already in use. ")
+            print(
+                "If you need to use prometheus, please check that port or specify another port number."
+            )
         gauges_test = {}
         gauges_valid = {}
         for metric in self.config["metrics"]:
@@ -350,3 +371,39 @@ class EvalEngine(object):
             self.gauges_test[metric].labels(*self.labels).set(
                 test_result[metric + "@" + str(10)]
             )
+
+    def init_prometheus_env(self):
+        """ Initialize prometheus environment
+
+        """
+        self.tunable = ["model", "dataset"]
+        self.labels = [
+            self.config["model"],
+            self.config["dataset"],
+        ]
+        other_opts = [
+            "n_sample",
+            "emb_dim",
+            "late_dim",
+            "alpha",
+            "time_step",
+            "activator",
+            "lr",
+            "optimizer",
+            "item_fea_type",
+            "max_epoch",
+        ]
+
+        for opt in other_opts:
+            if opt in self.config:
+                self.tunable.append(opt)
+                self.labels.append(self.config[opt])
+
+        environs = ["objectID", "owner", "instance", "namespace", "appID"]
+        for environ in environs:
+            if environ in os.environ:
+                env_name = os.environ[environ]
+                self.tunable.append(environ)
+                self.labels.append(env_name)
+        self.labels = tuple(self.labels)
+        self.init_prometheus_client()
