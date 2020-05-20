@@ -1,8 +1,14 @@
 import numpy as np
 import pandas as pd
 from functools import lru_cache, wraps
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_PREDICTION_COL, \
-    DEFAULT_K, DEFAULT_THRESHOLD
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_PREDICTION_COL,
+    DEFAULT_K,
+    DEFAULT_THRESHOLD,
+)
 from sklearn.metrics import (
     mean_squared_error,
     mean_absolute_error,
@@ -112,7 +118,7 @@ def has_same_base_dtype(df_1, df_2, columns=None):
 def check_column_dtypes(func):
     """Checks columns of DataFrame inputs
 
-    This includes the checks on 
+    This includes the checks on
         1. whether the input columns exist in the input DataFrames
         2. whether the data types of col_user as well as col_item are matched in the two input DataFrames.
 
@@ -217,7 +223,7 @@ def merge_rating_true_pred(
 ):
     """Join truth and prediction data frames on userID and itemID and return the true
     and predicted rated with the correct index.
-    
+
     Args:
         rating_true (pd.DataFrame): True data
         rating_pred (pd.DataFrame): Predicted data
@@ -327,7 +333,7 @@ def rsquared(
         col_item (str): column name for item
         col_rating (str): column name for rating
         col_prediction (str): column name for prediction
-    
+
     Returns:
         float: R squared (min=0, max=1).
     """
@@ -610,7 +616,7 @@ def recall_at_k(
         threshold (float): threshold of top items per user (optional)
 
     Returns:
-        float: recall at k (min=0, max=1). The maximum value is 1 even when fewer than 
+        float: recall at k (min=0, max=1). The maximum value is 1 even when fewer than
             k items exist for a user in rating_true.
     """
 
@@ -644,9 +650,9 @@ def ndcg_at_k(
     threshold=DEFAULT_THRESHOLD,
 ):
     """Normalized Discounted Cumulative Gain (nDCG).
-    
+
     Info: https://en.wikipedia.org/wiki/Discounted_cumulative_gain
-    
+
     Args:
         rating_true (pd.DataFrame): True DataFrame
         rating_pred (pd.DataFrame): Predicted DataFrame
@@ -777,8 +783,12 @@ def get_top_k_items(
         pd.DataFrame: DataFrame of top k items for each user
     """
 
-    return (
+    # Sort dataframe by col_user and (top k) col_rating
+    top_k_items = (
         dataframe.groupby(col_user, as_index=False)
         .apply(lambda x: x.nlargest(k, col_rating))
         .reset_index(drop=True)
     )
+    # Add ranks
+    top_k_items["rank"] = top_k_items.groupby(col_user, sort=False).cumcount() + 1
+    return top_k_items
