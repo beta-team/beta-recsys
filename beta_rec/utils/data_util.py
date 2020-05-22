@@ -574,7 +574,7 @@ class Dataset(object):
             )
         )
         self.process_path = os.path.join(
-            self.config["root_dir"], self.config["process_dir"]
+            self.config["root_dir"], self.config["process_dir"], self.config["dataset"]+"/"
         )
         process_file_name = os.path.join(self.process_path, process_file_name)
         ensureDir(process_file_name)
