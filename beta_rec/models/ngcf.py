@@ -13,7 +13,6 @@ class NGCF(torch.nn.Module):
     def __init__(self, config):
         super(NGCF, self).__init__()
         self.config = config
-        self.device = config["device_str"]
         self.n_users = config["n_users"]
         self.n_items = config["n_items"]
         self.emb_dim = config["emb_dim"]
@@ -98,10 +97,6 @@ class NGCFEngine(Engine):
     def __init__(self, config):
         self.config = config
         self.model = NGCF(config)
-
-    def __init__(self, config):
-        self.config = config
-        self.model = NGCF(config)
         self.regs = config["regs"]  # reg is the regularisation
         self.decay = self.regs[0]
         self.batch_size = config["batch_size"]
@@ -109,7 +104,7 @@ class NGCFEngine(Engine):
         self.num_batch = config["num_batch"]
 
         super(NGCFEngine, self).__init__(config)
-
+        self.model.to(self.device)
     def train_single_batch(self, batch_data):
         """
         Args:
