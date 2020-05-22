@@ -4,8 +4,6 @@ import torch.sparse as sparse
 import torch.nn.functional as F
 from beta_rec.models.torch_engine import Engine
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 class NGCF(torch.nn.Module):
     """Model initialisation, embedding generation and prediction of NGCF
@@ -15,7 +13,7 @@ class NGCF(torch.nn.Module):
     def __init__(self, config):
         super(NGCF, self).__init__()
         self.config = config
-        self.device = DEVICE
+        self.device = config["device_str"]
         self.n_users = config["n_users"]
         self.n_items = config["n_items"]
         self.emb_dim = config["emb_dim"]
