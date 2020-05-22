@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.sparse as sparse
 import torch.nn.functional as F
 from beta_rec.models.torch_engine import Engine
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class NGCF(torch.nn.Module):
@@ -13,6 +14,7 @@ class NGCF(torch.nn.Module):
     def __init__(self, config):
         super(NGCF, self).__init__()
         self.config = config
+        self.device = DEVICE
         self.n_users = config["n_users"]
         self.n_items = config["n_items"]
         self.emb_dim = config["emb_dim"]
@@ -55,7 +57,7 @@ class NGCF(torch.nn.Module):
             (self.user_embedding.weight, self.item_embedding.weight), dim=0
         )
         all_embeddings = [ego_embeddings]
-
+        norm_adj = norm_adj.to(self.device)
         for i in range(self.n_layers):
             side_embeddings = sparse.mm(norm_adj, ego_embeddings)
             sum_embeddings = F.leaky_relu(self.GC_weights[i](side_embeddings))
