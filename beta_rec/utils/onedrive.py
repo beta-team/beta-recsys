@@ -34,7 +34,7 @@ class OneDrive:
         self.session.headers.update(
             {
                 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
-                              " (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
+                " (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
             }
         )
 
@@ -91,7 +91,9 @@ class OneDrive:
 
         self.downloaded += 1
         progress = int(self.downloaded / len(self.to_download) * 100)
-        print(f"Download progress: {self.downloaded}/{len(self.to_download)}, {progress}%")
+        print(
+            f"Download progress: {self.downloaded}/{len(self.to_download)}, {progress}%"
+        )
 
     async def _downloader(self):
         async with aiohttp.ClientSession() as session:

@@ -1,7 +1,11 @@
 import os
 import time
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
@@ -56,9 +60,7 @@ class Diginetica(DatasetBase):
         Note: you also need unzip files in 'diginetica/raw/diginetica'.
         """
         super().__init__(
-            'diginetica',
-            manual_download_url=DIGINETICA_URL,
-            tips=DIGINETICA_TIPS,
+            "diginetica", manual_download_url=DIGINETICA_URL, tips=DIGINETICA_TIPS,
         )
 
     def preprocess(self):
@@ -78,7 +80,9 @@ class Diginetica(DatasetBase):
         """
 
         # Step 1: Download diginetica dataset if this dataset is not existed.
-        diginetica_path = os.path.join(self.raw_path, self.dataset_name, 'diginetica.csv')
+        diginetica_path = os.path.join(
+            self.raw_path, self.dataset_name, "diginetica.csv"
+        )
         if not os.path.exists(diginetica_path):
             self.download()
 
@@ -88,13 +92,9 @@ class Diginetica(DatasetBase):
             header=0,
             encoding="utf-8",
             engine="python",
-            sep=';',
+            sep=";",
             usecols=[0, 2, 4],
-            names=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
+            names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL],
         )
 
         # Step 3: Add rating column and create timestamp column.
@@ -102,9 +102,9 @@ class Diginetica(DatasetBase):
         prior_transactions.insert(2, "col_rating", 1.0)
 
         # Create timestamp column.
-        prior_transactions[DEFAULT_TIMESTAMP_COL] = prior_transactions[DEFAULT_TIMESTAMP_COL].apply(
-            lambda t: process_time(t)
-        )
+        prior_transactions[DEFAULT_TIMESTAMP_COL] = prior_transactions[
+            DEFAULT_TIMESTAMP_COL
+        ].apply(lambda t: process_time(t))
 
         # Check the validation of this dataset.
         print(prior_transactions.head())

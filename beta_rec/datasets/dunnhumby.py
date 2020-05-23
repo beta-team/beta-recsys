@@ -1,20 +1,38 @@
 import os
 import pandas as pd
 from beta_rec.utils.common_util import un_zip, timeit
-from beta_rec.utils.constants import DEFAULT_ORDER_COL, DEFAULT_ITEM_COL, DEFAULT_USER_COL, DEFAULT_FLAG_COL, \
-    DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_ORDER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_USER_COL,
+    DEFAULT_FLAG_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # download_url
-DUNNHUMBY_URL = r'https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip'
+DUNNHUMBY_URL = r"https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip"
 
 # processed data url
-DUNNHUMBY_LEAVE_ONE_BASKET_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXCn99mGZw4uHaSg?e=GhmyCa'
-DUNNHUMBY_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXK8xN12i0O4K-dd?e=OG0Dl3'
-DUNNHUMBY_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXRLlZbQnYJbjY1d?e=aQ9LrF'
-DUNNHUMBY_RANDOM_BASKET_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXYbw7U3_M363CpM?e=DuyT3a'
-DUNNHUMBY_TEMPORAL_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXgd1VE2sX089Udc?e=S2eM7Q'
-DUNNHUMBY_TEMPORAL_BASKET_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugXrmhlEvrEzYiX42?e=1RNidC'
+DUNNHUMBY_LEAVE_ONE_BASKET_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZqugXCn99mGZw4uHaSg?e=GhmyCa"
+)
+DUNNHUMBY_LEAVE_ONE_OUT_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZqugXK8xN12i0O4K-dd?e=OG0Dl3"
+)
+DUNNHUMBY_RANDOM_SPLIT_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZqugXRLlZbQnYJbjY1d?e=aQ9LrF"
+)
+DUNNHUMBY_RANDOM_BASKET_SPLIT_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZqugXYbw7U3_M363CpM?e=DuyT3a"
+)
+DUNNHUMBY_TEMPORAL_SPLIT_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZqugXgd1VE2sX089Udc?e=S2eM7Q"
+)
+DUNNHUMBY_TEMPORAL_BASKET_SPLIT_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZqugXrmhlEvrEzYiX42?e=1RNidC"
+)
 
 
 class Dunnhumby(DatasetBase):

@@ -157,7 +157,7 @@ class NeuMFEngine(Engine):
                 m1.bias.data.copy_(m2.bias)
 
         self.model.affine_output.weight.data = 0.5 * torch.cat(
-            [mlp_model.affine_output.weight.data, gmf_model.affine_output.weight.data,],
+            [mlp_model.affine_output.weight.data, gmf_model.affine_output.weight.data],
             dim=-1,
         )
         self.model.affine_output.bias.data = 0.5 * (

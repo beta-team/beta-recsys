@@ -16,9 +16,15 @@ from beta_rec.datasets.dataset_base import DatasetBase
 INSTACART_URL = "https://www.kaggle.com/c/instacart-market-basket-analysis/data"
 
 # processed data url
-INSTACART_RANDOM_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZqugX4W4zLO6Jkx8P-W?e=oKymnV'
-INSTACART_TEMPORAL_SPLIT_URL = r'https://1drv.ms/u/s!AjMahLyQeZquggAblxVFSYeu3nzh?e=pzBaAa'
-INSTACART_LEAVE_ONE_OUT_URL = r'https://1drv.ms/u/s!AjMahLyQeZquggLQynzcCWfNUdIg?e=HDhUjL'
+INSTACART_RANDOM_SPLIT_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZqugX4W4zLO6Jkx8P-W?e=oKymnV"
+)
+INSTACART_TEMPORAL_SPLIT_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZquggAblxVFSYeu3nzh?e=pzBaAa"
+)
+INSTACART_LEAVE_ONE_OUT_URL = (
+    r"https://1drv.ms/u/s!AjMahLyQeZquggLQynzcCWfNUdIg?e=HDhUjL"
+)
 
 # Tips
 INSTACART_TIPS = """

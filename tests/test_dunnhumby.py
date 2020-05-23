@@ -1,7 +1,8 @@
 import sys
-from beta_rec.datasets.dunnhumby import Dunnhumby
+
 sys.path.append("../")
 
+from beta_rec.datasets.dunnhumby import Dunnhumby
 
 if __name__ == "__main__":
     dataset = Dunnhumby()

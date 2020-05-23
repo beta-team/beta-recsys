@@ -1,6 +1,10 @@
 import os
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL
@@ -64,11 +68,7 @@ class RetailRocket(DatasetBase):
             encoding="utf-8",
             header=0,
             usecols=[0, 1, 3],
-            names=[
-                DEFAULT_TIMESTAMP_COL,
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL
-            ],
+            names=[DEFAULT_TIMESTAMP_COL, DEFAULT_USER_COL, DEFAULT_ITEM_COL],
         )
         # Add rating column into the table.
         prior_transactions.insert(2, "col_rating", 1.0)

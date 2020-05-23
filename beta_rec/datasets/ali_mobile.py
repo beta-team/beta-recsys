@@ -2,14 +2,20 @@ import os
 import time
 import pandas as pd
 from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 
 # Download URL
 ALIMOBILE_URL = "https://tianchi.aliyun.com/dataset/dataDetail?dataId=46"
 
 # processed data url
 ALIMOBILE_RANDOM_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughgIvkt5esnpJ3lV?e=bmT3ns"
-ALIMOBILE_TEMPORAL_SPLIT_URL = "https://1drv.ms/u/s!AjMahLyQeZqughqYQghbjw_MJqG5?e=9dkaed"
+ALIMOBILE_TEMPORAL_SPLIT_URL = (
+    "https://1drv.ms/u/s!AjMahLyQeZqughqYQghbjw_MJqG5?e=9dkaed"
+)
 
 # Tips
 TIPS = """
@@ -50,12 +56,13 @@ class AliMobile(DatasetBase):
         then put it into the directory `ali_mobile/raw`
         """
 
-        super().__init__("ali_mobile",
-                         manual_download_url=ALIMOBILE_URL,
-                         processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,
-                         processed_temporal_split_url=ALIMOBILE_TEMPORAL_SPLIT_URL,
-                         tips=TIPS
-                         )
+        super().__init__(
+            "ali_mobile",
+            manual_download_url=ALIMOBILE_URL,
+            processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,
+            processed_temporal_split_url=ALIMOBILE_TEMPORAL_SPLIT_URL,
+            tips=TIPS,
+        )
 
     def preprocess(self):
         """Preprocess the raw file
@@ -73,7 +80,7 @@ class AliMobile(DatasetBase):
         """
 
         # Step 1: Download AliMobile dataset if this dataset is not existed.
-        ali_mobile_path = os.path.join(self.raw_path, 'ali_mobile.csv')
+        ali_mobile_path = os.path.join(self.raw_path, "ali_mobile.csv")
         if not os.path.exists(ali_mobile_path):
             self.download()
 
@@ -84,18 +91,14 @@ class AliMobile(DatasetBase):
             engine="python",
             header=0,
             usecols=[0, 1, 5],
-            names=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
+            names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL],
         )
         # Add rating column into the dataset.
         prior_transactions.insert(2, "col_rating", 1.0)
         # Transform time data into timestamp format.
-        prior_transactions[DEFAULT_TIMESTAMP_COL] = prior_transactions[DEFAULT_TIMESTAMP_COL].apply(
-            lambda t: process_time(t)
-        )
+        prior_transactions[DEFAULT_TIMESTAMP_COL] = prior_transactions[
+            DEFAULT_TIMESTAMP_COL
+        ].apply(lambda t: process_time(t))
 
         # Check the validation of this dataset.
         print(prior_transactions.head())

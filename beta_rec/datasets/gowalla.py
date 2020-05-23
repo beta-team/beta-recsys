@@ -1,7 +1,12 @@
 import os
 import time
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL
@@ -23,9 +28,9 @@ def process_time(standard_time=None):
     """
 
     standard_time_list = list(standard_time)
-    standard_time_list[10] = ' '
+    standard_time_list[10] = " "
     standard_time_list.pop()
-    standard_time = ''.join(standard_time_list)
+    standard_time = "".join(standard_time_list)
     dateArr = time.strptime(standard_time, "%Y-%m-%d %H:%M:%S")
     timestamp = int(time.mktime(dateArr))
     return timestamp
@@ -47,11 +52,12 @@ class Gowalla(DatasetBase):
             https://snap.stanford.edu/data/loc-Gowalla.html.
         then put it into the directory `gowalla/raw` and unzip it.
         """
-        super().__init__('gowalla',
-                         url=GOWALLA_CHECKIN_URL,
-                         processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,
-                         processed_temporal_split_url=GOWALLA_TEMPORAL_SPLIT_UTL,
-                         )
+        super().__init__(
+            "gowalla",
+            url=GOWALLA_CHECKIN_URL,
+            processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,
+            processed_temporal_split_url=GOWALLA_TEMPORAL_SPLIT_UTL,
+        )
 
     def preprocess(self):
         """Preprocess the raw file
@@ -83,7 +89,7 @@ class Gowalla(DatasetBase):
         prior_transactions = pd.read_table(
             gowalla_path_checkin,
             header=None,
-            sep='\t',
+            sep="\t",
             usecols=[0, 1, 4],
             names=[DEFAULT_USER_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_ITEM_COL],
         )
@@ -91,9 +97,9 @@ class Gowalla(DatasetBase):
         prior_transactions.insert(2, "rating", 1.0)
 
         # Step 3: Process time columns and transform it into timestamp.
-        prior_transactions[DEFAULT_TIMESTAMP_COL] = prior_transactions[DEFAULT_TIMESTAMP_COL].apply(
-            lambda t: process_time(t)
-        )
+        prior_transactions[DEFAULT_TIMESTAMP_COL] = prior_transactions[
+            DEFAULT_TIMESTAMP_COL
+        ].apply(lambda t: process_time(t))
 
         # Step 4: Rename and save dataset model.
         prior_transactions.rename(
