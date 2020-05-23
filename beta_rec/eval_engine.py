@@ -37,7 +37,7 @@ def detect_port(port, ip="127.0.0.1"):
         sock.bind((ip, port))
         sock.listen(5)
         sock.close()
-    except socket.error as e:
+    except socket.error:
         ready = False
         raise RuntimeError("The server is already running on port {0}".format(port))
     finally:

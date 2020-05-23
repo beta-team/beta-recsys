@@ -1,6 +1,11 @@
 from copy import deepcopy
 from torch.utils.data import DataLoader, Dataset
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 import random
 import pandas as pd
 import torch
@@ -69,9 +74,9 @@ class SampleGenerator(object):
         """return all negative items & 100 sampled negative items"""
         interact_status = (
             ratings.groupby(DEFAULT_USER_COL)[DEFAULT_ITEM_COL]
-                   .apply(set)
-                   .reset_index()
-                   .rename(columns={DEFAULT_ITEM_COL: "interacted_items"})
+            .apply(set)
+            .reset_index()
+            .rename(columns={DEFAULT_ITEM_COL: "interacted_items"})
         )
         interact_status["negative_items"] = interact_status["interacted_items"].apply(
             lambda x: self.item_pool - x
@@ -108,7 +113,7 @@ class SampleGenerator(object):
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     def instance_temporal_train_loader(
-            self, num_negatives, batch_size, time_step=None, t=0
+        self, num_negatives, batch_size, time_step=None, t=0
     ):
         if time_step is None:
             return self.instance_a_train_loader(num_negatives, batch_size)

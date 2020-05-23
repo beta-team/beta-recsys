@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("../")
 
 import argparse
@@ -67,6 +68,7 @@ class Triple2vec_train(TrainEngine):
     """ An instance class from the TrainEngine base class
 
     """
+
     def __init__(self, config):
         """Constructor
 

@@ -19,9 +19,7 @@ class GMF(torch.nn.Module):
             num_embeddings=self.num_items, embedding_dim=self.emb_dim
         )
         self.init_weight()
-        self.affine_output = torch.nn.Linear(
-            in_features=self.emb_dim, out_features=1
-        )
+        self.affine_output = torch.nn.Linear(in_features=self.emb_dim, out_features=1)
         self.logistic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):

@@ -58,8 +58,8 @@ class Monitor(Thread):
             )  # Total gpu memory amount in GB
             self.writer.add_text(
                 "device/GPU",
-                "Current GPU (ID:{:d}) name:{:s} ".format(self.gpu_id, self.GPU.name) +
-                "Total_GPU_memory: {:.3f}GB;".format(self.GPU_memoryTotal),
+                "Current GPU (ID:{:d}) name:{:s} ".format(self.gpu_id, self.GPU.name)
+                + "Total_GPU_memory: {:.3f}GB;".format(self.GPU_memoryTotal),
                 0,
             )
 
@@ -127,6 +127,7 @@ def print_gpu_stat(gpu_id=None):
             GPU_memoryFree = GPU.memoryFree / 2.0 ** 10
             print("Current GPU (ID:{:d}) name:\t{:s}".format(gpu_id, GPU.name))
             print("Total_GPU_memory:\t{:.3f}GB;".format(GPU_memoryTotal))
+            print("GPU_memoryUtil:\t{:.3f}GB;".format(GPU_memoryUtil))
             print("GPU_memoryUsed:\t{:.3f}GB;".format(GPU_memoryUsed))
             print("GPU_memoryFree:\t{:.3f}GB;".format(GPU_memoryFree))
             print("GPU_load:\t{:.3f}GB;".format(GPU_load))

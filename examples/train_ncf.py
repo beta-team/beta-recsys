@@ -12,7 +12,6 @@ from beta_rec.models.ncf import NeuMFEngine
 from beta_rec.datasets.nmf_data_utils import SampleGenerator
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
-from beta_rec.utils.constants import MAX_N_UPDATE
 
 
 def parse_args():

@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("../")
 
 import os
@@ -103,9 +104,7 @@ class NGCF_train(TrainEngine):
                 break
 
             train_loader = self.dataset
-            self.engine.train_an_epoch(
-                epoch_id=epoch, train_loader=train_loader
-            )
+            self.engine.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
             self.eval_engine.train_eval(
                 self.dataset.valid[0], self.dataset.test[0], self.engine.model, epoch
             )

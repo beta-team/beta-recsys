@@ -6,7 +6,6 @@ import beta_rec.utils.evaluation as eval_model
 from beta_rec.utils.constants import (
     DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
     DEFAULT_PREDICTION_COL,
 )
 
@@ -92,7 +91,6 @@ class Engine(object):
         assert hasattr(self, "model"), "Please specify the exact model !"
         user_ids = eval_data_df[DEFAULT_USER_COL].to_numpy()
         item_ids = eval_data_df[DEFAULT_ITEM_COL].to_numpy()
-        ratings = eval_data_df[DEFAULT_RATING_COL].to_numpy()
         prediction = np.array(
             self.model.predict(user_ids, item_ids)
             .flatten()

@@ -1,6 +1,10 @@
 import os
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_ITEM_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_ITEM_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL
@@ -35,9 +39,7 @@ class Taobao(DatasetBase):
         then put it into the directory `taobao/raw`
         """
         super().__init__(
-            "taobao",
-            manual_download_url=TAOBAO_URL,
-            tips=TAOBAO_TIPS,
+            "taobao", manual_download_url=TAOBAO_URL, tips=TAOBAO_TIPS,
         )
 
     def preprocess(self):
@@ -56,7 +58,7 @@ class Taobao(DatasetBase):
         """
 
         # Step 1: Download taobao dataset if this dataset is not existed.
-        taobao_path = os.path.join(self.raw_path, self.dataset_name, 'taobao.csv')
+        taobao_path = os.path.join(self.raw_path, self.dataset_name, "taobao.csv")
         if not os.path.exists(taobao_path):
             self.download()
 
@@ -67,11 +69,7 @@ class Taobao(DatasetBase):
             engine="python",
             header=None,
             usecols=[0, 1, 4],
-            names=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_TIMESTAMP_COL
-            ],
+            names=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL],
         )
         # Add rating column into the dataset.
         prior_transactions.insert(2, "col_rating", 1.0)
