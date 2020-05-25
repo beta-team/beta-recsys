@@ -177,7 +177,6 @@ def feed_neg_sample(data, negative_num, item_sampler):
     Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     unique_list = list(data[DEFAULT_RATING_COL].unique())
-    unique_num = len(unique_list)
 
     interact_status = (
         data.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].apply(set).reset_index()
