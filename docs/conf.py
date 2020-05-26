@@ -13,7 +13,8 @@
 import os
 import sys
 import sphinx_rtd_theme
-from recommonmark.parser import CommonMarkParser
+
+# from recommonmark.parser import CommonMarkParser
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -53,9 +54,9 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_logo = "_static/img/recSys_logo.png"
 html_static_path = ["_static"]
 
-source_parsers = {
-    ".md": CommonMarkParser,
-}
+# source_parsers = {
+#     ".md": CommonMarkParser,
+# }
 
 source_suffix = [".rst", ".md"]
 
