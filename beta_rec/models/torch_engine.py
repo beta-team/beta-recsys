@@ -81,12 +81,15 @@ class Engine(object):
                 return the evaluation scores of the following metrics scores:MAP,NDCG,
                 Precision,Recall on value of k.
 
-                example:
-                {'map_at_k': 0.5,
-                 'NDCG@5': 0.5,
-                 'Precision@5': 0.5,
-                 'Recall@5':0.5
-                 }
+        .. code-block:: json
+
+            example:
+            {
+                'map_at_k': 0.5,
+                'NDCG@5': 0.5,
+                'Precision@5': 0.5,
+                'Recall@5':0.5
+            }
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         user_ids = eval_data_df[DEFAULT_USER_COL].to_numpy()

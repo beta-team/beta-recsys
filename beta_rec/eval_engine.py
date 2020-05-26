@@ -356,6 +356,7 @@ class EvalEngine(object):
     def expose_performance(self, valid_result, test_result):
         """
         Expose performance to a http_client
+
         Args:
             valid_result (dict): Performance result of validation set
             test_result (dict): Performance result of testing set
