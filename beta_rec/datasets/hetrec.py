@@ -1,14 +1,34 @@
 import os
 import csv
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_ORDER_COL, \
-    DEFAULT_TIMESTAMP_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_TIMESTAMP_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URLs
-ML_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens-2k-v2.zip'
-DL_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
-LF_2K_URL = 'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
+ML_2K_URL = (
+    "http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens-2k-v2.zip"
+)
+DL_2K_URL = "http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip"
+LF_2K_URL = "http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip"
+
+# processed data url
+ML_2K_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugjLTDesYUMDz7m4-?e=YjAeFC"
+ML_2K_RANDOM_URL = "https://1drv.ms/u/s!AjMahLyQeZqugjQGQk6tnU_abBhJ?e=ewH1dM"
+ML_2K_TEMPORAL_URL = "https://1drv.ms/u/s!AjMahLyQeZqugja3hXLGo-74UziC?e=6MN7jh"
+DL_2K_LEAVE_ONE_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiwhklT9W7jC1jCs?e=aO2IZz"
+DL_2K_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugi6ZpsxBQ-6KbXmE?e=wTyIX7"
+LF_2K_LEAVE_ONE_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugh0S50BjwNBDIVSi?e=ZSgjoB"
+LF_2K_LEAVE_ONE_OUT_URL = "https://1drv.ms/u/s!AjMahLyQeZqugh9SOy0tpGT-DyGO?e=djcSUS"
+LF_2K_RANDOM_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiE-a65YO3G7ziq4?e=XKla4F"
+LF_2K_RANDOM_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiM00QUQJYPWA5YE?e=s5o7By"
+LF_2K_TEMPORAL_URL = "https://1drv.ms/u/s!AjMahLyQeZqugiWDnPcNDr-5Hyri?e=m8fqQa"
+LF_2K_TEMPORAL_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugic_tmXvkpxN_RE8?e=ZKuSbB"
 
 
 class MovieLens_2k(DatasetBase):
@@ -23,8 +43,9 @@ class MovieLens_2k(DatasetBase):
         """
 
         super().__init__(
-            'movielens-2k',
+            "movielens-2k",
             manual_download_url=ML_2K_URL,
+            url=ML_2K_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
@@ -37,7 +58,7 @@ class MovieLens_2k(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        movie_2k_file = os.path.join(self.raw_path, 'user_ratedmovies-timestamps.dat')
+        movie_2k_file = os.path.join(self.raw_path, "user_ratedmovies-timestamps.dat")
         if not os.path.exists(movie_2k_file):
             self.download()
 
@@ -46,8 +67,8 @@ class MovieLens_2k(DatasetBase):
             movie_2k_file,
             header=0,
             encoding="utf-8",
-            delimiter='\t',
-            quoting=csv.QUOTE_NONE
+            delimiter="\t",
+            quoting=csv.QUOTE_NONE,
         )
 
         # Rename this table to fix the standard.
@@ -67,7 +88,7 @@ class MovieLens_2k(DatasetBase):
         # Save data.
         self.save_dataframe_as_npz(
             prior_transactions,
-            os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz')
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
 
         print("Done.")
@@ -89,8 +110,9 @@ class Delicious_2k(DatasetBase):
         """
 
         super().__init__(
-            'delicious-2k',
+            "delicious-2k",
             manual_download_url=DL_2K_URL,
+            url=DL_2K_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
             processed_temporal_split_url="",
@@ -103,7 +125,9 @@ class Delicious_2k(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        delicious_file = os.path.join(self.raw_path, 'user_taggedbookmarks-timestamps.dat')
+        delicious_file = os.path.join(
+            self.raw_path, "user_taggedbookmarks-timestamps.dat"
+        )
         if not os.path.exists(delicious_file):
             self.download()
 
@@ -112,8 +136,8 @@ class Delicious_2k(DatasetBase):
             delicious_file,
             header=0,
             encoding="utf-8",
-            delimiter='\t',
-            quoting=csv.QUOTE_NONE
+            delimiter="\t",
+            quoting=csv.QUOTE_NONE,
         )
 
         # Add rating feature into this table.
@@ -137,7 +161,7 @@ class Delicious_2k(DatasetBase):
         # Save data.
         self.save_dataframe_as_npz(
             prior_transactions,
-            os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz')
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
 
         print("Done.")
@@ -158,11 +182,15 @@ class LastFM_2k(DatasetBase):
         """
 
         super().__init__(
-            'lastfm-2k',
+            "lastfm-2k",
             manual_download_url=LF_2K_URL,
-            processed_leave_one_out_url="",
-            processed_random_split_url="",
-            processed_temporal_split_url="",
+            url=LF_2K_URL,
+            processed_leave_one_basket_url=LF_2K_LEAVE_ONE_BASKET_URL,
+            processed_leave_one_out_url=LF_2K_LEAVE_ONE_OUT_URL,
+            processed_random_basket_split_url=LF_2K_RANDOM_BASKET_URL,
+            processed_random_split_url=LF_2K_RANDOM_URL,
+            processed_temporal_basket_split_url=LF_2K_TEMPORAL_BASKET_URL,
+            processed_temporal_split_url=LF_2K_TEMPORAL_URL,
         )
 
     def preprocess(self):
@@ -172,7 +200,7 @@ class LastFM_2k(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        lastfm_file = os.path.join(self.raw_path, 'user_taggedartists-timestamps.dat')
+        lastfm_file = os.path.join(self.raw_path, "user_taggedartists-timestamps.dat")
         if not os.path.exists(lastfm_file):
             self.download()
 
@@ -181,8 +209,8 @@ class LastFM_2k(DatasetBase):
             lastfm_file,
             header=0,
             encoding="utf-8",
-            delimiter='\t',
-            quoting=csv.QUOTE_NONE
+            delimiter="\t",
+            quoting=csv.QUOTE_NONE,
         )
 
         # Add rating feature into this table.
@@ -206,7 +234,7 @@ class LastFM_2k(DatasetBase):
         # Save data.
         self.save_dataframe_as_npz(
             prior_transactions,
-            os.path.join(self.processed_path, f'{self.dataset_name}_interaction.npz')
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
 
         print("Done.")

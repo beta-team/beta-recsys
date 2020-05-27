@@ -56,6 +56,7 @@ class NGCF(torch.nn.Module):
         )
         all_embeddings = [ego_embeddings]
 
+        norm_adj = norm_adj.to(self.device)
         for i in range(self.n_layers):
             side_embeddings = sparse.mm(norm_adj, ego_embeddings)
             sum_embeddings = F.leaky_relu(self.GC_weights[i](side_embeddings))
@@ -93,9 +94,6 @@ class NGCF(torch.nn.Module):
 
 class NGCFEngine(Engine):
     # A class includes train an epoch and train a batch of NGCF
-    def __init__(self, config):
-        self.config = config
-        self.model = NGCF(config)
 
     def __init__(self, config):
         self.config = config
@@ -107,6 +105,7 @@ class NGCFEngine(Engine):
         self.num_batch = config["num_batch"]
 
         super(NGCFEngine, self).__init__(config)
+        self.model.to(self.device)
 
     def train_single_batch(self, batch_data):
         """

@@ -11,7 +11,12 @@ from beta_rec.eval_engine import EvalEngine
 from beta_rec.utils import logger, data_util
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.constants import MAX_N_UPDATE
-from beta_rec.utils.common_util import set_seed, initialize_folders, print_dict_as_table, ensureDir
+from beta_rec.utils.common_util import (
+    set_seed,
+    initialize_folders,
+    print_dict_as_table,
+    ensureDir,
+)
 from torch.utils.data import DataLoader
 
 
@@ -93,34 +98,6 @@ def prepare_env(config):
     return config
 
 
-def get_device():
-    """
-        Get one gpu id that have the most available memory.
-    Returns:
-        (int, str): The gpu id (None if no available gpu) and the the device string (pytorch style).
-    """
-    gpu_id_list = GPUtil.getAvailable(
-        order="memory", limit=3
-    )  # get the fist gpu with the lowest load
-    if len(gpu_id_list) < 1:
-        gpu_id = None
-        device_str = "cpu"
-    else:
-        gpu_id = gpu_id_list[0]
-        # need to set 0 if ray only specify 1 gpu
-        if "CUDA_VISIBLE_DEVICES" in os.environ:
-            if len(os.environ["CUDA_VISIBLE_DEVICES"].split()) == 1:
-                #  gpu_id = int(os.environ["CUDA_VISIBLE_DEVICES"])
-                gpu_id = 0
-                print("Find only one gpu with id: ", gpu_id)
-                device_str = "cuda:" + str(gpu_id)
-        #                     print(os.system("nvidia-smi"))
-        else:
-            print("Get a gpu id list sorted by the most available memory:", gpu_id)
-            device_str = "cuda:" + str(gpu_id)
-    return gpu_id, device_str
-
-
 class TrainEngine(object):
     """Training engine for all the models.
 
@@ -145,8 +122,49 @@ class TrainEngine(object):
         self.monitor = None
         self.engine = None
         self.config = prepare_env(config)
-        self.gpu_id, self.config["device_str"] = get_device()
+        self.gpu_id, self.config["device_str"] = self.get_device()
         self.eval_engine = EvalEngine(self.config)
+
+    def get_device(self):
+        """
+            Get one gpu id that have the most available memory.
+        Returns:
+            (int, str): The gpu id (None if no available gpu) and the the device string (pytorch style).
+        """
+        if "device" in self.config:
+            if self.config["device"] == "cpu":
+                return (None, "cpu")
+            elif "cuda" in self.config["device"]:  # receive an string with "cuda:#"
+                return (
+                    int(self.config["device"].replace("cuda", "")),
+                    self.config["device"],
+                )
+            elif len(self.config["device"]) < 1:  # receive an int string
+                return (
+                    int(self.config["device"]),
+                    "cuda:" + self.config["device"],
+                )
+
+        gpu_id_list = GPUtil.getAvailable(
+            order="memory", limit=3
+        )  # get the fist gpu with the lowest load
+        if len(gpu_id_list) < 1:
+            gpu_id = None
+            device_str = "cpu"
+        else:
+            gpu_id = gpu_id_list[0]
+            # need to set 0 if ray only specify 1 gpu
+            if "CUDA_VISIBLE_DEVICES" in os.environ:
+                if len(os.environ["CUDA_VISIBLE_DEVICES"].split()) == 1:
+                    #  gpu_id = int(os.environ["CUDA_VISIBLE_DEVICES"])
+                    gpu_id = 0
+                    print("Find only one gpu with id: ", gpu_id)
+                    device_str = "cuda:" + str(gpu_id)
+            # print(os.system("nvidia-smi"))
+            else:
+                print("Get a gpu with the most available memory :", gpu_id)
+                device_str = "cuda:" + str(gpu_id)
+        return gpu_id, device_str
 
     def load_dataset(self):
         """ Default implementation of building dataset
@@ -156,6 +174,9 @@ class TrainEngine(object):
 
         """
         self.dataset = data_util.Dataset(self.config)
+        if "item_fea_type" in self.config or "user_fea_type" in self.config:
+            self.config["item_fea"] = self.dataset.item_feature
+            self.config["user_fea"] = self.dataset.user_feature
         self.config["n_users"] = self.dataset.n_users
         self.config["n_items"] = self.dataset.n_items
 
@@ -174,6 +195,32 @@ class TrainEngine(object):
             drop_last=True,
         )
 
+    def check_early_stop(self, engine, model_dir, epoch):
+        """ Check if early stop criterion is triggered
+        Save model if previous epoch have already obtained better result
+
+        Args:
+            epoch (int): epoch num
+
+        Returns:
+            True: if early stop criterion is triggered
+            False: else
+
+        """
+        if epoch > 0 and self.eval_engine.n_no_update == 0:
+            # save model if previous epoch have already obtained better result
+            engine.save_checkpoint(model_dir=model_dir)
+
+        if self.eval_engine.n_no_update >= MAX_N_UPDATE:
+            # stop training if early stop criterion is triggered
+            print(
+                "Early stop criterion triggered, no performance update for {:} times".format(
+                    MAX_N_UPDATE
+                )
+            )
+            return True
+        return False
+
     def train(self):
         """Default train implementation
 
@@ -188,18 +235,11 @@ class TrainEngine(object):
         for epoch in epoch_bar:
             print(f"Epoch {epoch} starts !")
             print("-" * 80)
-            if epoch > 0 and self.eval_engine.n_no_update == 0:
-                # previous epoch have already obtained better result
-                self.engine.save_checkpoint(
-                    model_dir=os.path.join(self.config["model_save_dir"], "model.cpk")
-                )
-
-            if self.eval_engine.n_no_update >= MAX_N_UPDATE:
-                print(
-                    "Early stop criterion triggered, no performance update for {:} times".format(
-                        MAX_N_UPDATE
-                    )
-                )
+            if self.check_early_stop(
+                engine=self.engine,
+                model_dir=os.path.join(self.config["model_save_dir"], "model.cpk"),
+                epoch=epoch,
+            ):
                 break
             data_loader = self.build_data_loader()
             self.engine.train_an_epoch(data_loader, epoch_id=epoch)

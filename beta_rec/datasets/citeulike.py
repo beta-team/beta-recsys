@@ -1,7 +1,11 @@
 import os
 import csv
 import pandas as pd
-from beta_rec.utils.constants import DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL
+from beta_rec.utils.constants import (
+    DEFAULT_USER_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+)
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
@@ -42,7 +46,7 @@ class CiteULikeA(DatasetBase):
         then put it into the directory `citeulike-a/raw`
         """
         super().__init__(
-            'citeulike-a',
+            "citeulike-a",
             manual_download_url=CULA_URL,
             processed_leave_one_out_url=CULA_LEAVE_ONE_OUT_URL,
             processed_random_split_url=CULA_RANDOM_SPLIT_URL,
@@ -65,8 +69,8 @@ class CiteULikeA(DatasetBase):
             file_name,
             header=None,
             encoding="utf-8",
-            delimiter='\t',
-            quoting=csv.QUOTE_NONE
+            delimiter="\t",
+            quoting=csv.QUOTE_NONE,
         )
 
         # Split each line in user_item_matrix
@@ -74,7 +78,7 @@ class CiteULikeA(DatasetBase):
         itemList = []
         for index, item in user_item_matrix.iterrows():
             rating_list = item[0]
-            rating_array = rating_list.split(' ')
+            rating_array = rating_list.split(" ")
             user_id = rating_array[0]
             for i in range(1, len(rating_array)):
                 userList.append(user_id)
@@ -84,7 +88,7 @@ class CiteULikeA(DatasetBase):
         prior_transactions["itemID"] = prior_transactions["itemID"].astype("int")
 
         # Add rating list into this array
-        prior_transactions.insert(2, 'rating', 1.0)
+        prior_transactions.insert(2, "rating", 1.0)
 
         # Rename dataset's columns to fit the standard.
         # Note: there is no timestamp data in this dataset.
@@ -119,11 +123,11 @@ class CiteULikeT(DatasetBase):
         then put it into the directory `citeulike-t/raw/citeulike-t`
         """
         super().__init__(
-            'citeulike-t',
+            "citeulike-t",
             manual_download_url=CULT_URL,
             processed_leave_one_out_url=CULT_LEAVE_ONE_OUT_URL,
             processed_random_split_url=CULT_RANDOM_SPLIT_URL,
-            tips=CITEULIKET_TIPS
+            tips=CITEULIKET_TIPS,
         )
 
     def preprocess(self):
@@ -142,8 +146,8 @@ class CiteULikeT(DatasetBase):
             file_name,
             header=None,
             encoding="utf-8",
-            delimiter='\t',
-            quoting=csv.QUOTE_NONE
+            delimiter="\t",
+            quoting=csv.QUOTE_NONE,
         )
 
         # Split each line in user_item_matrix
@@ -151,7 +155,7 @@ class CiteULikeT(DatasetBase):
         itemList = []
         for index, item in user_item_matrix.iterrows():
             rating_list = item[0]
-            rating_array = rating_list.split(' ')
+            rating_array = rating_list.split(" ")
             user_id = rating_array[0]
             for i in range(1, len(rating_array)):
                 userList.append(user_id)
@@ -161,7 +165,7 @@ class CiteULikeT(DatasetBase):
         prior_transactions["itemID"] = prior_transactions["itemID"].astype("int")
 
         # Add rating list into this array
-        prior_transactions.insert(2, 'rating', 1.0)
+        prior_transactions.insert(2, "rating", 1.0)
 
         # Rename dataset's columns to fit the standard.
         # Note: there is no timestamp data in this dataset.
@@ -187,6 +191,8 @@ class CiteULikeT(DatasetBase):
 
     def load_leave_one_out(self, random=False, n_negative=100, n_test=10):
         if random is False:
-            raise RuntimeError("CiteULikeT doesn't have timestamp column, please use random=True as parameter")
+            raise RuntimeError(
+                "CiteULikeT doesn't have timestamp column, please use random=True as parameter"
+            )
 
         self.load_leave_one_out(random, n_negative, n_test)
