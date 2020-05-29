@@ -195,6 +195,7 @@ class Movielens_1m(DatasetBase):
             file_name,
             header=None,
             sep="::",
+            engine="python",
             names=[
                 DEFAULT_USER_COL,
                 DEFAULT_ITEM_COL,
@@ -232,6 +233,7 @@ class Movielens_25m(DatasetBase):
             header=None,
             sep=",",
             skiprows=[0],
+            engine="python",
             names=[
                 DEFAULT_USER_COL,
                 DEFAULT_ITEM_COL,
