@@ -12,7 +12,7 @@ Welcome to Beta-recsys's documentation!
    :caption: Notes
 
    notes/beta-recsys
-
+   notes/dataset_tutorial
 
 .. toctree::
    :maxdepth: 1
