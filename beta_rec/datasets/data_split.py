@@ -177,7 +177,6 @@ def feed_neg_sample(data, negative_num, item_sampler):
     Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     unique_list = list(data[DEFAULT_RATING_COL].unique())
-    unique_num = len(unique_list)
 
     interact_status = (
         data.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].apply(set).reset_index()
@@ -198,19 +197,20 @@ def feed_neg_sample(data, negative_num, item_sampler):
         # filter the positive items and truncate the first negative_num
         df_items = np.append(item_li, sample_neg_items)
         df_users = np.array([u] * (negative_num + n_items), dtype=np.long)
-        df_scores = []
-        if unique_num != 1:
-            # get the rating scores.
-            for item in item_li:
-                df_scores.append(
-                    data.loc[
-                        (data[DEFAULT_USER_COL] == u)
-                        & (data[DEFAULT_ITEM_COL] == item),
-                        DEFAULT_RATING_COL,
-                    ].to_numpy()[0]
-                )
-        else:
-            df_scores = np.full(n_items, unique_list[0])
+        df_scores = np.full(n_items, unique_list[0])
+        # df_scores = []
+        # if unique_num != 1:
+        #     # get the rating scores.
+        #     for item in item_li:
+        #         df_scores.append(
+        #             data.loc[
+        #                 (data[DEFAULT_USER_COL] == u)
+        #                 & (data[DEFAULT_ITEM_COL] == item),
+        #                 DEFAULT_RATING_COL,
+        #             ].to_numpy()[0]
+        #         )
+        # else:
+        #     df_scores = np.full(n_items, unique_list[0])
         df_zeros = np.zeros(negative_num, dtype=np.long)
         ratings = np.append(df_scores, df_zeros)
 
@@ -657,15 +657,17 @@ def split_data(
     save_split_data(tp_validate, save_dir, split_type, parameterized_path, "valid.npz")
     save_split_data(tp_test, save_dir, split_type, parameterized_path, "test.npz")
     item_sampler = AliasTable(data[DEFAULT_ITEM_COL].value_counts().to_dict())
-
+    n_items = tp_train[DEFAULT_ITEM_COL].nunique()
     valid_neg_max = (
         tp_validate.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].count().max()
     )
     test_neg_max = tp_test.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].count().max()
-    if valid_neg_max < n_negative or test_neg_max < n_negative:
+    if n_items - valid_neg_max < n_negative or n_items - test_neg_max < n_negative:
         raise RuntimeError(
-            f"This dataset do not have sufficient negative items for sampling! \nvalid_neg_max: {valid_neg_max}, "
-            + f"test_neg_max: {test_neg_max} n_negative: {n_negative}\nPlease directly use valid.npz and test.npz."
+            "This dataset do not have sufficient negative items for sampling! \n"
+            + f"valid_neg_max: {n_items-valid_neg_max}, "
+            + f"test_neg_max: {n_items-test_neg_max},"
+            + f"n_negative: {n_negative}\nPlease directly use valid.npz and test.npz."
         )
     for i in range(n_test):
         tp_validate_new = feed_neg_sample(tp_validate, n_negative, item_sampler)
