@@ -36,7 +36,9 @@ class UserItemRatingDataset(Dataset):
 
 
 class RatingNegativeDataset(Dataset):
-    """Wrapper, convert <user, item, rating> Tensor into Pytorch Dataset, which contains negative items with rating being 0.0 """
+    """Wrapper, convert <user, item, rating> Tensor into Pytorch Dataset,
+    which contains negative items with rating being 0.0
+    """
 
     def __init__(self, user_tensor, item_tensor, rating_tensor):
         """
