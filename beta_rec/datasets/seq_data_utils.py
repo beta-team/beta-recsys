@@ -4,6 +4,66 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
+# from beta_rec.datasets.data_load import (
+#     load_split_dataset,
+#     load_item_fea_dic,
+#     load_user_item_feature,
+# )
+
+# from beta_rec.utils.common_util import get_random_rep, ensureDir
+# from beta_rec.utils.aliasTable import AliasTable
+# from beta_rec.utils.triple_sampler import Sampler
+
+# from beta_rec.utils.constants import (
+#     DEFAULT_USER_COL,
+#     DEFAULT_ITEM_COL,
+#     DEFAULT_RATING_COL,
+# )
+
+
+# class Dataset(object):
+#     """
+#         Base Dataset class for all the model
+#     """
+
+#     def __init__(self, config):
+#         """Constructor
+
+#         Args:
+#             config:
+#         """
+#         self.config = config
+
+#         # data preprocessing for training and test data
+#         # To be replaced with new data method
+#         self.dataset = load_split_dataset(config)
+        
+#     def load_split_dataset(config):
+#         """Loading dataset
+
+#         Args:
+#             config (dict): Dictionary of configuration
+
+#         Returns:
+
+
+#         """
+#         dataset_mapping = {
+#             "ml_100k": Movielens_100k,
+#             "ml_1m": Movielens_1m,
+#             "ml_25m": Movielens_25m,
+#             "last_fm": LastFM,
+#             "tafeng": Tafeng,
+#             "epinions": Epinions,
+#             "dunnhumby": Dunnhumby,
+#             "instacart": Instacart,
+#             "instacart_25": Instacart_25,
+#         }
+#         dataset = dataset_mapping[config["dataset"]]()
+#         return dataset.load_split(config)
+
+
+
 
 def reindex_items(train_data, valid_data=None, test_data=None):
     """Reindex the item ids.
