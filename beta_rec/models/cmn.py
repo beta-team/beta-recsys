@@ -75,7 +75,7 @@ class CollaborativeMemoryNetwork(nn.Module):
     ):
         # get embeddings from user memory
         cur_user = self.user_memory(input_users)
-        cur_user_output = self.user_output(input_users)
+        # cur_user_output = self.user_output(input_users)
 
         # get embeddings from item memory
         cur_item = self.item_memory(input_items)
