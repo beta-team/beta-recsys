@@ -106,6 +106,7 @@ class NGCFEngine(Engine):
 
         super(NGCFEngine, self).__init__(config)
         self.model.to(self.device)
+
     def train_single_batch(self, batch_data):
         """
         Args:

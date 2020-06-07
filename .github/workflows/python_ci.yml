@@ -19,7 +19,7 @@ jobs:
         last_commit_log=$(git log -1 --pretty=format:"%s")
         echo "last commit log: $last_commit_log"
 
-        feat="[#[0-9]+][[:space:]]feat:[[:space:]].*$"
+        feat="feat:[[:space:]][#[0-9]+][[:space:]].*$"
         fix="fix:[[:space:]].*$"
         test="test:[[:space:]].*$"
         chore="chore:[[:space:]].*$"
@@ -56,6 +56,13 @@ jobs:
           printf "\n\n $last_commit_log  commit message failed match"
           exit 1
         fi
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

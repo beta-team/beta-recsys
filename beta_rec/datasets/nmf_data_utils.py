@@ -35,6 +35,76 @@ class UserItemRatingDataset(Dataset):
         return self.user_tensor.size(0)
 
 
+class RatingNegativeDataset(Dataset):
+    """Wrapper, convert <user, item, rating> Tensor into Pytorch Dataset,
+    which contains negative items with rating being 0.0
+    """
+
+    def __init__(self, user_tensor, item_tensor, rating_tensor):
+        """
+        args:
+
+            target_tensor: torch.Tensor, the corresponding rating for <user, item> pair
+        """
+        self.user_tensor = user_tensor
+        self.item_tensor = item_tensor
+        self.rating_tensor = rating_tensor
+
+    def __getitem__(self, index):
+        """
+
+        Args:
+            index:
+
+        Returns: users, pos_items, neg_items, pos_ratings, neg_ratings
+
+        """
+        return (
+            self.user_tensor[index],
+            self.item_tensor[index],
+            self.rating_tensor[index],
+        )
+
+        # index = torch.LongTensor(index, device=self.user_tensor.device)
+        # pos_index = index[self.rating_tensor[index] > 0]
+        # neg_index = index[self.rating_tensor[index] >= 0]
+        # return (
+        #     self.user_tensor[pos_index],
+        #     self.item_tensor[pos_index],
+        #     self.rating_tensor[pos_index],
+        #     self.user_tensor[neg_index],
+        #     self.item_tensor[neg_index],
+        #     self.rating_tensor[neg_index],
+        # )
+
+    def __len__(self):
+        return self.user_tensor.size(0)
+
+
+class PairwiseNegativeDataset(Dataset):
+    """Wrapper, convert <user, pos_item, neg_item> Tensor into Pytorch Dataset"""
+
+    def __init__(self, user_tensor, pos_item_tensor, neg_item_tensor):
+        """
+        args:
+
+            target_tensor: torch.Tensor, the corresponding rating for <user, item> pair
+        """
+        self.user_tensor = user_tensor
+        self.pos_item_tensor = pos_item_tensor
+        self.neg_item_tensor = neg_item_tensor
+
+    def __getitem__(self, index):
+        return (
+            self.user_tensor[index],
+            self.pos_item_tensor[index],
+            self.neg_item_tensor[index],
+        )
+
+    def __len__(self):
+        return self.user_tensor.size(0)
+
+
 class SampleGenerator(object):
     """Construct dataset for NCF"""
 
@@ -112,23 +182,16 @@ class SampleGenerator(object):
         )
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    def instance_temporal_train_loader(
-        self, num_negatives, batch_size, time_step=None, t=0
-    ):
-        if time_step is None:
-            return self.instance_a_train_loader(num_negatives, batch_size)
-        n_intera = len(self.ratings.index)
-        n_intera_per_t = int(n_intera / time_step)
-        n_first_intera = n_intera - time_step * n_intera_per_t
-        if t != 0:
-            index_start = t * n_intera_per_t + n_first_intera
-            index_end = (t + 1) * n_intera_per_t + n_first_intera
-        else:
-            index_start = 0
-            index_end = n_first_intera
+    def uniform_negative_train_loader(self, num_negatives, batch_size, device):
+        """ Instance a Data_loader for training
+        Sample 'num_negatives' negative items for each user, and shuffle them with positive items.
+        A batch of data in this DataLoader is suitable for a binary cross-entropy loss
+        # todo implement the item popularity-biased sampling
+
+        """
         users, items, ratings = [], [], []
         train_ratings = pd.merge(
-            self.ratings.iloc[[i for i in range(index_start, index_end)]],
+            self.ratings,
             self.negatives[[DEFAULT_USER_COL, "negative_items"]],
             on=DEFAULT_USER_COL,
         )
@@ -143,10 +206,37 @@ class SampleGenerator(object):
                 users.append(int(row[DEFAULT_USER_COL]))
                 items.append(int(row.negatives[i]))
                 ratings.append(float(0))  # negative samples get 0 rating
-        dataset = UserItemRatingDataset(
-            user_tensor=torch.LongTensor(users),
-            item_tensor=torch.LongTensor(items),
-            target_tensor=torch.FloatTensor(ratings),
+        dataset = RatingNegativeDataset(
+            user_tensor=torch.LongTensor(users).to(device),
+            item_tensor=torch.LongTensor(items).to(device),
+            rating_tensor=torch.FloatTensor(ratings).to(device),
+        )
+        return DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    def pairwise_negative_train_loader(self, batch_size, device):
+        """ Instance a pairwise Data_loader for training
+        Sample ONE negative items for each user-item pare, and shuffle them with positive items.
+        A batch of data in this DataLoader is suitable for a binary cross-entropy loss
+        # todo implement the item popularity-biased sampling
+
+        """
+        users, pos_items, neg_items = [], [], []
+        train_ratings = pd.merge(
+            self.ratings,
+            self.negatives[[DEFAULT_USER_COL, "negative_items"]],
+            on=DEFAULT_USER_COL,
+        )
+        train_ratings["one_negative"] = train_ratings["negative_items"].apply(
+            lambda x: random.sample(x, 1)
+        )
+        for _, row in train_ratings.iterrows():
+            users.append(int(row[DEFAULT_USER_COL]))
+            pos_items.append(int(row[DEFAULT_ITEM_COL]))
+            neg_items.append(int(row.one_negative[0]))
+        dataset = PairwiseNegativeDataset(
+            user_tensor=torch.LongTensor(users).to(device),
+            pos_item_tensor=torch.LongTensor(pos_items).to(device),
+            neg_item_tensor=torch.LongTensor(neg_items).to(device),
         )
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 

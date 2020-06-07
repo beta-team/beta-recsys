@@ -111,10 +111,13 @@ class DatasetBase(object):
         raw_file_path = os.path.join(
             self.raw_path, f"{self.dataset_name}.{file_format}"
         )
-
+        if "1drv.ms" in self.url:
+            file_format = "zip"
+            raw_file_path = os.path.join(
+                self.raw_path, f"{self.dataset_name}.{file_format}"
+            )
         if not os.path.exists(raw_file_path):
             download_file(self.url, raw_file_path)
-
             if file_format == "gz":
                 file_name = raw_file_path.replace(".gz", "")
                 with gzip.open(raw_file_path, "rb") as fin:
