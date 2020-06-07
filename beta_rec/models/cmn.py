@@ -58,7 +58,6 @@ class CollaborativeMemoryNetwork(nn.Module):
 
     def output_module(self, input):
 
-        emb_dim = self.config["emb_dim"]
         output = F.relu(self.dense(input))
         output = self.out(output)
         return output.squeeze()
