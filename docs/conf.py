@@ -14,6 +14,8 @@ import os
 import sys
 import sphinx_rtd_theme
 
+# import sphinx_markdown_tables
+
 # from recommonmark.parser import CommonMarkParser
 
 sys.path.insert(0, os.path.abspath(".."))
@@ -40,6 +42,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "recommonmark",
+    "sphinx_markdown_tables",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

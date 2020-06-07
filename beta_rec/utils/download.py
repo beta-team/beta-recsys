@@ -1,4 +1,5 @@
 import requests
+import os
 from tqdm import tqdm
 from beta_rec.utils.onedrive import OneDrive
 
@@ -15,22 +16,29 @@ def download_file(url, store_file_path):
     """
     filename = url.split("/")[-1]
     print(f"Start downloading file {filename}...")
-    r = requests.get(url, allow_redirects=True, stream=True)
-    # Total size in bytes
-    total_size = int(r.headers.get("content-length", 0))
-    block_size = 1024
-    t = tqdm(total=total_size, unit="iB", unit_scale=True)
 
-    with open(store_file_path, "wb") as f:
-        for data in r.iter_content(block_size):
-            t.update(len(data))
-            f.write(data)
-
-    t.close()
-    if total_size != 0 and t.n != total_size:
-        print(f"ERROR, download fail")
+    if "1drv.ms" in url:
+        # allow downloading raw data from Onedrive
+        store_file_path = os.path.dirname(store_file_path)
+        folder = OneDrive(url=url, path=store_file_path)
+        folder.download()
     else:
-        print(f"Success loading file {filename} to {store_file_path}")
+        r = requests.get(url, allow_redirects=True, stream=True)
+        # Total size in bytes
+        total_size = int(r.headers.get("content-length", 0))
+        block_size = 1024
+        t = tqdm(total=total_size, unit="iB", unit_scale=True)
+
+        with open(store_file_path, "wb") as f:
+            for data in r.iter_content(block_size):
+                t.update(len(data))
+                f.write(data)
+        t.close()
+
+        if total_size != 0 and t.n != total_size:
+            print(f"ERROR, download fail")
+        else:
+            print(f"Success loading file {filename} to {store_file_path}")
 
 
 def get_format(suffix):

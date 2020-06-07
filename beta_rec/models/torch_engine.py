@@ -1,13 +1,6 @@
-import numpy as np
-import pandas as pd
 import torch
 from tensorboardX import SummaryWriter
-import beta_rec.utils.evaluation as eval_model
-from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
-    DEFAULT_ITEM_COL,
-    DEFAULT_PREDICTION_COL,
-)
+import torch.nn.functional as F
 
 
 class Engine(object):
@@ -17,15 +10,11 @@ class Engine(object):
 
     def __init__(self, config):
         self.config = config  # model configuration, should be a dic
-        self.metrics = config["metrics"]
-        # evaluation metrice list, options are
-        # ['rmse', 'mae', 'rsquared', 'exp_var', 'auc', 'map_at_k', 'ndcg_at_k', 'precision_at_k', 'recall_at_k']
         self.set_device()
         self.set_optimizer()
         self.model.to(self.device)
         print(self.model)
         self.writer = SummaryWriter(log_dir=config["run_dir"])  # tensorboard writer
-        self.loss = torch.nn.BCELoss()
 
     def set_optimizer(self):
         if self.config["optimizer"] == "sgd":
@@ -67,73 +56,6 @@ class Engine(object):
         print("[Training Epoch {}], Loss {}".format(epoch_id, total_loss))
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
-    def evaluate(self, eval_data_df, epoch_id=0, TOP_K=10):
-        """
-        evaluate the performance for all the eval_data_df.
-
-
-        Parameters:
-                eval_data_df: DataFrame with column naming DEFAULT_USER_COL, DEFAULT_ITEM_COL
-                and DEFAULT_RATING_COL
-                TOP_K: if not specified, DEFAULT_K =10
-
-        Returns:
-                return the evaluation scores of the following metrics scores:MAP,NDCG,
-                Precision,Recall on value of k.
-
-        .. code-block:: json
-
-            example:
-            {
-                'map_at_k': 0.5,
-                'NDCG@5': 0.5,
-                'Precision@5': 0.5,
-                'Recall@5':0.5
-            }
-        """
-        assert hasattr(self, "model"), "Please specify the exact model !"
-        user_ids = eval_data_df[DEFAULT_USER_COL].to_numpy()
-        item_ids = eval_data_df[DEFAULT_ITEM_COL].to_numpy()
-        prediction = np.array(
-            self.model.predict(user_ids, item_ids)
-            .flatten()
-            .to(torch.device("cpu"))
-            .detach()
-            .numpy()
-        )
-
-        pred_df = pd.DataFrame(
-            {
-                DEFAULT_USER_COL: user_ids,
-                DEFAULT_ITEM_COL: item_ids,
-                DEFAULT_PREDICTION_COL: prediction,
-            }
-        )
-
-        result_dic = {}
-        if type(TOP_K) != list:
-            TOP_K = [TOP_K]
-        if 10 not in TOP_K:
-            TOP_K.append(10)
-        TOP_K = [5, 10, 20]
-        for k in TOP_K:
-            for metric in self.metrics:
-                eval_metric = getattr(eval_model, metric)
-                result = eval_metric(eval_data_df, pred_df, k=k)
-                result_dic[metric + "@" + str(k)] = result
-        return result_dic
-
-    def record_performance(self, validata_result, test_result, epoch_id):
-        for metric in self.metrics:
-            self.writer.add_scalars(
-                "performance/" + metric,
-                {
-                    "valid": validata_result[metric + "@10"],
-                    "test": test_result[metric + "@10"],
-                },
-                epoch_id,
-            )
-
     def save_checkpoint(self, model_dir):
         assert hasattr(self, "model"), "Please specify the exact model !"
         torch.save(self.model.state_dict(), model_dir)
@@ -153,3 +75,32 @@ class Engine(object):
             model.load_state_dict(state_dict)
             model.to(self.device)
             return model
+
+    def bpr_loss(self, pos_scores, neg_scores):
+        """ Bayesian Personalised Ranking (BPR) pairwise loss function
+        Note that the sizes of pos_scores and neg_scores should be equal.
+        Args:
+            pos_scores (tensor): Tensor containing predictions for known positive items.
+            neg_scores (tensor): Tensor containing predictions for sampled negative items.
+
+        Returns:
+
+        """
+        maxi = F.logsigmoid(pos_scores - neg_scores)
+        loss = -torch.mean(maxi)
+        return loss
+
+    def bce_loss(self, scores, ratings):
+        """ Binary Cross-Entropy (BCE) pointwise loss, also known as log loss or logistic loss
+
+        Args:
+            scores (tensor): Tensor containing predictions for both positive and negative items.
+            ratings (tensor): Tensor containing ratings for both positive and negative items.
+
+        Returns:
+
+        """
+        # Calculate Binary Cross Entropy loss
+        criterion = torch.nn.BCELoss()
+        loss = criterion(scores, ratings)
+        return loss

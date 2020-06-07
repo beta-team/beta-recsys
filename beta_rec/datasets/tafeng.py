@@ -13,7 +13,7 @@ from beta_rec.utils.constants import (
 from beta_rec.datasets.dataset_base import DatasetBase
 
 # download_url
-TAFENG_URL = r"http://www.bigdatalab.ac.cn/benchmark/upload/download_source/f2ce090f-5642-8eb5-358c-4b58a2aba231_data.zip"
+TAFENG_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugjc2k3eCAwKavccB?e=Qn5ppw"
 
 # processed data url
 TAFENG_LEAVE_ONE_OUT_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugWw1iWQHgI2NNbuM?e=LwEbEc"
@@ -27,11 +27,12 @@ class Tafeng(DatasetBase):
 
         Tafeng dataset.
         The dataset can not be download by the url,
-        you need to down the dataset by 'https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/download'
+        you need to down the dataset by 'https://1drv.ms/u/s!AjMahLyQeZqugjc2k3eCAwKavccB?e=Qn5ppw'
         then put it into the directory `tafeng/raw`
         """
         super().__init__(
             "tafeng",
+            url=TAFENG_URL,
             manual_download_url=TAFENG_URL,
             processed_random_split_url=TAFENG_RANDOM_SPLIT_URL,
         )
