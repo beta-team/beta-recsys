@@ -3,16 +3,15 @@ import sys
 sys.path.append("../")
 import os
 import argparse
-import time
+
 from tqdm import tqdm
-from ray import tune
+
 from beta_rec.train_engine import TrainEngine
 from beta_rec.models.narm import NARMEngine
 from beta_rec.utils.monitor import Monitor
 from beta_rec.utils.common_util import update_args
-from beta_rec.utils.constants import *
 
-from beta_rec.datasets.seq_data_utils import Dataset
+from beta_rec.datasets.seq_data_utils import load_dataset
 from beta_rec.datasets.seq_data_utils import reindex_items
 from beta_rec.datasets.seq_data_utils import create_seq_db
 from beta_rec.datasets.seq_data_utils import dataset_to_seq_target_format
@@ -20,14 +19,12 @@ from beta_rec.datasets.seq_data_utils import SeqDataset
 from beta_rec.datasets.seq_data_utils import collate_fn
 from torch.utils.data import DataLoader
 
-from beta_rec.datasets.movielens import Movielens_100k, Movielens_1m, Movielens_25m
-
 from beta_rec.eval_engine import SeqEvalEngine
 
 
 def parse_args():
     """Parse args from command line
-    
+
     Returns:
         args object.
 
@@ -101,8 +98,8 @@ class NARM_train(TrainEngine):
         Args:
             config (dict): All the parameters for the model
         """
-        super(NARM_train, self).__init__(self.config)
         self.config = config
+        super(NARM_train, self).__init__(self.config)
         self.load_dataset_seq()
         self.build_data_loader()
         self.engine = NARMEngine(self.config)
@@ -119,7 +116,7 @@ class NARM_train(TrainEngine):
         # ml.load_interaction()
         # self.dataset = ml.make_temporal_split(n_negative=0, n_test=0)
 
-        ld_dataset = Dataset.load_dataset(self.config)
+        ld_dataset = load_dataset(self.config)
         ld_dataset.download()
         ld_dataset.load_interaction()
         self.dataset = ld_dataset.make_temporal_split(n_negative=0, n_test=0)
@@ -169,7 +166,7 @@ class NARM_train(TrainEngine):
 
     def _train(self, engine, train_loader, save_dir):
         """Train the model with epochs
-        
+
         Retruns:
             None
         """

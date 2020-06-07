@@ -9,7 +9,6 @@ import pandas as pd
 
 from tqdm import tqdm
 
-import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 
 import time
@@ -26,7 +25,7 @@ class NARM(nn.Module):
         n_items(int): the number of items
         hidden_size(int): the hidden size of gru
         embedding_dim(int): the dimension of item embedding
-        batch_size(int): 
+        batch_size(int):
         n_layers(int): the number of gru layers
 
     """
@@ -184,14 +183,14 @@ class NARMEngine(Engine):
 
     def recommend(self, user_profile, user_id=None):
         """ Make a recommendation.
-        
+
         Args:
-            user_profile (List): Contains the item IDs of the events. 
+            user_profile (List): Contains the item IDs of the events.
             user_id (None): users' id for personalised recommenation.
-        
+
         Reurns:
             List: item and score pairs.
-        
+
         """
         pred = self.predict(user_profile, batch=1)
 

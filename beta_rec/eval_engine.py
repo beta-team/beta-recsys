@@ -447,16 +447,19 @@ class SeqEvalEngine(object):
             recommender (object): the instance of the recommender to test.
             test_sequences (List): the set of test sequences
             evaluation_functions (dict): list of evaluation metric functions.
-            users (List): (optional) the list of user ids associated to each test sequence. Required by personalized models like FPMC.
-            given_k (int): (optional) the initial size of each user profile, starting from the first interaction in the sequence.
+            users (List): (optional) the list of user ids associated to each test sequence.
+            given_k (int): (optional) the initial size of each user profile, starting from 
+                        the first interaction in the sequence.
                         If <0, start counting from the end of the sequence. It must be != 0.
             look_ahead (int): (optional) number of subsequent interactions in the sequence to be considered as ground truth.
                         It can be any positive number or 'all' to extend the ground truth until the end of the sequence.
             top_n (int): (optional) size of the recommendation list
             scroll (boolean): (optional) whether to scroll the ground truth until the end of the sequence.
-                    If True, expand the user profile and move the ground truth forward of `step` interactions. Recompute and evaluate recommendations every time.
+                    If True, expand the user profile and move the ground truth forward of `step` interactions.
+                    Recompute and evaluate recommendations every time.
                     If False, evaluate recommendations once per sequence without expanding the user profile.
-            step (int): (optional) number of interactions that will be added to the user profile at each step of the sequential evaluation.
+            step (int): (optional) number of interactions that will be added to the user profile at each
+                        step of the sequential evaluation.
 
         Returns: 
             metrics/len(test_sequences) (1d array): the list of the average values for each evaluation metric.
@@ -499,15 +502,16 @@ class SeqEvalEngine(object):
         self, recommender, seq, evaluation_functions, user, given_k, look_ahead, top_n
     ):
         """Compute metrics for each sequence.
-        
+
         Args:
             recommender (object): which recommender to use
             seq (List): the user_profile/ context
             given_k (int): last element used as ground truth. NB if <0 it is interpreted as first elements to keep
             evaluation_functions (dict): which function to use to evaluate the rec performance
-            look_ahead (int): number of elements in ground truth to consider. if look_ahead = 'all' then all the ground_truth sequence is considered
-        
-        Returns: 
+            look_ahead (int): number of elements in ground truth to consider.
+                        If look_ahead = 'all' then all the ground_truth sequence is considered
+
+        Returns:
             np.array(tmp_results) (1d array): performance of recommender.
         """
         # safety checks
@@ -551,15 +555,16 @@ class SeqEvalEngine(object):
         step,
     ):
         """Compute metrics for each sequence incrementally.
-        
+
         Args:
             recommender (object): which recommender to use
             seq (List): the user_profile/ context
             given_k (int): last element used as ground truth. NB if <0 it is interpreted as first elements to keep
             evaluation_functions (dict): which function to use to evaluate the rec performance
-            look_ahead (int): number of elements in ground truth to consider. if look_ahead = 'all' then all the ground_truth sequence is considered
-        
-        Returns: 
+            look_ahead (int): number of elements in ground truth to consider. 
+                            If look_ahead = 'all' then all the ground_truth sequence is considered
+
+        Returns:
             eval_res/eval_cnt (1d array): performance of recommender.
         """
         if given_k < 0:
@@ -576,14 +581,14 @@ class SeqEvalEngine(object):
 
     def get_test_sequences(self, test_data, given_k):
         """Run evaluation only over sequences longer than abs(LAST_K)
-        
+
         Args:
             test_data (pandas.DataFrame): Test set.
             given_k (int): last element used as ground truth.
-        
+
         Returns:
-            test_sequences (List): list of sequences for testing. 
-        
+            test_sequences (List): list of sequences for testing.
+
         """
         # we can run evaluation only over sequences longer than abs(LAST_K)
         test_sequences = test_data.loc[
@@ -593,17 +598,17 @@ class SeqEvalEngine(object):
 
     def train_eval_seq(self, valid_data, test_data, recommender, epoch_id=0, k=10):
         """Compute performance of the sequential models with validation and test datasets for each epoch during training.
-        
+
         Args:
             valid_data (pandas.DataFrame): validation dataset.
             test_data (pandas.DataFrame): test dataset.
             recommender (Object): Sequential recommender.
             epoch_id (int): id of the epoch.
             k (int): size of the recommendation list
-        
+
         Returns:
             None
-        
+
         """
         METRICS = {"precision": precision, "recall": recall, "mrr": mrr}
         TOPN = k  # length of the recommendation list
@@ -667,10 +672,9 @@ class SeqEvalEngine(object):
             test_data (pandas.DataFrame): test dataset.
             recommender (Object): Sequential recommender.
             k (int): size of the recommendation list
-        
+
         Returns:
             None
-        
         """
 
         METRICS = {"precision": precision, "recall": recall, "mrr": mrr}

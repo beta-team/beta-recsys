@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def precision(ground_truth, prediction):
     """Compute Precision metric.
 
@@ -43,11 +40,11 @@ def recall(ground_truth, prediction):
 
 def mrr(ground_truth, prediction):
     """Compute Mean Reciprocal Rank metric. Reciprocal Rank is set 0 if no predicted item is in contained the ground truth.
-    
+
     Args:
         ground_truth (List): the ground truth set or sequence
         prediction (List): the predicted set or sequence
-    
+
     Returns:
         rr (float): the value of the metric
     """
@@ -61,11 +58,11 @@ def mrr(ground_truth, prediction):
 
 def count_a_in_b_unique(a, b):
     """Count unique items.
-    
+
     Args:
         a (List): list of lists
         b (List): list of lists
-    
+
     Returns:
         count (int): number of elements of a in b
     """
@@ -78,6 +75,6 @@ def count_a_in_b_unique(a, b):
 
 def remove_duplicates(l):
     """Remove duplicated items in the list.
-    
+
     """
     return [list(x) for x in set(tuple(x) for x in l)]

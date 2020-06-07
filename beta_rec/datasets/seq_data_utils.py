@@ -12,42 +12,29 @@ from beta_rec.datasets.epinions import Epinions
 from beta_rec.datasets.instacart import Instacart, Instacart_25
 
 
-class Dataset(object):
-    """Base Dataset class for sequential models.
-    
+def load_dataset(config):
+    """Loading dataset.
+
+    Args:
+        config (dict): Dictionary of configuration.
+
+    Returns:
+        dataset (pandas.DataFrame): Full dataset.
+
     """
-
-    def __init__(self, config):
-        """Constructor
-
-        Args:
-            config (dict): Dictionary of configuration.
-        """
-        self.config = config
-
-    def load_dataset(config):
-        """Loading dataset.
-
-        Args:
-            config (dict): Dictionary of configuration.
-
-        Returns:
-            dataset (pandas.DataFrame): Full dataset.
-
-        """
-        dataset_mapping = {
-            "ml_100k": Movielens_100k,
-            "ml_1m": Movielens_1m,
-            "ml_25m": Movielens_25m,
-            "last_fm": LastFM,
-            "tafeng": Tafeng,
-            "epinions": Epinions,
-            "dunnhumby": Dunnhumby,
-            "instacart": Instacart,
-            "instacart_25": Instacart_25,
-        }
-        dataset = dataset_mapping[config["dataset"]]()
-        return dataset
+    dataset_mapping = {
+        "ml_100k": Movielens_100k,
+        "ml_1m": Movielens_1m,
+        "ml_25m": Movielens_25m,
+        "last_fm": LastFM,
+        "tafeng": Tafeng,
+        "epinions": Epinions,
+        "dunnhumby": Dunnhumby,
+        "instacart": Instacart,
+        "instacart_25": Instacart_25,
+    }
+    dataset = dataset_mapping[config["dataset"]]()
+    return dataset
 
 
 def reindex_items(train_data, valid_data=None, test_data=None):
@@ -59,7 +46,7 @@ def reindex_items(train_data, valid_data=None, test_data=None):
         train_data (pandas.DataFrame): Training set.
         valid_data (pandas.DataFrame): Validation set.
         test_data (pandas.DataFrame): Test set.
-    
+
     Returns:
         train_data (pandas.DataFrame): Reindexed training set.
         valid_data (pandas.DataFrame): Reindexed validation set.
@@ -101,7 +88,7 @@ def reindex_items(train_data, valid_data=None, test_data=None):
 
 def create_seq_db(data):
     """Convert interactions of a user to a sequence.
-    
+
     Args:
         data (pandas.DataFrame): The dataset to be transformed.
 
@@ -121,7 +108,7 @@ def create_seq_db(data):
 
 def dataset_to_seq_target_format(data):
     """Convert a list of sequences to (seq,target) format.
-    
+
     Args:
         data (pandas.DataFrame): The dataset to be transformed.
 
@@ -172,7 +159,7 @@ def collate_fn(data):
     batch_size x max_seq_len to max_seq_len x batch_size.
     It will return padded vectors, labels and lengths of each session (before padding)
     It will be used in the Dataloader.
-    
+
     Args:
         data (pytorch Dataset): Sequential dataset.
 
