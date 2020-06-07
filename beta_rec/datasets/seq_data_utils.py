@@ -24,7 +24,7 @@ class Dataset(object):
             config (dict): Dictionary of configuration.
         """
         self.config = config
-        
+
     def load_dataset(config):
         """Loading dataset.
 

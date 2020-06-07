@@ -101,14 +101,13 @@ class NARM_train(TrainEngine):
         Args:
             config (dict): All the parameters for the model
         """
-        self.config = config
         super(NARM_train, self).__init__(self.config)
+        self.config = config
         self.load_dataset_seq()
         self.build_data_loader()
         self.engine = NARMEngine(self.config)
         self.seq_eval_engine = SeqEvalEngine(self.config)
-        print(self.dataset)
-        
+
     def load_dataset_seq(self):
         """ Default implementation of building dataset
 
@@ -119,20 +118,20 @@ class NARM_train(TrainEngine):
         # ml.download()
         # ml.load_interaction()
         # self.dataset = ml.make_temporal_split(n_negative=0, n_test=0)
-        
+
         ld_dataset = Dataset.load_dataset(self.config)
         ld_dataset.download()
         ld_dataset.load_interaction()
         self.dataset = ld_dataset.make_temporal_split(n_negative=0, n_test=0)
-        
-        self.train_data=self.dataset[self.dataset.col_flag=="train"]
-        self.valid_data=self.dataset[self.dataset.col_flag=="validate"]
-        self.test_data=self.dataset[self.dataset.col_flag=="test"]
-        
+
+        self.train_data = self.dataset[self.dataset.col_flag == "train"]
+        self.valid_data = self.dataset[self.dataset.col_flag == "validate"]
+        self.test_data = self.dataset[self.dataset.col_flag == "test"]
+
         # self.dataset = Dataset(self.config)
         self.config["n_users"] = self.train_data.col_user.nunique()
-        self.config["n_items"] = self.train_data.col_item.nunique()+1
-    
+        self.config["n_items"] = self.train_data.col_item.nunique() + 1
+
     def build_data_loader(self):
         """ Convert users' interactions to sequences
 
@@ -140,10 +139,12 @@ class NARM_train(TrainEngine):
             load_train_data (DataLoader): training set.
 
         """
-        
+
         # reindex items from 1
-        self.train_data, self.valid_data, self.test_data = reindex_items(self.train_data, self.valid_data, self.test_data)
-        
+        self.train_data, self.valid_data, self.test_data = reindex_items(
+            self.train_data, self.valid_data, self.test_data
+        )
+
         # data to sequences
         self.valid_data = create_seq_db(self.valid_data)
         self.test_data = create_seq_db(self.test_data)
@@ -158,9 +159,14 @@ class NARM_train(TrainEngine):
         load_train_data = SeqDataset(load_train_data)
 
         # pad the sequences with 0
-        self.load_train_data = DataLoader(load_train_data, batch_size = self.config["batch_size"], shuffle = False, collate_fn = collate_fn)
+        self.load_train_data = DataLoader(
+            load_train_data,
+            batch_size=self.config["batch_size"],
+            shuffle=False,
+            collate_fn=collate_fn,
+        )
         return self.load_train_data
-    
+
     def _train(self, engine, train_loader, save_dir):
         """Train the model with epochs
         
@@ -175,12 +181,12 @@ class NARM_train(TrainEngine):
                 break
             engine.train_an_epoch(train_loader, epoch=epoch)
             """evaluate model on validation and test sets"""
-            
+
             # evaluation
             self.seq_eval_engine.train_eval_seq(
                 self.valid_data, self.test_data, engine, epoch
             )
-    
+
     def train(self):
         """ Train and test NARM
 
@@ -197,7 +203,8 @@ class NARM_train(TrainEngine):
         )
         self._train(self.engine, train_loader, self.narm_save_dir)
         self.config["run_time"] = self.monitor.stop()
-        self.seq_eval_engine.test_eval_seq(self.test_data, self.engine)    
+        self.seq_eval_engine.test_eval_seq(self.test_data, self.engine)
+
 
 if __name__ == "__main__":
     args = parse_args()
@@ -206,5 +213,3 @@ if __name__ == "__main__":
     narm = NARM_train(config)
     narm.train()
     # narm.test() have already implemented in train()
-    
-

@@ -424,22 +424,25 @@ class SeqEvalEngine(object):
         Args:
             config (dict): parameters for the model.
         """
+
         self.config = config  # model configuration, should be a dic
         self.metrics = config["metrics"]
         self.validate_metric = config["validate_metric"]
-    
-    def sequential_evaluation(self, 
-                              recommender,
-                              test_sequences,
-                              evaluation_functions,
-                              users=None,
-                              given_k=1,
-                              look_ahead=1,
-                              top_n=10,
-                              scroll=True,
-                              step=1):
+
+    def sequential_evaluation(
+        self,
+        recommender,
+        test_sequences,
+        evaluation_functions,
+        users=None,
+        given_k=1,
+        look_ahead=1,
+        top_n=10,
+        scroll=True,
+        step=1,
+    ):
         """Runs sequential evaluation of a recommender over a set of test sequences.
-        
+
         Args:
             recommender (object): the instance of the recommender to test.
             test_sequences (List): the set of test sequences
@@ -454,12 +457,12 @@ class SeqEvalEngine(object):
                     If True, expand the user profile and move the ground truth forward of `step` interactions. Recompute and evaluate recommendations every time.
                     If False, evaluate recommendations once per sequence without expanding the user profile.
             step (int): (optional) number of interactions that will be added to the user profile at each step of the sequential evaluation.
-        
+
         Returns: 
             metrics/len(test_sequences) (1d array): the list of the average values for each evaluation metric.
         """
         if given_k == 0:
-            raise ValueError('given_k must be != 0')
+            raise ValueError("given_k must be != 0")
 
         metrics = np.zeros(len(evaluation_functions))
         with tqdm(total=len(test_sequences)) as pbar:
@@ -469,27 +472,32 @@ class SeqEvalEngine(object):
                 else:
                     user = None
                 if scroll:
-                    metrics += self.sequence_sequential_evaluation(recommender,
-                                                              test_seq,
-                                                              evaluation_functions,
-                                                              user,
-                                                              given_k,
-                                                              look_ahead,
-                                                              top_n,
-                                                              step)
+                    metrics += self.sequence_sequential_evaluation(
+                        recommender,
+                        test_seq,
+                        evaluation_functions,
+                        user,
+                        given_k,
+                        look_ahead,
+                        top_n,
+                        step,
+                    )
                 else:
-                    metrics += self.evaluate_sequence(recommender,
-                                                 test_seq,
-                                                 evaluation_functions,
-                                                 user,
-                                                 given_k,
-                                                 look_ahead,
-                                                 top_n)
+                    metrics += self.evaluate_sequence(
+                        recommender,
+                        test_seq,
+                        evaluation_functions,
+                        user,
+                        given_k,
+                        look_ahead,
+                        top_n,
+                    )
                 pbar.update(1)
         return metrics / len(test_sequences)
 
-
-    def evaluate_sequence(self, recommender, seq, evaluation_functions, user, given_k, look_ahead, top_n):
+    def evaluate_sequence(
+        self, recommender, seq, evaluation_functions, user, given_k, look_ahead, top_n
+    ):
         """Compute metrics for each sequence.
         
         Args:
@@ -510,7 +518,9 @@ class SeqEvalEngine(object):
         ground_truth = seq[given_k:]
 
         # restrict ground truth to look_ahead
-        ground_truth = ground_truth[:look_ahead] if look_ahead != 'all' else ground_truth
+        ground_truth = (
+            ground_truth[:look_ahead] if look_ahead != "all" else ground_truth
+        )
         ground_truth = list(map(lambda x: [x], ground_truth))  # list of list format
 
         if not user_profile or not ground_truth:
@@ -529,8 +539,17 @@ class SeqEvalEngine(object):
             tmp_results.append(f(ground_truth, reco_list))
         return np.array(tmp_results)
 
-
-    def sequence_sequential_evaluation(self, recommender, seq, evaluation_functions, user, given_k, look_ahead, top_n, step):
+    def sequence_sequential_evaluation(
+        self,
+        recommender,
+        seq,
+        evaluation_functions,
+        user,
+        given_k,
+        look_ahead,
+        top_n,
+        step,
+    ):
         """Compute metrics for each sequence incrementally.
         
         Args:
@@ -549,7 +568,9 @@ class SeqEvalEngine(object):
         eval_res = 0.0
         eval_cnt = 0
         for gk in range(given_k, len(seq), step):
-            eval_res += self.evaluate_sequence(recommender, seq, evaluation_functions, user, gk, look_ahead, top_n)
+            eval_res += self.evaluate_sequence(
+                recommender, seq, evaluation_functions, user, gk, look_ahead, top_n
+            )
             eval_cnt += 1
         return eval_res / eval_cnt
 
@@ -565,7 +586,9 @@ class SeqEvalEngine(object):
         
         """
         # we can run evaluation only over sequences longer than abs(LAST_K)
-        test_sequences = test_data.loc[test_data['col_sequence'].map(len) > abs(given_k), 'col_sequence'].values
+        test_sequences = test_data.loc[
+            test_data["col_sequence"].map(len) > abs(given_k), "col_sequence"
+        ].values
         return test_sequences
 
     def train_eval_seq(self, valid_data, test_data, recommender, epoch_id=0, k=10):
@@ -582,52 +605,61 @@ class SeqEvalEngine(object):
             None
         
         """
-        METRICS = {'precision':precision, 
-                   'recall':recall,
-                   'mrr': mrr}
-        TOPN=k # length of the recommendation list
-        
+        METRICS = {"precision": precision, "recall": recall, "mrr": mrr}
+        TOPN = k  # length of the recommendation list
+
         # GIVEN_K=-1, LOOK_AHEAD=1, STEP=1 corresponds to the classical next-item evaluation
         GIVEN_K = self.config["GIVEN_K"]
         LOOK_AHEAD = self.config["LOOK_AHEAD"]
-        STEP=self.config["STEP"]
-        scroll=self.config["scroll"]
+        STEP = self.config["STEP"]
+        scroll = self.config["scroll"]
 
         # valid data
         valid_sequences = self.get_test_sequences(valid_data, GIVEN_K)
-        print('{} sequences available for evaluation'.format(len(valid_sequences)))
+        print("{} sequences available for evaluation".format(len(valid_sequences)))
 
-        valid_results = self.sequential_evaluation(recommender,
-                                        test_sequences=valid_sequences,
-                                        given_k=GIVEN_K,
-                                        look_ahead=LOOK_AHEAD,
-                                        evaluation_functions=METRICS.values(),
-                                        top_n=TOPN,
-                                        scroll=scroll,  # scrolling averages metrics over all profile lengths
-                                        step=STEP)
+        valid_results = self.sequential_evaluation(
+            recommender,
+            test_sequences=valid_sequences,
+            given_k=GIVEN_K,
+            look_ahead=LOOK_AHEAD,
+            evaluation_functions=METRICS.values(),
+            top_n=TOPN,
+            scroll=scroll,  # scrolling averages metrics over all profile lengths
+            step=STEP,
+        )
 
-        print('Sequential evaluation (GIVEN_K={}, LOOK_AHEAD={}, STEP={})'.format(GIVEN_K, LOOK_AHEAD, STEP))
+        print(
+            "Sequential evaluation (GIVEN_K={}, LOOK_AHEAD={}, STEP={})".format(
+                GIVEN_K, LOOK_AHEAD, STEP
+            )
+        )
         for mname, mvalue in zip(METRICS.keys(), valid_results):
-            print('\t{}@{}: {:.4f}'.format(mname, TOPN, mvalue))
-            
+            print("\t{}@{}: {:.4f}".format(mname, TOPN, mvalue))
+
         # test data
         test_sequences = self.get_test_sequences(test_data, GIVEN_K)
-        print('{} sequences available for evaluation'.format(len(test_sequences)))
+        print("{} sequences available for evaluation".format(len(test_sequences)))
 
-        test_results = self.sequential_evaluation(recommender,
-                                        test_sequences=test_sequences,
-                                        given_k=GIVEN_K,
-                                        look_ahead=LOOK_AHEAD,
-                                        evaluation_functions=METRICS.values(),
-                                        top_n=TOPN,
-                                        scroll=scroll,  # scrolling averages metrics over all profile lengths
-                                        step=STEP)
+        test_results = self.sequential_evaluation(
+            recommender,
+            test_sequences=test_sequences,
+            given_k=GIVEN_K,
+            look_ahead=LOOK_AHEAD,
+            evaluation_functions=METRICS.values(),
+            top_n=TOPN,
+            scroll=scroll,  # scrolling averages metrics over all profile lengths
+            step=STEP,
+        )
 
-        print('Sequential evaluation (GIVEN_K={}, LOOK_AHEAD={}, STEP={})'.format(GIVEN_K, LOOK_AHEAD, STEP))
+        print(
+            "Sequential evaluation (GIVEN_K={}, LOOK_AHEAD={}, STEP={})".format(
+                GIVEN_K, LOOK_AHEAD, STEP
+            )
+        )
         for mname, mvalue in zip(METRICS.keys(), test_results):
-            print('\t{}@{}: {:.4f}'.format(mname, TOPN, mvalue))
-            
-            
+            print("\t{}@{}: {:.4f}".format(mname, TOPN, mvalue))
+
     def test_eval_seq(self, test_data, recommender, k=10):
         """Compute performance of the sequential models with test dataset.
         
@@ -640,31 +672,35 @@ class SeqEvalEngine(object):
             None
         
         """
-        
-        METRICS = {'precision':precision, 
-                   'recall':recall,
-                   'mrr': mrr}
-        TOPN=k # length of the recommendation list
-        
+
+        METRICS = {"precision": precision, "recall": recall, "mrr": mrr}
+        TOPN = k  # length of the recommendation list
+
         # GIVEN_K=-1, LOOK_AHEAD=1, STEP=1 corresponds to the classical next-item evaluation
         GIVEN_K = self.config["GIVEN_K"]
         LOOK_AHEAD = self.config["LOOK_AHEAD"]
-        STEP=self.config["STEP"]
-        scroll=self.config["scroll"]
-            
+        STEP = self.config["STEP"]
+        scroll = self.config["scroll"]
+
         # test data
         test_sequences = self.get_test_sequences(test_data, GIVEN_K)
-        print('{} sequences available for evaluation'.format(len(test_sequences)))
+        print("{} sequences available for evaluation".format(len(test_sequences)))
 
-        test_results = self.sequential_evaluation(recommender,
-                                        test_sequences=test_sequences,
-                                        given_k=GIVEN_K,
-                                        look_ahead=LOOK_AHEAD,
-                                        evaluation_functions=METRICS.values(),
-                                        top_n=TOPN,
-                                        scroll=scroll,  # scrolling averages metrics over all profile lengths
-                                        step=STEP)
+        test_results = self.sequential_evaluation(
+            recommender,
+            test_sequences=test_sequences,
+            given_k=GIVEN_K,
+            look_ahead=LOOK_AHEAD,
+            evaluation_functions=METRICS.values(),
+            top_n=TOPN,
+            scroll=scroll,  # scrolling averages metrics over all profile lengths
+            step=STEP,
+        )
 
-        print('Sequential evaluation (GIVEN_K={}, LOOK_AHEAD={}, STEP={})'.format(GIVEN_K, LOOK_AHEAD, STEP))
+        print(
+            "Sequential evaluation (GIVEN_K={}, LOOK_AHEAD={}, STEP={})".format(
+                GIVEN_K, LOOK_AHEAD, STEP
+            )
+        )
         for mname, mvalue in zip(METRICS.keys(), test_results):
-            print('\t{}@{}: {:.4f}'.format(mname, TOPN, mvalue))
+            print("\t{}@{}: {:.4f}".format(mname, TOPN, mvalue))
