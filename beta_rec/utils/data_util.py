@@ -752,3 +752,139 @@ class Dataset(object):
             for item in i:
                 self.R[u, item] = 1
                 self.n_train += 1
+                
+    def neighbour_process(self):
+        user_np = np.array(self.train[DEFAULT_USER_COL])
+        item_np = np.array(self.train[DEFAULT_ITEM_COL])
+        # Neighborhods
+        users_items = defaultdict(set)
+        items_users = defaultdict(set)
+        zip_list = list(zip(user_np, item_np))
+        for u, i in zip_list:
+            users_items[u].add(i)
+            items_users[i].add(u)
+        train_data = np.array(zip_list)
+        train_index = np.arange(len(train_data), dtype=np.uint)
+        # get the list version
+        item_users_list = {k: list(v) for k, v in items_users.items()}
+        max_user_neighbors = max([len(x) for x in items_users.values()])
+        users_items = dict(users_items)
+        items_users = dict(items_users)
+
+        return (
+            train_data,
+            train_index,
+            max_user_neighbors,
+            items_users,
+            users_items,
+            item_users_list,
+        )
+
+    def cmn_train_loader(self, batch_size: int, neighborhood: bool, neg_count: int):
+        """
+        Batch data together as (user, item, negative item), pos_neighborhood,
+        length of neighborhood, negative_neighborhood, length of negative neighborhood
+
+        if neighborhood is False returns only user, item, negative_item so we
+        can reuse this for non-neighborhood-based methods.
+
+        :param batch_size: size of the batch
+        :param neighborhood: return the neighborhood information or not
+        :param neg_count: number of negative samples to uniformly draw per a pos
+                          example
+        :return: generator
+        """
+        # Allocate inputs
+        (
+            train_data,
+            train_index,
+            max_user_neighbors,
+            items_users,
+            users_items,
+            item_users_list,
+        ) = self.neighbour_process()
+        self.item_users_list = item_users_list
+        batch = np.zeros((batch_size, 3), dtype=np.uint32)
+        pos_neighbor = np.zeros((batch_size, max_user_neighbors), dtype=np.int32)
+        pos_length = np.zeros(batch_size, dtype=np.int32)
+        neg_neighbor = np.zeros((batch_size, max_user_neighbors), dtype=np.int32)
+        neg_length = np.zeros(batch_size, dtype=np.int32)
+
+        def sample_negative_item(user_id, n_items, users_items, items_users):
+            """
+            Uniformly sample a negative item
+            """
+            if user_id > n_items:
+                raise ValueError(
+                    "Trying to sample user id: {} > user count: {}".format(
+                        user_id, n_items
+                    )
+                )
+
+            n = np.random.randint(0, n_items)
+            positive_items = users_items[user_id]
+
+            if len(positive_items) >= n_items:
+                raise ValueError(
+                    "The User has rated more items than possible %s / %s"
+                    % (len(positive_items), n_items)
+                )
+            while n in positive_items or n not in items_users:
+                n = np.random.randint(0, n_items)
+            return n
+
+        # Shuffle index
+        np.random.shuffle(train_index)
+
+        idx = 0
+        for user_idx, item_idx in train_data[train_index]:
+            for _ in range(neg_count):
+                neg_item_idx = sample_negative_item(
+                    user_idx, self.n_items, users_items, items_users
+                )
+                batch[idx, :] = [user_idx, item_idx, neg_item_idx]
+
+                # Get neighborhood information
+                if neighborhood:
+                    if len(items_users.get(item_idx, [])) > 0:
+                        pos_length[idx] = len(items_users[item_idx])
+                        pos_neighbor[idx, : pos_length[idx]] = item_users_list[item_idx]
+                    else:
+                        # Length defaults to 1
+                        pos_length[idx] = 1
+                        pos_neighbor[idx, 0] = item_idx
+
+                    if len(items_users.get(neg_item_idx, [])) > 0:
+                        neg_length[idx] = len(items_users[neg_item_idx])
+                        neg_neighbor[idx, : neg_length[idx]] = item_users_list[
+                            neg_item_idx
+                        ]
+                    else:
+                        # Length defaults to 1
+                        neg_length[idx] = 1
+                        neg_neighbor[idx, 0] = neg_item_idx
+
+                idx += 1
+                # Yield batch if we filled queue
+                if idx == batch_size:
+                    if neighborhood:
+                        max_length = max(neg_length.max(), pos_length.max())
+                        yield batch, pos_neighbor[
+                            :, :max_length
+                        ], pos_length, neg_neighbor[:, :max_length], neg_length
+                        pos_length[:] = 1
+                        neg_length[:] = 1
+                    else:
+                        yield batch
+                    # Reset
+                    idx = 0
+
+        # Provide remainder
+        if idx > 0:
+            if neighborhood:
+                max_length = max(neg_length[:idx].max(), pos_length[:idx].max())
+                yield batch[:idx], pos_neighbor[:idx, :max_length], pos_length[
+                    :idx
+                ], neg_neighbor[:idx, :max_length], neg_length[:idx]
+            else:
+                yield batch[:idx]
