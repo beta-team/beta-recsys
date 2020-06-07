@@ -137,7 +137,6 @@ class cmn_train(TrainEngine):
 
 
 if __name__ == "__main__":
-
     args = parse_args()
     config_file = args.config_file
     with open(config_file) as config_params:
