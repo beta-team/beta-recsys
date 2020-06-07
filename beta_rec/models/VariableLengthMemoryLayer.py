@@ -40,7 +40,7 @@ class VariableLengthMemoryLayer(nn.Module):
         ) < mask_length.unsqueeze(1)
         memory_mask = memory_mask.float()
 
-        num_remaining_memory_slots = torch.sum(memory_mask, 1)
+        # num_remaining_memory_slots = torch.sum(memory_mask, 1)
 
         # Get the numerical limits of a float
         finfo = np.finfo(np.float32)
@@ -105,15 +105,18 @@ class VariableLengthMemoryLayer(nn.Module):
 
         for hop_k in range(self.hops):
             # hop 1, ... , hop self.hops-1
-            if hop_k != 0:
-                # f(Wz + o + b)
-                # equation 6
+            if hop_k == 0:
+                memory_hop = self.apply_attention_memory(
+                    memory, output_memory, z, seq_length, maxlen
+                )
+            else:
                 z = F.relu(self.hop_mapping[str(hop_k)](z) + memory_hop["output"])
 
-            # apply attention
-            memory_hop = self.apply_attention_memory(
-                memory, output_memory, z, seq_length, maxlen
-            )
+                # apply attention
+                memory_hop = self.apply_attention_memory(
+                    memory, output_memory, z, seq_length, maxlen
+                )
+
             hop_outputs.append(memory_hop)
 
         return hop_outputs
