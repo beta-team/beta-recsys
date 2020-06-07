@@ -448,7 +448,7 @@ class SeqEvalEngine(object):
             test_sequences (List): the set of test sequences
             evaluation_functions (dict): list of evaluation metric functions.
             users (List): (optional) the list of user ids associated to each test sequence.
-            given_k (int): (optional) the initial size of each user profile, starting from 
+            given_k (int): (optional) the initial size of each user profile, starting from
                         the first interaction in the sequence.
                         If <0, start counting from the end of the sequence. It must be != 0.
             look_ahead (int): (optional) number of subsequent interactions in the sequence to be considered as ground truth.
@@ -461,7 +461,7 @@ class SeqEvalEngine(object):
             step (int): (optional) number of interactions that will be added to the user profile at each
                         step of the sequential evaluation.
 
-        Returns: 
+        Returns:
             metrics/len(test_sequences) (1d array): the list of the average values for each evaluation metric.
         """
         if given_k == 0:
@@ -561,7 +561,7 @@ class SeqEvalEngine(object):
             seq (List): the user_profile/ context
             given_k (int): last element used as ground truth. NB if <0 it is interpreted as first elements to keep
             evaluation_functions (dict): which function to use to evaluate the rec performance
-            look_ahead (int): number of elements in ground truth to consider. 
+            look_ahead (int): number of elements in ground truth to consider.
                             If look_ahead = 'all' then all the ground_truth sequence is considered
 
         Returns:
@@ -667,7 +667,7 @@ class SeqEvalEngine(object):
 
     def test_eval_seq(self, test_data, recommender, k=10):
         """Compute performance of the sequential models with test dataset.
-        
+
         Args:
             test_data (pandas.DataFrame): test dataset.
             recommender (Object): Sequential recommender.
