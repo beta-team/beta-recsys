@@ -753,7 +753,7 @@ class Dataset(object):
             for item in i:
                 self.R[u, item] = 1
                 self.n_train += 1
-                
+
     def neighbour_process(self):
         user_np = np.array(self.train[DEFAULT_USER_COL])
         item_np = np.array(self.train[DEFAULT_ITEM_COL])
