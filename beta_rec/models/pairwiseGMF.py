@@ -1,13 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-import pickle
-import random
 import numpy as np
 from beta_rec.models.torch_engine import Engine
 from tqdm import tqdm
-from collections import defaultdict
 
 
 def truncated_normal_(tensor, mean=0, std=1):
