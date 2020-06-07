@@ -1,6 +1,7 @@
 import os
 from time import time
 import numpy as np
+from collections import defaultdict
 import pandas as pd
 import random
 from tabulate import tabulate
