@@ -1,13 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-import pickle
-import random
 import numpy as np
 from tqdm import tqdm
 from beta_rec.models.pairwiseGMF import truncated_normal_
-from collections import defaultdict
 from beta_rec.models.torch_engine import Engine
 from beta_rec.models.VariableLengthMemoryLayer import VariableLengthMemoryLayer
 
