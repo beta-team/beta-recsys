@@ -107,7 +107,6 @@ class NARM_train(TrainEngine):
         self.build_data_loader()
         self.engine = NARMEngine(self.config)
         self.seq_eval_engine = SeqEvalEngine(self.config)
-        
         print(self.dataset)
         
     def load_dataset_seq(self):
@@ -115,7 +114,6 @@ class NARM_train(TrainEngine):
 
         Returns:
             None
-
         """
         # ml = Movielens_100k()
         # ml.download()
@@ -168,7 +166,6 @@ class NARM_train(TrainEngine):
         
         Retruns:
             None
-        
         """
         epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:

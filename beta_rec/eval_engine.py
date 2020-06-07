@@ -427,7 +427,6 @@ class SeqEvalEngine(object):
         self.config = config  # model configuration, should be a dic
         self.metrics = config["metrics"]
         self.validate_metric = config["validate_metric"]
-        
     
     def sequential_evaluation(self, 
                               recommender,

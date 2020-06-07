@@ -24,10 +24,6 @@ class Dataset(object):
             config (dict): Dictionary of configuration.
         """
         self.config = config
-
-        # data preprocessing for training and test data
-        # To be replaced with new data method
-        # self.dataset = load_split_dataset(config)
         
     def load_dataset(config):
         """Loading dataset.
@@ -192,6 +188,5 @@ def collate_fn(data):
     for i, (sess, label) in enumerate(data):
         padded_sesss[i, : lens[i]] = torch.LongTensor(sess)
         labels.append(label)
-
     padded_sesss = padded_sesss.transpose(0, 1)
     return padded_sesss, torch.tensor(labels).long(), lens

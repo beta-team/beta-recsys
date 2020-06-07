@@ -30,6 +30,7 @@ class NARM(nn.Module):
         n_layers(int): the number of gru layers
 
     """
+    
     def __init__(self, config):
         super(NARM, self).__init__()
         self.config = config
