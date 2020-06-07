@@ -135,6 +135,7 @@ class cmn_train(TrainEngine):
             self.config["run_time"] = self.monitor.stop()
             self.eval_engine.test_eval(self.dataset.test, model.model)
 
+
 if __name__ == "__main__":
 
     args = parse_args()
