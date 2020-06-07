@@ -1,11 +1,14 @@
 import numpy as np
 
 def precision(ground_truth, prediction):
-    """
-    Compute Precision metric
-    :param ground_truth: the ground truth set or sequence
-    :param prediction: the predicted set or sequence
-    :return: the value of the metric
+    """Compute Precision metric.
+    
+    Args:
+        ground_truth (List): the ground truth set or sequence
+        prediction (List): the predicted set or sequence
+    
+    Returns:
+        precision_score (float): the value of the metric
     """
     ground_truth = remove_duplicates(ground_truth)
     prediction = remove_duplicates(prediction)
@@ -15,11 +18,14 @@ def precision(ground_truth, prediction):
 
 
 def recall(ground_truth, prediction):
-    """
-    Compute Recall metric
-    :param ground_truth: the ground truth set or sequence
-    :param prediction: the predicted set or sequence
-    :return: the value of the metric
+    """Compute Recall metric
+    
+    Args:
+        ground_truth (List): the ground truth set or sequence
+        prediction (List): the predicted set or sequence
+    
+    Returns:
+        recall_score (float): the value of the metric
     """
     ground_truth = remove_duplicates(ground_truth)
     prediction = remove_duplicates(prediction)
@@ -30,11 +36,14 @@ def recall(ground_truth, prediction):
 
 
 def mrr(ground_truth, prediction):
-    """
-    Compute Mean Reciprocal Rank metric. Reciprocal Rank is set 0 if no predicted item is in contained the ground truth.
-    :param ground_truth: the ground truth set or sequence
-    :param prediction: the predicted set or sequence
-    :return: the value of the metric
+    """Compute Mean Reciprocal Rank metric. Reciprocal Rank is set 0 if no predicted item is in contained the ground truth.
+    
+    Args:
+        ground_truth (List): the ground truth set or sequence
+        prediction (List): the predicted set or sequence
+    
+    Returns:
+        rr (float): the value of the metric
     """
     rr = 0.
     for rank, p in enumerate(prediction):
@@ -45,10 +54,14 @@ def mrr(ground_truth, prediction):
 
 
 def count_a_in_b_unique(a, b):
-    """
-    :param a: list of lists
-    :param b: list of lists
-    :return: number of elements of a in b
+    """Count unique items.
+    
+    Args:
+        a (List): list of lists
+        b (List): list of lists
+    
+    Returns:
+        count (int): number of elements of a in b
     """
     count = 0
     for el in a:
@@ -58,29 +71,7 @@ def count_a_in_b_unique(a, b):
 
 
 def remove_duplicates(l):
+    """Remove duplicated items in the list.
+    
+    """
     return [list(x) for x in set(tuple(x) for x in l)]
-
-
-def ndcg(ground_truth, prediction):
-    """
-    Compute Normalized Discounted Cumulative Gain (NDCG) metric. 
-    NDCG is set 0 if no predicted item is in contained the ground truth.
-    Note: there is only "one" item in the ground_truth in this version
-    :param ground_truth: the ground truth set or sequence
-    :param prediction: the predicted set or sequence
-    :return: the value of the metric
-    """
-    ndcg = 0.
-    for rank, p in enumerate(prediction):
-        if p in ground_truth:
-            if(rank==0):
-                ndcg = 1.
-            else:
-                discount = 1.0 / np.log10(rank+1)
-                # dcg = 1. * discount
-                # idcg = 1.0
-                # ndcg = dcg / idcg
-                ndcg = discount
-            break
-    return ndcg
-

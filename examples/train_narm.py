@@ -22,11 +22,14 @@ from torch.utils.data import DataLoader
 
 from beta_rec.datasets.movielens import Movielens_100k, Movielens_1m, Movielens_25m
 
+from beta_rec.eval_engine import SeqEvalEngine
+
 
 def parse_args():
-    """
-        Parse args from command line
-        Returns:
+    """Parse args from command line
+    
+    Returns:
+        args object.
 
     """
     parser = argparse.ArgumentParser(description="Run NARM..")
@@ -103,10 +106,8 @@ class NARM_train(TrainEngine):
         self.load_dataset_seq()
         self.build_data_loader()
         self.engine = NARMEngine(self.config)
+        self.seq_eval_engine = SeqEvalEngine(self.config)
         
-#         self.train_data=self.dataset.train
-#         self.valid_data=self.dataset.valid
-#         self.test_data=self.dataset.test
         print(self.dataset)
         
     def load_dataset_seq(self):
@@ -116,20 +117,32 @@ class NARM_train(TrainEngine):
             None
 
         """
-        ml = Movielens_100k()
-        ml.download()
-        ml.load_interaction()
-        self.dataset = ml.make_temporal_split(n_negative=0, n_test=0)
+        # ml = Movielens_100k()
+        # ml.download()
+        # ml.load_interaction()
+        # self.dataset = ml.make_temporal_split(n_negative=0, n_test=0)
+        
+        ld_dataset = Dataset.load_dataset(self.config)
+        ld_dataset.download()
+        ld_dataset.load_interaction()
+        self.dataset = ld_dataset.make_temporal_split(n_negative=0, n_test=0)
         
         self.train_data=self.dataset[self.dataset.col_flag=="train"]
         self.valid_data=self.dataset[self.dataset.col_flag=="validate"]
         self.test_data=self.dataset[self.dataset.col_flag=="test"]
         
-#         self.dataset = Dataset(self.config)
+        # self.dataset = Dataset(self.config)
         self.config["n_users"] = self.train_data.col_user.nunique()
         self.config["n_items"] = self.train_data.col_item.nunique()+1
     
     def build_data_loader(self):
+        """ Convert users' interactions to sequences
+
+        Returns:
+            load_train_data (DataLoader): training set.
+
+        """
+        
         # reindex items from 1
         self.train_data, self.valid_data, self.test_data = reindex_items(self.train_data, self.valid_data, self.test_data)
         
@@ -151,7 +164,12 @@ class NARM_train(TrainEngine):
         return self.load_train_data
     
     def _train(self, engine, train_loader, save_dir):
-        self.eval_engine.flush()
+        """Train the model with epochs
+        
+        Retruns:
+            None
+        
+        """
         epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:
             print("Epoch {} starts !".format(epoch))
@@ -162,12 +180,12 @@ class NARM_train(TrainEngine):
             """evaluate model on validation and test sets"""
             
             # evaluation
-            self.eval_engine.train_eval_seq(
+            self.seq_eval_engine.train_eval_seq(
                 self.valid_data, self.test_data, engine, epoch
             )
     
     def train(self):
-        """ Train NARM
+        """ Train and test NARM
 
         Returns:
             None
@@ -182,7 +200,7 @@ class NARM_train(TrainEngine):
         )
         self._train(self.engine, train_loader, self.narm_save_dir)
         self.config["run_time"] = self.monitor.stop()
-#         self.eval_engine.test_eval(self.dataset.test, self.engine.model)    
+        self.seq_eval_engine.test_eval_seq(self.test_data, self.engine)    
 
 if __name__ == "__main__":
     args = parse_args()

@@ -8,7 +8,7 @@
     "percent": 1,
     "emb_dim": 32,
     "num_negative": 4,
-    "batch_size": 32,
+    "batch_size": 128,
     "metrics": ["ndcg_at_k", "precision_at_k", "recall_at_k", "map_at_k"],
     "validate_metric": "ndcg_at_k@10",
     "device_str": "gpu",
@@ -29,5 +29,9 @@
     "lr_dc": 0.1,
     "lr_dc_step": 80,
     "embedding_dim": 32,
-    "save_name": "narm.model"
+    "save_name": "narm.model",
+    "GIVEN_K": -1,
+    "LOOK_AHEAD": 1,
+    "STEP": 1,
+    "scroll": 0
 }

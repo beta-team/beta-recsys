@@ -85,8 +85,6 @@ class NARM(nn.Module):
     def init_hidden(self, batch_size):
         return torch.zeros((self.n_layers, batch_size, self.hidden_size), requires_grad=True).to(self.device)
     
-    
-        
 
 class NARMEngine(Engine):
     """Engine for training & evaluating NARM model"""
@@ -131,27 +129,14 @@ class NARMEngine(Engine):
     
     
     def predict(self, user_profile, batch=1):
-        '''Gives predicton scores for a selected set of items. Can be used in batch mode to predict for multiple independent events (i.e. events of different sessions) at once and thus speed up evaluation.
+        '''Gives user profile, predict the next item.
 
-        If the session ID at a given coordinate of the session_ids parameter remains the same during subsequent calls of the function, the corresponding hidden state of the network will be kept intact (i.e. that's how one can predict an item to a session).
-        If it changes, the hidden state of the network is reset to zeros.
+        Args:
+            user_profile (List): Contains the item IDs of the events.
+            batch (int): Prediction batch size.
 
-        Parameters
-        --------
-        session_ids : 1D array
-            Contains the session IDs of the events of the batch. Its length must equal to the prediction batch size (batch param).
-        input_item_ids : 1D array
-            Contains the item IDs of the events of the batch. Every item ID must be must be in the training data of the network. Its length must equal to the prediction batch size (batch param).
-        predict_for_item_ids : 1D array (optional)
-            IDs of items for which the network should give prediction scores. Every ID must be in the training set. The default value is None, which means that the network gives prediction on its every output (i.e. for all items in the training set).
-        batch : int
-            Prediction batch size.
-
-        Returns
-        --------
-        out : pandas.DataFrame
-            Prediction scores for selected items for every event of the batch.
-            Columns: events of the batch; rows: items. Rows are indexed by the item IDs.
+        Returns:
+            preds (List): Prediction scores for selected items for every event of the batch.
 
         '''
 
@@ -177,9 +162,19 @@ class NARMEngine(Engine):
         return preds
 
     def recommend(self, user_profile, user_id=None):
-        pred = predict(user_profile, batch=1)
+        """ Make a recommendation.
+        
+        Args:
+            user_profile (List): Contains the item IDs of the events. 
+            user_id (None): users' id for personalised recommenation.
+        
+        Reurns:
+            List: item and score pairs.
+        
+        """
+        pred = self.predict(user_profile, batch=1)
 
-        pred = pd.DataFrame(data=pred, index=np.arange(self.n_items+1))
+        pred = pd.DataFrame(data=pred, index=np.arange(self.config["n_items"]))
 
         # sort items by predicted score
         pred.sort_values(0, ascending=False, inplace=True)
