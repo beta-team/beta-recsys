@@ -74,9 +74,7 @@ class Movielens_100k(DatasetBase):
         )
         self.save_dataframe_as_npz(
             data,
-            os.path.join(
-                self.processed_path, f"{self.dataset_name}_interaction.npz"
-            ),
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
 
     def make_fea_vec(self):
@@ -207,9 +205,7 @@ class Movielens_1m(DatasetBase):
         )
         self.save_dataframe_as_npz(
             data,
-            os.path.join(
-                self.processed_path, f"{self.dataset_name}_interaction.npz"
-            ),
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
 
 
@@ -246,7 +242,5 @@ class Movielens_25m(DatasetBase):
         )
         self.save_dataframe_as_npz(
             data,
-            os.path.join(
-                self.processed_path, f"{self.dataset_name}_interaction.npz"
-            ),
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
