@@ -2,9 +2,7 @@ import sys
 
 sys.path.append("../")
 import os
-import torch
 import argparse
-import numpy as np
 from tqdm import tqdm
 from beta_rec.train_engine import TrainEngine
 from beta_rec.models.mf import MFEngine
