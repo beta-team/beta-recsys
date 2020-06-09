@@ -178,7 +178,7 @@ def feed_neg_sample(data, negative_num, item_sampler):
                         if negative_num<0, will keep all the negative items for each user
         item_sampler (AliasTable): a AliasTable sampler that contains the items
     Returns:
-        DataFrame: interaction DataFrame that have already by labeled by a col with "train", "test" or "valid".
+        DataFrame: interaction DataFrame with a new 'flag' column labeling with "train", "test" or "valid".
     """
     unique_item_set = set(data[DEFAULT_ITEM_COL].unique())
     unique_rating_num = data[DEFAULT_RATING_COL].nunique()
