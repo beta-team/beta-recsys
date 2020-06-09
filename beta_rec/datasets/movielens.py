@@ -63,7 +63,7 @@ class Movielens_100k(DatasetBase):
         data = pd.read_table(
             file_name,
             header=None,
-            sep="::",
+            sep="\t",
             engine="python",
             names=[
                 DEFAULT_USER_COL,
