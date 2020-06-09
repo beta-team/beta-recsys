@@ -353,7 +353,8 @@ def random_split(data, test_rate=0.1, by_user=False):
 
     Args:
         data (DataFrame): interaction DataFrame to be split
-        test_rate (float): percentage of the test data. Note that percentage of the validation data will be the same as testing.
+        test_rate (float): percentage of the test data.
+            Note that percentage of the validation data will be the same as testing.
         by_user (bool): Default False.
                     - Ture: user-based split,
                     - False: global split,
@@ -401,7 +402,8 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
 
     Args:
         data (DataFrame): interaction DataFrame to be split
-        test_rate (float): percentage of the test data. Note that percentage of the validation data will be the same as testing.
+        test_rate (float): percentage of the test data.
+            Note that percentage of the validation data will be the same as testing.
         by_user (bool): Default False.
                     - True: user-based split,
                     - False: global split,
@@ -507,7 +509,8 @@ def temporal_split(data, test_rate=0.1, by_user=False):
 
     Args:
         data (DataFrame): interaction DataFrame to be split
-        test_rate (float): percentage of the test data. Note that percentage of the validation data will be the same as testing.
+        test_rate (float): percentage of the test data.
+            Note that percentage of the validation data will be the same as testing.
         by_user (bool): bool. Default False.
                     - Ture: user-based split,
                     - False: global split,
@@ -556,7 +559,8 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
     Args:
         data (DataFrame): interaction DataFrame to be split.
             It must have a col DEFAULT_ORDER_COL
-        test_rate (float): percentage of the test data. Note that percentage of the validation data will be the same as testing.
+        test_rate (float): percentage of the test data.
+            Note that percentage of the validation data will be the same as testing.
         by_user (bool): Default False.
                     - Ture: user-based split,
                     - False: global split,
@@ -624,7 +628,8 @@ def split_data(
                         - temporal
                         - temporal_basket
         random (bool): Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
-        test_rate (float): percentage of the test data. Note that percentage of the validation data will be the same as testing.
+        test_rate (float): percentage of the test data.
+            Note that percentage of the validation data will be the same as testing.
         n_negative (int): Number of negative samples for testing and validation data.
         save_dir (string or Path): Default None. If specified, the split data will be saved to the dir.
         by_user (bool): Default False.
@@ -731,7 +736,8 @@ def generate_parameterized_path(
 
     Args:
         by_user (bool): split by user
-        test_rate (float): percentage of the test data. Note that percentage of the validation data will be the same as testing.
+        test_rate (float): percentage of the test data.
+            Note that percentage of the validation data will be the same as testing.
         random (bool): Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
         n_negative (int): Number of negative samples for testing and validation data.
 
