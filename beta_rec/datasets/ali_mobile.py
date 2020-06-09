@@ -38,8 +38,8 @@ def process_time(standard_time=None):
     """
 
     standard_time = standard_time + ":00:00"
-    dateArr = time.strptime(standard_time, "%Y-%m-%d %H:%M:%S")
-    timestamp = int(time.mktime(dateArr))
+    date_arr = time.strptime(standard_time, "%Y-%m-%d %H:%M:%S")
+    timestamp = int(time.mktime(date_arr))
     return timestamp
 
 
