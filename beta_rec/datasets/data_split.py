@@ -18,16 +18,17 @@ from beta_rec.utils.constants import (
 
 
 def filter_by_count(df, group_col, filter_col, num):
-    """Filter out the group_col column values that have a less than num count of filter_col
+    """Filter out the group_col column values that have a less than num count of filter_col.
 
     Args:
-        df (DataFrame): interaction DataFrame to be processed
-        group_col (string): column name to be filtered
+        df (DataFrame): interaction DataFrame to be processed.
+        group_col (string): column name to be filtered.
         filter_col (string): column with the filter condition.
         num (int): minimum count condition that should be filter out.
 
     Returns:
-        DataFrame: The filtered interactions
+        DataFrame: The filtered interactions.
+
     """
     ordercount = (
         df.groupby([group_col])[filter_col].nunique().rename("count").reset_index()
@@ -39,10 +40,13 @@ def filter_by_count(df, group_col, filter_col, num):
 
 
 def check_data_available(data):
-    """ A simple notice showing that data interaction have
+    """ A simple notice showing that data interaction have.
 
     Args:
-        data (DataFrame): interaction DataFrame to be processed
+        data (DataFrame): interaction DataFrame to be processed.
+
+    Raises:
+        RuntimeError: An error occurred it there is no interaction.
 
     """
     if len(data.index) < 1:
@@ -52,13 +56,13 @@ def check_data_available(data):
 
 
 def filter_user_item(df, min_u_c=5, min_i_c=5):
-    """Filter data by the minimum purchase number of items and users
+    """Filter data by the minimum purchase number of items and users.
 
     Args:
-        df (DataFrame): interaction DataFrame to be processed
-        min_u_c (int): filter the items that were purchased by less than min_u_c users
+        df (DataFrame): interaction DataFrame to be processed.
+        min_u_c (int): filter the items that were purchased by less than min_u_c users.
             (default: :obj:`5`)
-        min_i_c (int): filter the users that have purchased by less than min_i_c items
+        min_i_c (int): filter the users that have purchased by less than min_i_c items.
             (default: :obj:`5`)
 
     Returns:
@@ -107,20 +111,19 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
 
 
 def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
-    """ Filter data by the minimum purchase number of items and users
+    """ Filter data by the minimum purchase number of items and users.
 
     Args:
-        df (DataFrame): interaction DataFrame to be processed
-        min_u_c: filter the items that were purchased by less than min_u_c users
+        df (DataFrame): interaction DataFrame to be processed.
+        min_u_c: filter the items that were purchased by less than min_u_c users.
         (default: :obj:`5`)
-        min_i_c: filter the users that have purchased by less than min_i_c items
+        min_i_c: filter the users that have purchased by less than min_i_c items.
         (default: :obj:`5`)
-        min_o_c: filter the users that have purchased by less than min_o_c orders
+        min_o_c: filter the users that have purchased by less than min_o_c orders.
         (default: :obj:`5`)
 
     Returns:
-        The filtered DataFrame
-
+        The filtered DataFrame.
     """
     print(
         f"filter_user_item_order under condition min_u_c={min_u_c}, min_i_c={min_i_c}, min_o_c={min_o_c}"
@@ -173,12 +176,13 @@ def feed_neg_sample(data, negative_num, item_sampler):
     """Sample negative items for a interaction DataFrame.
 
     Args:
-        data (DataFrame): interaction DataFrame to be processed
+        data (DataFrame): interaction DataFrame to be processed.
         negative_num (int): number of negative items.
-                        if negative_num<0, will keep all the negative items for each user
-        item_sampler (AliasTable): a AliasTable sampler that contains the items
+                        if negative_num<0, will keep all the negative items for each user.
+        item_sampler (AliasTable): a AliasTable sampler that contains the items.
     Returns:
         DataFrame: interaction DataFrame with a new 'flag' column labeling with "train", "test" or "valid".
+
     """
     unique_item_set = set(data[DEFAULT_ITEM_COL].unique())
     unique_rating_num = data[DEFAULT_RATING_COL].nunique()
@@ -236,10 +240,10 @@ def feed_neg_sample(data, negative_num, item_sampler):
 
 
 def load_split_data(path, n_test=10):
-    """Load split DataFrame from a specified path
+    """Load split DataFrame from a specified path.
 
     Args:
-        path (string): split data path
+        path (string): split data path.
         n_test: number of testing and validation datasets.
                 If n_test==0, will load the original (no negative items) valid and test datasets.
 
@@ -323,14 +327,14 @@ def save_split_data(
     parameterized_dir=None,
     suffix="train.npz",
 ):
-    """Save DataFrame to compressed npz
+    """Save DataFrame to compressed npz.
 
     Args:
-        data (DataFrame): interaction DataFrame to be saved
-        parameterized_dir (string): data_split parameter string
-        suffix (string): suffix of the data to be saved
-        base_dir (string): directory to save
-        data_split (string): sub folder name for saving the data
+        data (DataFrame): interaction DataFrame to be saved.
+        parameterized_dir (string): data_split parameter string.
+        suffix (string): suffix of the data to be saved.
+        base_dir (string): directory to save.
+        data_split (string): sub folder name for saving the data.
 
     """
 
@@ -349,10 +353,10 @@ def save_split_data(
 
 
 def random_split(data, test_rate=0.1, by_user=False):
-    """random_basket_split
+    """random_basket_split.
 
     Args:
-        data (DataFrame): interaction DataFrame to be split
+        data (DataFrame): interaction DataFrame to be split.
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         by_user (bool): Default False.
@@ -398,10 +402,10 @@ def random_split(data, test_rate=0.1, by_user=False):
 
 
 def random_basket_split(data, test_rate=0.1, by_user=False):
-    """random_basket_split
+    """random_basket_split.
 
     Args:
-        data (DataFrame): interaction DataFrame to be split
+        data (DataFrame): interaction DataFrame to be split.
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         by_user (bool): Default False.
@@ -452,11 +456,11 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
 
 
 def leave_one_out(data, random=False):
-    """leave_one_out split
+    """leave_one_out split.
 
     Args:
-        data (DataFrame): interaction DataFrame to be split
-        random (bool):  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        data (DataFrame): interaction DataFrame to be split.
+        random (bool):  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket.
 
     Returns:
         DataFrame: DataFrame that have already by labeled by a col with "train", "test" or "valid".
@@ -478,11 +482,11 @@ def leave_one_out(data, random=False):
 
 
 def leave_one_basket(data, random=False):
-    """leave_one_basket split
+    """leave_one_basket split.
 
     Args:
-        data (DataFrame): interaction DataFrame to be split
-        random (bool):  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        data (DataFrame): interaction DataFrame to be split.
+        random (bool):  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket.
 
     Returns:
         DataFrame: DataFrame that have already by labeled by a col with "train", "test" or "valid".
@@ -505,10 +509,10 @@ def leave_one_basket(data, random=False):
 
 
 def temporal_split(data, test_rate=0.1, by_user=False):
-    """temporal_split
+    """temporal_split.
 
     Args:
-        data (DataFrame): interaction DataFrame to be split
+        data (DataFrame): interaction DataFrame to be split.
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         by_user (bool): bool. Default False.
@@ -554,11 +558,11 @@ def temporal_split(data, test_rate=0.1, by_user=False):
 
 
 def temporal_basket_split(data, test_rate=0.1, by_user=False):
-    """temporal_basket_split
+    """temporal_basket_split.
 
     Args:
         data (DataFrame): interaction DataFrame to be split.
-            It must have a col DEFAULT_ORDER_COL
+            It must have a col DEFAULT_ORDER_COL.
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         by_user (bool): Default False.
@@ -616,7 +620,7 @@ def split_data(
     by_user=False,
     n_test=10,
 ):
-    """Data split methods
+    """Data split methods.
 
     Args:
         data (DataFrame): interaction DataFrame to be split
@@ -627,7 +631,7 @@ def split_data(
                         - leave_one_basket
                         - temporal
                         - temporal_basket
-        random (bool): Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        random (bool): Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket.
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         n_negative (int): Number of negative samples for testing and validation data.
@@ -684,8 +688,8 @@ def split_data(
     if n_items - valid_neg_max < n_negative or n_items - test_neg_max < n_negative:
         raise RuntimeError(
             "This dataset do not have sufficient negative items for sampling! \n"
-            + f"valid_neg_max: {n_items-valid_neg_max}, "
-            + f"test_neg_max: {n_items-test_neg_max},"
+            + f"valid_neg_max: {n_items - valid_neg_max}, "
+            + f"test_neg_max: {n_items - test_neg_max},"
             + f"n_negative: {n_negative}\nPlease directly use valid.npz and test.npz."
         )
     for i in range(n_test):
@@ -731,14 +735,13 @@ def generate_parameterized_path(
     test_rate=0, random=False, n_negative=100, by_user=False
 ):
     """Generate parameterized path.
-
-    Encode parameters into path to differentiate different split parameters
+    Encode parameters into path to differentiate different split parameters.
 
     Args:
-        by_user (bool): split by user
+        by_user (bool): split by user.
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
-        random (bool): Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        random (bool): Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket.
         n_negative (int): Number of negative samples for testing and validation data.
 
     Returns:

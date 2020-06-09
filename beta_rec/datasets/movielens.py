@@ -53,8 +53,8 @@ class Movielens_100k(DatasetBase):
         """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory.
+        convert it to a dataframe consisting of the user-item interactions
+        and save it in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "u.data")
         if not os.path.exists(file_name):
@@ -80,7 +80,7 @@ class Movielens_100k(DatasetBase):
     def make_fea_vec(self):
         """Make feature vectors for users and items.
         1. For items (movies), we use the last 19 fields as feature, which are the genres,
-        with 1 indicateing the movie is of that genre, and 0 indicateing it is not;
+        with 1 indicating the movie is of that genre, and 0 indicating it is not;
         movies can be in several genres at once.
 
         2. For users, we construct one_hot encoding for age, gender and occupation as their
@@ -91,7 +91,7 @@ class Movielens_100k(DatasetBase):
             item_feat (numpy.ndarray): The first column is the item id, rest column are feat vectors
 
         """
-        print(f"Making user and item feature vactors for dataset {self.dataset_name}")
+        print(f"Making user and item feature vectors for dataset {self.dataset_name}")
         data = pd.read_table(
             f"{self.dataset_dir}/raw/ml_100k/u.item",
             header=None,
@@ -108,7 +108,7 @@ class Movielens_100k(DatasetBase):
         )
         age_one_hot = np.eye(8).astype(np.int)
         # categorize age into 8 groups
-        age_maping = {
+        age_mapping = {
             1: age_one_hot[0],
             2: age_one_hot[1],
             3: age_one_hot[2],
@@ -118,20 +118,20 @@ class Movielens_100k(DatasetBase):
             7: age_one_hot[6],
             8: age_one_hot[7],
         }
-        data["age_one_hot"] = data[1].apply(lambda x: age_maping[int(x / 10) + 1])
+        data["age_one_hot"] = data[1].apply(lambda x: age_mapping[int(x / 10) + 1])
         col_2 = data[2].unique()
         col_2_one_hot = np.eye(len(col_2)).astype(np.int)
-        col_2_maping = {}
+        col_2_mapping = {}
         for idx, col in enumerate(col_2):
-            col_2_maping[col] = col_2_one_hot[idx]
-        data["col_2_one_hot"] = data[2].apply(lambda x: col_2_maping[x])
+            col_2_mapping[col] = col_2_one_hot[idx]
+        data["col_2_one_hot"] = data[2].apply(lambda x: col_2_mapping[x])
         col_3 = data[3].unique()
         col_3_one_hot = np.eye(len(col_3)).astype(np.int)
 
-        col_3_maping = {}
+        col_3_mapping = {}
         for idx, col in enumerate(col_3):
-            col_3_maping[col] = col_3_one_hot[idx]
-        data["col_3_one_hot"] = data[3].apply(lambda x: col_3_maping[x])
+            col_3_mapping[col] = col_3_one_hot[idx]
+        data["col_3_one_hot"] = data[3].apply(lambda x: col_3_mapping[x])
         A = []
         for i in data.index:
             A.append(
@@ -184,8 +184,8 @@ class Movielens_1m(DatasetBase):
         """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory.
+        convert it to a dataframe consisting of the user-item interactions
+        and save it in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.dat")
         if not os.path.exists(file_name):
@@ -221,8 +221,8 @@ class Movielens_25m(DatasetBase):
         """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory.
+        convert it to a dataframe consisting of the user-item interactions
+        and save it in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.csv")
         if not os.path.exists(file_name):
