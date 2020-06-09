@@ -746,9 +746,9 @@ def generate_parameterized_path(
     """
     path_str = ""
     if by_user:
-        path_str = "user_based_" + path_str
+        path_str = "user_based" + path_str
     else:
-        path_str = "full_" + path_str
+        path_str = "full" + path_str
     test_rate *= 100
     test_rate = round(test_rate)
     path_str += "_test_rate_" + str(test_rate) if test_rate != 0 else ""

@@ -389,8 +389,8 @@ class TestDataSplit(unittest.TestCase):
         path1 = generate_parameterized_path(
             test_rate=0, random=False, n_negative=100, by_user=True
         )
-        self.assertEqual(path1, "by_user_n_neg_100")
+        self.assertEqual(path1, "user_based_n_neg_100")
         path2 = generate_parameterized_path(
             test_rate=0.1, random=False, n_negative=100, by_user=False
         )
-        self.assertEqual(path2, "global_test_rate_10_n_neg_100")
+        self.assertEqual(path2, "full_test_rate_10_n_neg_100")
