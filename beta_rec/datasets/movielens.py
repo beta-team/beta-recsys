@@ -60,43 +60,22 @@ class Movielens_100k(DatasetBase):
         if not os.path.exists(file_name):
             self.download()
 
-        try:
-            _ = pd.read_table(
-                file_name,
-                header=None,
-                sep=r"\s+",
-                engine="python",
-                names=[
-                    DEFAULT_USER_COL,
-                    DEFAULT_ITEM_COL,
-                    DEFAULT_RATING_COL,
-                    DEFAULT_TIMESTAMP_COL,
-                ],
-            )
-        except FileNotFoundError:
-            print("origin file is broken, re-download the file")
-            raw_file_path = os.path.join(self.raw_path, f"{self.dataset_name}.zip")
-            os.remove(raw_file_path)
-            self.download()
-        finally:
-            data = pd.read_table(
-                file_name,
-                header=None,
-                sep=r"\s+",
-                engine="python",
-                names=[
-                    DEFAULT_USER_COL,
-                    DEFAULT_ITEM_COL,
-                    DEFAULT_RATING_COL,
-                    DEFAULT_TIMESTAMP_COL,
-                ],
-            )
-            self.save_dataframe_as_npz(
-                data,
-                os.path.join(
-                    self.processed_path, f"{self.dataset_name}_interaction.npz"
-                ),
-            )
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
 
     def make_fea_vec(self):
         """Make feature vectors for users and items.
@@ -212,43 +191,22 @@ class Movielens_1m(DatasetBase):
         if not os.path.exists(file_name):
             self.download()
 
-        try:
-            _ = pd.read_table(
-                file_name,
-                header=None,
-                sep="::",
-                engine="python",
-                names=[
-                    DEFAULT_USER_COL,
-                    DEFAULT_ITEM_COL,
-                    DEFAULT_RATING_COL,
-                    DEFAULT_TIMESTAMP_COL,
-                ],
-            )
-        except FileNotFoundError:
-            print("origin file is broken, re-download the file")
-            raw_file_path = os.path.join(self.raw_path, f"{self.dataset_name}.zip")
-            os.remove(raw_file_path)
-            self.download()
-        finally:
-            data = pd.read_table(
-                file_name,
-                header=None,
-                sep="::",
-                engine="python",
-                names=[
-                    DEFAULT_USER_COL,
-                    DEFAULT_ITEM_COL,
-                    DEFAULT_RATING_COL,
-                    DEFAULT_TIMESTAMP_COL,
-                ],
-            )
-            self.save_dataframe_as_npz(
-                data,
-                os.path.join(
-                    self.processed_path, f"{self.dataset_name}_interaction.npz"
-                ),
-            )
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
 
 
 class Movielens_25m(DatasetBase):
@@ -270,42 +228,19 @@ class Movielens_25m(DatasetBase):
         if not os.path.exists(file_name):
             self.download()
 
-        try:
-            _ = pd.read_table(
-                file_name,
-                header=None,
-                sep=",",
-                skiprows=[0],
-                engine="python",
-                names=[
-                    DEFAULT_USER_COL,
-                    DEFAULT_ITEM_COL,
-                    DEFAULT_RATING_COL,
-                    DEFAULT_TIMESTAMP_COL,
-                ],
-            )
-        except FileNotFoundError:
-            print("origin file is broken, re-download the file")
-            raw_file_path = os.path.join(self.raw_path, f"{self.dataset_name}.zip")
-            os.remove(raw_file_path)
-            self.download()
-        finally:
-            data = pd.read_table(
-                file_name,
-                header=None,
-                sep=",",
-                skiprows=[0],
-                engine="python",
-                names=[
-                    DEFAULT_USER_COL,
-                    DEFAULT_ITEM_COL,
-                    DEFAULT_RATING_COL,
-                    DEFAULT_TIMESTAMP_COL,
-                ],
-            )
-            self.save_dataframe_as_npz(
-                data,
-                os.path.join(
-                    self.processed_path, f"{self.dataset_name}_interaction.npz"
-                ),
-            )
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
