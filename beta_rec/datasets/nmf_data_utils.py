@@ -1,14 +1,17 @@
+import random
 from copy import deepcopy
-from torch.utils.data import DataLoader, Dataset
+
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-import random
+
 import pandas as pd
+
 import torch
+from torch.utils.data import DataLoader, Dataset
 
 
 class UserItemRatingDataset(Dataset):
