@@ -1,20 +1,26 @@
-import numpy as np
-import pandas as pd
 import math
 import os
-import sklearn
-from tqdm import tqdm
-from tabulate import tabulate
+
 from beta_rec.utils.aliasTable import AliasTable
 from beta_rec.utils.common_util import get_dataframe_from_npz, save_dataframe_as_npz
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
-    DEFAULT_ORDER_COL,
+    DEFAULT_FLAG_COL,
     DEFAULT_ITEM_COL,
+    DEFAULT_ORDER_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
-    DEFAULT_FLAG_COL,
+    DEFAULT_USER_COL,
 )
+
+import numpy as np
+
+import pandas as pd
+
+import sklearn
+
+from tabulate import tabulate
+
+from tqdm import tqdm
 
 
 def filter_by_count(df, group_col, filter_col, num):
