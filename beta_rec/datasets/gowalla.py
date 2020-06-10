@@ -1,13 +1,15 @@
 import os
 import time
-import pandas as pd
+
+from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
-    DEFAULT_TIMESTAMP_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
+
+import pandas as pd
 
 # Download URL
 GOWALLA_CHECKIN_URL = "https://snap.stanford.edu/data/loc-gowalla_totalCheckins.txt.gz"
