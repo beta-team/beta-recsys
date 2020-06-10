@@ -38,6 +38,7 @@ def load_item_fea_dic(config, fea_type):
     root_dir = config["root_dir"]
     print("load basic item featrue for dataset:", data_str, " type:", fea_type)
 
+    item_feature = {}
     if fea_type == "word2vec":
         item_feature_file = open(
             root_dir + "datasets/" + data_str + "/raw/item_feature_w2v.csv", "r"
@@ -56,10 +57,10 @@ def load_item_fea_dic(config, fea_type):
         )
     else:
         print(
-            "[ERROR]: CANNOT support other feature type, use 'random' user featrue instead!"
+            "[ERROR]: CANNOT support other feature type, use 'random' user feature instead!"
         )
+        return item_feature
 
-    item_feature = {}
     lines = item_feature_file.readlines()
     for index in range(1, len(lines)):
         key_value = lines[index].split(",")

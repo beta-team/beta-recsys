@@ -18,16 +18,16 @@ from beta_rec.utils.constants import (
 
 
 def filter_by_count(df, group_col, filter_col, num):
-    """Filter out the group_col column values that have a less than num count of filter_col
+    """Filter out the group_col column values that have a less than num count of filter_col.
 
     Args:
-        df: DataFrame of interactions
-        group_col: column to be filtered
+        df: DataFrame of interactions.
+        group_col: column to be filtered.
         filter_col: column with the filter condition.
         num: minimum count condition that should be filter out.
 
     Returns:
-
+        The filtered DataFrame.
     """
     ordercount = (
         df.groupby([group_col])[filter_col].nunique().rename("count").reset_index()
@@ -39,13 +39,13 @@ def filter_by_count(df, group_col, filter_col, num):
 
 
 def check_data_available(data):
-    """ A simple notice showing that data interaction have
+    """ A simple notice showing that data interaction have.
 
     Args:
         data (DataFrame): The filtered data interactions.
 
-    Returns:
-
+    Raises:
+        RuntimeError: An error occurred it there is no interaction.
     """
     if len(data.index) < 1:
         raise RuntimeError(
@@ -54,16 +54,15 @@ def check_data_available(data):
 
 
 def filter_user_item(df, min_u_c=5, min_i_c=5):
-    """filter data by the minimum purchase number of items and users
+    """filter data by the minimum purchase number of items and users.
 
     Args:
-        df: DataFrame of interactions
-        min_u_c: filter the items that were purchased by less than min_u_c users
-        min_i_c: filter the users that have purchased by less than min_i_c items
+        df: DataFrame of interactions.
+        min_u_c: filter the items that were purchased by less than min_u_c users.
+        min_i_c: filter the users that have purchased by less than min_i_c items.
 
     Returns:
-        The filtered DataFrame
-
+        The filtered DataFrame.
     """
     print(f"filter_user_item under condition min_u_c={min_u_c}, min_i_c={min_i_c}")
     print("-" * 80)
@@ -107,17 +106,16 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
 
 
 def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
-    """ filter data by the minimum purchase number of items and users
+    """ filter data by the minimum purchase number of items and users.
 
     Args:
-        df: DataFrame of interactions
-        min_u_c: filter the items that were purchased by less than min_u_c users
-        min_i_c: filter the users that have purchased by less than min_i_c items
-        min_o_c: filter the users that have purchased by less than min_o_c orders
+        df: DataFrame of interactions.
+        min_u_c: filter the items that were purchased by less than min_u_c users.
+        min_i_c: filter the users that have purchased by less than min_i_c items.
+        min_o_c: filter the users that have purchased by less than min_o_c orders.
 
     Returns:
-        The filtered DataFrame
-
+        The filtered DataFrame.
     """
     print(
         f"filter_user_item_order under condition min_u_c={min_u_c}, min_i_c={min_i_c}, min_o_c={min_o_c}"
@@ -167,14 +165,15 @@ def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
 
 
 def feed_neg_sample(data, negative_num, item_sampler):
-    """feed_neg_sample
+    """Feed negative samples.
 
     Args:
-        data: DataFrame. of interactions.
+        data: DataFrame of interactions.
         negative_num: int. number of negative items.
         item_sampler: polynomial sampler.
 
-    Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
+    Returns:
+        DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     unique_list = list(data[DEFAULT_RATING_COL].unique())
 
@@ -228,19 +227,17 @@ def feed_neg_sample(data, negative_num, item_sampler):
 
 
 def load_split_data(path, n_test=10):
-    """Load split DataFrame from a specified path
+    """Load split DataFrame from a specified path.
 
     Args:
-        path: split data path
+        path: split data path.
         n_test: number of testing and validation datasets.
                 If n_test==0, will load the original (no negative items) valid and test datasets.
 
-
     Returns:
-        train_data: DataFrame of training interaction,
-        valid_data_li: DataFrame list of validation interaction,
-        test_data_li: DataFrame list of testing interaction,
-
+        train_data: DataFrame of training interaction.
+        valid_data_li: DataFrame list of validation interaction.
+        test_data_li: DataFrame list of testing interaction.
     """
     train_file = os.path.join(path, "train.npz")
     train_data = get_dataframe_from_npz(train_file)
@@ -316,17 +313,14 @@ def save_split_data(
     parameterized_dir=None,
     suffix="train.npz",
 ):
-    """save DataFrame to compressed npz
+    """Save DataFrame to compressed npz.
 
     Args:
-        parameterized_dir: data_split parameter string
-        suffix: suffix of the data to be saved
+        parameterized_dir: data_split parameter string.
+        suffix: suffix of the data to be saved.
         data (DataFrame): Interactions.
-        base_dir: directory to save
-        data_split: str. sub folder name to save the data
-
-    Returns:
-        None
+        base_dir: directory to save.
+        data_split: str. sub folder name to save the data.
     """
 
     data_file = os.path.join(base_dir, data_split)
@@ -344,13 +338,13 @@ def save_split_data(
 
 
 def random_split(data, test_rate=0.1, by_user=False):
-    """random_basket_split
+    """random_basket_split.
 
     Args:
         data: DataFrame. of interactions.
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
 
     Returns:
@@ -392,7 +386,7 @@ def random_split(data, test_rate=0.1, by_user=False):
 
 
 def random_basket_split(data, test_rate=0.1, by_user=False):
-    """random_basket_split
+    """random_basket_split.
 
     Args:
         data: DataFrame. of interactions.
@@ -445,11 +439,11 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
 
 
 def leave_one_out(data, random=False):
-    """leave_one_out split
+    """leave_one_out split.
 
     Args:
         data: DataFrame. of interactions.
-        random: bool.  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        random: bool.  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket.
 
     Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
@@ -470,13 +464,14 @@ def leave_one_out(data, random=False):
 
 
 def leave_one_basket(data, random=False):
-    """leave_one_basket split
+    """leave_one_basket split.
 
     Args:
         data: DataFrame. of interactions.
         random: bool.  Whether randomly leave one item/basket as testing. only for leave_one_out and leave_one_basket
 
-    Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
+    Returns:
+        DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
     print("leave_one_basket")
     data[DEFAULT_FLAG_COL] = "train"
@@ -496,13 +491,13 @@ def leave_one_basket(data, random=False):
 
 
 def temporal_split(data, test_rate=0.1, by_user=False):
-    """temporal_split
+    """temporal_split.
 
     Args:
         data: DataFrame. of interactions.
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
 
     Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
@@ -543,13 +538,13 @@ def temporal_split(data, test_rate=0.1, by_user=False):
 
 
 def temporal_basket_split(data, test_rate=0.1, by_user=False):
-    """temporal_basket_split
+    """temporal_basket_split.
 
     Args:
-        data: DataFrame. of interactions. must have a col DEFAULT_ORDER_COL
+        data: DataFrame. of interactions. must have a col DEFAULT_ORDER_COL.
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         by_user: bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
 
     Returns: DataFrame that have already by labeled by a col with "train", "test" or "valid".
@@ -602,7 +597,7 @@ def split_data(
     by_user=False,
     n_test=10,
 ):
-    """Data split methods
+    """Data split methods.
 
     Args:
         data: DataFrame. of interactions.
@@ -613,7 +608,7 @@ def split_data(
                         - leave_one_basket
                         - temporal
                         - temporal_basket
-        random: bool. Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        random: bool. Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket.
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
         n_negative: Number of negative samples for testing and validation data.
         save_dir: str. Default None. If specified, the split data will be saved to the dir.
@@ -624,7 +619,6 @@ def split_data(
 
     Returns:
         DataFrame. The split data. Note that the returned data will not have negative samples.
-
     """
     print(f"Splitting data by {split_type} ...")
     if split_type == "random":
@@ -718,7 +712,7 @@ def generate_parameterized_path(
     Args:
         by_user: split by user
         test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
-        random: bool. Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket
+        random: bool. Whether random leave one item/basket as testing. only for leave_one_out and leave_one_basket.
         n_negative: Number of negative samples for testing and validation data.
 
     Returns:

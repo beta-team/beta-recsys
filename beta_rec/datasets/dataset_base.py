@@ -163,7 +163,15 @@ class DatasetBase(object):
             self.processed_path, f"{self.dataset_name}_interaction.npz"
         )
         if not os.path.exists(os.path.join(processed_file_path)):
-            self.preprocess()
+            try:
+                self.preprocess()
+            except FileNotFoundError:
+                print("origin file is broken, re-download it")
+                raw_file_path = os.path.join(self.raw_path, f"{self.dataset_name}.zip")
+                os.remove(raw_file_path)
+                self.download()
+            finally:
+                self.preprocess()
         data = get_dataframe_from_npz(processed_file_path)
         print("-" * 80)
         print("raw interaction statistics")

@@ -2,9 +2,7 @@ import sys
 
 sys.path.append("../")
 import os
-import torch
 import argparse
-import numpy as np
 from tqdm import tqdm
 from beta_rec.train_engine import TrainEngine
 from beta_rec.models.mf import MFEngine
@@ -13,25 +11,13 @@ from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
 
 
-def sparse_mx_to_torch_sparse_tensor(sparse_mx):
-    """Convert a scipy sparse matrix to a torch sparse tensor.
-    """
-    sparse_mx = sparse_mx.tocoo().astype(np.float32)
-    indices = torch.from_numpy(
-        np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64)
-    )
-    values = torch.from_numpy(sparse_mx.data)
-    shape = torch.Size(sparse_mx.shape)
-    return torch.sparse.FloatTensor(indices, values, shape)
-
-
 def parse_args():
     """ Parse args from command line
 
         Returns:
             args object.
     """
-    parser = argparse.ArgumentParser(description="Run NCF..")
+    parser = argparse.ArgumentParser(description="Run MF..")
     parser.add_argument(
         "--config_file",
         nargs="?",
