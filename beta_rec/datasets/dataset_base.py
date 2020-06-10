@@ -1,25 +1,31 @@
-import os
 import gzip
+import os
 import shutil
-import pandas as pd
-from tabulate import tabulate
-from py7zr import unpack_7zarchive
-from beta_rec.utils.constants import DEFAULT_TIMESTAMP_COL, DEFAULT_ORDER_COL
+
+from beta_rec.datasets.data_split import (
+    filter_user_item,
+    filter_user_item_order,
+    generate_parameterized_path,
+    load_split_data,
+    split_data,
+)
 from beta_rec.utils.common_util import (
     get_dataframe_from_npz,
     save_dataframe_as_npz,
     timeit,
     un_zip,
 )
+from beta_rec.utils.constants import DEFAULT_ORDER_COL, DEFAULT_TIMESTAMP_COL
 from beta_rec.utils.download import download_file, get_format
 from beta_rec.utils.onedrive import OneDrive
-from beta_rec.datasets.data_split import (
-    split_data,
-    generate_parameterized_path,
-    load_split_data,
-    filter_user_item_order,
-    filter_user_item,
-)
+
+
+import pandas as pd
+
+from py7zr import unpack_7zarchive
+
+from tabulate import tabulate
+
 
 default_root_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)

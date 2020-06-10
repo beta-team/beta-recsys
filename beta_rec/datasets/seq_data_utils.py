@@ -1,15 +1,16 @@
+from beta_rec.datasets.dunnhumby import Dunnhumby
+from beta_rec.datasets.epinions import Epinions
+from beta_rec.datasets.instacart import Instacart, Instacart_25
+from beta_rec.datasets.last_fm import LastFM
+from beta_rec.datasets.movielens import Movielens_100k, Movielens_1m, Movielens_25m
+from beta_rec.datasets.tafeng import Tafeng
+
 import numpy as np
+
 import pandas as pd
 
 import torch
 from torch.utils.data import Dataset
-
-from beta_rec.datasets.movielens import Movielens_100k, Movielens_1m, Movielens_25m
-from beta_rec.datasets.dunnhumby import Dunnhumby
-from beta_rec.datasets.tafeng import Tafeng
-from beta_rec.datasets.last_fm import LastFM
-from beta_rec.datasets.epinions import Epinions
-from beta_rec.datasets.instacart import Instacart, Instacart_25
 
 
 def load_dataset(config):

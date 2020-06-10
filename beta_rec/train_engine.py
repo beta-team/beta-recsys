@@ -1,23 +1,27 @@
-import sys
-import os
 import json
-import GPUtil
-import string
+import os
 import random
-import torch
-from tqdm import tqdm
+import string
+import sys
 from datetime import datetime
+
+import GPUtil
+
 from beta_rec.eval_engine import EvalEngine
-from beta_rec.utils import logger, data_util
-from beta_rec.utils.monitor import Monitor
-from beta_rec.utils.constants import MAX_N_UPDATE
+from beta_rec.utils import data_util, logger
 from beta_rec.utils.common_util import (
-    set_seed,
+    ensureDir,
     initialize_folders,
     print_dict_as_table,
-    ensureDir,
+    set_seed,
 )
+from beta_rec.utils.constants import MAX_N_UPDATE
+from beta_rec.utils.monitor import Monitor
+
+import torch
 from torch.utils.data import DataLoader
+
+from tqdm import tqdm
 
 
 def prepare_env(config):

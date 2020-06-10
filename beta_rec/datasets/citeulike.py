@@ -1,12 +1,14 @@
-import os
 import csv
-import pandas as pd
+import os
+
+from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
+
+import pandas as pd
 
 # Download URL.
 CULA_URL = "https://github.com/js05212/citeulike-a"

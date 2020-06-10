@@ -1,25 +1,31 @@
 import os
-import pandas as pd
-import torch
-import numpy as np
-from tqdm import tqdm
-from threading import Thread
-from threading import Lock
+import socket
+from threading import Lock, Thread
+
 import beta_rec.utils.evaluation as eval_model
+from beta_rec.utils.common_util import print_dict_as_table, save_to_csv, timeit
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_PREDICTION_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.utils.common_util import print_dict_as_table, save_to_csv, timeit
+from beta_rec.utils.seq_evaluation import mrr, precision, recall
+
+import numpy as np
+
+import pandas as pd
+
+from prometheus_client import Gauge, start_http_server
+
 from tensorboardX import SummaryWriter
-import socket
-from prometheus_client import start_http_server, Gauge
+
+import torch
+
+from tqdm import tqdm
+
 
 lock_train_eval = Lock()
 lock_test_eval = Lock()
-
-from beta_rec.utils.seq_evaluation import precision, recall, mrr
 
 
 def detect_port(port, ip="127.0.0.1"):
