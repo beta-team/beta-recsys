@@ -195,6 +195,8 @@ class EvalEngine(object):
         """
         self.config = config  # model configuration, should be a dic
         self.metrics = config["metrics"]
+        self.batch_eval = config["batch_eval"] if "batch_eval" in config else False
+        self.batch_size = config["batch_size"]
         self.validate_metric = config["validate_metric"]
         self.writer = SummaryWriter(log_dir=config["run_dir"])  # tensorboard writer
         self.writer.add_text(
@@ -222,12 +224,13 @@ class EvalEngine(object):
         self.n_no_update = 0
         self.best_valid_performance = 0
 
-    def predict(self, data_df, model):
+    def predict(self, data_df, model, batch_eval=False):
         """ Make prediction for a trained model
 
         Args:
             data_df (DataFrame): A dataset to be evaluated
             model: A trained model
+            batch_eval (Boolean): A signal to indicate if the model is evaluated in batches
 
         Returns:
             array: predicted scores
@@ -235,13 +238,30 @@ class EvalEngine(object):
         """
         user_ids = data_df[DEFAULT_USER_COL].to_numpy()
         item_ids = data_df[DEFAULT_ITEM_COL].to_numpy()
-        predictions = np.array(
-            model.predict(user_ids, item_ids)
-            .flatten()
-            .to(torch.device("cpu"))
-            .detach()
-            .numpy()
-        )
+        if batch_eval:
+            n_batch = len(data_df) // self.batch_size + 1
+            predictions = np.array([])
+            for idx in range(n_batch):
+                start_idx = idx * self.batch_size
+                end_idx = min((idx + 1) * self.batch_size, len(data_df))
+                sub_user_ids = user_ids[start_idx: end_idx]
+                sub_item_ids = item_ids[start_idx: end_idx]
+                sub_predictions = np.array(
+                    model.predict(sub_user_ids, sub_item_ids)
+                    .flatten()
+                    .to(torch.device("cpu"))
+                    .detach()
+                    .numpy()
+                )
+                predictions = np.append(predictions, sub_predictions)
+        else:
+            predictions = np.array(
+                model.predict(user_ids, item_ids)
+                .flatten()
+                .to(torch.device("cpu"))
+                .detach()
+                .numpy()
+            )
         return predictions
 
     def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0, k=10):
@@ -258,8 +278,8 @@ class EvalEngine(object):
             None
 
         """
-        valid_pred = self.predict(valid_data_df, model)
-        test_pred = self.predict(test_data_df, model)
+        valid_pred = self.predict(valid_data_df, model, self.batch_eval)
+        test_pred = self.predict(test_data_df, model, self.batch_eval)
         worker = Thread(
             target=train_eval_worker,
             args=(
@@ -291,7 +311,7 @@ class EvalEngine(object):
         if type(test_df_list) is not list:  # compatible for testing a single test set
             test_df_list = [test_df_list]
         for i, test_data_df in enumerate(test_df_list):
-            test_pred = self.predict(test_data_df, model)
+            test_pred = self.predict(test_data_df, model, self.batch_eval)
             worker = Thread(
                 target=test_eval_worker,
                 args=(self, test_data_df, test_pred, k),
