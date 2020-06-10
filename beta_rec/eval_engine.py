@@ -244,8 +244,8 @@ class EvalEngine(object):
             for idx in range(n_batch):
                 start_idx = idx * self.batch_size
                 end_idx = min((idx + 1) * self.batch_size, len(data_df))
-                sub_user_ids = user_ids[start_idx: end_idx]
-                sub_item_ids = item_ids[start_idx: end_idx]
+                sub_user_ids = user_ids[start_idx:end_idx]
+                sub_item_ids = item_ids[start_idx:end_idx]
                 sub_predictions = np.array(
                     model.predict(sub_user_ids, sub_item_ids)
                     .flatten()
