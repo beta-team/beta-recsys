@@ -36,6 +36,17 @@ shutil.register_unpack_format("7zip", [".7z"], unpack_7zarchive)
 
 
 class DatasetBase(object):
+    """Base class for processing raw dataset into interactions, making and loading data splits
+
+            This is an beta dataset which can derive to other dataset.
+            Several directory that store the dataset file would be created in the initial process.
+
+            Args:
+                dataset_name: the dataset name that a folder can be created with.
+                url: the url that can be downloaded the dataset file.
+                manual_download_url: the url that users need to download manually
+    """
+
     def __init__(
         self,
         dataset_name,
@@ -50,16 +61,6 @@ class DatasetBase(object):
         processed_temporal_basket_split_url="",
         tips=None,
     ):
-        """Dataset base that any other datasets need to inherit from
-
-        This is an beta dataset which can derive to other dataset.
-        Several directory that store the dataset file would be created in the initial process.
-
-        Args:
-            dataset_name: the dataset name that a folder can be created with.
-            url: the url that can be downloaded the dataset file.
-            manual_download_url: the url that users need to download manually
-        """
         self.url = url
         self.manual_download_url = manual_download_url if manual_download_url else url
 
@@ -829,6 +830,11 @@ class DatasetBase(object):
         )
         split_paras["by_user"] = config["by_user"] if "by_user" in config else False
         split_paras["n_test"] = config["n_test"] if "n_test" in config else 10
+
+        if split_paras["n_negative"] < 0 and split_paras["n_test"] > 1:
+            # n_negative < 0, validate and testing sets of splits will contain all the negative items.
+            # There will be only one validata and one testing sets.
+            split_paras["n_test"] = 1
 
         data_split_mapping = {
             "leave_one_out": self.load_leave_one_out,
