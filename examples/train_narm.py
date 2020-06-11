@@ -1,25 +1,26 @@
+import argparse
+import os
 import sys
 
 sys.path.append("../")
-import os
-import argparse
 
-from tqdm import tqdm
-
-from beta_rec.train_engine import TrainEngine
+from beta_rec.datasets.seq_data_utils import (
+    SeqDataset,
+    collate_fn,
+    create_seq_db,
+    dataset_to_seq_target_format,
+    load_dataset,
+    reindex_items,
+)
+from beta_rec.eval_engine import SeqEvalEngine
 from beta_rec.models.narm import NARMEngine
-from beta_rec.utils.monitor import Monitor
+from beta_rec.train_engine import TrainEngine
 from beta_rec.utils.common_util import update_args
+from beta_rec.utils.monitor import Monitor
 
-from beta_rec.datasets.seq_data_utils import load_dataset
-from beta_rec.datasets.seq_data_utils import reindex_items
-from beta_rec.datasets.seq_data_utils import create_seq_db
-from beta_rec.datasets.seq_data_utils import dataset_to_seq_target_format
-from beta_rec.datasets.seq_data_utils import SeqDataset
-from beta_rec.datasets.seq_data_utils import collate_fn
 from torch.utils.data import DataLoader
 
-from beta_rec.eval_engine import SeqEvalEngine
+from tqdm import tqdm
 
 
 def parse_args():

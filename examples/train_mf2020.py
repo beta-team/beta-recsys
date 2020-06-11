@@ -1,14 +1,16 @@
+import argparse
+import os
 import sys
 
 sys.path.append("../")
-import os
-import argparse
-from tqdm import tqdm
-from beta_rec.train_engine import TrainEngine
-from beta_rec.models.mf import MFEngine
+
 from beta_rec.datasets.nmf_data_utils import SampleGenerator
+from beta_rec.models.mf import MFEngine
+from beta_rec.train_engine import TrainEngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
+
+from tqdm import tqdm
 
 
 def parse_args():

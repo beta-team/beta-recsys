@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+
 from beta_rec.utils.aliasTable import AliasTable
 
 

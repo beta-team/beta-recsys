@@ -1,16 +1,18 @@
+import argparse
+import math
+import os
 import sys
 
 sys.path.append("../")
 
-import argparse
-import os
-import math
-from ray import tune
-from beta_rec.train_engine import TrainEngine
 from beta_rec.models.vbcar import VBCAREngine
-from beta_rec.utils.monitor import Monitor
+from beta_rec.train_engine import TrainEngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
+from beta_rec.utils.monitor import Monitor
+
+from ray import tune
+
 from tqdm import tqdm
 
 
