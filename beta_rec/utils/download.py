@@ -1,7 +1,10 @@
-import requests
 import os
-from tqdm import tqdm
+
 from beta_rec.utils.onedrive import OneDrive
+
+import requests
+
+from tqdm import tqdm
 
 
 def download_file(url, store_file_path):

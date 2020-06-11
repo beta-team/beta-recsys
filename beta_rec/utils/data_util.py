@@ -1,24 +1,30 @@
 import os
-from time import time
-import numpy as np
-from collections import defaultdict
-import pandas as pd
 import random
-from tabulate import tabulate
-import scipy.sparse as sp
-from beta_rec.utils.common_util import get_random_rep, ensureDir
-from beta_rec.utils.aliasTable import AliasTable
-from beta_rec.utils.triple_sampler import Sampler
+from collections import defaultdict
+from time import time
+
 from beta_rec.datasets.data_load import (
-    load_split_dataset,
     load_item_fea_dic,
+    load_split_dataset,
     load_user_item_feature,
 )
+from beta_rec.utils.aliasTable import AliasTable
+from beta_rec.utils.common_util import ensureDir, get_random_rep
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
+    DEFAULT_USER_COL,
 )
+from beta_rec.utils.triple_sampler import Sampler
+
+import numpy as np
+
+import pandas as pd
+
+import scipy.sparse as sp
+
+from tabulate import tabulate
+
 
 pd.options.mode.chained_assignment = None  # default='warn'
 

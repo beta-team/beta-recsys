@@ -1,6 +1,7 @@
-import torch
-from beta_rec.utils.common_util import timeit, print_dict_as_table
 from beta_rec.models.torch_engine import Engine
+from beta_rec.utils.common_util import print_dict_as_table, timeit
+
+import torch
 import torch.nn as nn
 from torch.nn import Parameter
 

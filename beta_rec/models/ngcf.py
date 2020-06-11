@@ -1,8 +1,9 @@
+from beta_rec.models.torch_engine import Engine
+
 import torch
 import torch.nn as nn
-import torch.sparse as sparse
 import torch.nn.functional as F
-from beta_rec.models.torch_engine import Engine
+import torch.sparse as sparse
 
 
 class NGCF(torch.nn.Module):

@@ -1,11 +1,14 @@
+from beta_rec.models.VariableLengthMemoryLayer import VariableLengthMemoryLayer
+from beta_rec.models.pairwiseGMF import truncated_normal_
+from beta_rec.models.torch_engine import Engine
+
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
+
 from tqdm import tqdm
-from beta_rec.models.pairwiseGMF import truncated_normal_
-from beta_rec.models.torch_engine import Engine
-from beta_rec.models.VariableLengthMemoryLayer import VariableLengthMemoryLayer
 
 
 class CollaborativeMemoryNetwork(nn.Module):
