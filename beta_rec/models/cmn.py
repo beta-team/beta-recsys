@@ -1,5 +1,5 @@
 from beta_rec.models.VariableLengthMemoryLayer import VariableLengthMemoryLayer
-from beta_rec.models.pairwiseGMF import truncated_normal_
+from beta_rec.models.pairwise_gmf import truncated_normal_
 from beta_rec.models.torch_engine import Engine
 
 import numpy as np

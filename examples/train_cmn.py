@@ -6,7 +6,7 @@ import sys
 sys.path.append("../")
 
 from beta_rec.models.cmn import cmnEngine
-from beta_rec.models.pairwiseGMF import PairwiseGMFEngine
+from beta_rec.models.pairwise_gmf import PairwiseGMFEngine
 from beta_rec.train_engine import TrainEngine
 from beta_rec.utils.common_util import ensureDir, update_args
 from beta_rec.utils.constants import MAX_N_UPDATE

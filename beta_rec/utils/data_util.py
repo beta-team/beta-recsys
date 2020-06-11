@@ -8,7 +8,7 @@ from beta_rec.datasets.data_load import (
     load_split_dataset,
     load_user_item_feature,
 )
-from beta_rec.utils.aliasTable import AliasTable
+from beta_rec.utils.alias_table import AliasTable
 from beta_rec.utils.common_util import ensureDir, get_random_rep
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,

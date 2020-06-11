@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-from beta_rec.utils.aliasTable import AliasTable
+from beta_rec.utils.alias_table import AliasTable
 
 
 class TestAliasTable(unittest.TestCase):

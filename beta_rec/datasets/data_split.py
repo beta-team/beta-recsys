@@ -1,7 +1,7 @@
 import math
 import os
 
-from beta_rec.utils.aliasTable import AliasTable
+from beta_rec.utils.alias_table import AliasTable
 from beta_rec.utils.common_util import get_dataframe_from_npz, save_dataframe_as_npz
 from beta_rec.utils.constants import (
     DEFAULT_FLAG_COL,
