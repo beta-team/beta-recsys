@@ -1,19 +1,24 @@
 import os
 import random
 import time
-from tabulate import tabulate
-import numpy as np
-import pandas as pd
-import torch
 import zipfile
 from functools import wraps
+
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
     DEFAULT_ORDER_COL,
+    DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
+
+import numpy as np
+
+import pandas as pd
+
+from tabulate import tabulate
+
+import torch
 
 
 def ensureDir(dir_path):
