@@ -3,13 +3,9 @@ import os
 from base64 import b64encode
 
 import aiofiles
-
 import aiohttp
-
 import nest_asyncio
-
 from requests import Session
-
 
 nest_asyncio.apply()
 

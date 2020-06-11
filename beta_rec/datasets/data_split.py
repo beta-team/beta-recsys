@@ -1,6 +1,12 @@
 import math
 import os
 
+import numpy as np
+import pandas as pd
+import sklearn
+from tabulate import tabulate
+from tqdm import tqdm
+
 from beta_rec.utils.alias_table import AliasTable
 from beta_rec.utils.common_util import get_dataframe_from_npz, save_dataframe_as_npz
 from beta_rec.utils.constants import (
@@ -11,16 +17,6 @@ from beta_rec.utils.constants import (
     DEFAULT_TIMESTAMP_COL,
     DEFAULT_USER_COL,
 )
-
-import numpy as np
-
-import pandas as pd
-
-import sklearn
-
-from tabulate import tabulate
-
-from tqdm import tqdm
 
 
 def filter_by_count(df, group_col, filter_col, num):
@@ -272,9 +268,9 @@ def load_split_data(path, n_test=10):
         )
     )
     if not n_test:
-        valid_df = get_dataframe_from_npz(os.path.join(path, f"valid.npz"))
-        test_df = get_dataframe_from_npz(os.path.join(path, f"test.npz"))
-        print(f"valid_data statistics")
+        valid_df = get_dataframe_from_npz(os.path.join(path, "valid.npz"))
+        test_df = get_dataframe_from_npz(os.path.join(path, "test.npz"))
+        print("valid_data statistics")
         print(
             tabulate(
                 valid_df.agg(["count", "nunique"]),
@@ -283,7 +279,7 @@ def load_split_data(path, n_test=10):
                 disable_numparse=True,
             )
         )
-        print(f"test_data statistics")
+        print("test_data statistics")
         print(
             tabulate(
                 test_df.agg(["count", "nunique"]),

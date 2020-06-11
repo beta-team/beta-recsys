@@ -5,15 +5,14 @@ import sys
 
 sys.path.append("../")
 
+import numpy as np
+import torch
+
+from beta_rec.cores.train_engine import TrainEngine
 from beta_rec.models.ngcf import NGCFEngine
-from beta_rec.train_engine import TrainEngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
-
-import numpy as np
-
-import torch
 
 
 def parse_args():

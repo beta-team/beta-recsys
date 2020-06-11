@@ -1,8 +1,8 @@
-from beta_rec.models.torch_engine import Engine
-from beta_rec.utils.common_util import timeit
-
 import torch
 import torch.nn as nn
+
+from beta_rec.cores.torch_engine import Engine
+from beta_rec.utils.common_util import timeit
 
 
 class MLP(torch.nn.Module):

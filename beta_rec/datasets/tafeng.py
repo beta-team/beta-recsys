@@ -1,5 +1,8 @@
 import os
 
+import numpy as np
+import pandas as pd
+
 from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
     DEFAULT_FLAG_COL,
@@ -9,11 +12,6 @@ from beta_rec.utils.constants import (
     DEFAULT_TIMESTAMP_COL,
     DEFAULT_USER_COL,
 )
-
-import numpy as np
-
-import pandas as pd
-
 
 # download_url
 TAFENG_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugjc2k3eCAwKavccB?e=Qn5ppw"

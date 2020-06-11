@@ -1,19 +1,20 @@
 import argparse
 import os
 import sys
-import time
 
 sys.path.append("../")
 
+import time
+
+from tqdm import tqdm
+
+from beta_rec.cores.train_engine import TrainEngine
 from beta_rec.datasets.nmf_data_utils import SampleGenerator
 from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine
-from beta_rec.train_engine import TrainEngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
-
-from tqdm import tqdm
 
 
 def parse_args():
@@ -165,7 +166,7 @@ class NCF_train(TrainEngine):
         )
         self._train(self.engine, train_loader, self.gmf_save_dir)
         while self.eval_engine.n_worker:
-            print(f"Wait 15s for the complete of eval_engine.n_worker")
+            print("Wait 15s for the complete of eval_engine.n_worker")
             time.sleep(15)  # wait the
         self.config["run_time"] = self.monitor.stop()
         self.eval_engine.test_eval(self.dataset.test, self.engine.model)
@@ -190,7 +191,7 @@ class NCF_train(TrainEngine):
         self._train(self.engine, train_loader, self.mlp_save_dir)
 
         while self.eval_engine.n_worker:
-            print(f"Wait 15s for the complete of eval_engine.n_worker")
+            print("Wait 15s for the complete of eval_engine.n_worker")
             time.sleep(15)  # wait the
         self.config["run_time"] = self.monitor.stop()
         self.eval_engine.test_eval(self.dataset.test, self.engine.model)

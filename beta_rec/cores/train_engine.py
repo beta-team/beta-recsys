@@ -6,8 +6,11 @@ import sys
 from datetime import datetime
 
 import GPUtil
+import torch
+from torch.utils.data import DataLoader
+from tqdm import tqdm
 
-from beta_rec.eval_engine import EvalEngine
+from beta_rec.cores.eval_engine import EvalEngine
 from beta_rec.utils import data_util, logger
 from beta_rec.utils.common_util import (
     ensureDir,
@@ -17,11 +20,6 @@ from beta_rec.utils.common_util import (
 )
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
-
-import torch
-from torch.utils.data import DataLoader
-
-from tqdm import tqdm
 
 
 def prepare_env(config):

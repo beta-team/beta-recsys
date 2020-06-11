@@ -2,6 +2,10 @@ import gzip
 import os
 import shutil
 
+import pandas as pd
+from py7zr import unpack_7zarchive
+from tabulate import tabulate
+
 from beta_rec.datasets.data_split import (
     filter_user_item,
     filter_user_item_order,
@@ -18,14 +22,6 @@ from beta_rec.utils.common_util import (
 from beta_rec.utils.constants import DEFAULT_ORDER_COL, DEFAULT_TIMESTAMP_COL
 from beta_rec.utils.download import download_file, get_format
 from beta_rec.utils.onedrive import OneDrive
-
-
-import pandas as pd
-
-from py7zr import unpack_7zarchive
-
-from tabulate import tabulate
-
 
 default_root_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
@@ -159,7 +155,7 @@ class DatasetBase(object):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory.
         """
-        raise RuntimeError(f"please implement this function!")
+        raise RuntimeError("please implement this function!")
 
     def load_interaction(self):
         """Load the user-item interaction

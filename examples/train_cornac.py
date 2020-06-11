@@ -1,20 +1,17 @@
 import argparse
 import sys
-from datetime import datetime
 
 sys.path.append("../")
+from datetime import datetime
+
+import cornac
+import numpy as np
+import pandas as pd
 
 import beta_rec.utils.constants as Constants
 import beta_rec.utils.evaluation as eval_model
 from beta_rec.utils import data_util, logger
 from beta_rec.utils.common_util import save_to_csv
-
-
-import cornac
-
-import numpy as np
-
-import pandas as pd
 
 
 base_string = "abcdefghijklmnopqrstuvwxyz"
