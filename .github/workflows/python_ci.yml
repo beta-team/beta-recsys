@@ -75,7 +75,7 @@ jobs:
         flake8 . --count --ignore=E402,W503,W504,E203,C901 --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        python -m pytest --cov-report=xml
+        python -m pytest --cov-report=xml --cov=./
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml # optional
