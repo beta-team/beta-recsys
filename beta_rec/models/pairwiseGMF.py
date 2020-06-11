@@ -1,8 +1,11 @@
+from beta_rec.models.torch_engine import Engine
+
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
-from beta_rec.models.torch_engine import Engine
+
 from tqdm import tqdm
 
 
