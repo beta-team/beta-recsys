@@ -1,14 +1,18 @@
 import os
 import sys
-import numpy as np
-import pandas as pd
-from tqdm import tqdm
+
 from beta_rec.utils.constants import (
-    DEFAULT_ORDER_COL,
-    DEFAULT_USER_COL,
-    DEFAULT_TIMESTAMP_COL,
     DEFAULT_ITEM_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
+
+import numpy as np
+
+import pandas as pd
+
+from tqdm import tqdm
 
 
 class Sampler(object):
