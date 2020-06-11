@@ -12,7 +12,11 @@ class TestMovielens(unittest.TestCase):
         ml_100k.preprocess()
         self.assertTrue(os.path.exists(os.getcwd() + "/datasets/ml_100k/raw/ml_100k"))
         self.assertTrue(os.path.exists(os.getcwd() + "/datasets/ml_100k/raw/ml_100k"))
-        self.assertTrue(os.path.exists(os.getcwd() + "/datasets/ml_100k/processed/ml_100k_interaction.npz"))
+        self.assertTrue(
+            os.path.exists(
+                os.getcwd() + "/datasets/ml_100k/processed/ml_100k_interaction.npz"
+            )
+        )
 
         interactions = ml_100k.load_interaction()
         self.assertEqual(100000, interactions.shape[0])
