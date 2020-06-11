@@ -1,29 +1,34 @@
-import numpy as np
-import pandas as pd
-import pytest
-from mock import Mock
-from sklearn.preprocessing import minmax_scale
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
     DEFAULT_PREDICTION_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_USER_COL,
 )
 from beta_rec.utils.evaluation import (
+    auc,
     check_column_dtypes,
-    merge_rating_true_pred,
-    merge_ranking_true_pred,
-    rmse,
-    mae,
-    rsquared,
     exp_var,
+    logloss,
+    mae,
+    map_at_k,
+    merge_ranking_true_pred,
+    merge_rating_true_pred,
+    ndcg_at_k,
     precision_at_k,
     recall_at_k,
-    ndcg_at_k,
-    map_at_k,
-    auc,
-    logloss,
+    rmse,
+    rsquared,
 )
+
+from mock import Mock
+
+import numpy as np
+
+import pandas as pd
+
+import pytest
+
+from sklearn.preprocessing import minmax_scale
 
 TOL = 0.0001
 

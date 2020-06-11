@@ -1,8 +1,9 @@
-import sys
 import os
+import sys
+import unittest
 
 sys.path.append("../")
-import unittest
+
 from beta_rec.datasets.movielens import Movielens_100k
 
 
