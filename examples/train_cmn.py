@@ -1,17 +1,18 @@
+import argparse
+import json
+import os
 import sys
 
 sys.path.append("../")
 
-import os
-import json
-import numpy as np
-import argparse
-from beta_rec.train_engine import TrainEngine
-from beta_rec.models.pairwiseGMF import PairwiseGMFEngine
 from beta_rec.models.cmn import cmnEngine
-from beta_rec.utils.common_util import update_args, ensureDir
+from beta_rec.models.pairwiseGMF import PairwiseGMFEngine
+from beta_rec.train_engine import TrainEngine
+from beta_rec.utils.common_util import ensureDir, update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
+
+import numpy as np
 
 
 def parse_args():
