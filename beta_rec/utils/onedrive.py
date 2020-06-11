@@ -1,10 +1,15 @@
-from requests import Session
-from base64 import b64encode
-import aiofiles
 import asyncio
-import aiohttp
 import os
+from base64 import b64encode
+
+import aiofiles
+
+import aiohttp
+
 import nest_asyncio
+
+from requests import Session
+
 
 nest_asyncio.apply()
 
