@@ -1,7 +1,9 @@
 import os
-import requests
 
 from beta_rec.utils.onedrive import OneDrive
+
+import requests
+
 from tqdm import tqdm
 
 
