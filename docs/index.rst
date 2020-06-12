@@ -5,7 +5,11 @@
 
 Welcome to Beta-recsys's documentation!
 =======================================
+.. image:: https://codecov.io/gh/leungyukshing/beta-recsys/branch/develop/graph/badge.svg
+  :target: https://codecov.io/gh/leungyukshing/beta-recsys
 
+.. image:: https://github.com/beta-team/beta-recsys/workflows/CI/badge.svg?branch=develop
+  :target: https://github.com/beta-team/beta-recsys/actions
 
 .. toctree::
    :maxdepth: 1
