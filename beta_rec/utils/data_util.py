@@ -8,7 +8,7 @@ from beta_rec.datasets.data_load import (
     load_split_dataset,
     load_user_item_feature,
 )
-from beta_rec.utils.aliasTable import AliasTable
+from beta_rec.utils.alias_table import AliasTable
 from beta_rec.utils.common_util import ensureDir, get_random_rep
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
@@ -323,7 +323,7 @@ class Dataset(object):
             self.n_users = train[DEFAULT_USER_COL].nunique()
             self.n_items = train[DEFAULT_ITEM_COL].nunique()
             users_ser, items_ser = intersect_train_test(train, test)
-            print(f"After intersection, train statistics")
+            print("After intersection, train statistics")
             print(
                 tabulate(
                     train.agg(["count", "nunique"]),
@@ -332,7 +332,7 @@ class Dataset(object):
                     disable_numparse=True,
                 )
             )
-            print(f"After intersection, test statistics")
+            print("After intersection, test statistics")
             print(
                 tabulate(
                     test.agg(["count", "nunique"]),

@@ -4,6 +4,11 @@ import sys
 
 sys.path.append("../")
 
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+
+from beta_rec.cores.eval_engine import SeqEvalEngine
+from beta_rec.cores.train_engine import TrainEngine
 from beta_rec.datasets.seq_data_utils import (
     SeqDataset,
     collate_fn,
@@ -12,15 +17,9 @@ from beta_rec.datasets.seq_data_utils import (
     load_dataset,
     reindex_items,
 )
-from beta_rec.eval_engine import SeqEvalEngine
 from beta_rec.models.narm import NARMEngine
-from beta_rec.train_engine import TrainEngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
-
-from torch.utils.data import DataLoader
-
-from tqdm import tqdm
 
 
 def parse_args():

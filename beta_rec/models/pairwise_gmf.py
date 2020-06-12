@@ -1,12 +1,10 @@
-from beta_rec.models.torch_engine import Engine
-
 import numpy as np
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 from tqdm import tqdm
+
+from beta_rec.cores.torch_engine import Engine
 
 
 def truncated_normal_(tensor, mean=0, std=1):

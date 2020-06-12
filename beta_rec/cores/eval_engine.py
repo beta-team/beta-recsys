@@ -2,6 +2,13 @@ import os
 import socket
 from threading import Lock, Thread
 
+import numpy as np
+import pandas as pd
+import torch
+from prometheus_client import Gauge, start_http_server
+from tensorboardX import SummaryWriter
+from tqdm import tqdm
+
 import beta_rec.utils.evaluation as eval_model
 from beta_rec.utils.common_util import print_dict_as_table, save_to_csv, timeit
 from beta_rec.utils.constants import (
@@ -10,19 +17,6 @@ from beta_rec.utils.constants import (
     DEFAULT_USER_COL,
 )
 from beta_rec.utils.seq_evaluation import mrr, precision, recall
-
-import numpy as np
-
-import pandas as pd
-
-from prometheus_client import Gauge, start_http_server
-
-from tensorboardX import SummaryWriter
-
-import torch
-
-from tqdm import tqdm
-
 
 lock_train_eval = Lock()
 lock_test_eval = Lock()
@@ -178,7 +172,7 @@ def test_eval_worker(testEngine, eval_data_df, prediction, k_li=[5, 10, 20]):
 
     test_result_dic = evaluate(eval_data_df, prediction, testEngine.metrics, k_li)
     print_dict_as_table(
-        test_result_dic, tag=f"performance on test", columns=["metrics", "values"],
+        test_result_dic, tag="performance on test", columns=["metrics", "values"],
     )
     test_result_dic.update(result_para)
     lock_test_eval.acquire()  # need to be test

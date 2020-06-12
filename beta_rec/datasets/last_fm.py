@@ -1,13 +1,13 @@
 import os
 
+import pandas as pd
+
 from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_USER_COL,
 )
-
-import pandas as pd
 
 # download_url
 LAST_FM_URL = r"http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip"

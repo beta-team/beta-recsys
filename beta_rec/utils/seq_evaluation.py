@@ -73,8 +73,8 @@ def count_a_in_b_unique(a, b):
     return count
 
 
-def remove_duplicates(l):
+def remove_duplicates(li):
     """Remove duplicated items in the list.
 
     """
-    return [list(x) for x in set(tuple(x) for x in l)]
+    return [list(x) for x in set(tuple(x) for x in li)]
