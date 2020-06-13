@@ -1,3 +1,9 @@
+import numpy as np
+import pandas as pd
+import pytest
+from mock import Mock
+from sklearn.preprocessing import minmax_scale
+
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_PREDICTION_COL,
@@ -19,16 +25,6 @@ from beta_rec.utils.evaluation import (
     rmse,
     rsquared,
 )
-
-from mock import Mock
-
-import numpy as np
-
-import pandas as pd
-
-import pytest
-
-from sklearn.preprocessing import minmax_scale
 
 TOL = 0.0001
 

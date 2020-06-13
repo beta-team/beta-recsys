@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("../")
+from torch.utils.data import DataLoader
 
 from beta_rec.datasets.movielens import Movielens_100k
 from beta_rec.datasets.seq_data_utils import (
@@ -11,7 +11,7 @@ from beta_rec.datasets.seq_data_utils import (
     reindex_items,
 )
 
-from torch.utils.data import DataLoader
+sys.path.append("../")
 
 
 if __name__ == "__main__":

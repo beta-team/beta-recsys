@@ -73,6 +73,10 @@ jobs:
         flake8 . --count --select BLK --show-source --statistics
         # --exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --ignore=E402,W503,W504,E203,C901,I001,I003,I004 --max-complexity=10 --max-line-length=127 --statistics
+    - name: Check import foramt
+      run: |
+        # use isort to check
+        isort -c
     - name: Test with pytest
       run: |
         python -m pytest --cov-report=xml --cov=./
