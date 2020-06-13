@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from tensorboardX import SummaryWriter
 
 
-class Engine(object):
+class ModelEngine(object):
     """Meta Engine for training & evaluating NCF model
     Note: Subclass should implement self.model !
     """

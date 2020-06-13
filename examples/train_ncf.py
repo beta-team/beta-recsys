@@ -9,7 +9,7 @@ import time
 from tqdm import tqdm
 
 from beta_rec.cores.train_engine import TrainEngine
-from beta_rec.datasets.nmf_data_utils import SampleGenerator
+from beta_rec.datasets.data_base import SampleGenerator
 from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine

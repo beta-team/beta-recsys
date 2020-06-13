@@ -38,7 +38,7 @@ def prepare_env(config):
     # You need specified it if it is running in the container.
     if "root_dir" not in config:
         file_dir = os.path.dirname(os.path.abspath(__file__))
-        config["root_dir"] = os.path.abspath(os.path.join(file_dir, ".."))
+        config["root_dir"] = os.path.abspath(os.path.join(file_dir, "..", ".."))
 
     # load config file from json
     with open(config["config_file"]) as config_params:

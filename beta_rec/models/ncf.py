@@ -3,9 +3,9 @@ import os
 import torch
 import torch.nn as nn
 
-from beta_rec.cores.torch_engine import Engine
 from beta_rec.models.gmf import GMF
 from beta_rec.models.mlp import MLP
+from beta_rec.models.torch_engine import ModelEngine
 from beta_rec.utils.common_util import timeit
 
 
@@ -76,7 +76,7 @@ class NeuMF(torch.nn.Module):
         pass
 
 
-class NeuMFEngine(Engine):
+class NeuMFEngine(ModelEngine):
     """Engine for training & evaluating GMF model"""
 
     def __init__(self, config):
