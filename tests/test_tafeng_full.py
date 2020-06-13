@@ -1,8 +1,9 @@
 import sys
 
+from beta_rec.datasets.tafeng import Tafeng
+
 sys.path.append("../")
 
-from beta_rec.datasets.tafeng import Tafeng
 
 if __name__ == "__main__":
     dataset = Tafeng()

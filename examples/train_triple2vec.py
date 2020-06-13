@@ -1,3 +1,9 @@
+"""An example of triple2vec model.
+
+This is an example of triple2vec model.
+
+isort:skip_file
+"""
 import argparse
 import sys
 

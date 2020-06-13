@@ -1,3 +1,9 @@
+"""An example of MF2020 model.
+
+This is an example of MF2020 model.
+
+isort:skip_file
+"""
 import argparse
 import os
 import sys

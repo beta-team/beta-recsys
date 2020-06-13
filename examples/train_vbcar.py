@@ -1,3 +1,9 @@
+"""An example of vbcar model.
+
+This is an example of vbcar model.
+
+isort:skip_file
+"""
 import argparse
 import math
 import os

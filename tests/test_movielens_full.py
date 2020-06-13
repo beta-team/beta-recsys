@@ -2,9 +2,9 @@ import os
 import sys
 import unittest
 
-sys.path.append("../")
-
 from beta_rec.datasets.movielens import Movielens_100k
+
+sys.path.append("../")
 
 
 class TestMovielens(unittest.TestCase):

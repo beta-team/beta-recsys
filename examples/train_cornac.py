@@ -1,3 +1,9 @@
+"""An example of CORNAC model.
+
+This is an example of CORNAC model.
+
+isort:skip_file
+"""
 import argparse
 import sys
 

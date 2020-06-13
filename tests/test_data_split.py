@@ -1,6 +1,8 @@
 import unittest
 from unittest import mock
 
+import pandas as pd
+
 from beta_rec.datasets.data_split import (
     generate_parameterized_path,
     leave_one_basket,
@@ -18,8 +20,6 @@ from beta_rec.utils.constants import (
     DEFAULT_TIMESTAMP_COL,
     DEFAULT_USER_COL,
 )
-
-import pandas as pd
 
 
 def generate_temporal_testdata():
