@@ -1,3 +1,9 @@
+"""An example of NARM model.
+
+This is an example of NARM model.
+
+isort:skip_file
+"""
 import argparse
 import os
 import sys

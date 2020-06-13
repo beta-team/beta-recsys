@@ -1,7 +1,8 @@
 import sys
 
-sys.path.append("../")
 from beta_rec.datasets.yoochoose import YooChoose
+
+sys.path.append("../")
 
 if __name__ == "__main__":
     dataset = YooChoose()

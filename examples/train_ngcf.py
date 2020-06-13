@@ -1,3 +1,9 @@
+"""An example of NGCF model.
+
+This is an example of NGCF model.
+
+isort:skip_file
+"""
 import argparse
 import json
 import os
