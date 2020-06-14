@@ -156,7 +156,7 @@ class DictToObject(object):
             else:
                 return key, element
 
-        objd = dict(_traverse(k, v) for k, v in dictionary.iteritems())
+        objd = dict(_traverse(k, v) for k, v in dictionary.items())
         self.__dict__.update(objd)
 
 

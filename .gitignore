@@ -43,3 +43,5 @@ processes/
 !/generate_yelp_dataset.py
 !/test_download_tips.py
 docs/_build
+build/
+dist/

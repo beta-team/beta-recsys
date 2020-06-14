@@ -253,23 +253,26 @@ class TrainEngine(object):
         Returns:
 
         """
-        ax = AxClient(enforce_sequential_optimization=False)
-        # verbose_logging=False,
-        ax.create_experiment(
-            name=self.config["model"]["model"],
-            parameters=self.config["tunable"],
-            objective_name="valid_metric",
-        )
-        tune.run(
-            runable,
-            num_samples=30,
-            search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
-            verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
-            # To use GPU, specify: resources_per_trial={"gpu": 1}.
-        )
+        # ax = AxClient(enforce_sequential_optimization=False)
+        # # verbose_logging=False,
+        # ax.create_experiment(
+        #     name=self.config["model"]["model"],
+        #     parameters=self.config["tunable"],
+        #     objective_name="valid_metric",
+        # )
+        # tune.run(
+        #     runable,
+        #     num_samples=30,
+        #     search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
+        #     verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
+        #     # To use GPU, specify: resources_per_trial={"gpu": 1}.
+        # )
 
-        # analysis = tune.run(
-        #     runable, config={"lr": tune.grid_search([0.001, 0.01, 0.1])})
+        analysis = tune.run(
+            runable,
+            config={"lr": tune.grid_search([0.001, 0.01, 0.1])},
+            local_dir="../results",
+        )
 
     def test(self):
         """Evaluate the performance for the testing sets based on the final model.

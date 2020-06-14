@@ -1,5 +1,4 @@
 import argparse
-import sys
 from datetime import datetime
 
 import cornac
@@ -11,7 +10,6 @@ import beta_rec.utils.evaluation as eval_model
 from beta_rec.data import grocery_data
 from beta_rec.utils import logger
 from beta_rec.utils.common_util import save_to_csv
-
 
 base_string = "abcdefghijklmnopqrstuvwxyz"
 

@@ -1,9 +1,3 @@
-print(
-    "__file__={0:<35} | __name__={1:<20} | __package__={2:<20}".format(
-        __file__, __name__, str(__package__)
-    )
-)
-
 import argparse
 import os
 
@@ -115,6 +109,33 @@ class MF_train(TrainEngine):
         self._train(self.engine, train_loader, self.model_save_dir)
         self.config["run_time"] = self.monitor.stop()
         return self.eval_engine.best_valid_performance
+
+    def tune(self, runable):
+        """
+        Tune parameters unsing ray.tune and ax
+        Returns:
+
+        """
+        # ax = AxClient(enforce_sequential_optimization=False)
+        # # verbose_logging=False,
+        # ax.create_experiment(
+        #     name=self.config["model"]["model"],
+        #     parameters=self.config["tunable"],
+        #     objective_name="valid_metric",
+        # )
+        # tune.run(
+        #     runable,
+        #     num_samples=30,
+        #     search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
+        #     verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
+        #     # To use GPU, specify: resources_per_trial={"gpu": 1}.
+        # )
+
+        analysis = tune.run(
+            runable,
+            config={"lr": tune.grid_search([0.001, 0.01, 0.1])},
+            local_dir="../tune_results",
+        )
 
 
 def tune_train(config):
