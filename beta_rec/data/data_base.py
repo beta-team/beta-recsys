@@ -107,7 +107,7 @@ class PairwiseNegativeDataset(Dataset):
         return self.user_tensor.size(0)
 
 
-class SampleGenerator(object):
+class DataLoaderBase(object):
     """Construct dataset for NCF"""
 
     def __init__(self, ratings):
