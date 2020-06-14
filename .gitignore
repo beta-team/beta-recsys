@@ -45,3 +45,4 @@ processes/
 docs/_build
 build/
 dist/
+*.egg-info/
