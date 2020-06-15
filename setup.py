@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 __version__ = "0.0.1"
 url = "https://github.com/beta-team/beta-recsys"
@@ -43,7 +43,7 @@ setup(
     author_email="recsys.beta@gmail.com",
     url=url,
     download_url="{}/archive/{}.tar.gz".format(url, __version__),
-    keywords=["pytorch", "recommender system", "recommendations",],
+    keywords=["pytorch", "recommender system", "recommendations"],
     python_requires=">=3.6",
     install_requires=install_requires,
     setup_requires=setup_requires,

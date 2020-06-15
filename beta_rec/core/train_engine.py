@@ -24,20 +24,10 @@ from beta_rec.utils.common_util import (
     update_args,
 )
 from beta_rec.utils.constants import MAX_N_UPDATE
-from beta_rec.utils.monitor import Monitor
 
 
 class TrainEngine(object):
     """Training engine for all the models.
-    # You need specified root_dir from CLS if it is to run in the container.
-        Args:
-            args (ArgumentParser): Args received from command line. Should have the parameter of args.config_file.
-
-        Attributes:
-            data (GroceryData): A dataset containing DataFrame of train, validation and test.
-            train_data (DataLoader): Extracted training data or train DataLoader, need to be implement.
-            monitor (Monitor): An monitor object that monitor the computational resources.
-            engine (Model Engine)
     """
 
     def __init__(self, args):
