@@ -21,7 +21,7 @@ def parse_args():
         "--config_file",
         nargs="?",
         type=str,
-        default="../configs/mf_default.json",
+        default="/Users/mzq/git/beta_pro_zaiqiao_dev/configs/mf_default.json",
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
@@ -39,10 +39,14 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument(
-        "--root_dir", nargs="?", type=str, help="Working directory",
+        "--root_dir",
+        default="/Users/mzq/git/beta_pro_zaiqiao_dev/",
+        nargs="?",
+        type=str,
+        help="Working directory",
     )
     parser.add_argument(
-        "--tune", nargs="?", type=bool, help="Tun parameter",
+        "--tune", nargs="?", type=str, help="Tun parameter",
     )
     parser.add_argument(
         "--device", nargs="?", type=str, help="Device",
@@ -110,33 +114,6 @@ class MF_train(TrainEngine):
         self.config["run_time"] = self.monitor.stop()
         return self.eval_engine.best_valid_performance
 
-    def tune(self, runable):
-        """
-        Tune parameters unsing ray.tune and ax
-        Returns:
-
-        """
-        # ax = AxClient(enforce_sequential_optimization=False)
-        # # verbose_logging=False,
-        # ax.create_experiment(
-        #     name=self.config["model"]["model"],
-        #     parameters=self.config["tunable"],
-        #     objective_name="valid_metric",
-        # )
-        # tune.run(
-        #     runable,
-        #     num_samples=30,
-        #     search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
-        #     verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
-        #     # To use GPU, specify: resources_per_trial={"gpu": 1}.
-        # )
-
-        analysis = tune.run(
-            runable,
-            config={"lr": tune.grid_search([0.001, 0.01, 0.1])},
-            local_dir="../tune_results",
-        )
-
 
 def tune_train(config):
     """Train the model with a hypyer-parameter tuner (ray)
@@ -156,6 +133,8 @@ def tune_train(config):
 if __name__ == "__main__":
     args = parse_args()
     train_engine = MF_train(args)
-    train_engine.tune(tune_train)
-    # train_engine.train()
-    # train_engine.test()
+    if args.tune:
+        train_engine.tune(tune_train)
+    else:
+        train_engine.train()
+        train_engine.test()

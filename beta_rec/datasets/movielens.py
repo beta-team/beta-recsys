@@ -37,13 +37,14 @@ ml_1m_l1o_dir = os.path.join(par_abs_dir, "datasets/ml-1m/leave_one_out")
 
 
 class Movielens_100k(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Movielens 100k
 
         Movielens 100k dataset.
         """
         super().__init__(
             "ml_100k",
+            root_dir=root_dir,
             url=ML_100K_URL,
             processed_leave_one_out_url=ML_100K_LEAVE_ONE_OUT_URL,
             processed_random_split_url=ML_100K_RANDOM_URL,

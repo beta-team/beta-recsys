@@ -160,29 +160,6 @@ class DictToObject(object):
         self.__dict__.update(objd)
 
 
-def initialize_folders(base_dir):
-    """ Initialize the whole directory structure of the project
-
-    Args:
-        base_dir (str): Root path of the project.
-
-    Returns:
-        None
-    """
-
-    configs = base_dir + "/configs/"
-    datasets = base_dir + "/datasets/"
-    checkpoints = base_dir + "/checkpoints/"
-    results = base_dir + "/results/"
-    logs = base_dir + "/logs/"
-    processes = base_dir + "/processes/"
-    runs = base_dir + "/runs/"
-
-    for dir in [configs, datasets, checkpoints, results, processes, logs, runs]:
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-
-
 def get_random_rep(raw_num, dim):
     """
     Generate a random embedding from a normal (Gaussian) distribution.

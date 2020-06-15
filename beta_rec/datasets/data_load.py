@@ -92,7 +92,9 @@ def load_split_dataset(config):
         "instacart": Instacart,
         "instacart_25": Instacart_25,
     }
-    dataset = dataset_mapping[config["dataset"]["dataset"]]()
+    dataset = dataset_mapping[config["dataset"]["dataset"]](
+        root_dir=config["system"]["root_dir"]
+    )
     return dataset.load_split(config["dataset"])
 
 

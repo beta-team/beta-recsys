@@ -7,6 +7,7 @@
         "checkpoint_dir": "checkpoints/",
         "dataset_dir": "datasets/",
         "run_dir": "runs/",
+        "tune_dir": "tune_results/",
         "device": "gpu",
         "seed": 2020,
         "metrics": ["ndcg", "precision", "recall", "map"],
@@ -46,6 +47,6 @@
     },
     "tunable": [
         {"name": "loss", "type": "choice", "values": ["bce", "bpr"]},
-        {"name": "num_negative", "type": "range", "bounds": [1, 5]}
+        {"name": "num_negative", "type": "range", "bounds": [1, 2]}
     ]
 }
