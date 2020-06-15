@@ -75,6 +75,8 @@ jobs:
         flake8 . --count --ignore=E402,W503,W504,E203,C901,I001,I003,I004 --max-complexity=10 --max-line-length=127 --statistics
     - name: Check import foramt
       run: |
+        # show position
+        pwd
         # use isort to check
         isort -c
     - name: Test with pytest
