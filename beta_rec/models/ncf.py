@@ -1,12 +1,12 @@
 import os
 
-import torch
-import torch.nn as nn
-
 from beta_rec.models.gmf import GMF
 from beta_rec.models.mlp import MLP
 from beta_rec.models.torch_engine import ModelEngine
 from beta_rec.utils.common_util import timeit
+
+import torch
+import torch.nn as nn
 
 
 class NeuMF(torch.nn.Module):

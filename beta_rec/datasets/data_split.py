@@ -1,12 +1,6 @@
 import math
 import os
 
-import numpy as np
-import pandas as pd
-import sklearn
-from tabulate import tabulate
-from tqdm import tqdm
-
 from beta_rec.utils.alias_table import AliasTable
 from beta_rec.utils.common_util import get_dataframe_from_npz, save_dataframe_as_npz
 from beta_rec.utils.constants import (
@@ -17,6 +11,12 @@ from beta_rec.utils.constants import (
     DEFAULT_TIMESTAMP_COL,
     DEFAULT_USER_COL,
 )
+
+import numpy as np
+import pandas as pd
+import sklearn
+from tabulate import tabulate
+from tqdm import tqdm
 
 
 def filter_by_count(df, group_col, filter_col, num):

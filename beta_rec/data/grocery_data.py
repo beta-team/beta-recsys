@@ -3,11 +3,6 @@ import random
 from collections import defaultdict
 from time import time
 
-import numpy as np
-import pandas as pd
-import scipy.sparse as sp
-from tabulate import tabulate
-
 from beta_rec.datasets.data_load import (
     load_item_fea_dic,
     load_split_dataset,
@@ -21,6 +16,11 @@ from beta_rec.utils.constants import (
     DEFAULT_USER_COL,
 )
 from beta_rec.utils.triple_sampler import Sampler
+
+import numpy as np
+import pandas as pd
+import scipy.sparse as sp
+from tabulate import tabulate
 
 pd.options.mode.chained_assignment = None  # default='warn'
 

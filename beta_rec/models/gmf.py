@@ -1,8 +1,8 @@
-import torch
-import torch.nn as nn
-
 from beta_rec.models.torch_engine import ModelEngine
 from beta_rec.utils.common_util import timeit
+
+import torch
+import torch.nn as nn
 
 
 class GMF(torch.nn.Module):

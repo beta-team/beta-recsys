@@ -2,14 +2,14 @@ import argparse
 import json
 import os
 
-import numpy as np
-
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.cmn import cmnEngine
 from beta_rec.models.pairwise_gmf import PairwiseGMFEngine
 from beta_rec.utils.common_util import ensureDir, update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
+
+import numpy as np
 
 
 def parse_args():

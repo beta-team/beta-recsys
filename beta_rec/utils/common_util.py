@@ -4,11 +4,6 @@ import time
 import zipfile
 from functools import wraps
 
-import numpy as np
-import pandas as pd
-import torch
-from tabulate import tabulate
-
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_ORDER_COL,
@@ -16,6 +11,11 @@ from beta_rec.utils.constants import (
     DEFAULT_TIMESTAMP_COL,
     DEFAULT_USER_COL,
 )
+
+import numpy as np
+import pandas as pd
+import torch
+from tabulate import tabulate
 
 
 def ensureDir(dir_path):
