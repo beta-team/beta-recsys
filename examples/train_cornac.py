@@ -1,13 +1,4 @@
-"""An example of CORNAC model.
-
-This is an example of CORNAC model.
-
-isort:skip_file
-"""
 import argparse
-import sys
-
-sys.path.append("../")
 from datetime import datetime
 
 import cornac
@@ -16,9 +7,9 @@ import pandas as pd
 
 import beta_rec.utils.constants as Constants
 import beta_rec.utils.evaluation as eval_model
-from beta_rec.utils import data_util, logger
+from beta_rec.data import grocery_data
+from beta_rec.utils import logger
 from beta_rec.utils.common_util import save_to_csv
-
 
 base_string = "abcdefghijklmnopqrstuvwxyz"
 
@@ -206,7 +197,7 @@ if __name__ == "__main__":
 
     models = [pop, mf, pmf, bpr, vaecf, nmf, neumf]
     # add our own eval
-    data = data_util.Dataset(config)
+    data = grocery_data.GroceryData(config)
 
     num_users = data.n_users
     num_items = data.n_items
@@ -219,7 +210,7 @@ if __name__ == "__main__":
         data.train["col_rating"].to_numpy(),
     ]
 
-    train_data = cornac.dataset.Dataset(
+    train_data = cornac.dataset.GroceryData(
         num_users,
         num_items,
         uid_map,

@@ -1,20 +1,12 @@
-"""An example of NARM model.
-
-This is an example of NARM model.
-
-isort:skip_file
-"""
 import argparse
 import os
 import sys
 
-sys.path.append("../")
-
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from beta_rec.cores.eval_engine import SeqEvalEngine
-from beta_rec.cores.train_engine import TrainEngine
+from beta_rec.core.eval_engine import SeqEvalEngine
+from beta_rec.core.train_engine import TrainEngine
 from beta_rec.datasets.seq_data_utils import (
     SeqDataset,
     collate_fn,

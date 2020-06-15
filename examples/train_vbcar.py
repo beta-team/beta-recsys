@@ -1,19 +1,12 @@
-"""An example of vbcar model.
-
-This is an example of vbcar model.
-
-isort:skip_file
-"""
 import argparse
 import math
 import os
 import sys
 
-sys.path.append("../")
 from ray import tune
 from tqdm import tqdm
 
-from beta_rec.cores.train_engine import TrainEngine
+from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.vbcar import VBCAREngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
@@ -96,7 +89,7 @@ class VBCAR_train(TrainEngine):
         self.config = config
         super(VBCAR_train, self).__init__(self.config)
         self.load_dataset()
-        self.train_data = self.dataset.sample_triple()
+        self.train_data = self.data.sample_triple()
         self.config["alpha_step"] = (1 - self.config["alpha"]) / (
             self.config["max_epoch"]
         )
@@ -110,7 +103,7 @@ class VBCAR_train(TrainEngine):
         self.monitor = Monitor(
             log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
         )
-        self.engine.data = self.dataset
+        self.engine.data = self.data
         print("Start training... ")
         epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:
@@ -132,7 +125,7 @@ class VBCAR_train(TrainEngine):
             data_loader = self.build_data_loader()
             self.engine.train_an_epoch(data_loader, epoch_id=epoch)
             self.eval_engine.train_eval(
-                self.dataset.valid[0], self.dataset.test[0], self.engine.model, epoch
+                self.data.valid[0], self.data.test[0], self.engine.model, epoch
             )
             # anneal alpha
             self.engine.model.alpha = min(
