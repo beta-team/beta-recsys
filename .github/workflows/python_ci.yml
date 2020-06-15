@@ -79,8 +79,7 @@ jobs:
     - name: Check import foramt
       run: |
         # use isort to check
-        isort -v
-        isort -c
+        isort . --check-only --recursive
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml # optional
