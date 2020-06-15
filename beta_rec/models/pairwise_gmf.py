@@ -6,6 +6,7 @@ from tqdm import tqdm
 
 from beta_rec.models.torch_engine import ModelEngine
 
+
 def truncated_normal_(tensor, mean=0, std=1):
     size = tensor.shape
     tmp = tensor.new_empty(size + (4,)).normal_()

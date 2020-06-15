@@ -5,6 +5,7 @@ import torch.sparse as sparse
 
 from beta_rec.models.torch_engine import ModelEngine
 
+
 class NGCF(torch.nn.Module):
     """Model initialisation, embedding generation and prediction of NGCF
 

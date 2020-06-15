@@ -4,6 +4,7 @@ import torch.nn.functional as F
 
 from beta_rec.models.torch_engine import ModelEngine
 
+
 class Triple2vec(nn.Module):
     def __init__(self, config):
         super(Triple2vec, self).__init__()
