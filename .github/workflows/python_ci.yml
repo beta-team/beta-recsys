@@ -81,7 +81,7 @@ jobs:
         cat .isort.cfg
         cp .isort.cfg ~/
         # use isort to check
-        isort -c --line-length=88 --indet='    ' --multi-line-output=3 --sections=FUTURE,STDLIB,FIRSTPARTY,THIRDPARTY,LOCALFOLDER --include-trailing-comma --use-parentheses
+        isort -c
     - name: Test with pytest
       run: |
         python -m pytest --cov-report=xml --cov=./
