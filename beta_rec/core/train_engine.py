@@ -7,13 +7,11 @@ from datetime import datetime
 
 import GPUtil
 import torch
-from ax.service.ax_client import AxClient
-from ray import tune
-from ray.tune.suggest.ax import AxSearch
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+from ax.service.ax_client import AxClient
 from beta_rec.core.eval_engine import EvalEngine
 from beta_rec.data.grocery_data import GroceryData
 from beta_rec.utils import logger
@@ -24,6 +22,8 @@ from beta_rec.utils.common_util import (
     update_args,
 )
 from beta_rec.utils.constants import MAX_N_UPDATE
+from ray import tune
+from ray.tune.suggest.ax import AxSearch
 
 
 class TrainEngine(object):
