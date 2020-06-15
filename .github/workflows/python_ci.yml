@@ -77,10 +77,10 @@ jobs:
       run: |
         python -m pytest --cov-report=xml --cov=./
     - name: Check import foramt
-        run: |
-          # use isort to check
-          isort -v
-          isort -c
+      run: |
+        # use isort to check
+        isort -v
+        isort -c
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml # optional
