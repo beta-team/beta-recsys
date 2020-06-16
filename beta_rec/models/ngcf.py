@@ -74,14 +74,13 @@ class NGCF(torch.nn.Module):
         u_g_embeddings, i_g_embeddings = torch.split(
             all_embeddings, [self.n_users, self.n_items], dim=0
         )
-
         return u_g_embeddings, i_g_embeddings
 
     def predict(self, users, items):
         """ Model prediction: dot product of users and items embeddings
         Args:
-            users (int):  user id
-            items (int):  item id
+            users (int, or list of int):  user id
+            items (int, or list of int):  item id
         Return:
             scores (int): dot product
         """
