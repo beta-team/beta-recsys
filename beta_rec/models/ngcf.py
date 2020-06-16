@@ -11,13 +11,14 @@ class NGCF(torch.nn.Module):
 
     """
 
-    def __init__(self, config):
+    def __init__(self, config, norm_adj):
         super(NGCF, self).__init__()
         self.config = config
         self.n_users = config["n_users"]
         self.n_items = config["n_items"]
         self.emb_dim = config["emb_dim"]
         self.layer_size = config["layer_size"]
+        self.norm_adj = norm_adj
         self.n_layers = len(self.layer_size)
         self.dropout = nn.ModuleList()
         self.GC_weights = nn.ModuleList()
@@ -78,18 +79,20 @@ class NGCF(torch.nn.Module):
     def predict(self, users, items):
         """ Model prediction: dot product of users and items embeddings
         Args:
-            users (int):  user id
-            items (int):  item id
+            users (int, or list of int):  user id
+            items (int, or list of int):  item id
         Return:
             scores (int): dot product
         """
+
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
 
         with torch.no_grad():
-            scores = torch.mul(
-                self.user_embedding(users_t), self.item_embedding(items_t)
-            ).sum(dim=1)
+            ua_embeddings, ia_embeddings = self.forward(self.norm_adj)
+            u_g_embeddings = ua_embeddings[users_t]
+            i_g_embeddings = ia_embeddings[items_t]
+            scores = torch.mul(u_g_embeddings, i_g_embeddings).sum(dim=1)
         return scores
 
 
@@ -98,13 +101,12 @@ class NGCFEngine(ModelEngine):
 
     def __init__(self, config):
         self.config = config
-        self.model = NGCF(config)
         self.regs = config["regs"]  # reg is the regularisation
         self.decay = self.regs[0]
         self.batch_size = config["batch_size"]
         self.norm_adj = config["norm_adj"]
         self.num_batch = config["num_batch"]
-
+        self.model = NGCF(config, self.norm_adj)
         super(NGCFEngine, self).__init__(config)
         self.model.to(self.device)
 
