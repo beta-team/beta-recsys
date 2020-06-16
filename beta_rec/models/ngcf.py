@@ -97,7 +97,7 @@ class NGCF(torch.nn.Module):
         return scores
 
 
-class NGCFEngine(Engine):
+class NGCFEngine(ModelEngine):
     # A class includes train an epoch and train a batch of NGCF
 
     def __init__(self, config):
