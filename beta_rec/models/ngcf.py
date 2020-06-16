@@ -107,7 +107,6 @@ class NGCFEngine(ModelEngine):
         self.norm_adj = config["norm_adj"]
         self.num_batch = config["num_batch"]
         self.model = NGCF(config, self.norm_adj)
-        
         super(NGCFEngine, self).__init__(config)
         self.model.to(self.device)
 
