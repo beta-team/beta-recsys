@@ -1,13 +1,12 @@
 import argparse
 import os
 
-from ray import tune
-
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.mf import MFEngine
 from beta_rec.utils.common_util import DictToObject
 from beta_rec.utils.monitor import Monitor
+from ray import tune
 
 
 def parse_args():

@@ -33,7 +33,7 @@ install_requires = [
     "sphinx_markdown_tables",
     "isort",
 ]
-setup_requires = ["pytest-runner"]
+setup_requires = ["pytest-runner", "isort"]
 tests_require = ["pytest", "pytest-cov", "mock"]
 
 setup(
