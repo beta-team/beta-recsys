@@ -1,10 +1,11 @@
 import numpy as np
-from beta_rec.datasets.movielens import Movielens_100k, Movielens_1m, Movielens_25m
+
 from beta_rec.datasets.dunnhumby import Dunnhumby
-from beta_rec.datasets.tafeng import Tafeng
-from beta_rec.datasets.last_fm import LastFM
 from beta_rec.datasets.epinions import Epinions
 from beta_rec.datasets.instacart import Instacart, Instacart_25
+from beta_rec.datasets.last_fm import LastFM
+from beta_rec.datasets.movielens import Movielens_1m, Movielens_25m, Movielens_100k
+from beta_rec.datasets.tafeng import Tafeng
 
 
 def load_user_fea_dic(config, fea_type):
@@ -34,10 +35,11 @@ def load_item_fea_dic(config, fea_type):
         dict: A dictionary with key being the item_id and value being the numpy array of feature vector
 
     """
-    data_str = config["dataset"]
-    root_dir = config["root_dir"]
+    data_str = config["dataset"]["dataset"]
+    root_dir = config["system"]["root_dir"]
     print("load basic item featrue for dataset:", data_str, " type:", fea_type)
 
+    item_feature = {}
     if fea_type == "word2vec":
         item_feature_file = open(
             root_dir + "datasets/" + data_str + "/raw/item_feature_w2v.csv", "r"
@@ -56,10 +58,10 @@ def load_item_fea_dic(config, fea_type):
         )
     else:
         print(
-            "[ERROR]: CANNOT support other feature type, use 'random' user featrue instead!"
+            "[ERROR]: CANNOT support other feature type, use 'random' user feature instead!"
         )
+        return item_feature
 
-    item_feature = {}
     lines = item_feature_file.readlines()
     for index in range(1, len(lines)):
         key_value = lines[index].split(",")
@@ -90,8 +92,10 @@ def load_split_dataset(config):
         "instacart": Instacart,
         "instacart_25": Instacart_25,
     }
-    dataset = dataset_mapping[config["dataset"]]()
-    return dataset.load_split(config)
+    dataset = dataset_mapping[config["dataset"]["dataset"]](
+        root_dir=config["system"]["root_dir"]
+    )
+    return dataset.load_split(config["dataset"])
 
 
 def load_user_item_feature(config):
@@ -116,5 +120,5 @@ def load_user_item_feature(config):
         "instacart": Instacart,
         "instacart_25": Instacart_25,
     }
-    dataset = dataset_mapping[config["dataset"]]()
+    dataset = dataset_mapping[config["dataset"]["dataset"]]()
     return dataset.load_fea_vec()

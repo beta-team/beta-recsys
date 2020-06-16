@@ -1,14 +1,16 @@
-import os
 import csv
+import os
+
 import pandas as pd
-from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
-    DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
-    DEFAULT_ORDER_COL,
-    DEFAULT_TIMESTAMP_COL,
-)
+
 from beta_rec.datasets.dataset_base import DatasetBase
+from beta_rec.utils.constants import (
+    DEFAULT_ITEM_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
+)
 
 # Download URLs
 ML_2K_URL = (

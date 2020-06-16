@@ -1,11 +1,13 @@
 import os
 import time
+
 import pandas as pd
+
 from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
 
 # Download URL
@@ -38,8 +40,8 @@ def process_time(standard_time=None):
     """
 
     standard_time = standard_time + ":00:00"
-    dateArr = time.strptime(standard_time, "%Y-%m-%d %H:%M:%S")
-    timestamp = int(time.mktime(dateArr))
+    date_arr = time.strptime(standard_time, "%Y-%m-%d %H:%M:%S")
+    timestamp = int(time.mktime(date_arr))
     return timestamp
 
 

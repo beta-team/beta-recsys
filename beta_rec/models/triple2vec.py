@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from beta_rec.models.torch_engine import Engine
+
+from beta_rec.models.torch_engine import ModelEngine
 
 
 class Triple2vec(nn.Module):
@@ -95,7 +96,7 @@ class Triple2vec(nn.Module):
         return scores
 
 
-class Triple2vecEngine(Engine):
+class Triple2vecEngine(ModelEngine):
     """Engine for training Triple model"""
 
     def __init__(self, config):

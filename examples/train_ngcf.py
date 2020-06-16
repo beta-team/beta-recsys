@@ -1,13 +1,11 @@
-import sys
-
-sys.path.append("../")
-
-import os
-import json
-import numpy as np
 import argparse
+import json
+import os
+
+import numpy as np
 import torch
-from beta_rec.train_engine import TrainEngine
+
+from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.ngcf import NGCFEngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
@@ -74,12 +72,12 @@ class NGCF_train(TrainEngine):
 
     def build_data_loader(self):
         # ToDo: Please define the directory to store the adjacent matrix
-        plain_adj, norm_adj, mean_adj = self.dataset.get_adj_mat()
+        plain_adj, norm_adj, mean_adj = self.data.get_adj_mat()
         norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj)
         self.config["norm_adj"] = norm_adj
-        self.config["num_batch"] = self.dataset.n_train // config["batch_size"] + 1
-        self.config["n_users"] = self.dataset.n_users
-        self.config["n_items"] = self.dataset.n_items
+        self.config["num_batch"] = self.data.n_train // config["batch_size"] + 1
+        self.config["n_users"] = self.data.n_users
+        self.config["n_items"] = self.data.n_items
 
     def train(self):
         self.monitor = Monitor(
@@ -103,10 +101,10 @@ class NGCF_train(TrainEngine):
                 )
                 break
 
-            train_loader = self.dataset
+            train_loader = self.data
             self.engine.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
             self.eval_engine.train_eval(
-                self.dataset.valid[0], self.dataset.test[0], self.engine.model, epoch
+                self.data.valid[0], self.data.test[0], self.engine.model, epoch
             )
         self.config["run_time"] = self.monitor.stop()
 

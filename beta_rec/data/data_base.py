@@ -1,14 +1,16 @@
+import random
 from copy import deepcopy
+
+import pandas as pd
+import torch
 from torch.utils.data import DataLoader, Dataset
+
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-import random
-import pandas as pd
-import torch
 
 
 class UserItemRatingDataset(Dataset):
@@ -105,7 +107,7 @@ class PairwiseNegativeDataset(Dataset):
         return self.user_tensor.size(0)
 
 
-class SampleGenerator(object):
+class DataLoaderBase(object):
     """Construct dataset for NCF"""
 
     def __init__(self, ratings):

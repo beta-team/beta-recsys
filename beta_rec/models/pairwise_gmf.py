@@ -1,9 +1,10 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
-from beta_rec.models.torch_engine import Engine
 from tqdm import tqdm
+
+from beta_rec.models.torch_engine import ModelEngine
 
 
 def truncated_normal_(tensor, mean=0, std=1):
@@ -61,7 +62,7 @@ class PairwiseGMF(nn.Module):
         pass
 
 
-class PairwiseGMFEngine(Engine):
+class PairwiseGMFEngine(ModelEngine):
     def __init__(self, config):
         self.config = config
         self.model = PairwiseGMF(config)

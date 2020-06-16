@@ -1,9 +1,10 @@
-from threading import Thread
-import GPUtil
-import cpuinfo
-import psutil
-import time
 import os
+import time
+from threading import Thread
+
+import cpuinfo
+import GPUtil
+import psutil
 from tensorboardX import SummaryWriter
 
 

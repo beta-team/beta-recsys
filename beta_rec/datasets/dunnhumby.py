@@ -1,15 +1,17 @@
 import os
+
 import pandas as pd
-from beta_rec.utils.common_util import un_zip, timeit
+
+from beta_rec.datasets.dataset_base import DatasetBase
+from beta_rec.utils.common_util import timeit, un_zip
 from beta_rec.utils.constants import (
-    DEFAULT_ORDER_COL,
-    DEFAULT_ITEM_COL,
-    DEFAULT_USER_COL,
     DEFAULT_FLAG_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_ORDER_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
 
 # download_url
 DUNNHUMBY_URL = r"https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip"

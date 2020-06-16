@@ -1,11 +1,12 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 from tqdm import tqdm
-from beta_rec.models.pairwiseGMF import truncated_normal_
-from beta_rec.models.torch_engine import Engine
-from beta_rec.models.VariableLengthMemoryLayer import VariableLengthMemoryLayer
+
+from beta_rec.models.pairwise_gmf import truncated_normal_
+from beta_rec.models.torch_engine import ModelEngine
+from beta_rec.models.vlml import VariableLengthMemoryLayer
 
 
 class CollaborativeMemoryNetwork(nn.Module):
@@ -128,7 +129,7 @@ class CollaborativeMemoryNetwork(nn.Module):
         return score
 
 
-class cmnEngine(Engine):
+class cmnEngine(ModelEngine):
     def __init__(self, config, user_embeddings, item_embeddings, item_user_list):
         self.config = config
         self.device = config["device_str"]

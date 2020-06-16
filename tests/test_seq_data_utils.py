@@ -1,14 +1,17 @@
 import sys
 
-sys.path.append("../")
+from torch.utils.data import DataLoader
 
 from beta_rec.datasets.movielens import Movielens_100k
-from beta_rec.datasets.seq_data_utils import reindex_items
-from beta_rec.datasets.seq_data_utils import create_seq_db
-from beta_rec.datasets.seq_data_utils import dataset_to_seq_target_format
-from beta_rec.datasets.seq_data_utils import SeqDataset
-from beta_rec.datasets.seq_data_utils import collate_fn
-from torch.utils.data import DataLoader
+from beta_rec.datasets.seq_data_utils import (
+    SeqDataset,
+    collate_fn,
+    create_seq_db,
+    dataset_to_seq_target_format,
+    reindex_items,
+)
+
+sys.path.append("../")
 
 
 if __name__ == "__main__":

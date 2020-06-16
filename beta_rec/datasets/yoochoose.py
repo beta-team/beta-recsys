@@ -1,13 +1,15 @@
-import os
 import csv
+import os
+
 import pandas as pd
+
+from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
-    DEFAULT_TIMESTAMP_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL
 YOOCHOOSE_URL = "https://s3-eu-west-1.amazonaws.com/yc-rdata/yoochoose-data.7z"

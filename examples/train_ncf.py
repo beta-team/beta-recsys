@@ -1,15 +1,15 @@
-import sys
-
-sys.path.append("../")
-import os
 import argparse
+import os
+import sys
 import time
+
 from tqdm import tqdm
-from beta_rec.train_engine import TrainEngine
+
+from beta_rec.core.train_engine import TrainEngine
+from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine
-from beta_rec.datasets.nmf_data_utils import SampleGenerator
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
 
@@ -81,10 +81,10 @@ class NCF_train(TrainEngine):
 
     def build_data_loader(self):
         # ToDo: Please define the directory to store the adjacent matrix
-        self.sample_generator = SampleGenerator(ratings=self.dataset.train)
-        self.config["num_batch"] = self.dataset.n_train // self.config["batch_size"] + 1
-        self.config["n_users"] = self.dataset.n_users
-        self.config["n_items"] = self.dataset.n_items
+        self.sample_generator = DataLoaderBase(ratings=self.data.train)
+        self.config["num_batch"] = self.data.n_train // self.config["batch_size"] + 1
+        self.config["n_users"] = self.data.n_users
+        self.config["n_items"] = self.data.n_items
 
     def _train(self, engine, train_loader, save_dir):
         self.eval_engine.flush()
@@ -97,7 +97,7 @@ class NCF_train(TrainEngine):
             engine.train_an_epoch(train_loader, epoch_id=epoch)
             """evaluate model on validation and test sets"""
             self.eval_engine.train_eval(
-                self.dataset.valid[0], self.dataset.test[0], engine.model, epoch
+                self.data.valid[0], self.data.test[0], engine.model, epoch
             )
 
     def train(self):
@@ -142,7 +142,7 @@ class NCF_train(TrainEngine):
         )
         self._train(self.engine, train_loader, self.neumf_save_dir)
         self.config["run_time"] = self.monitor.stop()
-        self.eval_engine.test_eval(self.dataset.test, self.engine.model)
+        self.eval_engine.test_eval(self.data.test, self.engine.model)
 
     def train_gmf(self):
         """ Train GMF
@@ -163,10 +163,10 @@ class NCF_train(TrainEngine):
         )
         self._train(self.engine, train_loader, self.gmf_save_dir)
         while self.eval_engine.n_worker:
-            print(f"Wait 15s for the complete of eval_engine.n_worker")
+            print("Wait 15s for the complete of eval_engine.n_worker")
             time.sleep(15)  # wait the
         self.config["run_time"] = self.monitor.stop()
-        self.eval_engine.test_eval(self.dataset.test, self.engine.model)
+        self.eval_engine.test_eval(self.data.test, self.engine.model)
 
     def train_mlp(self):
         """ Train MLP
@@ -188,10 +188,10 @@ class NCF_train(TrainEngine):
         self._train(self.engine, train_loader, self.mlp_save_dir)
 
         while self.eval_engine.n_worker:
-            print(f"Wait 15s for the complete of eval_engine.n_worker")
+            print("Wait 15s for the complete of eval_engine.n_worker")
             time.sleep(15)  # wait the
         self.config["run_time"] = self.monitor.stop()
-        self.eval_engine.test_eval(self.dataset.test, self.engine.model)
+        self.eval_engine.test_eval(self.data.test, self.engine.model)
 
 
 if __name__ == "__main__":

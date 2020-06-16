@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
-import torch.sparse as sparse
 import torch.nn.functional as F
-from beta_rec.models.torch_engine import Engine
+import torch.sparse as sparse
+
+from beta_rec.models.torch_engine import ModelEngine
 
 
 class NGCF(torch.nn.Module):
@@ -92,7 +93,7 @@ class NGCF(torch.nn.Module):
         return scores
 
 
-class NGCFEngine(Engine):
+class NGCFEngine(ModelEngine):
     # A class includes train an epoch and train a batch of NGCF
 
     def __init__(self, config):

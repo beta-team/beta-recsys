@@ -1,10 +1,8 @@
-import sys
-
-sys.path.append("../")
-
 import argparse
+
 from ray import tune
-from beta_rec.train_engine import TrainEngine
+
+from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.triple2vec import Triple2vecEngine
 from beta_rec.utils.common_util import update_args
 
@@ -79,7 +77,7 @@ class Triple2vec_train(TrainEngine):
         self.config = config
         super(Triple2vec_train, self).__init__(self.config)
         self.load_dataset()
-        self.train_data = self.dataset.sample_triple()
+        self.train_loader = self.data.sample_triple()
         self.engine = Triple2vecEngine(self.config)
 
 

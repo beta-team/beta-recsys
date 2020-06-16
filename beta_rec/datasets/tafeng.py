@@ -1,16 +1,17 @@
 import os
-import pandas as pd
-import numpy as np
 
-from beta_rec.utils.constants import (
-    DEFAULT_TIMESTAMP_COL,
-    DEFAULT_ORDER_COL,
-    DEFAULT_USER_COL,
-    DEFAULT_ITEM_COL,
-    DEFAULT_FLAG_COL,
-    DEFAULT_RATING_COL,
-)
+import numpy as np
+import pandas as pd
+
 from beta_rec.datasets.dataset_base import DatasetBase
+from beta_rec.utils.constants import (
+    DEFAULT_FLAG_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
+)
 
 # download_url
 TAFENG_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugjc2k3eCAwKavccB?e=Qn5ppw"
