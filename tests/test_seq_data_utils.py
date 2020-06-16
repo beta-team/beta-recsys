@@ -1,5 +1,7 @@
 import sys
 
+from torch.utils.data import DataLoader
+
 from beta_rec.datasets.movielens import Movielens_100k
 from beta_rec.datasets.seq_data_utils import (
     SeqDataset,
@@ -8,8 +10,6 @@ from beta_rec.datasets.seq_data_utils import (
     dataset_to_seq_target_format,
     reindex_items,
 )
-
-from torch.utils.data import DataLoader
 
 sys.path.append("../")
 

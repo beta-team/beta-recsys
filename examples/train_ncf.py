@@ -3,6 +3,8 @@ import os
 import sys
 import time
 
+from tqdm import tqdm
+
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.gmf import GMFEngine
@@ -10,8 +12,6 @@ from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
-
-from tqdm import tqdm
 
 
 def parse_args():

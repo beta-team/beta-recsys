@@ -2,6 +2,9 @@ import argparse
 import os
 import sys
 
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+
 from beta_rec.core.eval_engine import SeqEvalEngine
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.datasets.seq_data_utils import (
@@ -15,9 +18,6 @@ from beta_rec.datasets.seq_data_utils import (
 from beta_rec.models.narm import NARMEngine
 from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
-
-from torch.utils.data import DataLoader
-from tqdm import tqdm
 
 
 def parse_args():

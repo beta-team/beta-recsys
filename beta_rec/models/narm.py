@@ -1,8 +1,5 @@
 import time
 
-from beta_rec.datasets.seq_data_utils import SeqDataset, collate_fn
-from beta_rec.models.torch_engine import ModelEngine
-
 import numpy as np
 import pandas as pd
 import torch
@@ -12,6 +9,9 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+
+from beta_rec.datasets.seq_data_utils import SeqDataset, collate_fn
+from beta_rec.models.torch_engine import ModelEngine
 
 
 class NARM(nn.Module):

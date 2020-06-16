@@ -1,15 +1,15 @@
 import argparse
 from datetime import datetime
 
+import numpy as np
+import pandas as pd
+
 import beta_rec.utils.constants as Constants
 import beta_rec.utils.evaluation as eval_model
 import cornac
 from beta_rec.data import grocery_data
 from beta_rec.utils import logger
 from beta_rec.utils.common_util import save_to_csv
-
-import numpy as np
-import pandas as pd
 
 base_string = "abcdefghijklmnopqrstuvwxyz"
 
