@@ -1,14 +1,14 @@
 import os
 import time
 
+import pandas as pd
+
 from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_TIMESTAMP_COL,
     DEFAULT_USER_COL,
 )
-
-import pandas as pd
 
 # Download URL.
 DIGINETICA_URL = "https://cikm2016.cs.iupui.edu/cikm-cup/"
