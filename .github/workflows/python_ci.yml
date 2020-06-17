@@ -57,12 +57,12 @@ jobs:
           exit 1
         fi
 
-    - uses: actions/cache@v1
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+#    - uses: actions/cache@v1
+#      with:
+#        path: ~/.cache/pip
+#        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+#        restore-keys: |
+#          ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -72,14 +72,14 @@ jobs:
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select BLK --show-source --statistics
         # --exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --ignore=E402,W503,W504,E203,C901,I001,I003,I004 --max-complexity=10 --max-line-length=127 --statistics
-    - name: Check import foramt
-      run: |
-        # use isort to check
-        isort -c
+        flake8 . --count --ignore=E402,W503,W504,E203,C901,I001,I003,I004,I100,I101,I201 --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
         python -m pytest --cov-report=xml --cov=./
+    - name: Check import foramt
+      run: |
+        # use isort to check
+        isort . --check-only --recursive --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=88 --skip beta_rec/core/train_engine.py --skip examples/train_triple2vec.py --skip examples/train_vbcar.py --skip examples/train_cornac.py --skip examples/train_mf.py
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml # optional
