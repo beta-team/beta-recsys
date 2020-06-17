@@ -20,7 +20,7 @@ def parse_args():
         "--config_file",
         nargs="?",
         type=str,
-        default="/Users/mzq/git/beta_pro_zaiqiao_dev/configs/mf_default.json",
+        default="../configs/mf_default.json",
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
@@ -36,13 +36,6 @@ def parse_args():
         nargs="?",
         type=str,
         help="Options are: leave_one_out and temporal",
-    )
-    parser.add_argument(
-        "--root_dir",
-        default="/Users/mzq/git/beta_pro_zaiqiao_dev/",
-        nargs="?",
-        type=str,
-        help="Working directory",
     )
     parser.add_argument(
         "--tune", nargs="?", type=str, help="Tun parameter",
