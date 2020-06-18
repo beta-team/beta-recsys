@@ -57,12 +57,12 @@ jobs:
           exit 1
         fi
 
-#    - uses: actions/cache@v1
-#      with:
-#        path: ~/.cache/pip
-#        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-#        restore-keys: |
-#          ${{ runner.os }}-pip-
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -79,7 +79,7 @@ jobs:
     - name: Check import foramt
       run: |
         # use isort to check
-        isort . --check-only --recursive --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=88 --skip examples/train_triple2vec.py --skip examples/train_vbcar.py --skip examples/train_cornac.py --skip examples/train_mf.py
+        isort . --check-only --recursive --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=88 --skip beta_rec/core/train_engine.py --skip examples/train_triple2vec.py --skip examples/train_vbcar.py --skip examples/train_cornac.py --skip examples/train_mf.py
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml # optional
