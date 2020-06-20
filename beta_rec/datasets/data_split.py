@@ -42,7 +42,9 @@ def filter_by_count(df, group_col, filter_col, num):
 
 
 def check_data_available(data):
-    """ A simple notice showing that data interaction have.
+    """Check if a dataset is available after filtering.
+
+    Check whether a given dataset is available for later use.
 
     Args:
         data (DataFrame): interaction DataFrame to be processed.
@@ -113,7 +115,7 @@ def filter_user_item(df, min_u_c=5, min_i_c=5):
 
 
 def filter_user_item_order(df, min_u_c=5, min_i_c=5, min_o_c=5):
-    """ Filter data by the minimum purchase number of items and users.
+    """Filter data by the minimum purchase number of items and users.
 
     Args:
         df (DataFrame): interaction DataFrame to be processed.
@@ -337,9 +339,7 @@ def save_split_data(
         suffix (string): suffix of the data to be saved.
         base_dir (string): directory to save.
         data_split (string): sub folder name for saving the data.
-
     """
-
     data_file = os.path.join(base_dir, data_split)
     if not os.path.exists(data_file):
         os.makedirs(data_file)
@@ -622,7 +622,7 @@ def split_data(
     by_user=False,
     n_test=10,
 ):
-    """Data split methods.
+    """Split data by split_type and other parameters.
 
     Args:
         data (DataFrame): interaction DataFrame to be split
@@ -715,6 +715,10 @@ def split_data(
 
 
 def generate_random_data(n_interaction, user_id, item_id):
+    """Generate random data for testing.
+
+    Generate random data for unit test.
+    """
     oder_id = 10
     users = np.random.randint(user_id, size=n_interaction)
     orders = np.random.randint(oder_id, size=n_interaction) * 100 + users
@@ -737,6 +741,7 @@ def generate_parameterized_path(
     test_rate=0, random=False, n_negative=100, by_user=False
 ):
     """Generate parameterized path.
+
     Encode parameters into path to differentiate different split parameters.
 
     Args:

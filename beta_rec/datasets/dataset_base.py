@@ -34,13 +34,13 @@ shutil.register_unpack_format("7zip", [".7z"], unpack_7zarchive)
 class DatasetBase(object):
     """Base class for processing raw dataset into interactions, making and loading data splits
 
-            This is an beta dataset which can derive to other dataset.
-            Several directory that store the dataset file would be created in the initial process.
+    This is an beta dataset which can derive to other dataset.
+    Several directory that store the dataset file would be created in the initial process.
 
-            Args:
-                dataset_name: the dataset name that a folder can be created with.
-                url: the url that can be downloaded the dataset file.
-                manual_download_url: the url that users need to download manually
+    Args:
+         dataset_name: the dataset name that a folder can be created with.
+         url: the url that can be downloaded the dataset file.
+        manual_download_url: the url that users need to download manually
     """
 
     def __init__(
