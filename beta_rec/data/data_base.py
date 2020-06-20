@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from torch.utils.data import DataLoader, Dataset
 
-from beta_rec.utils.common_util import *
+from beta_rec.utils.common_util import normalized_adj_single
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
