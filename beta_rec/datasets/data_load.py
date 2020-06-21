@@ -9,20 +9,20 @@ from beta_rec.datasets.tafeng import Tafeng
 
 
 def load_user_fea_dic(config, fea_type):
-    """ TO BE DONE
+    """Load user feature.
 
     Args:
         config (dict): Dictionary of configuration
         fea_type (str): A string describing the feature type. Options:
 
     Returns:
-
+        dict: A dictionary with key being the item_id and value being the numpy array of feature vector
     """
     pass
 
 
 def load_item_fea_dic(config, fea_type):
-    """ Load item feature
+    """Load item feature.
 
     Args:
         config (dict): Dictionary of configuration
@@ -33,7 +33,6 @@ def load_item_fea_dic(config, fea_type):
             - cate
     Returns:
         dict: A dictionary with key being the item_id and value being the numpy array of feature vector
-
     """
     data_str = config["dataset"]["dataset"]
     root_dir = config["system"]["root_dir"]
@@ -72,14 +71,15 @@ def load_item_fea_dic(config, fea_type):
 
 
 def load_split_dataset(config):
-    """Loading dataset
+    """Load split dataset.
 
     Args:
         config (dict): Dictionary of configuration
 
     Returns:
-
-
+        train_data (DataFrame): Interaction for training.
+        valid_data list(DataFrame): List of interactions for validation.
+        test_data list(DataFrame): List of interactions for testing.
     """
     dataset_mapping = {
         "ml_100k": Movielens_100k,
@@ -99,7 +99,7 @@ def load_split_dataset(config):
 
 
 def load_user_item_feature(config):
-    """Loading features of users and items
+    """Load features of users and items.
 
     Args:
         config (dict): Dictionary of configuration
