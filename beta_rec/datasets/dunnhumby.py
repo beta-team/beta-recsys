@@ -38,15 +38,16 @@ DUNNHUMBY_TEMPORAL_BASKET_SPLIT_URL = (
 
 
 class Dunnhumby(DatasetBase):
-    def __init__(self):
-        """Dunnhumby
+    r"""Dunnhumby Dataset.
 
-        Dunnhumby dataset.
-        If the dataset can not be download by the url,
-        you need to down the dataset by the link:
-            'https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip'
-        then put it into the directory `dunnhumby/raw`
-        """
+    If the dataset can not be download by the url,
+    you need to down the dataset by the link:
+        'https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip'
+    then put it into the directory `dunnhumby/raw`
+    """
+
+    def __init__(self):
+        """Init Dunnhumby Class."""
         super().__init__(
             "dunnhumby",
             url=DUNNHUMBY_URL,
@@ -61,15 +62,14 @@ class Dunnhumby(DatasetBase):
 
     @timeit
     def parse_raw_data(self, data_base_dir="./dunnhumby_The-Complete-Journey"):
-        """Parse raw dunnhumby csv data from transaction_data.csv
+        """Parse raw dunnhumby csv data from transaction_data.csv.
 
         Args:
-            data_base_dir (path): Default dir is "./dunnhumby - The Complete Journey CSV"
+            data_base_dir (path): Default dir is "./dunnhumby - The Complete Journey CSV".
 
         Returns:
-            DataFrame of interactions
+            DataFrame of interactions.
         """
-
         transaction_data = os.path.join(data_base_dir, "transaction_data.csv")
         prior_transaction = pd.read_csv(
             transaction_data,
@@ -109,7 +109,7 @@ class Dunnhumby(DatasetBase):
         return prior_transaction
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction

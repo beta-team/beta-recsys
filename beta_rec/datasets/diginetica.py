@@ -28,45 +28,45 @@ DIGINETICA_TIPS = """
 
 def process_time(standard_time=None):
     """Transform time format "xxxx-xx-xx" into format "xxxx-xx-xx xx-xx-xx".
-    Since there is no specific hour-minute-second data, we assume it is 00:00:00.
+
+    If there is no specified hour-minute-second data, we use 00:00:00 as default value.
 
     Args:
         standard_time: str with format "xxxx-xx-xx".
     Returns:
         timestamp: timestamp data.
     """
-
     standard_time = standard_time + " 00:00:00"
-    dateArr = time.strptime(standard_time, "%Y-%m-%d %H:%M:%S")
-    timestamp = int(time.mktime(dateArr))
+    date_arr = time.strptime(standard_time, "%Y-%m-%d %H:%M:%S")
+    timestamp = int(time.mktime(date_arr))
     return timestamp
 
 
 class Diginetica(DatasetBase):
+    r"""Diginetica Dataset.
+
+    This is a dataset provided by DIGINETICA and its partners containing anonymized search and browsing logs,
+    product data, anonymized transactions, and a large data set of product images. The participants have to
+    predict search relevance of products according to the personal shopping, search, and browsing preferences of
+    the users. Both 'query-less' and 'query-full' sessions are possible. The evaluation is based on click and
+    transaction data.
+
+    The dataset can not be download by the url,
+    you need to down the dataset by 'https://cikm2016.cs.iupui.edu/cikm-cup/'
+    then put it into the directory `diginetica/raw`,
+    then unzip this file and rename the new directory to 'diginetica'.
+
+    Note: you also need unzip files in 'diginetica/raw/diginetica'.
+    """
+
     def __init__(self):
-        """Diginetica
-
-        Diginetica dataset.
-        This is a dataset provided by DIGINETICA and its partners containing
-        anonymized search and browsing logs, product data, anonymized transactions,
-        and a large data set of product images. The participants have to predict
-        search relevance of products according to the personal shopping, search,
-        and browsing preferences of the users. Both 'query-less' and 'query-full'
-        sessions are possible. The evaluation is based on click and transaction data.
-
-        The dataset can not be download by the url,
-        you need to down the dataset by 'https://cikm2016.cs.iupui.edu/cikm-cup/'
-        then put it into the directory `diginetica/raw`,
-        then unzip this file and rename the new directory to 'diginetica'.
-
-        Note: you also need unzip files in 'diginetica/raw/diginetica'.
-        """
+        """Init Diginetica Class."""
         super().__init__(
             "diginetica", manual_download_url=DIGINETICA_URL, tips=DIGINETICA_TIPS,
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
@@ -80,7 +80,6 @@ class Diginetica(DatasetBase):
         3. Add rating column and create timestamp column.
         4. Save data model.
         """
-
         # Step 1: Download diginetica dataset if this dataset is not existed.
         diginetica_path = os.path.join(
             self.raw_path, self.dataset_name, "diginetica.csv"

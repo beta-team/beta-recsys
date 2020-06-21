@@ -24,11 +24,10 @@ EPIONIONS_RANDOM_SPLIT_URL = (
 
 
 class Epinions(DatasetBase):
-    def __init__(self):
-        """Epinions
+    """Epinions Dataset."""
 
-        Epinions dataset.
-        """
+    def __init__(self):
+        """Init Epinions Class."""
         super().__init__(
             "epinions",
             url=EPINIONS_URL,
@@ -37,11 +36,10 @@ class Epinions(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, f"{self.dataset_name}.txt")
 
