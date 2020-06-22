@@ -39,18 +39,19 @@ INSTACART_TIPS = """
 
 
 class Instacart(DatasetBase):
+    """Instacart Dataset.
+
+    If the dataset can not be download by the url,
+    you need to down the dataset by the link:
+        'https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz'
+    then put it into the directory `instacart/raw`, unzip this file and rename the directory in 'instacart'.
+
+    Instacart dataset is used to predict when users buy
+    product for the next time, we construct it with structure [order_id, product_id].
+    """
+
     def __init__(self):
-        """Instacart
-
-        Instacart dataset
-        If the dataset can not be download by the url,
-        you need to down the dataset by the link:
-            'https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz'
-        then put it into the directory `instacart/raw`, unzip this file and rename the directory in 'instacart'.
-
-        Instacart dataset is used to predict when users buy
-        product for the next time, we construct it with structure [order_id, product_id] =>
-        """
+        """Init Instacart Class."""
         super().__init__(
             "instacart",
             manual_download_url=INSTACART_URL,
@@ -61,11 +62,11 @@ class Instacart(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
 
         Download and load datasets
         1. Download instacart dataset if this dataset is not existed.
@@ -74,7 +75,6 @@ class Instacart(DatasetBase):
         4. Add additional columns [rating, timestamp].
         5. Rename columns and save data model.
         """
-
         # Step 1: Download instacart dataset if this dataset is not existed.
 
         print("Start loading data from raw data")
@@ -143,18 +143,19 @@ class Instacart(DatasetBase):
 
 
 class Instacart_25(DatasetBase):
+    """Instacart Dataset.
+
+    If the dataset can not be download by the url,
+    you need to down the dataset by the link:
+        'https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz'
+    then put it into the directory `instacart/raw`, unzip this file and rename the directory in 'instacart'.
+
+    Instacart dataset is used to predict when users buy
+    product for the next time, we construct it with structure [order_id, product_id].
+    """
+
     def __init__(self):
-        """Instacart
-
-        Instacart dataset
-        If the dataset can not be download by the url,
-        you need to down the dataset by the link:
-            'https://s3.amazonaws.com/instacart-datasets/instacart_online_grocery_shopping_2017_05_01.tar.gz'
-        then put it into the directory `instacart/raw`, unzip this file and rename the directory in 'instacart'.
-
-        Instacart dataset is used to predict when users buy
-        product for the next time, we construct it with structure [order_id, product_id] =>
-        """
+        """Init Instacart_25 Class."""
         super().__init__(
             "instacart_25",
             manual_download_url="https://www.kaggle.com/c/6644/download-all",
@@ -163,7 +164,7 @@ class Instacart_25(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
@@ -176,7 +177,6 @@ class Instacart_25(DatasetBase):
         4. Add additional columns [rating, timestamp].
         5. Rename columns and save data model.
         """
-
         # Step 1: Download instacart dataset if this dataset is not existed.
 
         print("Start loading data from raw data")
