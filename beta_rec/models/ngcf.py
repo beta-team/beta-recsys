@@ -151,9 +151,7 @@ class NGCFEngine(ModelEngine):
 
         n_batch = self.num_batch
 
-        for idx in range(n_batch):
-            users, pos_items, neg_items = train_loader.sample(self.batch_size)
-            batch_data = (users, pos_items, neg_items)
+        for batch_data in train_loader:
             loss = self.train_single_batch(batch_data)
             total_loss += loss
         print("[Training Epoch {}], Loss {}".format(epoch_id, loss))
