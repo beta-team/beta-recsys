@@ -34,16 +34,16 @@ LF_2K_TEMPORAL_BASKET_URL = "https://1drv.ms/u/s!AjMahLyQeZqugic_tmXvkpxN_RE8?e=
 
 
 class MovieLens_2k(DatasetBase):
+    """MovieLens-2k Dataset.
+
+    If the dataset can not be download by the url,
+    you need to down the dataset by the link:
+    'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens-2k-v2.zip'
+    then put it into the directory `movielens-2k/raw.
+    """
+
     def __init__(self):
-        """MovieLens-2k
-
-        MovieLens-2k dataset
-        If the dataset can not be download by the url,
-        you need to down the dataset by the link:
-            'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-movielens-2k-v2.zip'
-        then put it into the directory `movielens-2k/raw
-        """
-
+        """Init Movielens_2k Class."""
         super().__init__(
             "movielens-2k",
             manual_download_url=ML_2K_URL,
@@ -54,11 +54,11 @@ class MovieLens_2k(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
         """
         movie_2k_file = os.path.join(self.raw_path, "user_ratedmovies-timestamps.dat")
         if not os.path.exists(movie_2k_file):
@@ -97,20 +97,20 @@ class MovieLens_2k(DatasetBase):
 
 
 class Delicious_2k(DatasetBase):
+    """delicious-2k Dataset.
+
+    This dataset contains social networking, bookmarking, and tagging information
+    from a set of 2K users from Delicious social bookmarking system.
+    http://www.delicious.com.
+
+    If the dataset can not be download by the url,
+    you need to down the dataset in the following link:
+    'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
+    then put it into the directory `delicious-2k/raw`.
+    """
+
     def __init__(self):
-        """delicious-2k
-
-        Delicious-2k dataset
-        This dataset contains social networking, bookmarking, and tagging information
-        from a set of 2K users from Delicious social bookmarking system.
-        http://www.delicious.com
-
-        If the dataset can not be download by the url,
-        you need to down the dataset in the following link:
-            'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip'
-        then put it into the directory `delicious-2k/raw
-        """
-
+        """Init Delicious_2k Class."""
         super().__init__(
             "delicious-2k",
             manual_download_url=DL_2K_URL,
@@ -121,11 +121,11 @@ class Delicious_2k(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
         """
         delicious_file = os.path.join(
             self.raw_path, "user_taggedbookmarks-timestamps.dat"
@@ -170,19 +170,19 @@ class Delicious_2k(DatasetBase):
 
 
 class LastFM_2k(DatasetBase):
+    """Lastfm-2k Dataset.
+
+    This dataset contains social networking, tagging, and music artist listening information
+    from a set of 2K users from Last.fm online music system.
+
+    If the dataset can not be download by the url,
+    you need to down the dataset by the link:
+        'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
+    then put it into the directory `delicious-2k/raw`.
+    """
+
     def __init__(self):
-        """lastfm-2k
-
-        lastfm-2k dataset
-        This dataset contains social networking, tagging, and music artist listening information
-        from a set of 2K users from Last.fm online music system.
-
-        If the dataset can not be download by the url,
-        you need to down the dataset by the link:
-            'http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip'
-        then put it into the directory `delicious-2k/raw
-        """
-
+        """Init LastFM_2k Class."""
         super().__init__(
             "lastfm-2k",
             manual_download_url=LF_2K_URL,
@@ -196,11 +196,11 @@ class LastFM_2k(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
         """
         lastfm_file = os.path.join(self.raw_path, "user_taggedartists-timestamps.dat")
         if not os.path.exists(lastfm_file):
