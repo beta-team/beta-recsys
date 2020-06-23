@@ -6,6 +6,7 @@ from functools import wraps
 
 import numpy as np
 import pandas as pd
+import scipy.sparse as sp
 import torch
 from tabulate import tabulate
 
@@ -16,6 +17,26 @@ from beta_rec.utils.constants import (
     DEFAULT_TIMESTAMP_COL,
     DEFAULT_USER_COL,
 )
+
+
+def normalized_adj_single(adj):
+    """ Missing docs
+
+    Args:
+        adj:
+
+    Returns:
+
+    """
+    rowsum = np.array(adj.sum(1))
+    d_inv = np.power(rowsum, -1).flatten()
+    d_inv[np.isinf(d_inv)] = 0.0
+    d_mat_inv = sp.diags(d_inv)
+
+    norm_adj = d_mat_inv.dot(adj)
+    # norm_adj = adj.dot(d_mat_inv)
+    print("generate single-normalized adjacency matrix.")
+    return norm_adj.tocoo()
 
 
 def ensureDir(dir_path):

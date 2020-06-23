@@ -1,12 +1,13 @@
 import argparse
 import os
 
+from ray import tune
+
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.mf import MFEngine
 from beta_rec.utils.common_util import DictToObject
 from beta_rec.utils.monitor import Monitor
-from ray import tune
 
 
 def parse_args():
@@ -22,6 +23,9 @@ def parse_args():
         type=str,
         default="../configs/mf_default.json",
         help="Specify the config file name. Only accept a file from ../configs/",
+    )
+    parser.add_argument(
+        "--root_dir", nargs="?", type=str, help="Root path of the project",
     )
     # If the following settings are specified with command line,
     # These settings will used to update the parameters received from the config file.
