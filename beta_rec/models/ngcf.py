@@ -105,7 +105,6 @@ class NGCFEngine(ModelEngine):
         self.decay = self.regs[0]
         self.batch_size = config["batch_size"]
         self.norm_adj = config["norm_adj"]
-        self.num_batch = config["num_batch"]
         self.model = NGCF(config, self.norm_adj)
         super(NGCFEngine, self).__init__(config)
         self.model.to(self.device)
@@ -149,11 +148,7 @@ class NGCFEngine(ModelEngine):
         self.model.train()
         total_loss = 0.0
 
-        n_batch = self.num_batch
-
-        for idx in range(n_batch):
-            users, pos_items, neg_items = train_loader.sample(self.batch_size)
-            batch_data = (users, pos_items, neg_items)
+        for batch_data in train_loader:
             loss = self.train_single_batch(batch_data)
             total_loss += loss
         print("[Training Epoch {}], Loss {}".format(epoch_id, loss))

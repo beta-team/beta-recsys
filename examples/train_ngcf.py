@@ -1,13 +1,12 @@
 import argparse
-import json
 import os
 
 import numpy as np
 import torch
 
 from beta_rec.core.train_engine import TrainEngine
+from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.ngcf import NGCFEngine
-from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
@@ -68,30 +67,35 @@ class NGCF_train(TrainEngine):
         super(NGCF_train, self).__init__(self.config)
         self.load_dataset()
         self.build_data_loader()
-        self.engine = NGCFEngine(self.config)
+        self.engine = NGCFEngine(self.config["model"])
 
     def build_data_loader(self):
         # ToDo: Please define the directory to store the adjacent matrix
-        plain_adj, norm_adj, mean_adj = self.data.get_adj_mat()
-        norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj)
-        self.config["norm_adj"] = norm_adj
-        self.config["num_batch"] = self.data.n_train // config["batch_size"] + 1
-        self.config["n_users"] = self.data.n_users
-        self.config["n_items"] = self.data.n_items
+        self.sample_generator = DataLoaderBase(ratings=self.data.train)
+        adj_mat, norm_adj_mat, mean_adj_mat = self.sample_generator.get_adj_mat(
+            self.config
+        )
+        norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj_mat)
+        self.config["model"]["norm_adj"] = norm_adj
+        self.config["model"]["num_batch"] = (
+            self.data.n_train // self.config["model"]["batch_size"] + 1
+        )
+        self.config["model"]["n_users"] = self.data.n_users
+        self.config["model"]["n_items"] = self.data.n_items
 
     def train(self):
         self.monitor = Monitor(
-            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
-        self.model_dir = os.path.join(
-            self.config["model_save_dir"], self.config["save_name"]
+        self.model_save_dir = os.path.join(
+            self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
         )
-        for epoch in range(config["max_epoch"]):
+        for epoch in range(self.config["model"]["max_epoch"]):
             print(f"Epoch {epoch} starts !")
             print("-" * 80)
             if epoch > 0 and self.eval_engine.n_no_update == 0:
                 # previous epoch have already obtained better result
-                self.engine.save_checkpoint(model_dir=self.model_dir)
+                self.engine.save_checkpoint(model_dir=self.model_save_dir)
 
             if self.eval_engine.n_no_update >= MAX_N_UPDATE:
                 print(
@@ -101,7 +105,9 @@ class NGCF_train(TrainEngine):
                 )
                 break
 
-            train_loader = self.data
+            train_loader = self.sample_generator.pairwise_negative_train_loader(
+                self.config["model"]["batch_size"], self.config["model"]["device_str"]
+            )
             self.engine.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
             self.eval_engine.train_eval(
                 self.data.valid[0], self.data.test[0], self.engine.model, epoch
@@ -115,11 +121,6 @@ class NGCF_train(TrainEngine):
 
 if __name__ == "__main__":
     args = parse_args()
-    print(args)
-    config_file = args.config_file
-    with open(config_file) as config_params:
-        config = json.load(config_params)
-    update_args(config, args)
-    ngcf = NGCF_train(config)
+    ngcf = NGCF_train(args)
     ngcf.train()
     ngcf.test()
