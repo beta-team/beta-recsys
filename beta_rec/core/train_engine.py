@@ -3,7 +3,6 @@ import os
 import random
 import string
 import sys
-import tempfile
 from datetime import datetime
 
 import GPUtil
