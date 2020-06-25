@@ -3,9 +3,11 @@ import os
 import random
 import string
 import sys
+import tempfile
 from datetime import datetime
 
 import GPUtil
+import ray
 import torch
 from ax.service.ax_client import AxClient
 from ray import tune
@@ -61,7 +63,7 @@ class TrainEngine(object):
                     int(self.config["system"]["device"]),
                     "cuda:" + self.config["system"]["device"],
                 )
-
+        device_str = "cpu"
         gpu_id_list = GPUtil.getAvailable(
             order="memory", limit=3
         )  # get the fist gpu with the lowest load
@@ -156,6 +158,13 @@ class TrainEngine(object):
         config["system"]["tune_dir"] = os.path.join(
             config["system"]["root_dir"], config["system"]["tune_dir"]
         )
+
+        def get_user_temp_dir():
+            tempdir = os.path.join(config["system"]["root_dir"], "tmp")
+            print(f"ray temp dir {tempdir}")
+            return tempdir
+
+        ray.utils.get_user_temp_dir = get_user_temp_dir
 
         #  Model checkpoints paths to be saved
         config["system"]["model_save_dir"] = os.path.join(
