@@ -47,3 +47,4 @@ build/
 dist/
 *.egg-info/
 tune_results/
+tmp/
