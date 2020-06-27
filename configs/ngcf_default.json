@@ -42,5 +42,9 @@
         "max_epoch": 50,
         "save_name": "ngcf.model",
         "result_col": ["model","emb_dim","batch_size","optimizer","lr","regs"]
-    }
+    },
+    "tunable": [
+        {"name": "lr", "type": "choice", "values": [0.1,0.05,0.0025,0.0005,0.00025]},
+        {"name": "layer_size", "type": "choice", "values": [[32,32,32],[64,64,64],[128,128,128]]}
+    ]
 }
