@@ -67,7 +67,7 @@ def update_args(config, args):
             if v is not None and k in config[cfg]:
                 config[cfg][k] = v
                 args_dic[f"{cfg}:{k}"] = v
-    print_dict_as_table(args_dic, "Received parameters form command line (or default):")
+    print_dict_as_table(args_dic, "Received parameters from command line (or default):")
 
 
 def save_dataframe_as_npz(data, data_file):
