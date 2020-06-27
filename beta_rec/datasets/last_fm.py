@@ -18,13 +18,14 @@ LAST_FM_RANDOM_SPLIT_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugV8roce2jec5yVMs?e=
 
 
 class LastFM(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Last.FM
 
         Last.FM dataset.
         """
         super().__init__(
             "last_fm",
+            root_dir=root_dir,
             url=LAST_FM_URL,
             processed_leave_one_out_url=LAST_FM_LEAVE_ONE_OUT_URL,
             processed_random_split_url=LAST_FM_RANDOM_SPLIT_URL,

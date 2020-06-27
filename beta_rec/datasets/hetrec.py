@@ -42,10 +42,11 @@ class MovieLens_2k(DatasetBase):
     then put it into the directory `movielens-2k/raw.
     """
 
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Init Movielens_2k Class."""
         super().__init__(
             "movielens-2k",
+            root_dir=root_dir,
             manual_download_url=ML_2K_URL,
             url=ML_2K_URL,
             processed_leave_one_out_url="",
@@ -109,10 +110,11 @@ class Delicious_2k(DatasetBase):
     then put it into the directory `delicious-2k/raw`.
     """
 
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Init Delicious_2k Class."""
         super().__init__(
             "delicious-2k",
+            root_dir=root_dir,
             manual_download_url=DL_2K_URL,
             url=DL_2K_URL,
             processed_leave_one_out_url="",
@@ -181,10 +183,11 @@ class LastFM_2k(DatasetBase):
     then put it into the directory `delicious-2k/raw`.
     """
 
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Init LastFM_2k Class."""
         super().__init__(
             "lastfm-2k",
+            root_dir=root_dir,
             manual_download_url=LF_2K_URL,
             url=LF_2K_URL,
             processed_leave_one_basket_url=LF_2K_LEAVE_ONE_BASKET_URL,

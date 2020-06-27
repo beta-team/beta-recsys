@@ -23,7 +23,7 @@ RETAIL_ROCKET_TIPS = """
 
 
 class RetailRocket(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """RetailRocket
 
         RetailRocket dataset.
@@ -39,6 +39,7 @@ class RetailRocket(DatasetBase):
         """
         super().__init__(
             "retailrocket",
+            root_dir=root_dir,
             manual_download_url=RETAIL_ROCKET_URL,
             tips=RETAIL_ROCKET_TIPS,
         )

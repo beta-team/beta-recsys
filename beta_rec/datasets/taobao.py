@@ -24,7 +24,7 @@ TAOBAO_TIPS = """
 
 
 class Taobao(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Taobao
 
         Taobao dataset.
@@ -41,7 +41,10 @@ class Taobao(DatasetBase):
         then put it into the directory `taobao/raw`
         """
         super().__init__(
-            "taobao", manual_download_url=TAOBAO_URL, tips=TAOBAO_TIPS,
+            "taobao",
+            root_dir=root_dir,
+            manual_download_url=TAOBAO_URL,
+            tips=TAOBAO_TIPS,
         )
 
     def preprocess(self):

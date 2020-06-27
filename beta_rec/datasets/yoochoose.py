@@ -16,7 +16,7 @@ YOOCHOOSE_URL = "https://s3-eu-west-1.amazonaws.com/yc-rdata/yoochoose-data.7z"
 
 
 class YooChoose(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """YooChoose
 
         YooChoose Dataset.
@@ -45,7 +45,7 @@ class YooChoose(DatasetBase):
             https://s3-eu-west-1.amazonaws.com/yc-rdata/yoochoose-data.7z.
         then put it into the directory `yoochoose/raw` and unzip it.
         """
-        super().__init__("yoochoose", url=YOOCHOOSE_URL)
+        super().__init__("yoochoose", root_dir=root_dir, url=YOOCHOOSE_URL)
 
     def preprocess(self):
         """Preprocess the raw file
