@@ -9,6 +9,8 @@ from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.ngcf import NGCFEngine
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
+from beta_rec.utils.common_util import DictToObject
+from ray import tune
 
 
 def parse_args():
@@ -29,6 +31,9 @@ def parse_args():
     # These settings will used to update the parameters received from the config file.
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
+    )
+    parser.add_argument(
+        "--tune", nargs="?", type=str, default=True, help="Tun parameter",
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
     parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
@@ -118,9 +123,25 @@ class NGCF_train(TrainEngine):
         self.engine.resume_checkpoint(model_dir=self.model_dir)
         super(NGCF_train, self).test()
 
+def tune_train(config):
+    """Train the model with a hypyer-parameter tuner (ray)
+
+    Args:
+        config (dict): All the parameters for the model
+
+    Returns:
+
+    """
+    train_engine = NGCF_train(DictToObject(config))
+    best_performance = train_engine.train()
+    tune.track.log(valid_metric=best_performance)
+    train_engine.test()
 
 if __name__ == "__main__":
     args = parse_args()
-    ngcf = NGCF_train(args)
-    ngcf.train()
-    ngcf.test()
+    train_engine = NGCF_train(args)
+    if args.tune:
+        train_engine.tune(tune_train)
+    else:
+        train_engine.train()
+        train_engine.test()
