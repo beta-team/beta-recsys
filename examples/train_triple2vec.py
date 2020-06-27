@@ -4,7 +4,7 @@ from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.triple2vec import Triple2vecEngine
-from beta_rec.utils.common_util import update_args
+from beta_rec.utils.common_util import DictToObject, str2bool
 
 
 def parse_args():
@@ -39,16 +39,10 @@ def parse_args():
         "--root_dir", nargs="?", type=str, help="working directory",
     )
     parser.add_argument(
-        "--percent",
-        nargs="?",
-        type=float,
-        help="The percentage of the subset of the data set, only available on instacart data set.",
+        "--tune", nargs="?", type=str2bool, help="Tun parameter",
     )
     parser.add_argument(
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
-    )
-    parser.add_argument(
-        "--use_bias", nargs="?", type=int, help="",
     )
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
@@ -90,16 +84,17 @@ def tune_train(config):
     Returns:
 
     """
-    triple2vec = Triple2vec_train(config)
-    best_performance = triple2vec.train()
-    tune.track.log(best_ndcg=best_performance)
-    triple2vec.test()
+    train_engine = Triple2vec_train(DictToObject(config))
+    best_performance = train_engine.train()
+    tune.track.log(valid_metric=best_performance)
+    train_engine.test()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    config = {}
-    update_args(config, args)
-    triple2vec = Triple2vec_train(config)
-    triple2vec.train()
-    triple2vec.test()
+    train_engine = Triple2vec_train(args)
+    if args.tune:
+        train_engine.tune(tune_train)
+    else:
+        train_engine.train()
+        train_engine.test()
