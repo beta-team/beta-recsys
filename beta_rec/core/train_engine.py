@@ -6,12 +6,15 @@ import sys
 from datetime import datetime
 
 import GPUtil
+import ray
 import torch
+from ax.service.ax_client import AxClient
+from ray import tune
+from ray.tune.suggest.ax import AxSearch
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from ax.service.ax_client import AxClient
 from beta_rec.core.eval_engine import EvalEngine
 from beta_rec.data.grocery_data import GroceryData
 from beta_rec.utils import logger
@@ -22,8 +25,6 @@ from beta_rec.utils.common_util import (
     update_args,
 )
 from beta_rec.utils.constants import MAX_N_UPDATE
-from ray import tune
-from ray.tune.suggest.ax import AxSearch
 
 
 class TrainEngine(object):
@@ -61,7 +62,7 @@ class TrainEngine(object):
                     int(self.config["system"]["device"]),
                     "cuda:" + self.config["system"]["device"],
                 )
-
+        device_str = "cpu"
         gpu_id_list = GPUtil.getAvailable(
             order="memory", limit=3
         )  # get the fist gpu with the lowest load
@@ -105,11 +106,7 @@ class TrainEngine(object):
         update_args(config, self.args)
 
         # obtain abspath for the project
-        if config["system"]["root_dir"] == "default":
-            file_dir = os.path.dirname(os.path.abspath(__file__))
-            config["system"]["root_dir"] = os.path.abspath(
-                os.path.join(file_dir, "..", "..")
-            )
+        config["system"]["root_dir"] = os.path.abspath(config["system"]["root_dir"])
 
         # construct unique model run id, which consist of model name, config id and a timestamp
         timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -156,6 +153,17 @@ class TrainEngine(object):
             "The intermediate running statuses will be reported in folder:",
             config["system"]["run_dir"],
         )
+
+        config["system"]["tune_dir"] = os.path.join(
+            config["system"]["root_dir"], config["system"]["tune_dir"]
+        )
+
+        def get_user_temp_dir():
+            tempdir = os.path.join(config["system"]["root_dir"], "tmp")
+            print(f"ray temp dir {tempdir}")
+            return tempdir
+
+        ray.utils.get_user_temp_dir = get_user_temp_dir
 
         #  Model checkpoints paths to be saved
         config["system"]["model_save_dir"] = os.path.join(
@@ -264,6 +272,11 @@ class TrainEngine(object):
         config = vars(self.args)
         if "tune" in config:
             config["tune"] = False
+        if "root_dir" in config and config["root_dir"]:
+            config["root_dir"] = os.path.abspath(config["root_dir"])
+        else:
+            config["root_dir"] = os.path.abspath("..")
+        config["config_file"] = os.path.abspath(config["config_file"])
         print(config)
         tunable = self.config["tunable"]
         for para in tunable:
@@ -271,7 +284,7 @@ class TrainEngine(object):
                 config[para["name"]] = tune.grid_search(para["values"])
             if para["type"] == "range":
                 values = []
-                for val in range(para["bounds"][0], para["bounds"][1]):
+                for val in range(para["bounds"][0], para["bounds"][1] + 1):
                     values.append(val)
                 config[para["name"]] = tune.grid_search(values)
 
@@ -285,7 +298,7 @@ class TrainEngine(object):
         df.to_csv(
             os.path.join(
                 self.config["system"]["tune_dir"],
-                f"/{self.config['system']['model_run_id']}_tune_result.csv",
+                f"{self.config['system']['model_run_id']}_tune_result.csv",
             )
         )
         print(tabulate(df, headers=df.columns, tablefmt="psql"))

@@ -14,7 +14,7 @@ from beta_rec.datasets.data_load import (
     load_user_item_feature,
 )
 from beta_rec.utils.alias_table import AliasTable
-from beta_rec.utils.common_util import ensureDir, get_random_rep
+from beta_rec.utils.common_util import ensureDir, get_random_rep, normalized_adj_single
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
@@ -79,26 +79,6 @@ def calc_sim(A):
     # cosine similarity (elementwise multiply by inverse magnitudes)
     cosine = similarity * inv_mag
     return cosine.T * inv_mag
-
-
-def normalized_adj_single(adj):
-    """ Missing docs
-
-    Args:
-        adj:
-
-    Returns:
-
-    """
-    rowsum = np.array(adj.sum(1))
-    d_inv = np.power(rowsum, -1).flatten()
-    d_inv[np.isinf(d_inv)] = 0.0
-    d_mat_inv = sp.diags(d_inv)
-
-    norm_adj = d_mat_inv.dot(adj)
-    # norm_adj = adj.dot(d_mat_inv)
-    print("generate single-normalized adjacency matrix.")
-    return norm_adj.tocoo()
 
 
 def get_D_inv(adj):
