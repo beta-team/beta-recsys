@@ -3,14 +3,14 @@ import os
 
 import numpy as np
 import torch
+from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.ngcf import NGCFEngine
+from beta_rec.utils.common_util import DictToObject
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
-from beta_rec.utils.common_util import DictToObject
-from ray import tune
 
 
 def parse_args():
@@ -123,6 +123,7 @@ class NGCF_train(TrainEngine):
         self.engine.resume_checkpoint(model_dir=self.model_dir)
         super(NGCF_train, self).test()
 
+
 def tune_train(config):
     """Train the model with a hypyer-parameter tuner (ray)
 
@@ -136,6 +137,7 @@ def tune_train(config):
     best_performance = train_engine.train()
     tune.track.log(valid_metric=best_performance)
     train_engine.test()
+
 
 if __name__ == "__main__":
     args = parse_args()
