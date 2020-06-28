@@ -1,10 +1,8 @@
 import argparse
 import os
-import sys
 import time
 
 from ray import tune
-from tqdm import tqdm
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
