@@ -23,7 +23,7 @@ TAFENG_TEMPORAL_SPLIT_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugWp1Y1JefMXZr0ng?e
 
 
 class Tafeng(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Tafeng
 
         Tafeng dataset.
@@ -33,6 +33,7 @@ class Tafeng(DatasetBase):
         """
         super().__init__(
             "tafeng",
+            root_dir=root_dir,
             url=TAFENG_URL,
             manual_download_url=TAFENG_URL,
             processed_random_split_url=TAFENG_RANDOM_SPLIT_URL,

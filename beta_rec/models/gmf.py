@@ -46,7 +46,8 @@ class GMFEngine(ModelEngine):
     """Engine for training & evaluating GMF model"""
 
     def __init__(self, config):
-        self.model = GMF(config)
+        self.model = GMF(config["model"])
+        self.loss = torch.nn.BCELoss()
         super(GMFEngine, self).__init__(config)
 
     def train_single_batch(self, users, items, ratings):

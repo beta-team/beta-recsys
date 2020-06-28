@@ -59,10 +59,13 @@ class Diginetica(DatasetBase):
     Note: you also need unzip files in 'diginetica/raw/diginetica'.
     """
 
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Init Diginetica Class."""
         super().__init__(
-            "diginetica", manual_download_url=DIGINETICA_URL, tips=DIGINETICA_TIPS,
+            "diginetica",
+            root_dir=root_dir,
+            manual_download_url=DIGINETICA_URL,
+            tips=DIGINETICA_TIPS,
         )
 
     def preprocess(self):

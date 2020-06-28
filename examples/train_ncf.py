@@ -1,16 +1,15 @@
 import argparse
 import os
-import sys
 import time
 
-from tqdm import tqdm
+from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine
-from beta_rec.utils.common_util import update_args
+from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.monitor import Monitor
 
 
@@ -52,6 +51,9 @@ def parse_args():
         "--root_dir", nargs="?", type=str, help="Working directory",
     )
     parser.add_argument(
+        "--tune", nargs="?", type=str2bool, help="Tune parameter",
+    )
+    parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initial learning rate.")
@@ -77,28 +79,16 @@ class NCF_train(TrainEngine):
         super(NCF_train, self).__init__(self.config)
         self.load_dataset()
         self.build_data_loader()
-        self.gpu_id, self.config["device_str"] = self.get_device()
+        self.gpu_id, self.config["model"]["device_str"] = self.get_device()
 
     def build_data_loader(self):
         # ToDo: Please define the directory to store the adjacent matrix
         self.sample_generator = DataLoaderBase(ratings=self.data.train)
-        self.config["num_batch"] = self.data.n_train // self.config["batch_size"] + 1
-        self.config["n_users"] = self.data.n_users
-        self.config["n_items"] = self.data.n_items
-
-    def _train(self, engine, train_loader, save_dir):
-        self.eval_engine.flush()
-        epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
-        for epoch in epoch_bar:
-            print("Epoch {} starts !".format(epoch))
-            print("-" * 80)
-            if self.check_early_stop(engine, save_dir, epoch):
-                break
-            engine.train_an_epoch(train_loader, epoch_id=epoch)
-            """evaluate model on validation and test sets"""
-            self.eval_engine.train_eval(
-                self.data.valid[0], self.data.test[0], engine.model, epoch
-            )
+        self.config["model"]["num_batch"] = (
+            self.data.n_train // self.config["model"]["batch_size"] + 1
+        )
+        self.config["model"]["n_users"] = self.data.n_users
+        self.config["model"]["n_items"] = self.data.n_items
 
     def train(self):
         """ Main training navigator
@@ -109,13 +99,13 @@ class NCF_train(TrainEngine):
 
         # Options are: 'mlp', 'gmf', 'ncf_end', and 'ncf_pre';
         # Train NeuMF without pre-train
-        if self.config["model"] == "ncf_end":
+        if self.config["model"]["model"] == "ncf_end":
             self.train_ncf()
-        elif self.config["model"] == "gmf":
+        elif self.config["model"]["model"] == "gmf":
             self.train_gmf()
-        elif self.config["model"] == "mlp":
+        elif self.config["model"]["model"] == "mlp":
             self.train_mlp()
-        elif self.config["model"] == "ncf_pre":
+        elif self.config["model"]["model"] == "ncf_pre":
             self.train_gmf()
             self.train_mlp()
             self.train_ncf()
@@ -131,14 +121,15 @@ class NCF_train(TrainEngine):
             None
         """
         self.monitor = Monitor(
-            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
         train_loader = self.sample_generator.instance_a_train_loader(
-            self.config["num_negative"], self.config["batch_size"]
+            self.config["model"]["num_negative"], self.config["model"]["batch_size"]
         )
         self.engine = NeuMFEngine(self.config)
         self.neumf_save_dir = os.path.join(
-            self.config["model_save_dir"], self.config["neumf_config"]["save_name"]
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["neumf_config"]["save_name"],
         )
         self._train(self.engine, train_loader, self.neumf_save_dir)
         self.config["run_time"] = self.monitor.stop()
@@ -151,15 +142,16 @@ class NCF_train(TrainEngine):
             None
         """
         self.monitor = Monitor(
-            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
         train_loader = self.sample_generator.instance_a_train_loader(
-            self.config["num_negative"], self.config["batch_size"]
+            self.config["model"]["num_negative"], self.config["model"]["batch_size"]
         )
         # Train GMF
         self.engine = GMFEngine(self.config)
         self.gmf_save_dir = os.path.join(
-            self.config["model_save_dir"], self.config["gmf_config"]["save_name"]
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["gmf_config"]["save_name"],
         )
         self._train(self.engine, train_loader, self.gmf_save_dir)
         while self.eval_engine.n_worker:
@@ -176,14 +168,15 @@ class NCF_train(TrainEngine):
         """
         # Train MLP
         self.monitor = Monitor(
-            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
         train_loader = self.sample_generator.instance_a_train_loader(
-            self.config["num_negative"], self.config["batch_size"]
+            self.config["model"]["num_negative"], self.config["model"]["batch_size"]
         )
         self.engine = MLPEngine(self.config)
         self.mlp_save_dir = os.path.join(
-            self.config["model_save_dir"], self.config["mlp_config"]["save_name"]
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["mlp_config"]["save_name"],
         )
         self._train(self.engine, train_loader, self.mlp_save_dir)
 
@@ -194,11 +187,30 @@ class NCF_train(TrainEngine):
         self.eval_engine.test_eval(self.data.test, self.engine.model)
 
 
+def tune_train(config):
+    """Train the model with a hypyer-parameter tuner (ray)
+
+    Args:
+        config (dict): All the parameters for the model
+
+    Returns:
+
+    """
+    train_engine = NCF_train(DictToObject(config))
+    best_performance = train_engine.train()
+    tune.track.log(valid_metric=best_performance)
+    train_engine.test()
+
+
 if __name__ == "__main__":
     args = parse_args()
-    config = {}
-    update_args(config, args)
-    ncf = NCF_train(config)
-    ncf.train()
-    # test() have already implemented in train()
-    # ncf.test()
+    print(args)
+    if args.tune:
+        print("Start tune hyper-parameters ...")
+        train_engine = NCF_train(args)
+        train_engine.tune(tune_train)
+    else:
+        print("Run application with single config ...")
+        train_engine = NCF_train(args)
+        train_engine.train()
+        train_engine.test()

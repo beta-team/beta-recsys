@@ -1,3 +1,4 @@
+import argparse
 import os
 import random
 import time
@@ -66,7 +67,7 @@ def update_args(config, args):
             if v is not None and k in config[cfg]:
                 config[cfg][k] = v
                 args_dic[f"{cfg}:{k}"] = v
-    print_dict_as_table(args_dic, "Received parameters form command line (or default):")
+    print_dict_as_table(args_dic, "Received parameters from command line (or default):")
 
 
 def save_dataframe_as_npz(data, data_file):
@@ -267,3 +268,14 @@ def set_seed(seed):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")

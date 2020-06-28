@@ -26,7 +26,7 @@ YELP_TIPS = """
 
 
 class Yelp(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Yelp
 
         Yelp dataset.
@@ -36,6 +36,7 @@ class Yelp(DatasetBase):
         """
         super().__init__(
             "yelp",
+            root_dir=root_dir,
             manual_download_url=YELP_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",

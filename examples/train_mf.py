@@ -6,7 +6,7 @@ from ray import tune
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.mf import MFEngine
-from beta_rec.utils.common_util import DictToObject
+from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.monitor import Monitor
 
 
@@ -42,7 +42,7 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str, help="Tun parameter",
+        "--tune", nargs="?", type=str2bool, help="Tun parameter",
     )
     parser.add_argument(
         "--device", nargs="?", type=str, help="Device",
@@ -128,9 +128,10 @@ def tune_train(config):
 
 if __name__ == "__main__":
     args = parse_args()
-    train_engine = MF_train(args)
     if args.tune:
+        train_engine = MF_train(args)
         train_engine.tune(tune_train)
     else:
+        train_engine = MF_train(args)
         train_engine.train()
         train_engine.test()

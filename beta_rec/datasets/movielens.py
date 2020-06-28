@@ -175,12 +175,12 @@ class Movielens_100k(DatasetBase):
 
 
 class Movielens_1m(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Movielens 1m
 
         Movielens 1m dataset.
         """
-        super().__init__("ml_1m", url=ML_1M_URL)
+        super().__init__("ml_1m", root_dir=root_dir, url=ML_1M_URL)
 
     def preprocess(self):
         """Preprocess the raw file.
@@ -212,12 +212,12 @@ class Movielens_1m(DatasetBase):
 
 
 class Movielens_25m(DatasetBase):
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Movielens 25m
 
         Movielens 25m dataset.
         """
-        super().__init__("ml_25m", url=ML_25M_URL)
+        super().__init__("ml_25m", root_dir=root_dir, url=ML_25M_URL)
 
     def preprocess(self):
         """Preprocess the raw file.
