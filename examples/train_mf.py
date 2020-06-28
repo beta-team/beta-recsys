@@ -128,9 +128,10 @@ def tune_train(config):
 
 if __name__ == "__main__":
     args = parse_args()
-    train_engine = MF_train(args)
     if args.tune:
+        train_engine = MF_train(args)
         train_engine.tune(tune_train)
     else:
+        train_engine = MF_train(args)
         train_engine.train()
         train_engine.test()

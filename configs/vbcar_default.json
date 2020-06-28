@@ -32,9 +32,9 @@
     "model": {
         "model": "VBCAR",
         "config_id": "default",
-        "n_sample": 10000,
-        "emb_dim": 32,
-        "late_dim": 32,
+        "n_sample": 1000000,
+        "emb_dim": 64,
+        "late_dim": 256,
         "feature_type": "random",
         "n_neg": 5,
         "lr": 0.0005,
