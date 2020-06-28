@@ -33,7 +33,7 @@
         "model": "lightgcn",
         "config_id": "default",
         "keep_pro": 0.6,
-        "result_col": ["model", "emb_dim", "batch_size", "optimizer", "lr", "regs"],
+        "result_col": ["model", "emb_dim", "batch_size","layer_size", "optimizer", "lr", "regs"],
         "batch_size": 1024,
         "regs": [1e-5],
         "emb_dim": 64,
@@ -42,15 +42,10 @@
         "device": "gpu",
         "optimizer": "adam",
         "max_epoch": 50,
-        "result_file": "lightgcn_result.csv",
-        "log_dir": "logs/",
-        "result_dir": "results/",
-        "checkpoint_dir": "checkpoints/",
-        "dataset_dir": "datasets/",
-        "process_dir": "processes/",
-        "run_dir": "runs/",
-        "metrics": ["ndcg_at_k", "precision_at_k", "recall_at_k", "map_at_k"],
-        "validate_metric": "ndcg_at_k@10",
         "save_name": "lightgcn.model"
-    }
+    },
+    "tunable": [
+        {"name": "lr", "type": "choice", "values": [0.1,0.05,0.0025,0.0005,0.00025]},
+        {"name": "layer_size", "type": "choice", "values": [[64,64,64],[128,128,128],[64,128,64]]}
+    ]
 }

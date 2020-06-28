@@ -4,10 +4,12 @@ import sys
 
 import numpy as np
 import torch
+from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.lightgcn import LightGCNEngine
+from beta_rec.utils.common_util import DictToObject
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
@@ -32,6 +34,9 @@ def parse_args():
     # These settings will used to update the parameters received from the config file.
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
+    )
+    parser.add_argument(
+        "--tune", nargs="?", type=str, default=True, help="Tun parameter",
     )
     parser.add_argument(
         "--keep_pro", nargs="?", type=float, help="dropout", default=0.6
@@ -125,8 +130,26 @@ class LightGCN_train(TrainEngine):
         super(LightGCN_train, self).test()
 
 
+def tune_train(config):
+    """Train the model with a hypyer-parameter tuner (ray)
+
+    Args:
+        config (dict): All the parameters for the model
+
+    Returns:
+
+    """
+    train_engine = LightGCN_train(DictToObject(config))
+    best_performance = train_engine.train()
+    tune.track.log(valid_metric=best_performance)
+    train_engine.test()
+
+
 if __name__ == "__main__":
     args = parse_args()
-    lightcgn = LightGCN_train(args)
-    lightcgn.train()
-    lightcgn.test()
+    train_engine = LightGCN_train(args)
+    if args.tune:
+        train_engine.tune(tune_train)
+    else:
+        train_engine.train()
+        train_engine.test()
