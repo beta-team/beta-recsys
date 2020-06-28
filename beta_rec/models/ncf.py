@@ -82,9 +82,10 @@ class NeuMFEngine(ModelEngine):
     def __init__(self, config):
         self.config = config
         self.model = NeuMF(config)
-        super(NeuMFEngine, self).__init__(config)
+        self.loss = torch.nn.BCELoss()
+        super(NeuMFEngine, self).__init__(config["model"])
         print(self.model)
-        if self.config["model"] == "ncf_pre":
+        if self.config["model"]["model"] == "ncf_pre":
             self.load_pretrain_weights()
         else:
             self.init_weights()
@@ -135,7 +136,8 @@ class NeuMFEngine(ModelEngine):
         # load GMF model
         gmf_model = GMF(self.config)
         gmf_save_dir = os.path.join(
-            self.config["model_save_dir"], self.config["gmf_config"]["save_name"]
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["gmf_config"]["save_name"],
         )
         self.resume_checkpoint(
             gmf_save_dir, gmf_model,
@@ -146,7 +148,8 @@ class NeuMFEngine(ModelEngine):
         # load MLP model
         mlp_model = MLP(self.config)
         mlp_save_dir = os.path.join(
-            self.config["model_save_dir"], self.config["mlp_config"]["save_name"]
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["mlp_config"]["save_name"],
         )
         self.resume_checkpoint(
             mlp_save_dir, mlp_model,

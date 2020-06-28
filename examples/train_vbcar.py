@@ -48,7 +48,7 @@ def parse_args():
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str2bool, help="Tun parameter",
+        "--tune", nargs="?", type=str2bool, help="Tune parameter",
     )
     parser.add_argument("--sub_set", nargs="?", type=int, help="Subset of dataset.")
     parser.add_argument(

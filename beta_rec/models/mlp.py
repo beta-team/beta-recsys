@@ -61,7 +61,8 @@ class MLPEngine(ModelEngine):
     """Engine for training & evaluating GMF model"""
 
     def __init__(self, config):
-        self.model = MLP(config)
+        self.model = MLP(config["model"])
+        self.loss = torch.nn.BCELoss()
         super(MLPEngine, self).__init__(config)
         self.model.to(self.device)
 

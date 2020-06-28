@@ -1,38 +1,64 @@
 {
-    "model": "ncf_pre",
-    "model_comments": "'gmf', 'mlp', 'ncf_end', and 'ncf_pre'",
-    "config_id": "default",
-    "root_dir": "../",
-    "dataset": "ml_100k",
-    "data_split": "leave_one_out",
-    "percent": 1,
-    "emb_dim": 32,
-    "num_negative": 4,
-    "batch_size": 512,
-    "dropout": 0.0,
-    "metrics": ["ndcg_at_k", "precision_at_k", "recall_at_k", "map_at_k"],
-    "validate_metric": "ndcg_at_k@10",
-    "device": "gpu",
-    "optimizer": "adam",
-    "lr": 1e-3,
-    "max_epoch": 20,
-    "result_file": "ncf_result.csv",
-    "log_dir": "logs/",
-    "result_dir": "results/",
-    "checkpoint_dir": "checkpoints/",
-    "dataset_dir": "datasets/",
-    "run_dir": "runs/",
-    "gmf_config": {
-        "name": "gmf",
-        "save_name": "gmf.model"
+    "system": {
+        "root_dir": "../",
+        "log_dir": "logs/",
+        "result_dir": "results/",
+        "process_dir": "processes/",
+        "checkpoint_dir": "checkpoints/",
+        "dataset_dir": "datasets/",
+        "run_dir": "runs/",
+        "tune_dir": "tune_results/",
+        "device": "gpu",
+        "seed": 2020,
+        "metrics": ["ndcg", "precision", "recall", "map"],
+        "k": [5,10,20],
+        "valid_metric": "ndcg",
+        "valid_k": 10,
+        "result_file": "ncf_result.csv"
     },
-    "mlp_config": {
-        "name": "mlp",
-        "n_layers": 3,
-        "save_name": "mlp.model"
+    "dataset": {
+        "dataset": "ml_100k",
+        "data_split": "leave_one_out",
+        "validate": true,
+        "download": false,
+        "random": false,
+        "test_rate": 0.2,
+        "by_user": false,
+        "n_test": 10,
+        "n_negative": 100,
+        "result_col": ["dataset","data_split","validate"]
     },
-    "neumf_config": {
-        "name": "ncf",
-        "save_name": "ncf.model"
-    }
+    "model": {
+        "model": "ncf_pre",
+        "config_id": "default",
+        "emb_dim": 32,
+        "num_negative": 5,
+        "lr": 1e-3,
+        "alpha": 0.001,
+        "batch_size": 512,
+        "batch_eval": true,
+        "dropout": 0.0,
+        "optimizer": "adam",
+        "l2_regularization": 0.01,
+        "max_epoch": 20,
+        "gmf_config": {
+            "name": "gmf",
+            "save_name": "gmf.model"
+        },
+        "mlp_config": {
+            "name": "mlp",
+            "n_layers": 3,
+            "save_name": "mlp.model"
+        },
+        "neumf_config": {
+            "name": "ncf",
+            "save_name": "ncf.model"
+        },
+        "save_name": "vbcar.model",
+        "result_col": ["model","emb_dim","batch_size","optimizer","lr"]
+    },
+    "tunable": [
+        {"name": "lr", "type": "choice", "values": [0.0005,0.00025]}
+    ]
 }
+
