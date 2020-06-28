@@ -33,7 +33,7 @@
         "model": "Triple2vec",
         "config_id": "default",
         "n_sample": 1000000,
-        "emb_dim": 32,
+        "emb_dim": 64,
         "n_neg": 5,
         "lr": 0.0005,
         "batch_size": 256,

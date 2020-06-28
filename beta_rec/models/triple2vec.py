@@ -101,7 +101,7 @@ class Triple2vecEngine(ModelEngine):
 
     def __init__(self, config):
         self.config = config
-        self.model = Triple2vec(config)
+        self.model = Triple2vec(config["model"])
         super(Triple2vecEngine, self).__init__(config)
 
     def train_single_batch(self, batch_data, ratings=None):
@@ -128,18 +128,24 @@ class Triple2vecEngine(ModelEngine):
                 [triple[2] for triple in sample], dtype=torch.int64, device=self.device,
             )
             neg_u = torch.tensor(
-                self.data.user_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.user_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
             neg_i_1 = torch.tensor(
-                self.data.item_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.item_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
 
             neg_i_2 = torch.tensor(
-                self.data.item_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.item_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
