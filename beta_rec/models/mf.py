@@ -83,7 +83,9 @@ class MFEngine(ModelEngine):
         self.batch_size = config["model"]["batch_size"]
         super(MFEngine, self).__init__(config)
         self.model.to(self.device)
-        self.loss = self.config["model"]["loss"] if "loss" in self.config["model"] else "bpr"
+        self.loss = (
+            self.config["model"]["loss"] if "loss" in self.config["model"] else "bpr"
+        )
         print(f"using {self.loss} loss...")
 
     def train_single_batch(self, batch_data):
