@@ -23,14 +23,14 @@ TAFENG_TEMPORAL_SPLIT_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugWp1Y1JefMXZr0ng?e
 
 
 class Tafeng(DatasetBase):
-    def __init__(self, root_dir=None):
-        """Tafeng
+    """Tafeng Dataset.
 
-        Tafeng dataset.
-        The dataset can not be download by the url,
-        you need to down the dataset by 'https://1drv.ms/u/s!AjMahLyQeZqugjc2k3eCAwKavccB?e=Qn5ppw'
-        then put it into the directory `tafeng/raw`
-        """
+    The dataset can not be download by the url, you need to down the dataset by
+    'https://1drv.ms/u/s!AjMahLyQeZqugjc2k3eCAwKavccB?e=Qn5ppw' then put it into the directory `tafeng/raw`.
+    """
+
+    def __init__(self, root_dir=None):
+        """Init Tafeng Class."""
         super().__init__(
             "tafeng",
             root_dir=root_dir,
@@ -40,11 +40,10 @@ class Tafeng(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, "train.txt")
         if not os.path.exists(file_name):
@@ -59,9 +58,9 @@ class Tafeng(DatasetBase):
                 temp_list = line.replace("\n", "\t").split("\t")
                 # replace '\n' in the end of the line by '\t'
                 # split line by '\t'
-                # store splited items in a list
+                # store split items in a list
                 order_id = temp_list[0]
-                item_ids_list = temp_list[1:-3]  # itemids
+                item_ids_list = temp_list[1:-3]  # item_ids
                 time_order = temp_list[-2].replace("-", "")
                 user_id = temp_list[-3]
                 for item_id in item_ids_list:
@@ -74,9 +73,9 @@ class Tafeng(DatasetBase):
                 temp_list = line.replace("\n", "\t").split("\t")
                 # replace '\n' in the end of the line by '\t'
                 # split line by '\t'
-                # store splited items in a list
+                # store split items in a list
                 order_id = temp_list[0]
-                item_ids_list = temp_list[1:-3]  # itemids
+                item_ids_list = temp_list[1:-3]  # item_ids
                 time_order = temp_list[-2].replace("-", "")
                 user_id = temp_list[-3]
                 for item_id in item_ids_list:
