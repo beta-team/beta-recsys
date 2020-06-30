@@ -22,7 +22,8 @@ Welcome to Beta-recsys's documentation!
    :maxdepth: 1
    :caption: Package Reference
 
-   modules/beta_rec
+   modules/core
+   modules/data
    modules/datasets
    modules/models
    modules/utils
