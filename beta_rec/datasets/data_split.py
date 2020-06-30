@@ -186,7 +186,6 @@ def feed_neg_sample(data, negative_num, item_sampler):
         item_sampler (AliasTable): a AliasTable sampler that contains the items.
     Returns:
         DataFrame: interaction DataFrame with a new 'flag' column labeling with "train", "test" or "valid".
-
     """
     unique_item_set = set(data[DEFAULT_ITEM_COL].unique())
     unique_rating_num = data[DEFAULT_RATING_COL].nunique()
@@ -255,7 +254,6 @@ def load_split_data(path, n_test=10):
         (DataFrame, list(DataFrame), list(DataFrame)): DataFrame of training interaction,
         DataFrame list of validation interaction,
         DataFrame list of testing interaction,
-
     """
     train_file = os.path.join(path, "train.npz")
     train_data = get_dataframe_from_npz(train_file)

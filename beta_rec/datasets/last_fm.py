@@ -18,11 +18,10 @@ LAST_FM_RANDOM_SPLIT_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugV8roce2jec5yVMs?e=
 
 
 class LastFM(DatasetBase):
-    def __init__(self, root_dir=None):
-        """Last.FM
+    """LastFM Dataset."""
 
-        Last.FM dataset.
-        """
+    def __init__(self, root_dir=None):
+        """Init LastFM Class."""
         super().__init__(
             "last_fm",
             root_dir=root_dir,
@@ -32,11 +31,10 @@ class LastFM(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        Preprocess the file downloaded via the url, convert it to a DataFrame consist of the user-item interaction
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, "user_artists.dat")
         if not os.path.exists(file_name):
