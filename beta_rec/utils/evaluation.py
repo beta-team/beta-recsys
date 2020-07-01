@@ -1,21 +1,23 @@
+from functools import lru_cache, wraps
+
 import numpy as np
 import pandas as pd
-from functools import lru_cache, wraps
-from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
-    DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
-    DEFAULT_PREDICTION_COL,
-    DEFAULT_K,
-    DEFAULT_THRESHOLD,
-)
 from sklearn.metrics import (
-    mean_squared_error,
-    mean_absolute_error,
-    r2_score,
     explained_variance_score,
-    roc_auc_score,
     log_loss,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+    roc_auc_score,
+)
+
+from beta_rec.utils.constants import (
+    DEFAULT_ITEM_COL,
+    DEFAULT_K,
+    DEFAULT_PREDICTION_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_THRESHOLD,
+    DEFAULT_USER_COL,
 )
 
 

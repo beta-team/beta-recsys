@@ -1,7 +1,7 @@
 requests~=2.23.0
 prometheus_client
 tensorboardX~=2.0
-ray~=0.8.4
+ray~=0.8.5
 torch==1.4.0
 numpy==1.18.1
 tqdm==4.45.0
@@ -25,3 +25,5 @@ py7zr~=0.6
 flake8-black==0.1.2
 wheel
 sphinx_markdown_tables~=0.0.14
+flake8-isort
+isort==4.3.20

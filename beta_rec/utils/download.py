@@ -1,6 +1,8 @@
-import requests
 import os
+
+import requests
 from tqdm import tqdm
+
 from beta_rec.utils.onedrive import OneDrive
 
 
@@ -36,7 +38,7 @@ def download_file(url, store_file_path):
         t.close()
 
         if total_size != 0 and t.n != total_size:
-            print(f"ERROR, download fail")
+            print("ERROR, download fail")
         else:
             print(f"Success loading file {filename} to {store_file_path}")
 

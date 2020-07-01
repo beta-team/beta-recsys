@@ -1,14 +1,16 @@
-import os
 import json
+import os
 import time
+
 import pandas as pd
+
+from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
 YELP_URL = "https://www.yelp.com/dataset"
@@ -24,16 +26,18 @@ YELP_TIPS = """
 
 
 class Yelp(DatasetBase):
-    def __init__(self):
-        """Yelp
+    """Yelp Dataset.
 
-        Yelp dataset.
-        The dataset can not be download by the url,
-        you need to down the dataset by 'https://www.yelp.com/dataset'
-        then put it into the directory `yelp/raw/yelp`
-        """
+    The dataset can not be download by the url,
+    you need to down the dataset by 'https://www.yelp.com/dataset'
+    then put it into the directory `yelp/raw/yelp`.
+    """
+
+    def __init__(self, root_dir=None):
+        """Init Yelp Class."""
         super().__init__(
             "yelp",
+            root_dir=root_dir,
             manual_download_url=YELP_URL,
             processed_leave_one_out_url="",
             processed_random_split_url="",
@@ -42,11 +46,11 @@ class Yelp(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
         """
         file_name = os.path.join(
             self.raw_path, self.dataset_name, "yelp_academic_dataset_review.json"
@@ -71,9 +75,9 @@ class Yelp(DatasetBase):
                 star = line["stars"]
 
                 # Create timestamp.
-                dateStr = str(line["date"])
-                dateArr = time.strptime(dateStr, "%Y-%m-%d %H:%M:%S")
-                timestamp = int(time.mktime(dateArr))
+                date_str = str(line["date"])
+                date_arr = time.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+                timestamp = int(time.mktime(date_arr))
 
                 # Construct HashMap.
                 if user not in userMap:

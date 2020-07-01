@@ -1,14 +1,20 @@
+import os
+import random
 from copy import deepcopy
+
+import numpy as np
+import pandas as pd
+import scipy.sparse as sp
+import torch
 from torch.utils.data import DataLoader, Dataset
+
+from beta_rec.utils.common_util import ensureDir, normalized_adj_single
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-import random
-import pandas as pd
-import torch
 
 
 class UserItemRatingDataset(Dataset):
@@ -105,7 +111,7 @@ class PairwiseNegativeDataset(Dataset):
         return self.user_tensor.size(0)
 
 
-class SampleGenerator(object):
+class DataLoaderBase(object):
     """Construct dataset for NCF"""
 
     def __init__(self, ratings):
@@ -124,6 +130,8 @@ class SampleGenerator(object):
         self.preprocess_ratings = self._binarize(ratings)
         self.user_pool = set(self.ratings[DEFAULT_USER_COL].unique())
         self.item_pool = set(self.ratings[DEFAULT_ITEM_COL].unique())
+        self.n_users = len(self.user_pool)
+        self.n_items = len(self.item_pool)
         # create negative item samples for NCF learning
         self.negatives = self._sample_negative(ratings)
 
@@ -266,3 +274,73 @@ class SampleGenerator(object):
             }
         )
         return test_df
+
+    def get_adj_mat(self, config):
+        """ Get the adjacent matrix, if not previously stored then call the function to create
+        This method is for NGCF model
+        Return:
+            Different types of adjacment matrix
+        """
+
+        process_file_name = (
+            "ngcf_"
+            + config["dataset"]["dataset"]
+            + "_"
+            + config["dataset"]["data_split"]
+            + (
+                ("_" + str(config["dataset"]["percent"] * 100))
+                if "percent" in config
+                else ""
+            )
+        )
+        process_path = os.path.join(
+            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+        )
+        process_file_name = os.path.join(process_path, process_file_name)
+        ensureDir(process_file_name)
+        print(process_file_name)
+        try:
+            adj_mat = sp.load_npz(os.path.join(process_file_name, "s_adj_mat.npz"))
+            norm_adj_mat = sp.load_npz(
+                os.path.join(process_file_name, "s_norm_adj_mat.npz")
+            )
+            mean_adj_mat = sp.load_npz(
+                os.path.join(process_file_name, "s_mean_adj_mat.npz")
+            )
+            print("already load adj matrix", adj_mat.shape)
+        except Exception:
+            adj_mat, norm_adj_mat, mean_adj_mat = self.create_adj_mat()
+            sp.save_npz(os.path.join(process_file_name, "s_adj_mat.npz"), adj_mat)
+            sp.save_npz(
+                os.path.join(process_file_name, "s_norm_adj_mat.npz"), norm_adj_mat
+            )
+            sp.save_npz(
+                os.path.join(process_file_name, "s_mean_adj_mat.npz"), mean_adj_mat
+            )
+        return adj_mat, norm_adj_mat, mean_adj_mat
+
+    def create_adj_mat(self):
+        """ Create adjacent matirx from the user-item interaction matrix
+        """
+        adj_mat = sp.dok_matrix(
+            (self.n_users + self.n_items, self.n_users + self.n_items), dtype=np.float32
+        )
+        adj_mat = adj_mat.tolil()
+
+        R = sp.dok_matrix((self.n_users, self.n_items), dtype=np.float32)
+        user_np = np.array(self.ratings[DEFAULT_USER_COL])
+        item_np = np.array(self.ratings[DEFAULT_ITEM_COL])
+        for u in range(self.n_users):
+            index = list(np.where(user_np == u)[0])
+            i = item_np[index]
+            for item in i:
+                R[u, item] = 1
+        R = R.tolil()
+        adj_mat[: self.n_users, self.n_users :] = R
+        adj_mat[self.n_users :, : self.n_users] = R.T
+        adj_mat = adj_mat.todok()
+        print("already create adjacency matrix", adj_mat.shape)
+        norm_adj_mat = normalized_adj_single(adj_mat + sp.eye(adj_mat.shape[0]))
+        mean_adj_mat = normalized_adj_single(adj_mat)
+        print("already normalize adjacency matrix")
+        return adj_mat.tocsr(), norm_adj_mat.tocsr(), mean_adj_mat.tocsr()

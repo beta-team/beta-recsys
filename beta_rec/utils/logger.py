@@ -59,6 +59,7 @@ class Logger(object):
     def __init__(self, filename="default", stdout=None, stderr=None):
         self.stdout = stdout
         self.stderr = stderr
+        self.fileno = sys.stdout.fileno
         self.filename = filename
         self.message = ""
 

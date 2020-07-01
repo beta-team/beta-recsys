@@ -1,27 +1,28 @@
 import numpy as np
-from beta_rec.datasets.movielens import Movielens_100k, Movielens_1m, Movielens_25m
+
 from beta_rec.datasets.dunnhumby import Dunnhumby
-from beta_rec.datasets.tafeng import Tafeng
-from beta_rec.datasets.last_fm import LastFM
 from beta_rec.datasets.epinions import Epinions
 from beta_rec.datasets.instacart import Instacart, Instacart_25
+from beta_rec.datasets.last_fm import LastFM
+from beta_rec.datasets.movielens import Movielens_1m, Movielens_25m, Movielens_100k
+from beta_rec.datasets.tafeng import Tafeng
 
 
 def load_user_fea_dic(config, fea_type):
-    """ TO BE DONE
+    """Load user feature.
 
     Args:
         config (dict): Dictionary of configuration
         fea_type (str): A string describing the feature type. Options:
 
     Returns:
-
+        dict: A dictionary with key being the item_id and value being the numpy array of feature vector
     """
     pass
 
 
 def load_item_fea_dic(config, fea_type):
-    """ Load item feature
+    """Load item feature.
 
     Args:
         config (dict): Dictionary of configuration
@@ -32,10 +33,9 @@ def load_item_fea_dic(config, fea_type):
             - cate
     Returns:
         dict: A dictionary with key being the item_id and value being the numpy array of feature vector
-
     """
-    data_str = config["dataset"]
-    root_dir = config["root_dir"]
+    data_str = config["dataset"]["dataset"]
+    root_dir = config["system"]["root_dir"]
     print("load basic item featrue for dataset:", data_str, " type:", fea_type)
 
     item_feature = {}
@@ -71,14 +71,15 @@ def load_item_fea_dic(config, fea_type):
 
 
 def load_split_dataset(config):
-    """Loading dataset
+    """Load split dataset.
 
     Args:
         config (dict): Dictionary of configuration
 
     Returns:
-
-
+        train_data (DataFrame): Interaction for training.
+        valid_data list(DataFrame): List of interactions for validation.
+        test_data list(DataFrame): List of interactions for testing.
     """
     dataset_mapping = {
         "ml_100k": Movielens_100k,
@@ -91,12 +92,14 @@ def load_split_dataset(config):
         "instacart": Instacart,
         "instacart_25": Instacart_25,
     }
-    dataset = dataset_mapping[config["dataset"]]()
-    return dataset.load_split(config)
+    dataset = dataset_mapping[config["dataset"]["dataset"]](
+        root_dir=config["system"]["root_dir"]
+    )
+    return dataset.load_split(config["dataset"])
 
 
 def load_user_item_feature(config):
-    """Loading features of users and items
+    """Load features of users and items.
 
     Args:
         config (dict): Dictionary of configuration
@@ -117,5 +120,5 @@ def load_user_item_feature(config):
         "instacart": Instacart,
         "instacart_25": Instacart_25,
     }
-    dataset = dataset_mapping[config["dataset"]]()
+    dataset = dataset_mapping[config["dataset"]["dataset"]]()
     return dataset.load_fea_vec()

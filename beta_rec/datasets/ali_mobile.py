@@ -1,11 +1,13 @@
 import os
 import time
+
 import pandas as pd
+
 from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
 
 # Download URL
@@ -29,14 +31,17 @@ AliMobile dataset can not be downloaded by this url automatically, and you need 
 
 
 def process_time(standard_time=None):
-    """Transform time format "xxxx-xx-xxTxx-xx-xxZ" into format "xxxx-xx-xx xx-xx-xx".
+    r"""Transform time format "xxxx-xx-xxTxx-xx-xxZ" into format "xxxx-xx-xx xx-xx-xx".
+
+    Transform a standard time into our specified format.
 
     Args:
         standard_time: str with format "xxxx-xx-xxTxx-xx-xxZ".
+
     Returns:
         timestamp: timestamp data.
-    """
 
+    """
     standard_time = standard_time + ":00:00"
     date_arr = time.strptime(standard_time, "%Y-%m-%d %H:%M:%S")
     timestamp = int(time.mktime(date_arr))
@@ -44,20 +49,20 @@ def process_time(standard_time=None):
 
 
 class AliMobile(DatasetBase):
-    def __init__(self):
-        """AliMobile
+    r"""AliMobile Dataset.
 
-        AliMobile dataset.
-        This dataset is used to develop an individualized recommendation system
-        of all items, it is similar to the taobao dataset.
+    AliMobile dataset. This dataset is used to develop an individualized recommendation system of all items,
+    it is similar to the taobao dataset.
 
-        The dataset can not be download by the url,
-        you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46'
-        then put it into the directory `ali_mobile/raw`
-        """
+    The dataset can not be download by the url, you need to down the dataset by
+    'https://tianchi.aliyun.com/dataset/dataDetail?dataId=46' and then put it into the directory `ali_mobile/raw`
+    """
 
+    def __init__(self, root_dir=None):
+        r"""Init the AliMobile Class."""
         super().__init__(
             "ali_mobile",
+            root_dir=root_dir,
             manual_download_url=ALIMOBILE_URL,
             processed_random_split_url=ALIMOBILE_RANDOM_SPLIT_URL,
             processed_temporal_split_url=ALIMOBILE_TEMPORAL_SPLIT_URL,
@@ -65,7 +70,7 @@ class AliMobile(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
@@ -78,7 +83,6 @@ class AliMobile(DatasetBase):
         2. Load AliMobile <ali-mobile-interaction> table from 'tianchi_mobile_recommend_train_user.csv'.
         3. Save dataset model.
         """
-
         # Step 1: Download AliMobile dataset if this dataset is not existed.
         ali_mobile_path = os.path.join(self.raw_path, "ali_mobile.csv")
         if not os.path.exists(ali_mobile_path):

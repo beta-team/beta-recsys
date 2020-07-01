@@ -1,12 +1,13 @@
 import os
+
 import pandas as pd
 
+from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
 
 # download_url
 EPINIONS_URL = (
@@ -23,24 +24,23 @@ EPIONIONS_RANDOM_SPLIT_URL = (
 
 
 class Epinions(DatasetBase):
-    def __init__(self):
-        """Epinions
+    """Epinions Dataset."""
 
-        Epinions dataset.
-        """
+    def __init__(self, root_dir=None):
+        """Init Epinions Class."""
         super().__init__(
             "epinions",
+            root_dir=root_dir,
             url=EPINIONS_URL,
             processed_leave_one_out_url=EPIONIONS_LEAVE_ONE_OUT_URL,
             processed_random_split_url=EPIONIONS_RANDOM_SPLIT_URL,
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, f"{self.dataset_name}.txt")
 

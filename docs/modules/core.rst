@@ -1,18 +1,18 @@
-beta\_rec package
+beta\_rec.core package
 =================
 
-beta\_rec.eval\_engine module
+beta\_rec.core.eval\_engine module
 -----------------------------
 
-.. automodule:: beta_rec.eval_engine
+.. automodule:: beta_rec.core.eval_engine
    :members:
    :undoc-members:
    :show-inheritance:
 
-beta\_rec.train\_engine module
+beta\_rec.core.train\_engine module
 ------------------------------
 
-.. automodule:: beta_rec.train_engine
+.. automodule:: beta_rec.core.train_engine
    :members:
    :undoc-members:
    :show-inheritance:
@@ -21,7 +21,7 @@ beta\_rec.train\_engine module
 Module contents
 ---------------
 
-.. automodule:: beta_rec
+.. automodule:: beta_rec.core
    :members:
    :undoc-members:
    :show-inheritance:

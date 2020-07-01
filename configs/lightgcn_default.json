@@ -14,7 +14,7 @@
         "k": [5, 10, 20],
         "valid_metric": "ndcg",
         "valid_k": 10,
-        "result_file": "ngcf_result.csv"
+        "result_file": "lightgcn_result.csv"
     },
     "dataset": {
         "dataset": "ml_100k",
@@ -30,21 +30,22 @@
         "result_col": ["dataset", "data_split", "validate"]
     },
     "model": {
-        "model": "NGCF",
+        "model": "lightgcn",
         "config_id": "default",
+        "keep_pro": 0.6,
+        "result_col": ["model", "emb_dim", "batch_size","layer_size", "optimizer", "lr", "regs"],
         "batch_size": 1024,
         "regs": [1e-5],
         "emb_dim": 64,
         "layer_size": [64, 64, 64],
         "lr": 0.05,
+        "device": "gpu",
         "optimizer": "adam",
-        "mess_dropout": [0.1, 0.1, 0.1],
         "max_epoch": 50,
-        "save_name": "ngcf.model",
-        "result_col": ["model","emb_dim","batch_size","optimizer","lr","regs"]
+        "save_name": "lightgcn.model"
     },
     "tunable": [
         {"name": "lr", "type": "choice", "values": [0.1,0.05,0.0025,0.0005,0.00025]},
-        {"name": "layer_size", "type": "choice", "values": [[32,32,32],[64,64,64],[128,128,128]]}
+        {"name": "layer_size", "type": "choice", "values": [[64,64,64],[128,128,128],[64,128,64]]}
     ]
 }

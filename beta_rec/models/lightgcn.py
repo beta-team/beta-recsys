@@ -1,44 +1,41 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.sparse as sparse
 
 from beta_rec.models.torch_engine import ModelEngine
 
 
-class NGCF(torch.nn.Module):
+class LightGCN(torch.nn.Module):
     """Model initialisation, embedding generation and prediction of NGCF
 
     """
 
     def __init__(self, config, norm_adj):
-        super(NGCF, self).__init__()
+        super(LightGCN, self).__init__()
         self.config = config
         self.n_users = config["n_users"]
         self.n_items = config["n_items"]
         self.emb_dim = config["emb_dim"]
         self.layer_size = config["layer_size"]
-        self.norm_adj = norm_adj
         self.n_layers = len(self.layer_size)
-        self.dropout = nn.ModuleList()
-        self.GC_weights = nn.ModuleList()
-        self.Bi_weights = nn.ModuleList()
-        self.dropout_list = list(config["mess_dropout"])
+        self.norm_adj = norm_adj
         self.layer_size = [self.emb_dim] + self.layer_size
-        # Create GNN layers
-
-        for i in range(self.n_layers):
-            self.GC_weights.append(
-                nn.Linear(self.layer_size[i], self.layer_size[i + 1])
-            )
-            self.Bi_weights.append(
-                nn.Linear(self.layer_size[i], self.layer_size[i + 1])
-            )
-            self.dropout.append(nn.Dropout(self.dropout_list[i]))
 
         self.user_embedding = nn.Embedding(self.n_users, self.emb_dim)
         self.item_embedding = nn.Embedding(self.n_items, self.emb_dim)
         self.init_emb()
+
+    def dropout(self, x, keep_prob):
+
+        size = x.size()
+        index = x.indices().t()
+        values = x.values()
+        random_index = torch.rand(len(values)) + keep_prob
+        random_index = random_index.int().bool()
+        index = index[random_index]
+        values = values[random_index] / keep_prob
+        g = torch.sparse.FloatTensor(index.t(), values, size)
+
+        return g
 
     def init_emb(self):
         # Initialise users and items' embeddings
@@ -53,27 +50,26 @@ class NGCF(torch.nn.Module):
             u_g_embeddings (tensor): processed user embeddings
             i_g_embeddings (tensor): processed item embeddings
         """
-        ego_embeddings = torch.cat(
+        all_emb = torch.cat(
             (self.user_embedding.weight, self.item_embedding.weight), dim=0
         )
-        all_embeddings = [ego_embeddings]
-
+        embs = [all_emb]
+        norm_adj = norm_adj.coalesce()
         norm_adj = norm_adj.to(self.device)
-        for i in range(self.n_layers):
-            side_embeddings = sparse.mm(norm_adj, ego_embeddings)
-            sum_embeddings = F.leaky_relu(self.GC_weights[i](side_embeddings))
-            bi_embeddings = torch.mul(ego_embeddings, side_embeddings)
-            bi_embeddings = F.leaky_relu(self.Bi_weights[i](bi_embeddings))
-            ego_embeddings = sum_embeddings + bi_embeddings
-            ego_embeddings = self.dropout[i](ego_embeddings)
 
-            norm_embeddings = F.normalize(ego_embeddings, p=2, dim=1)
-            all_embeddings += [norm_embeddings]
+        # if self.config["dropout"]:
+        #     print("droping")
+        #     norm_adj = self.dropout(x=norm_adj, keep_prob=self.config["keep_pro"])
+        # else:
+        #     norm_adj = norm_adj
+        norm_adj = self.dropout(x=norm_adj, keep_prob=self.config["keep_pro"])
+        for layer in range(self.n_layers):
 
-        all_embeddings = torch.cat(all_embeddings, dim=1)
-        u_g_embeddings, i_g_embeddings = torch.split(
-            all_embeddings, [self.n_users, self.n_items], dim=0
-        )
+            all_emb = torch.sparse.mm(norm_adj, all_emb)
+            embs.append(all_emb)
+        embs = torch.stack(embs, dim=1)
+        embs = torch.mean(embs, dim=1)
+        u_g_embeddings, i_g_embeddings = torch.split(embs, [self.n_users, self.n_items])
         return u_g_embeddings, i_g_embeddings
 
     def predict(self, users, items):
@@ -84,11 +80,13 @@ class NGCF(torch.nn.Module):
         Return:
             scores (int): dot product
         """
-
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
 
         with torch.no_grad():
+            # scores = torch.mul(
+            #     self.user_embedding(users_t), self.item_embedding(items_t)
+            # ).sum(dim=1)
             ua_embeddings, ia_embeddings = self.forward(self.norm_adj)
             u_g_embeddings = ua_embeddings[users_t]
             i_g_embeddings = ia_embeddings[items_t]
@@ -96,7 +94,7 @@ class NGCF(torch.nn.Module):
         return scores
 
 
-class NGCFEngine(ModelEngine):
+class LightGCNEngine(ModelEngine):
     # A class includes train an epoch and train a batch of NGCF
 
     def __init__(self, config):
@@ -105,8 +103,9 @@ class NGCFEngine(ModelEngine):
         self.decay = self.regs[0]
         self.batch_size = config["batch_size"]
         self.norm_adj = config["norm_adj"]
-        self.model = NGCF(config, self.norm_adj)
-        super(NGCFEngine, self).__init__(config)
+        self.num_batch = config["num_batch"]
+        self.model = LightGCN(config, self.norm_adj)
+        super(LightGCNEngine, self).__init__(config)
         self.model.to(self.device)
 
     def train_single_batch(self, batch_data):
@@ -127,11 +126,16 @@ class NGCFEngine(ModelEngine):
         pos_i_g_embeddings = ia_embeddings[pos_items]
         neg_i_g_embeddings = ia_embeddings[neg_items]
 
-        batch_mf_loss, batch_emb_loss, batch_reg_loss = self.bpr_loss(
-            u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings
+        batch_mf_loss, batch_reg_loss = self.loss_comput(
+            u_g_embeddings,
+            pos_i_g_embeddings,
+            neg_i_g_embeddings,
+            batch_users,
+            pos_items,
+            neg_items,
         )
 
-        batch_loss = batch_mf_loss + batch_emb_loss + batch_reg_loss
+        batch_loss = batch_mf_loss + batch_reg_loss
 
         batch_loss.backward()
         self.optimizer.step()
@@ -154,21 +158,30 @@ class NGCFEngine(ModelEngine):
         print("[Training Epoch {}], Loss {}".format(epoch_id, loss))
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
-    def bpr_loss(self, users, pos_items, neg_items):
+    def loss_comput(self, usersE, pos_itemsE, neg_itemsE, users, pos_item, neg_item):
         # Calculate BPR loss
-        pos_scores = torch.sum(torch.mul(users, pos_items), dim=1)
-        neg_scores = torch.sum(torch.mul(users, neg_items), dim=1)
-
-        regularizer = (
-            1.0 / 2 * (users ** 2).sum()
-            + 1.0 / 2 * (pos_items ** 2).sum()
-            + 1.0 / 2 * (neg_items ** 2).sum()
+        pos_scores = torch.sum(torch.mul(usersE, pos_itemsE), dim=1)
+        neg_scores = torch.sum(torch.mul(usersE, neg_itemsE), dim=1)
+        userEmb0 = self.model.user_embedding(
+            torch.tensor(users).clone().detach().to(self.device)
         )
-        regularizer = regularizer / self.batch_size
+        posEmb0 = self.model.item_embedding(
+            torch.tensor(pos_item).clone().detach().to(self.device)
+        )
+        negEmb0 = self.model.item_embedding(
+            torch.tensor(neg_item).clone().detach().to(self.device)
+        )
 
-        maxi = F.logsigmoid(pos_scores - neg_scores)
-        mf_loss = -torch.mean(maxi)
+        reg_loss = (
+            (1 / 2)
+            * (
+                userEmb0.norm(2).pow(2)
+                + posEmb0.norm(2).pow(2)
+                + negEmb0.norm(2).pow(2)
+            )
+            / float(len(users))
+        )
+        reg_loss = reg_loss * self.decay
+        loss = torch.mean(torch.nn.functional.softplus(neg_scores - pos_scores))
 
-        emb_loss = self.decay * regularizer
-        reg_loss = 0.0
-        return mf_loss, emb_loss, reg_loss
+        return loss, reg_loss

@@ -1,25 +1,24 @@
+import os
 import sys
+import unittest
 
-sys.path.append("../")
 from beta_rec.datasets.movielens import Movielens_100k
 
-if __name__ == "__main__":
-    dataset = Movielens_100k()
-    dataset.preprocess()
-    # interactions = dataset.load_interaction()
-    # print(interactions.head())
-    # from beta_rec.datasets.data_split import filter_user_item_order
-    #
-    # # use filter_user_item_order() to make the dataset smaller, just for test
-    # interactions = filter_user_item_order(interactions, 5, 5, 5)
-    #
-    # # use n_test=1 to save time as well
-    # dataset.make_leave_one_out(n_test=1)
-    # dataset.make_random_split(n_test=1)
-    #
-    # dataset.load_leave_one_out(n_test=1)
-    # dataset.load_random_split(n_test=1)
-    train_data, valid_data_li, test_data_li = dataset.load_temporal_split(n_test=1)
-    print(valid_data_li[0]["col_rating"].unique())
-    train_data, valid_data_li, test_data_li = dataset.load_random_split(n_test=1)
-    print(valid_data_li[0]["col_rating"].unique())
+sys.path.append("../")
+
+
+class TestMovielens(unittest.TestCase):
+    def test_preprocess(self):
+        ml_100k = Movielens_100k()
+        ml_100k.preprocess()
+        self.assertTrue(os.path.exists(os.getcwd() + "/datasets/ml_100k/raw/ml_100k"))
+        self.assertTrue(os.path.exists(os.getcwd() + "/datasets/ml_100k/raw/ml_100k"))
+        self.assertTrue(
+            os.path.exists(
+                os.getcwd() + "/datasets/ml_100k/processed/ml_100k_interaction.npz"
+            )
+        )
+
+        interactions = ml_100k.load_interaction()
+        self.assertEqual(100000, interactions.shape[0])
+        self.assertEqual(4, interactions.shape[1])

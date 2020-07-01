@@ -1,26 +1,24 @@
 import numpy as np
 import pandas as pd
-
 import torch
 from torch.utils.data import Dataset
 
-from beta_rec.datasets.movielens import Movielens_100k, Movielens_1m, Movielens_25m
 from beta_rec.datasets.dunnhumby import Dunnhumby
-from beta_rec.datasets.tafeng import Tafeng
-from beta_rec.datasets.last_fm import LastFM
 from beta_rec.datasets.epinions import Epinions
 from beta_rec.datasets.instacart import Instacart, Instacart_25
+from beta_rec.datasets.last_fm import LastFM
+from beta_rec.datasets.movielens import Movielens_1m, Movielens_25m, Movielens_100k
+from beta_rec.datasets.tafeng import Tafeng
 
 
 def load_dataset(config):
-    """Loading dataset.
+    """Load datasets.
 
     Args:
         config (dict): Dictionary of configuration.
 
     Returns:
         dataset (pandas.DataFrame): Full dataset.
-
     """
     dataset_mapping = {
         "ml_100k": Movielens_100k,
@@ -116,7 +114,6 @@ def dataset_to_seq_target_format(data):
         out_seqs (List): Context sequence.
         labs (List): Labels of the context sequence, each element is the last item in the origin sequence.
     """
-
     iseqs = data["col_sequence"]
 
     out_seqs = []
@@ -132,10 +129,10 @@ def dataset_to_seq_target_format(data):
 
 
 class SeqDataset(Dataset):
-    """Define the pytorch Dataset class for sequential datasets.
-    """
+    """Sequential Dataset."""
 
     def __init__(self, data, print_info=True):
+        """Init SeqDataset Class."""
         self.data = data
         if print_info:
             print("-" * 80)
@@ -144,16 +141,19 @@ class SeqDataset(Dataset):
             print("-" * 80)
 
     def __getitem__(self, index):
+        """Get an item from the dataset by index."""
         session_items = self.data[0][index]
         target_item = self.data[1][index]
         return session_items, target_item
 
     def __len__(self):
+        """Get the length of the dataset."""
         return len(self.data[0])
 
 
 def collate_fn(data):
     """Pad the sequences.
+
     This function will be used to pad the sessions to max length
     in the batch and transpose the batch from
     batch_size x max_seq_len to max_seq_len x batch_size.

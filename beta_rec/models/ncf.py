@@ -1,10 +1,12 @@
 import os
+
 import torch
 import torch.nn as nn
-from beta_rec.utils.common_util import timeit
+
 from beta_rec.models.gmf import GMF
 from beta_rec.models.mlp import MLP
-from beta_rec.models.torch_engine import Engine
+from beta_rec.models.torch_engine import ModelEngine
+from beta_rec.utils.common_util import timeit
 
 
 class NeuMF(torch.nn.Module):
@@ -74,15 +76,16 @@ class NeuMF(torch.nn.Module):
         pass
 
 
-class NeuMFEngine(Engine):
+class NeuMFEngine(ModelEngine):
     """Engine for training & evaluating GMF model"""
 
     def __init__(self, config):
         self.config = config
         self.model = NeuMF(config)
-        super(NeuMFEngine, self).__init__(config)
+        self.loss = torch.nn.BCELoss()
+        super(NeuMFEngine, self).__init__(config["model"])
         print(self.model)
-        if self.config["model"] == "ncf_pre":
+        if self.config["model"]["model"] == "ncf_pre":
             self.load_pretrain_weights()
         else:
             self.init_weights()
@@ -133,7 +136,8 @@ class NeuMFEngine(Engine):
         # load GMF model
         gmf_model = GMF(self.config)
         gmf_save_dir = os.path.join(
-            self.config["model_save_dir"], self.config["gmf_config"]["save_name"]
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["gmf_config"]["save_name"],
         )
         self.resume_checkpoint(
             gmf_save_dir, gmf_model,
@@ -144,7 +148,8 @@ class NeuMFEngine(Engine):
         # load MLP model
         mlp_model = MLP(self.config)
         mlp_save_dir = os.path.join(
-            self.config["model_save_dir"], self.config["mlp_config"]["save_name"]
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["mlp_config"]["save_name"],
         )
         self.resume_checkpoint(
             mlp_save_dir, mlp_model,

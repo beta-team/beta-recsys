@@ -1,23 +1,25 @@
 import unittest
 from unittest import mock
+
+import pandas as pd
+
+from beta_rec.datasets.data_split import (
+    generate_parameterized_path,
+    leave_one_basket,
+    leave_one_out,
+    random_basket_split,
+    random_split,
+    temporal_basket_split,
+    temporal_split,
+)
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
-    DEFAULT_ORDER_COL,
+    DEFAULT_FLAG_COL,
     DEFAULT_ITEM_COL,
+    DEFAULT_ORDER_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
-    DEFAULT_FLAG_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.data_split import (
-    temporal_split,
-    temporal_basket_split,
-    leave_one_out,
-    leave_one_basket,
-    random_split,
-    random_basket_split,
-    generate_parameterized_path,
-)
-import pandas as pd
 
 
 def generate_temporal_testdata():
@@ -389,8 +391,8 @@ class TestDataSplit(unittest.TestCase):
         path1 = generate_parameterized_path(
             test_rate=0, random=False, n_negative=100, by_user=True
         )
-        self.assertEqual(path1, "by_user_n_neg_100")
+        self.assertEqual(path1, "user_based_n_neg_100")
         path2 = generate_parameterized_path(
             test_rate=0.1, random=False, n_negative=100, by_user=False
         )
-        self.assertEqual(path2, "global_test_rate_10_n_neg_100")
+        self.assertEqual(path2, "full_test_rate_10_n_neg_100")

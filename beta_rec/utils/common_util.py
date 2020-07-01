@@ -1,19 +1,43 @@
+import argparse
 import os
 import random
 import time
-from tabulate import tabulate
-import numpy as np
-import pandas as pd
-import torch
 import zipfile
 from functools import wraps
+
+import numpy as np
+import pandas as pd
+import scipy.sparse as sp
+import torch
+from tabulate import tabulate
+
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
     DEFAULT_ORDER_COL,
+    DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
+
+
+def normalized_adj_single(adj):
+    """ Missing docs
+
+    Args:
+        adj:
+
+    Returns:
+
+    """
+    rowsum = np.array(adj.sum(1))
+    d_inv = np.power(rowsum, -1).flatten()
+    d_inv[np.isinf(d_inv)] = 0.0
+    d_mat_inv = sp.diags(d_inv)
+
+    norm_adj = d_mat_inv.dot(adj)
+    # norm_adj = adj.dot(d_mat_inv)
+    print("generate single-normalized adjacency matrix.")
+    return norm_adj.tocoo()
 
 
 def ensureDir(dir_path):
@@ -31,16 +55,19 @@ def update_args(config, args):
     """Update config parameters by the received parameters from command line
 
     Args:
-        config (dict): Initial dict of the parameters from JOSN config file.
+        config (dict): Initial dict of the parameters from JSON config file.
         args (object): An argparse Argument object with attributes being the parameters to be updated.
 
     Returns:
         None
     """
-    for k, v in vars(args).items():
-        if v is not None:
-            config[k] = v
-    print_dict_as_table(config, "Received parameters form command line (or default):")
+    args_dic = {}
+    for cfg in ["system", "model"]:
+        for k, v in vars(args).items():
+            if v is not None and k in config[cfg]:
+                config[cfg][k] = v
+                args_dic[f"{cfg}:{k}"] = v
+    print_dict_as_table(args_dic, "Received parameters from command line (or default):")
 
 
 def save_dataframe_as_npz(data, data_file):
@@ -139,27 +166,20 @@ def print_dict_as_table(dic, tag=None, columns=["keys", "values"]):
     return tabulate(df, headers=columns, tablefmt="psql")
 
 
-def initialize_folders(base_dir):
-    """ Initialize the whole directory structure of the project
+class DictToObject(object):
+    """Python dict to object
 
-    Args:
-        base_dir (str): Root path of the project.
-
-    Returns:
-        None
     """
 
-    configs = base_dir + "/configs/"
-    datasets = base_dir + "/datasets/"
-    checkpoints = base_dir + "/checkpoints/"
-    results = base_dir + "/results/"
-    logs = base_dir + "/logs/"
-    processes = base_dir + "/processes/"
-    runs = base_dir + "/runs/"
+    def __init__(self, dictionary):
+        def _traverse(key, element):
+            if isinstance(element, dict):
+                return key, DictToObject(element)
+            else:
+                return key, element
 
-    for dir in [configs, datasets, checkpoints, results, processes, logs, runs]:
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+        objd = dict(_traverse(k, v) for k, v in dictionary.items())
+        self.__dict__.update(objd)
 
 
 def get_random_rep(raw_num, dim):
@@ -248,3 +268,14 @@ def set_seed(seed):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")

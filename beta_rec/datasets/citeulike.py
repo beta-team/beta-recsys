@@ -1,12 +1,14 @@
-import os
 import csv
+import os
+
 import pandas as pd
+
+from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL.
 CULA_URL = "https://github.com/js05212/citeulike-a"
@@ -37,16 +39,17 @@ CITEULIKET_TIPS = """
 
 
 class CiteULikeA(DatasetBase):
-    def __init__(self):
-        """CiteULike-A
+    r"""CiteULike-A.
 
-        CiteULike-A dataset.
-        The dataset can not be download by the url,
-        you need to down the dataset by 'https://github.com/js05212/citeulike-a'
-        then put it into the directory `citeulike-a/raw`
-        """
+    CiteULike-A dataset. The dataset can not be download by the url, you need to down the dataset by
+    'https://github.com/js05212/citeulike-a', then put it into the directory `citeulike-a/raw`
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init CiteULikeA Class."""
         super().__init__(
             "citeulike-a",
+            root_dir=root_dir,
             manual_download_url=CULA_URL,
             processed_leave_one_out_url=CULA_LEAVE_ONE_OUT_URL,
             processed_random_split_url=CULA_RANDOM_SPLIT_URL,
@@ -54,11 +57,10 @@ class CiteULikeA(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
+        and save in the processed directory.W
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "citeulike_a.dat")
         if not os.path.exists(file_name):
@@ -114,14 +116,14 @@ class CiteULikeA(DatasetBase):
 
 
 class CiteULikeT(DatasetBase):
-    def __init__(self):
-        """CiteULike-T
+    """CiteULike-T.
 
-        CiteULike-T dataset.
-        The dataset can not be download by the url,
-        you need to down the dataset by 'https://github.com/js05212/citeulike-t'
-        then put it into the directory `citeulike-t/raw/citeulike-t`
-        """
+    CiteULike-T dataset. The dataset can not be download by the url, you need to down the dataset by
+    'https://github.com/js05212/citeulike-t', and then put it into the directory `citeulike-t/raw/citeulike-t`.
+    """
+
+    def __init__(self):
+        r"""Init CiteULikeT Class."""
         super().__init__(
             "citeulike-t",
             manual_download_url=CULT_URL,
@@ -131,11 +133,10 @@ class CiteULikeT(DatasetBase):
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "citeulike_t.dat")
         if not os.path.exists(file_name):
@@ -189,7 +190,10 @@ class CiteULikeT(DatasetBase):
 
         print("Done.")
 
-    def load_leave_one_out(self, random=False, n_negative=100, n_test=10):
+    def load_leave_one_out(
+        self, random=False, n_negative=100, n_test=10, download=False
+    ):
+        r"""Load leave one out split data."""
         if random is False:
             raise RuntimeError(
                 "CiteULikeT doesn't have timestamp column, please use random=True as parameter"

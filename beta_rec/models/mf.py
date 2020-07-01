@@ -1,8 +1,9 @@
 import torch
-from beta_rec.utils.common_util import timeit, print_dict_as_table
-from beta_rec.models.torch_engine import Engine
 import torch.nn as nn
 from torch.nn import Parameter
+
+from beta_rec.models.torch_engine import ModelEngine
+from beta_rec.utils.common_util import print_dict_as_table, timeit
 
 
 class MF(torch.nn.Module):
@@ -71,7 +72,7 @@ class MF(torch.nn.Module):
         return scores
 
 
-class MFEngine(Engine):
+class MFEngine(ModelEngine):
     def __init__(self, config):
         self.config = config
         print_dict_as_table(config, tag="MF model config")

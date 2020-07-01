@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 
 import numpy as np
 import torch
@@ -7,10 +8,12 @@ from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.data_base import DataLoaderBase
-from beta_rec.models.ngcf import NGCFEngine
+from beta_rec.models.lightgcn import LightGCNEngine
 from beta_rec.utils.common_util import DictToObject
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
+
+sys.path.append("../")
 
 
 def parse_args():
@@ -19,12 +22,12 @@ def parse_args():
         Returns:
             args object.
     """
-    parser = argparse.ArgumentParser(description="Run NGCF..")
+    parser = argparse.ArgumentParser(description="Run LightGCN..")
     parser.add_argument(
         "--config_file",
         nargs="?",
         type=str,
-        default="../configs/ngcf_default.json",
+        default="../configs/lightgcn_default.json",
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
@@ -34,6 +37,9 @@ def parse_args():
     )
     parser.add_argument(
         "--tune", nargs="?", type=str, default=True, help="Tun parameter",
+    )
+    parser.add_argument(
+        "--keep_pro", nargs="?", type=float, help="dropout", default=0.6
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
     parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
@@ -56,7 +62,7 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     return torch.sparse.FloatTensor(indices, values, shape)
 
 
-class NGCF_train(TrainEngine):
+class LightGCN_train(TrainEngine):
     """ An instance class from the TrainEngine base class
 
     """
@@ -69,10 +75,10 @@ class NGCF_train(TrainEngine):
         """
 
         self.config = config
-        super(NGCF_train, self).__init__(self.config)
+        super(LightGCN_train, self).__init__(config)
         self.load_dataset()
         self.build_data_loader()
-        self.engine = NGCFEngine(self.config["model"])
+        self.engine = LightGCNEngine(self.config["model"])
 
     def build_data_loader(self):
         # ToDo: Please define the directory to store the adjacent matrix
@@ -120,8 +126,8 @@ class NGCF_train(TrainEngine):
         self.config["run_time"] = self.monitor.stop()
 
     def test(self):
-        self.engine.resume_checkpoint(model_dir=self.model_dir)
-        super(NGCF_train, self).test()
+        self.engine.resume_checkpoint(model_dir=self.model_save_dir)
+        super(LightGCN_train, self).test()
 
 
 def tune_train(config):
@@ -133,7 +139,7 @@ def tune_train(config):
     Returns:
 
     """
-    train_engine = NGCF_train(DictToObject(config))
+    train_engine = LightGCN_train(DictToObject(config))
     best_performance = train_engine.train()
     tune.track.log(valid_metric=best_performance)
     train_engine.test()
@@ -141,7 +147,7 @@ def tune_train(config):
 
 if __name__ == "__main__":
     args = parse_args()
-    train_engine = NGCF_train(args)
+    train_engine = LightGCN_train(args)
     if args.tune:
         train_engine.tune(tune_train)
     else:

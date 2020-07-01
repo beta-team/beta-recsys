@@ -1,9 +1,9 @@
 import torch
-from tensorboardX import SummaryWriter
 import torch.nn.functional as F
+from tensorboardX import SummaryWriter
 
 
-class Engine(object):
+class ModelEngine(object):
     """Meta Engine for training & evaluating NCF model
     Note: Subclass should implement self.model !
     """
@@ -14,24 +14,26 @@ class Engine(object):
         self.set_optimizer()
         self.model.to(self.device)
         print(self.model)
-        self.writer = SummaryWriter(log_dir=config["run_dir"])  # tensorboard writer
+        self.writer = SummaryWriter(
+            log_dir=config["system"]["run_dir"]
+        )  # tensorboard writer
 
     def set_optimizer(self):
-        if self.config["optimizer"] == "sgd":
+        if self.config["model"]["optimizer"] == "sgd":
             self.optimizer = torch.optim.SGD(
-                self.model.parameters(), lr=self.config["lr"],
+                self.model.parameters(), lr=self.config["model"]["lr"],
             )
-        elif self.config["optimizer"] == "adam":
+        elif self.config["model"]["optimizer"] == "adam":
             self.optimizer = torch.optim.Adam(
-                self.model.parameters(), lr=self.config["lr"],
+                self.model.parameters(), lr=self.config["model"]["lr"],
             )
-        elif self.config["optimizer"] == "rmsprop":
+        elif self.config["model"]["optimizer"] == "rmsprop":
             self.optimizer = torch.optim.RMSprop(
-                self.model.parameters(), lr=self.config["lr"],
+                self.model.parameters(), lr=self.config["model"]["lr"],
             )
 
     def set_device(self):
-        self.device = torch.device(self.config["device_str"])
+        self.device = torch.device(self.config["model"]["device_str"])
         self.model.device = self.device
         print("Setting device for torch_engine", self.device)
 

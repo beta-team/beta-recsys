@@ -5,7 +5,11 @@
 
 Welcome to Beta-recsys's documentation!
 =======================================
+.. image:: https://codecov.io/gh/leungyukshing/beta-recsys/branch/develop/graph/badge.svg
+  :target: https://codecov.io/gh/leungyukshing/beta-recsys
 
+.. image:: https://github.com/beta-team/beta-recsys/workflows/CI/badge.svg?branch=develop
+  :target: https://github.com/beta-team/beta-recsys/actions
 
 .. toctree::
    :maxdepth: 1
@@ -18,7 +22,8 @@ Welcome to Beta-recsys's documentation!
    :maxdepth: 1
    :caption: Package Reference
 
-   modules/beta_rec
+   modules/core
+   modules/data
    modules/datasets
    modules/models
    modules/utils

@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
+
+from beta_rec.models.torch_engine import ModelEngine
 from beta_rec.utils.common_util import timeit
-from beta_rec.models.torch_engine import Engine
 
 
 class GMF(torch.nn.Module):
@@ -41,11 +42,12 @@ class GMF(torch.nn.Module):
         nn.init.normal_(self.embedding_user.weight, std=0.01)
 
 
-class GMFEngine(Engine):
+class GMFEngine(ModelEngine):
     """Engine for training & evaluating GMF model"""
 
     def __init__(self, config):
-        self.model = GMF(config)
+        self.model = GMF(config["model"])
+        self.loss = torch.nn.BCELoss()
         super(GMFEngine, self).__init__(config)
 
     def train_single_batch(self, users, items, ratings):

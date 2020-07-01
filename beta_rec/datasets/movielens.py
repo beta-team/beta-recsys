@@ -1,14 +1,15 @@
 import os
+
 import numpy as np
 import pandas as pd
 
+from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
 
 # download_url
 ML_100K_URL = r"http://files.grouplens.org/datasets/movielens/ml-100k.zip"
@@ -36,13 +37,13 @@ ml_1m_l1o_dir = os.path.join(par_abs_dir, "datasets/ml-1m/leave_one_out")
 
 
 class Movielens_100k(DatasetBase):
-    def __init__(self):
-        """Movielens 100k
+    """Movielens 100k Dataset."""
 
-        Movielens 100k dataset.
-        """
+    def __init__(self, root_dir=None):
+        """Init Movielens_100k Class."""
         super().__init__(
             "ml_100k",
+            root_dir=root_dir,
             url=ML_100K_URL,
             processed_leave_one_out_url=ML_100K_LEAVE_ONE_OUT_URL,
             processed_random_split_url=ML_100K_RANDOM_URL,
@@ -52,9 +53,8 @@ class Movielens_100k(DatasetBase):
     def preprocess(self):
         """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consisting of the user-item interactions
-        and save it in the processed directory.
+        Preprocess the file downloaded via the url, convert it to a dataframe consisting of the user-item
+        interactions and save it in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "u.data")
         if not os.path.exists(file_name):
@@ -63,7 +63,7 @@ class Movielens_100k(DatasetBase):
         data = pd.read_table(
             file_name,
             header=None,
-            sep="::",
+            sep="\t",
             engine="python",
             names=[
                 DEFAULT_USER_COL,
@@ -79,6 +79,7 @@ class Movielens_100k(DatasetBase):
 
     def make_fea_vec(self):
         """Make feature vectors for users and items.
+
         1. For items (movies), we use the last 19 fields as feature, which are the genres,
         with 1 indicating the movie is of that genre, and 0 indicating it is not;
         movies can be in several genres at once.
@@ -87,9 +88,8 @@ class Movielens_100k(DatasetBase):
         feature, where ages are categorized into 8 groups.
 
         Returns:
-            user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors
-            item_feat (numpy.ndarray): The first column is the item id, rest column are feat vectors
-
+            user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors.
+            item_feat (numpy.ndarray): The first column is the item id, rest column are feat vectors.
         """
         print(f"Making user and item feature vectors for dataset {self.dataset_name}")
         data = pd.read_table(
@@ -150,7 +150,8 @@ class Movielens_100k(DatasetBase):
         return user_feat, item_feat
 
     def load_fea_vec(self):
-        """Loading feature vectors for users and items.
+        """Load feature vectors for users and items.
+
         1. For items (movies), we use the last 19 fields as feature, which are the genres,
         with 1 indicating the movie is of that genre, and 0 indicating it is not;
         movies can be in several genres at once.
@@ -159,9 +160,8 @@ class Movielens_100k(DatasetBase):
         feature, where ages are categorized into 8 groups.
 
         Returns:
-            user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors
-            item_feat (numpy.ndarray): The first column is the itm id, rest column are feat vectors
-
+            user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors.
+            item_feat (numpy.ndarray): The first column is the itm id, rest column are feat vectors.
         """
         if not os.path.exists(self.dataset_dir):
             self.preprocess()
@@ -173,19 +173,17 @@ class Movielens_100k(DatasetBase):
 
 
 class Movielens_1m(DatasetBase):
-    def __init__(self):
-        """Movielens 1m
+    """Movielens 1m Dataset."""
 
-        Movielens 1m dataset.
-        """
-        super().__init__("ml_1m", url=ML_1M_URL)
+    def __init__(self, root_dir=None):
+        """Init Movielens_1m Class."""
+        super().__init__("ml_1m", root_dir=root_dir, url=ML_1M_URL)
 
     def preprocess(self):
         """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consisting of the user-item interactions
-        and save it in the processed directory.
+        Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
+        interactions and save it in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.dat")
         if not os.path.exists(file_name):
@@ -210,19 +208,17 @@ class Movielens_1m(DatasetBase):
 
 
 class Movielens_25m(DatasetBase):
-    def __init__(self):
-        """Movielens 25m
+    """Movielens 25m Dataset."""
 
-        Movielens 25m dataset.
-        """
-        super().__init__("ml_25m", url=ML_25M_URL)
+    def __init__(self, root_dir=None):
+        """Init Movielens_25m Class."""
+        super().__init__("ml_25m", root_dir=root_dir, url=ML_25M_URL)
 
     def preprocess(self):
         """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consisting of the user-item interactions
-        and save it in the processed directory.
+        Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
+        interactions and save it in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.csv")
         if not os.path.exists(file_name):

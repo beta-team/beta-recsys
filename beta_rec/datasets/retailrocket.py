@@ -1,11 +1,13 @@
 import os
+
 import pandas as pd
+
+from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
 )
-from beta_rec.datasets.dataset_base import DatasetBase
 
 # Download URL
 RETAIL_ROCKET_URL = "https://www.kaggle.com/retailrocket/ecommerce-dataset/download"
@@ -21,41 +23,41 @@ RETAIL_ROCKET_TIPS = """
 
 
 class RetailRocket(DatasetBase):
-    def __init__(self):
-        """RetailRocket
+    """RetailRocket Dataset.
 
-        RetailRocket dataset.
-        This data has been collected from a real-world e-commerce website. It is
-        raw data without any content transformations, however, all values are
-        hashed due to confidential issue. The purpose of publishing is to motivate
-        researches in the field of recommendation systems with implicit feedback.
+    This data has been collected from a real-world e-commerce website. It is
+    raw data without any content transformations, however, all values are
+    hashed due to confidential issue. The purpose of publishing is to motivate
+    researches in the field of recommendation systems with implicit feedback.
 
-        If the dataset can not be download by the url,
-        you need to down the dataset by the link:
-            https://www.kaggle.com/retailrocket/ecommerce-dataset/download.
-        then put it into the directory `retailrocket/raw` and unzip it.
-        """
+    If the dataset can not be download by the url,
+    you need to down the dataset by the link:
+        https://www.kaggle.com/retailrocket/ecommerce-dataset/download.
+    then put it into the directory `retailrocket/raw` and unzip it.
+    """
+
+    def __init__(self, root_dir=None):
+        """Init RetailRocket Class."""
         super().__init__(
             "retailrocket",
+            root_dir=root_dir,
             manual_download_url=RETAIL_ROCKET_URL,
             tips=RETAIL_ROCKET_TIPS,
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url,
-        convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        Preprocess the file downloaded via the url, convert it to a DataFrame consist of the user-item interaction
+        and save in the processed directory.
 
-        Download datasets if not existed.
+        Download dataset if not existed.
         retail_rocket_name: UserBehavior.csv
 
         1. Download RetailRocket dataset if this dataset is not existed.
         2. Load RetailRocket <retail-rocket-interaction> table from 'events.csv'.
         3. Save dataset model.
         """
-
         # Step 1: Download RetailRocket dataset if this dataset is not existed.
         retail_rocket_path = os.path.join(self.raw_path, "events.csv")
         if not os.path.exists(retail_rocket_path):

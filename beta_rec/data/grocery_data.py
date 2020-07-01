@@ -1,24 +1,26 @@
 import os
-from time import time
-import numpy as np
-from collections import defaultdict
-import pandas as pd
 import random
-from tabulate import tabulate
+from collections import defaultdict
+from time import time
+
+import numpy as np
+import pandas as pd
 import scipy.sparse as sp
-from beta_rec.utils.common_util import get_random_rep, ensureDir
-from beta_rec.utils.aliasTable import AliasTable
-from beta_rec.utils.triple_sampler import Sampler
+from tabulate import tabulate
+
 from beta_rec.datasets.data_load import (
-    load_split_dataset,
     load_item_fea_dic,
+    load_split_dataset,
     load_user_item_feature,
 )
+from beta_rec.utils.alias_table import AliasTable
+from beta_rec.utils.common_util import ensureDir, get_random_rep, normalized_adj_single
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
+    DEFAULT_USER_COL,
 )
+from beta_rec.utils.triple_sampler import Sampler
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -79,26 +81,6 @@ def calc_sim(A):
     return cosine.T * inv_mag
 
 
-def normalized_adj_single(adj):
-    """ Missing docs
-
-    Args:
-        adj:
-
-    Returns:
-
-    """
-    rowsum = np.array(adj.sum(1))
-    d_inv = np.power(rowsum, -1).flatten()
-    d_inv[np.isinf(d_inv)] = 0.0
-    d_mat_inv = sp.diags(d_inv)
-
-    norm_adj = d_mat_inv.dot(adj)
-    # norm_adj = adj.dot(d_mat_inv)
-    print("generate single-normalized adjacency matrix.")
-    return norm_adj.tocoo()
-
-
 def get_D_inv(adj):
     """ Missing docs
 
@@ -131,7 +113,7 @@ def check_adj_if_equal(adj):
     return temp
 
 
-class Dataset(object):
+class GroceryData(object):
     """
         Base Dataset class for all the model
     """
@@ -149,9 +131,9 @@ class Dataset(object):
         self.random_dim = 512
         # subset of the dataset. use a small set of users and items if >0, otherwise use full dataset
         if "sub_set" in config:
-            self.sub_set = config["sub_set"]
+            self.sub_set = config["dataset"]["sub_set"]
         if "random_dim" in config:
-            self.random_dim = config["random_dim"]
+            self.random_dim = config["model"]["random_dim"]
         # data preprocessing for training and test data
         # To be replaced with new data method
         train, valid, test = load_split_dataset(config)
@@ -165,7 +147,10 @@ class Dataset(object):
         self.user_sampler = AliasTable(
             self.train[DEFAULT_USER_COL].value_counts().to_dict()
         )
-        if "item_fea_type" in self.config or "user_fea_type" in self.config:
+        if (
+            "item_fea_type" in self.config["dataset"]
+            or "user_fea_type" in self.config["dataset"]
+        ):
             self.init_item_fea()
             self.init_user_fea()
 
@@ -178,35 +163,33 @@ class Dataset(object):
         """
         sample_file_name = (
             "triple_"
-            + self.config["dataset"]
+            + self.config["dataset"]["dataset"]
             + (
-                ("_" + str(self.config["percent"] * 100))
+                ("_" + str(self.config["dataset"]["percent"] * 100))
                 if "percent" in self.config
                 else ""
             )
             + (
-                ("_" + str(self.config["time_step"]))
+                ("_" + str(self.config["model"]["time_step"]))
                 if "time_step" in self.config
                 else "_10"
             )
             + "_"
-            + str(self.config["n_sample"])
+            + str(self.config["model"]["n_sample"])
             if "percent" in self.config
             else "" + ".csv"
         )
-        self.process_path = os.path.join(
-            self.config["root_dir"], self.config["process_dir"]
-        )
+        self.process_path = self.config["system"]["process_dir"]
         ensureDir(self.process_path)
         sample_file = os.path.join(self.process_path, sample_file_name)
         my_sampler = Sampler(
             self.train,
             sample_file,
-            self.config["n_sample"],
+            self.config["model"]["n_sample"],
             dump=dump,
             load_save=load_save,
         )
-        return my_sampler.sample_by_time(self.config["time_step"])
+        return my_sampler.sample_by_time(self.config["model"]["time_step"])
 
     def sample_triple(self, dump=True, load_save=False):
         """
@@ -217,26 +200,24 @@ class Dataset(object):
         """
         sample_file_name = (
             "triple_"
-            + self.config["dataset"]
+            + self.config["dataset"]["dataset"]
             + (
-                ("_" + str(self.config["percent"] * 100))
+                ("_" + str(self.config["dataset"]["percent"] * 100))
                 if "percent" in self.config
                 else ""
             )
             + "_"
-            + str(self.config["n_sample"])
+            + str(self.config["model"]["n_sample"])
             if "percent" in self.config
             else "" + ".csv"
         )
-        self.process_path = os.path.join(
-            self.config["root_dir"], self.config["process_dir"]
-        )
+        self.process_path = self.config["system"]["process_dir"]
         ensureDir(self.process_path)
         sample_file = os.path.join(self.process_path, sample_file_name)
         my_sampler = Sampler(
             self.train,
             sample_file,
-            self.config["n_sample"],
+            self.config["model"]["n_sample"],
             dump=dump,
             load_save=load_save,
         )
@@ -317,7 +298,7 @@ class Dataset(object):
             self.n_users = train[DEFAULT_USER_COL].nunique()
             self.n_items = train[DEFAULT_ITEM_COL].nunique()
             users_ser, items_ser = intersect_train_test(train, test)
-            print(f"After intersection, train statistics")
+            print("After intersection, train statistics")
             print(
                 tabulate(
                     train.agg(["count", "nunique"]),
@@ -326,7 +307,7 @@ class Dataset(object):
                     disable_numparse=True,
                 )
             )
-            print(f"After intersection, test statistics")
+            print("After intersection, test statistics")
             print(
                 tabulate(
                     test.agg(["count", "nunique"]),
@@ -398,11 +379,11 @@ class Dataset(object):
 
         """
         config = self.config
-        if "item_fea_type" in config:
-            fea_type = config["item_fea_type"]
+        if "item_fea_type" in config["dataset"]:
+            fea_type = config["dataset"]["item_fea_type"]
         else:
             fea_type = "random"
-        data_str = config["dataset"]
+        data_str = config["dataset"]["dataset"]
         print(
             "Loading item feature for dataset:", data_str, " type:", fea_type,
         )
@@ -538,13 +519,16 @@ class Dataset(object):
         VBCAR model
 
         """
-        if "user_fea_type" in self.config:
-            fea_type = self.config["user_fea_type"]
+        if "user_fea_type" in self.config["dataset"]:
+            fea_type = self.config["dataset"]["user_fea_type"]
         else:
             fea_type = "random"
 
         print(
-            "init user featrue for dataset:", self.config["dataset"], " type:", fea_type
+            "init user featrue for dataset:",
+            self.config["dataset"]["dataset"],
+            " type:",
+            fea_type,
         )
         if fea_type == "random":
             self.user_feature = get_random_rep(self.n_users, self.random_dim)
@@ -565,19 +549,18 @@ class Dataset(object):
 
         process_file_name = (
             "ngcf_"
-            + self.config["dataset"]
+            + self.config["dataset"]["dataset"]
             + "_"
-            + self.config["data_split"]
+            + self.config["dataset"]["data_split"]
             + (
-                ("_" + str(self.config["percent"] * 100))
+                ("_" + str(self.config["dataset"]["percent"] * 100))
                 if "percent" in self.config
                 else ""
             )
         )
         self.process_path = os.path.join(
-            self.config["root_dir"],
-            self.config["process_dir"],
-            self.config["dataset"] + "/",
+            self.config["system"]["process_dir"],
+            self.config["dataset"]["dataset"] + "/",
         )
         process_file_name = os.path.join(self.process_path, process_file_name)
         ensureDir(process_file_name)

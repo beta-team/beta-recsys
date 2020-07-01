@@ -1,15 +1,13 @@
-import sys
-
-sys.path.append("../")
-
-import os
-import json
-import numpy as np
 import argparse
-from beta_rec.train_engine import TrainEngine
-from beta_rec.models.pairwiseGMF import PairwiseGMFEngine
+import json
+import os
+
+import numpy as np
+
+from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.cmn import cmnEngine
-from beta_rec.utils.common_util import update_args, ensureDir
+from beta_rec.models.pairwise_gmf import PairwiseGMFEngine
+from beta_rec.utils.common_util import ensureDir, update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
@@ -83,7 +81,7 @@ class cmn_train(TrainEngine):
                 )
                 break
 
-            train_loader = self.dataset
+            train_loader = self.data
             self.gmfengine.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
 
         print("Saving embeddings to: %s" % self.config["model_save_dir"])
@@ -103,7 +101,7 @@ class cmn_train(TrainEngine):
         if self.config["pretrain"] == "gmf":
             user_embed, item_embed = self.train_gmf()
             model = self.cmnengine(
-                self.config, user_embed, item_embed, self.dataset.item_users_list
+                self.config, user_embed, item_embed, self.data.item_users_list
             )
             self.monitor = Monitor(
                 log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
@@ -126,14 +124,14 @@ class cmn_train(TrainEngine):
                     )
                     break
 
-                train_loader = self.dataset
+                train_loader = self.data
                 model.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
 
                 self.eval_engine.train_eval(
-                    self.dataset.valid[0], self.dataset.test[0], model.model, epoch
+                    self.data.valid[0], self.data.test[0], model.model, epoch
                 )
             self.config["run_time"] = self.monitor.stop()
-            self.eval_engine.test_eval(self.dataset.test, model.model)
+            self.eval_engine.test_eval(self.data.test, model.model)
 
 
 if __name__ == "__main__":

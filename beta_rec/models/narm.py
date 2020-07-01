@@ -1,21 +1,17 @@
-from beta_rec.models.torch_engine import Engine
+import time
+
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
-
-import numpy as np
-import pandas as pd
-
+from torch.optim.lr_scheduler import StepLR
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from torch.optim.lr_scheduler import StepLR
-
-import time
-
-from beta_rec.datasets.seq_data_utils import SeqDataset
-from beta_rec.datasets.seq_data_utils import collate_fn
-from torch.utils.data import DataLoader
+from beta_rec.datasets.seq_data_utils import SeqDataset, collate_fn
+from beta_rec.models.torch_engine import ModelEngine
 
 
 class NARM(nn.Module):
@@ -96,7 +92,7 @@ class NARM(nn.Module):
         ).to(self.device)
 
 
-class NARMEngine(Engine):
+class NARMEngine(ModelEngine):
     """Engine for training & evaluating NARM model"""
 
     def __init__(self, config):
