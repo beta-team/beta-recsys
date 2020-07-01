@@ -1,10 +1,10 @@
-# Beta-recsys
+# Beta-Recsys
 
-Welcome to Read the Beta-recsys docs
+Welcome to Read the Beta-Recsys docs
 
 
 
-## how to install
+## How to install
 
 how to install
 
