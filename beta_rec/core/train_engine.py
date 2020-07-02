@@ -26,10 +26,10 @@ from beta_rec.utils.constants import MAX_N_UPDATE
 
 
 class TrainEngine(object):
-    """Training engine for all the models.
-    """
+    """Training engine for all the models."""
 
     def __init__(self, args):
+        """Init TrainEngine Class."""
         self.data = None
         self.train_loader = None
         self.monitor = None
@@ -40,8 +40,8 @@ class TrainEngine(object):
         self.eval_engine = EvalEngine(self.config)
 
     def get_device(self):
-        """
-            Get one gpu id that have the most available memory.
+        """Get one gpu id that have the most available memory.
+
         Returns:
             (int, str): The gpu id (None if no available gpu) and the the device string (pytorch style).
         """
@@ -83,18 +83,14 @@ class TrainEngine(object):
         return gpu_id, device_str
 
     def prepare_env(self):
-        """Prepare running environment
-            - Load parameters from json files.
-            - Initialize system folders, model name and the paths to be saved.
-            - Initialize resource monitor.
-            - Initialize random seed.
-            - Initialize logging.
+        """Prepare running environment.
 
-        Args:
-            args (ArgumentParser): Args received from command line. Should have the parameter of args.config_file.
-
+        * Load parameters from json files.
+        * Initialize system folders, model name and the paths to be saved.
+        * Initialize resource monitor.
+        * Initialize random seed.
+        * Initialize logging.
         """
-
         # Load config file from json
         with open(self.args.config_file) as config_params:
             print(f"loading config file {self.args.config_file}")
@@ -183,8 +179,7 @@ class TrainEngine(object):
         return config
 
     def initialize_folders(self, config):
-        """ Initialize the whole directory structure of the project
-        """
+        """Initialize the whole directory structure of the project."""
         dirs = [
             "log_dir",
             "result_dir",
@@ -195,22 +190,20 @@ class TrainEngine(object):
             "dataset_dir",
         ]
         base_dir = config["system"]["root_dir"]
-        for dir in dirs:
-            path = os.path.join(base_dir, config["system"][dir])
+        for directory in dirs:
+            path = os.path.join(base_dir, config["system"][directory])
             if not os.path.exists(path):
                 os.makedirs(path)
 
     def load_dataset(self):
-        """ Default implementation of building Data
-        """
+        """Load dataset."""
         self.data = GroceryData(self.config)
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
 
     # noinspection PyTypeChecker
     def build_data_loader(self):
-        """ Default implementation of building DataLoader
-        """
+        """Build DataLoader."""
         self.train_loader = DataLoader(
             torch.LongTensor(self.data.sample_triple()).to(self.engine.device),
             batch_size=self.config["model"]["batch_size"],
@@ -219,8 +212,9 @@ class TrainEngine(object):
         )
 
     def check_early_stop(self, engine, model_dir, epoch):
-        """ Check if early stop criterion is triggered
-        Save model if previous epoch have already obtained better result
+        """Check if early stop criterion is triggered.
+
+        Save model if previous epoch have already obtained better result.
 
         Args:
             epoch (int): epoch num
@@ -262,11 +256,7 @@ class TrainEngine(object):
                 )
 
     def tune(self, runable):
-        """
-        Tune parameters unsing ray.tune
-        Returns:
-
-        """
+        """Tune parameters using ray.tune."""
         config = vars(self.args)
         if "tune" in config:
             config["tune"] = False
@@ -320,7 +310,5 @@ class TrainEngine(object):
     #     )
 
     def test(self):
-        """Evaluate the performance for the testing sets based on the final model.
-
-        """
+        """Evaluate the performance for the testing sets based on the final model."""
         self.eval_engine.test_eval(self.data.test, self.engine.model)
