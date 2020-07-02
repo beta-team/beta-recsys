@@ -8,9 +8,7 @@ from datetime import datetime
 import GPUtil
 import ray
 import torch
-from ax.service.ax_client import AxClient
 from ray import tune
-from ray.tune.suggest.ax import AxSearch
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -283,6 +281,7 @@ class TrainEngine(object):
             config=config,
             local_dir=self.config["system"]["tune_dir"],
             # temp_dir=self.config["system"]["tune_dir"] + "/temp",
+            resources_per_trial={"cpu": 3, "gpu": 1},
         )
         df = analysis.dataframe()
         df.to_csv(
@@ -293,23 +292,22 @@ class TrainEngine(object):
         )
         print(tabulate(df, headers=df.columns, tablefmt="psql"))
 
-    def ax_tune(self, runable):
-        """Tune parameters with AxClient."""
-        # todo still cannot runable yet.
-        ax = AxClient(enforce_sequential_optimization=False)
-        # verbose_logging=False,
-        ax.create_experiment(
-            name=self.config["model"]["model"],
-            parameters=self.config["tunable"],
-            objective_name="valid_metric",
-        )
-        tune.run(
-            runable,
-            num_samples=30,
-            search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
-            verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
-            # To use GPU, specify: resources_per_trial={"gpu": 1}.
-        )
+    # def ax_tune(self, runable):
+    #     # todo still cannot runable yet.
+    #     ax = AxClient(enforce_sequential_optimization=False)
+    #     # verbose_logging=False,
+    #     ax.create_experiment(
+    #         name=self.config["model"]["model"],
+    #         parameters=self.config["tunable"],
+    #         objective_name="valid_metric",
+    #     )
+    #     tune.run(
+    #         runable,
+    #         num_samples=30,
+    #         search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
+    #         verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
+    #         # To use GPU, specify: resources_per_trial={"gpu": 1}.
+    #     )
 
     def test(self):
         """Evaluate the performance for the testing sets based on the final model."""

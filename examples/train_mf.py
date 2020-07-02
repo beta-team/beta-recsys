@@ -1,5 +1,6 @@
 import argparse
 import os
+import time
 
 from ray import tune
 
@@ -102,7 +103,7 @@ class MF_train(TrainEngine):
                 f"Unsupported loss type {self.config['loss']}, try other options: 'bpr' or 'bce'"
             )
 
-        self.engine = MFEngine(self.config["model"])
+        self.engine = MFEngine(self.config)
         self.model_save_dir = os.path.join(
             self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
         )
@@ -122,8 +123,10 @@ def tune_train(config):
     """
     train_engine = MF_train(DictToObject(config))
     best_performance = train_engine.train()
-    tune.track.log(valid_metric=best_performance)
     train_engine.test()
+    while train_engine.eval_engine.n_worker > 0:
+        time.sleep(20)
+    tune.track.log(valid_metric=best_performance)
 
 
 if __name__ == "__main__":

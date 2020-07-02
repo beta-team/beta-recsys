@@ -151,6 +151,7 @@ def test_eval_worker(testEngine, eval_data_df, prediction):
     result_para = {
         "run_time": [testEngine.config["run_time"]],
     }
+    testEngine.n_worker += 1
     for cfg in ["model", "dataset"]:
         for col in testEngine.config[cfg]["result_col"]:
             result_para[col] = [testEngine.config[cfg][col]]
@@ -166,6 +167,7 @@ def test_eval_worker(testEngine, eval_data_df, prediction):
     result_df = pd.DataFrame(test_result_dic)
     save_to_csv(result_df, testEngine.config["system"]["result_file"])
     lock_test_eval.release()
+    testEngine.n_worker -= 1
     return test_result_dic
 
 
