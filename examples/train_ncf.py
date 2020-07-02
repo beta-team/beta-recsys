@@ -201,7 +201,7 @@ def tune_train(config):
     tune.track.log(valid_metric=best_performance)
     train_engine.test()
     while train_engine.eval_engine.n_worker > 0:
-        time.sleep(10000)
+        time.sleep(20)
 
 
 if __name__ == "__main__":
