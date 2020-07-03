@@ -1,9 +1,16 @@
 import os
 import sys
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from beta_rec.utils.constants import *
+
+from beta_rec.utils.constants import (
+    DEFAULT_ITEM_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
+)
 
 
 class Sampler(object):
@@ -108,7 +115,7 @@ class Sampler(object):
             )
             sampled_order = self.dataTrain.iloc[sampled_index]
             for _, row in sampled_order.iterrows():
-                _uid, _tid, _items = row["UID"], row["TID"], row["PID"]
+                _uid, _, _items = row["UID"], row["TID"], row["PID"]
                 _i, _j = np.random.choice(_items, size=2)
                 res.append([int(_uid), int(_i), int(_j), int(t)])
         res = np.array(res)

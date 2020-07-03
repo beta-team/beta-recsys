@@ -1,6 +1,10 @@
 import os
+
 import requests
+from tqdm import tqdm
+
 from beta_rec.utils.onedrive import OneDrive
+
 
 def download_file(url, store_file_path):
     """Download the raw dataset file
@@ -8,16 +12,35 @@ def download_file(url, store_file_path):
     Download the dataset with the given url and save to the store_path
     Args:
         url: the url that can be downloaded the dataset file.
-        store_path: the path that stores the downloaded file
+        store_file_path: the path that stores the downloaded file
     Return:
         the archive format of the suffix
     """
     filename = url.split("/")[-1]
-    print(f'Start downloading file {filename}...')
-    file_data = requests.get(url, allow_redirects=True).content
-    with open(store_file_path, 'wb') as handler:
-        handler.write(file_data)
-    print(f'Success loading file {filename} to {store_file_path}')
+    print(f"Start downloading file {filename}...")
+
+    if "1drv.ms" in url:
+        # allow downloading raw data from Onedrive
+        store_file_path = os.path.dirname(store_file_path)
+        folder = OneDrive(url=url, path=store_file_path)
+        folder.download()
+    else:
+        r = requests.get(url, allow_redirects=True, stream=True)
+        # Total size in bytes
+        total_size = int(r.headers.get("content-length", 0))
+        block_size = 1024
+        t = tqdm(total=total_size, unit="iB", unit_scale=True)
+
+        with open(store_file_path, "wb") as f:
+            for data in r.iter_content(block_size):
+                t.update(len(data))
+                f.write(data)
+        t.close()
+
+        if total_size != 0 and t.n != total_size:
+            print("ERROR, download fail")
+        else:
+            print(f"Success loading file {filename} to {store_file_path}")
 
 
 def get_format(suffix):
@@ -30,7 +53,8 @@ def get_format(suffix):
         the archive format of the suffix
     """
     format_map = {
-        'bz2': 'bztar',
+        "bz2": "bztar",
+        "gz": "gztar",
     }
     if suffix not in format_map:
         return suffix

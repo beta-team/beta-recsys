@@ -3,26 +3,27 @@ import pandas as pd
 import pytest
 from mock import Mock
 from sklearn.preprocessing import minmax_scale
+
 from beta_rec.utils.constants import (
-    DEFAULT_USER_COL,
     DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
     DEFAULT_PREDICTION_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_USER_COL,
 )
 from beta_rec.utils.evaluation import (
+    auc,
     check_column_dtypes,
-    merge_rating_true_pred,
-    merge_ranking_true_pred,
-    rmse,
-    mae,
-    rsquared,
     exp_var,
+    logloss,
+    mae,
+    map_at_k,
+    merge_ranking_true_pred,
+    merge_rating_true_pred,
+    ndcg_at_k,
     precision_at_k,
     recall_at_k,
-    ndcg_at_k,
-    map_at_k,
-    auc,
-    logloss,
+    rmse,
+    rsquared,
 )
 
 TOL = 0.0001
@@ -32,7 +33,7 @@ TOL = 0.0001
 def rating_true():
     return pd.DataFrame(
         {
-            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1,],
+            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
             DEFAULT_ITEM_COL: [
                 3,
                 1,
@@ -53,7 +54,7 @@ def rating_true():
                 1,
                 2,
             ],
-            DEFAULT_RATING_COL: [3, 5, 5, 3, 3, 1, 5, 5, 5, 4, 4, 3, 3, 3, 2, 1, 5, 4,],
+            DEFAULT_RATING_COL: [3, 5, 5, 3, 3, 1, 5, 5, 5, 4, 4, 3, 3, 3, 2, 1, 5, 4],
         }
     )
 
@@ -62,7 +63,7 @@ def rating_true():
 def rating_pred():
     return pd.DataFrame(
         {
-            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1,],
+            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
             DEFAULT_ITEM_COL: [
                 12,
                 10,
@@ -103,7 +104,7 @@ def rating_pred():
                 14,
                 13,
             ],
-            DEFAULT_RATING_COL: [3, 5, 5, 3, 3, 1, 5, 5, 5, 4, 4, 3, 3, 3, 2, 1, 5, 4,],
+            DEFAULT_RATING_COL: [3, 5, 5, 3, 3, 1, 5, 5, 5, 4, 4, 3, 3, 3, 2, 1, 5, 4],
         }
     )
 
@@ -112,7 +113,7 @@ def rating_pred():
 def rating_nohit():
     return pd.DataFrame(
         {
-            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1,],
+            DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
             DEFAULT_ITEM_COL: [100] * 18,
             DEFAULT_PREDICTION_COL: [
                 12,
@@ -191,7 +192,6 @@ def test_merge_rating(rating_true, rating_pred):
 
 
 def test_merge_ranking(rating_true, rating_pred):
-
     data_hit, data_hit_count, n_users = merge_ranking_true_pred(
         rating_true,
         rating_pred,

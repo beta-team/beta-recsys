@@ -1,6 +1,25 @@
 import unittest
 from unittest import mock
-from beta_rec.datasets.data_split import *
+
+import pandas as pd
+
+from beta_rec.datasets.data_split import (
+    generate_parameterized_path,
+    leave_one_basket,
+    leave_one_out,
+    random_basket_split,
+    random_split,
+    temporal_basket_split,
+    temporal_split,
+)
+from beta_rec.utils.constants import (
+    DEFAULT_FLAG_COL,
+    DEFAULT_ITEM_COL,
+    DEFAULT_ORDER_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
+)
 
 
 def generate_temporal_testdata():
@@ -290,7 +309,7 @@ class TestDataSplit(unittest.TestCase):
 
     def my_shuffle_side_effect(*args, **kwargs):
         a = args[1]
-        first, last = a[0], a[len(a) - 1]
+        _, last = a[0], a[len(a) - 1]
         temp = a[0].copy()
         a[0] = last
         a[len(a) - 1] = temp
@@ -369,7 +388,11 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[0, 3], 10)
 
     def test_generate_parameterized_path(self):
-        path1 = generate_parameterized_path(test_rate=0, random=False, n_negative=100, by_user=True)
-        self.assertEqual(path1, "by_user_n_neg_100")
-        path2 = generate_parameterized_path(test_rate=0.1, random=False, n_negative=100, by_user=False)
-        self.assertEqual(path2, "global_test_rate_10_n_neg_100")
+        path1 = generate_parameterized_path(
+            test_rate=0, random=False, n_negative=100, by_user=True
+        )
+        self.assertEqual(path1, "user_based_n_neg_100")
+        path2 = generate_parameterized_path(
+            test_rate=0.1, random=False, n_negative=100, by_user=False
+        )
+        self.assertEqual(path2, "full_test_rate_10_n_neg_100")

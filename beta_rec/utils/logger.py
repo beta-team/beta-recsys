@@ -59,25 +59,30 @@ class Logger(object):
     def __init__(self, filename="default", stdout=None, stderr=None):
         self.stdout = stdout
         self.stderr = stderr
+        self.fileno = sys.stdout.fileno
         self.filename = filename
         self.message = ""
 
     def write(self, message):
-        #         with open(self.filename, "a") as logger:
-        #             logger.write(str(len(message)) + ":" + message + "\n")
-
         if message == "" or message is None:
             return
         elif "\n" in message:
+            message = message[:-1]
             self.message += message
             now = datetime.now()
             date_time = now.strftime("%Y-%m-%d %H:%M:%S ")
             if self.stdout is not None:
-                self.message = date_time + "[INFO]-" + self.message
+                if "\n" in self.message:
+                    self.message = date_time + "[INFO]-\n" + self.message + "\n"
+                else:
+                    self.message = date_time + "[INFO]-" + self.message + "\n"
                 self.stdout.write(self.message)
                 self.stdout.flush()
             if self.stderr is not None:
-                self.message = date_time + "[ERROR]-" + self.message
+                if "\n" in self.message:
+                    self.message = date_time + "[ERROR]-\n" + self.message + "\n"
+                else:
+                    self.message = date_time + "[ERROR]-" + self.message + "\n"
                 self.stderr.write(self.message)
                 self.stderr.flush()
             with open(self.filename, "a") as logger:

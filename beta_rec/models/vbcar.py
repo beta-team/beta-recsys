@@ -1,9 +1,9 @@
-from beta_rec.models.torch_engine import Engine
-from beta_rec.utils.constants import *
-from beta_rec.utils.common_util import *
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+from beta_rec.models.torch_engine import ModelEngine
+from beta_rec.utils.common_util import timeit
 
 
 class VBCAR(nn.Module):
@@ -44,17 +44,17 @@ class VBCAR(nn.Module):
     def init_feature(self, user_fea, item_fea):
         self.user_fea = user_fea
         self.item_fea = item_fea
-        self.user_fea_dim = user_fea.size()[1]
-        self.item_fea_dim = item_fea.size()[1]
+        self.user_fea_dim = user_fea.embedding_dim
+        self.item_fea_dim = item_fea.embedding_dim
 
     def user_encode(self, index):
-        x = self.user_fea[index]
+        x = self.user_fea(index)
         mu = self.fc_u_2_mu(self.act(self.fc_u_1_mu(x)))
         std = self.fc_u_2_std(self.act(self.fc_u_1_std(x)))
         return mu, std
 
     def item_encode(self, index):
-        x = self.item_fea[index]
+        x = self.item_fea(index)
         mu = self.fc_i_2_mu(self.act(self.fc_i_1_mu(x)))
         std = self.fc_i_2_std(self.act(self.fc_i_1_std(x)))
         return mu, std
@@ -71,7 +71,7 @@ class VBCAR(nn.Module):
 
     def kl_div(self, dis1, dis2=None, neg=False):
         mean1, std1 = dis1
-        if dis2 == None:
+        if dis2 is None:
             mean2 = torch.zeros(mean1.size(), device=self.device)
             std2 = torch.ones(std1.size(), device=self.device)
         else:
@@ -149,7 +149,7 @@ class VBCAR(nn.Module):
 
         i_2_score = -1 * (torch.sum(i_2_pos_score) + torch.sum(i_2_neg_score))
 
-        GEN = (u_score + i_1_score + i_2_score) / (self.batch_size)
+        GEN = (u_score + i_1_score + i_2_score) / self.batch_size
         KLD = (
             self.kl_div(pos_u_dis)
             + self.kl_div(pos_i_1_dis)
@@ -157,7 +157,7 @@ class VBCAR(nn.Module):
             + self.kl_div(neg_u_dis)
             + self.kl_div(neg_i_1_dis)
             + self.kl_div(neg_i_2_dis)
-        ) / (self.batch_size)
+        ) / self.batch_size
         self.kl_loss = KLD.item()
         #         return GEN/ (3 * self.batch_size)
         return (1 - self.alpha) * (GEN) + (self.alpha * KLD)
@@ -172,25 +172,19 @@ class VBCAR(nn.Module):
         return scores
 
 
-class VBCAREngine(Engine):
+class VBCAREngine(ModelEngine):
     """Engine for training & evaluating GMF model"""
 
     def __init__(self, config):
         self.config = config
-        self.model = VBCAR(config)
-        if config["feature_type"] == "random":
-            user_fea = torch.randn(
-                config["n_users"],
-                self.config["late_dim"],
-                dtype=torch.float32,
-                device=torch.device(self.config["device_str"]),
-            )
-            item_fea = torch.randn(
-                config["n_items"],
-                self.config["late_dim"],
-                dtype=torch.float32,
-                device=torch.device(self.config["device_str"]),
-            )
+        self.model = VBCAR(config["model"])
+        if config["model"]["feature_type"] == "random":
+            user_fea = nn.Embedding(
+                config["model"]["n_users"], self.config["model"]["late_dim"]
+            ).to(torch.device(self.config["model"]["device_str"]))
+            item_fea = nn.Embedding(
+                config["model"]["n_items"], self.config["model"]["late_dim"]
+            ).to(torch.device(self.config["model"]["device_str"]))
         else:
             pass
             # todo
@@ -227,17 +221,23 @@ class VBCAREngine(Engine):
                 [triple[2] for triple in sample], dtype=torch.int64, device=self.device,
             )
             neg_u = torch.tensor(
-                self.data.user_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.user_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
             neg_i_1 = torch.tensor(
-                self.data.item_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.item_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
             neg_i_2 = torch.tensor(
-                self.data.item_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.item_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
@@ -245,15 +245,15 @@ class VBCAREngine(Engine):
             loss = self.train_single_batch(batch_data)
             total_loss += loss
             kl_loss += self.model.kl_loss
-        total_loss = total_loss / self.config["batch_size"]
-        kl_loss = kl_loss / self.config["batch_size"]
+        total_loss = total_loss / self.config["model"]["batch_size"]
+        kl_loss = kl_loss / self.config["model"]["batch_size"]
         print(
             "[Training Epoch {}], log_like_loss {} kl_loss: {} alpha: {} lr: {}".format(
                 epoch_id,
                 total_loss - kl_loss,
                 kl_loss,
                 self.model.alpha,
-                self.config["lr"],
+                self.config["model"]["lr"],
             )
         )
         self.writer.add_scalars(

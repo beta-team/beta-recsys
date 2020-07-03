@@ -1,21 +1,26 @@
-import sys
-
-sys.path.append("../")
 import argparse
+import math
+import os
+import sys
+import time
+
+import torch
 from ray import tune
-from beta_rec.train_engine import TrainEngine, dict2str
-from beta_rec.models.vbcar import VBCAREngine
-from beta_rec.utils.monitor import Monitor
-from beta_rec.utils.common_util import update_args
-from beta_rec.utils.constants import *
+from torch.utils.data import DataLoader
 from tqdm import tqdm
+
+from beta_rec.core.train_engine import TrainEngine
+from beta_rec.models.vbcar import VBCAREngine
+from beta_rec.utils.common_util import DictToObject, str2bool
+from beta_rec.utils.constants import MAX_N_UPDATE
+from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """
-        Parse args from command line
-        Returns:
+    """ Parse args from command line
 
+        Returns:
+            args object.
     """
     parser = argparse.ArgumentParser(description="Run VBCAR..")
     parser.add_argument(
@@ -26,7 +31,7 @@ def parse_args():
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
-    # these settings will be updated.
+    # These settings will used to update the parameters received from the config file.
     parser.add_argument(
         "--dataset",
         nargs="?",
@@ -41,13 +46,10 @@ def parse_args():
     )
     parser.add_argument("--root_dir", nargs="?", type=str, help="working directory")
     parser.add_argument(
-        "--percent",
-        nargs="?",
-        type=float,
-        help="The percentage of the subset of the dataset, only availbe on instacart dataset.",
+        "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
     parser.add_argument(
-        "--n_sample", nargs="?", type=int, help="Number of sampled triples."
+        "--tune", nargs="?", type=str2bool, help="Tune parameter",
     )
     parser.add_argument("--sub_set", nargs="?", type=int, help="Subset of dataset.")
     parser.add_argument(
@@ -63,15 +65,13 @@ def parse_args():
         "--late_dim", nargs="?", type=int, help="Dimension of the latent layers.",
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Intial learning rate.")
-    parser.add_argument("--num_epoch", nargs="?", type=int, help="Number of max epoch.")
-
+    parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
     )
     parser.add_argument("--optimizer", nargs="?", type=str, help="OPTI")
     parser.add_argument("--activator", nargs="?", type=str, help="activator")
     parser.add_argument("--alpha", nargs="?", type=float, help="ALPHA")
-
     return parser.parse_args()
 
 
@@ -88,67 +88,92 @@ class VBCAR_train(TrainEngine):
         """
         self.config = config
         super(VBCAR_train, self).__init__(self.config)
-        self.sample_triple()
-        self.config["alpha_step"] = (1 - self.config["alpha"]) / (
-            self.config["num_epoch"]
-        )
-        self.engine = VBCAREngine(self.config)
 
     def train(self):
-        assert hasattr(self, "engine"), "Please specify the exact model engine !"
-        monitor = Monitor(log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id)
-        """
-        init model
-        """
-        print("init model ...")
-        self.engine.data = self.data
-        print("strat traning... ")
-        best_performance = 0
-        n_no_update = 0
-        epoch_bar = tqdm(range(self.config["num_epoch"]), file=sys.stdout)
-        for epoch in epoch_bar:
-            print("Epoch {} starts !".format(epoch))
-            print("-" * 80)
-            data_loader = self.build_data_loader()
-            self.engine.train_an_epoch(data_loader, epoch_id=epoch)
-            result = self.engine.evaluate(self.data.validate[0], epoch_id=epoch)
-            test_result = self.engine.evaluate(self.data.test[0], epoch_id=epoch)
-            self.engine.record_performance(result, test_result, epoch_id=epoch)
-            if result[self.config["validate_metric"]] > best_performance:
-                n_no_update = 0
-                dict2str(result)
-                self.engine.save_checkpoint(model_dir=self.config["model_ckp_file"])
-                best_performance = result[self.config["validate_metric"]]
-            else:
-                n_no_update += 1
+        """Default train implementation
 
-            if n_no_update >= MAX_N_UPDATE:
+        """
+        self.load_dataset()
+        self.train_data = self.data.sample_triple()
+        self.config["model"]["alpha_step"] = (1 - self.config["model"]["alpha"]) / (
+            self.config["model"]["max_epoch"]
+        )
+        self.engine = VBCAREngine(self.config)
+        assert hasattr(self, "engine"), "Please specify the exact model engine !"
+        self.monitor = Monitor(
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
+        )
+        self.engine.data = self.data
+        print("Start training... ")
+        epoch_bar = tqdm(range(self.config["model"]["max_epoch"]), file=sys.stdout)
+        for epoch in epoch_bar:
+            print(f"Epoch {epoch} starts !")
+            print("-" * 80)
+            if epoch > 0 and self.eval_engine.n_no_update == 0:
+                # previous epoch have already obtained better result
+                self.engine.save_checkpoint(
+                    model_dir=os.path.join(
+                        self.config["system"]["model_save_dir"], "model.cpk"
+                    )
+                )
+
+            if self.eval_engine.n_no_update >= MAX_N_UPDATE:
                 print(
                     "Early stop criterion triggered, no performance update for {:} times".format(
                         MAX_N_UPDATE
                     )
                 )
                 break
+            data_loader = DataLoader(
+                torch.LongTensor(self.train_data.to_numpy()).to(self.engine.device),
+                batch_size=self.config["model"]["batch_size"],
+                shuffle=True,
+                drop_last=True,
+            )
+            self.engine.train_an_epoch(data_loader, epoch_id=epoch)
+            self.eval_engine.train_eval(
+                self.data.valid[0], self.data.test[0], self.engine.model, epoch
+            )
+            # anneal alpha
+            self.engine.model.alpha = min(
+                self.config["model"]["alpha"]
+                + math.exp(epoch - self.config["model"]["max_epoch"] + 20),
+                1,
+            )
             """Sets the learning rate to the initial LR decayed by 10 every 10 epochs"""
-            lr = self.config["lr"] * (0.5 ** (epoch // 10))
-            self.engine.model.alpha += self.config["alpha_step"]
+            lr = self.config["model"]["lr"] * (0.5 ** (epoch // 10))
             for param_group in self.engine.optimizer.param_groups:
                 param_group["lr"] = lr
-        self.config["run_time"] = monitor.stop()
-        return best_performance
+        self.config["run_time"] = self.monitor.stop()
+        return self.eval_engine.best_valid_performance
 
 
 def tune_train(config):
-    VBCAR = VBCAR_train(config)
-    best_performance = VBCAR.train()
-    tune.track.log(best_ndcg=best_performance)
-    VBCAR.test()
+    """Train the model with a hypyer-parameter tuner (ray)
+
+    Args:
+        config (dict): All the parameters for the model
+
+    Returns:
+
+    """
+    train_engine = VBCAR_train(DictToObject(config))
+    best_performance = train_engine.train()
+    tune.track.log(valid_metric=best_performance)
+    train_engine.test()
+    while train_engine.eval_engine.n_worker > 0:
+        time.sleep(20)
 
 
 if __name__ == "__main__":
     args = parse_args()
-    config = {}
-    update_args(config, args)
-    VBCAR = VBCAR_train(config)
-    VBCAR.train()
-    VBCAR.test()
+    print(args)
+    if args.tune:
+        print("Start tune hyper-parameters ...")
+        train_engine = VBCAR_train(args)
+        train_engine.tune(tune_train)
+    else:
+        print("Run application with single config ...")
+        train_engine = VBCAR_train(args)
+        train_engine.train()
+        train_engine.test()

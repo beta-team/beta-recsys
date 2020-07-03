@@ -1,23 +1,23 @@
-import sys
-
-sys.path.append("../")
 import argparse
-import pandas as pd
-from tqdm import tqdm
-from beta_rec.train_engine import TrainEngine
+import os
+import time
+
+from ray import tune
+
+from beta_rec.core.train_engine import TrainEngine
+from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine
-from beta_rec.datasets.nmf_data_utils import SampleGenerator
-from beta_rec.utils.common_util import save_to_csv
+from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """
-        Parse args from command line
-        Returns:
+    """ Parse args from command line
 
+        Returns:
+            args object.
     """
     parser = argparse.ArgumentParser(description="Run NCF..")
     parser.add_argument(
@@ -28,7 +28,13 @@ def parse_args():
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
-    # these settings will be updated.
+    # These settings will used to update the parameters received from the config file.
+    parser.add_argument(
+        "--model",
+        nargs="?",
+        type=str,
+        help="Options are: 'mlp', 'gmf', 'ncf_end', and 'ncf_pre'",
+    )
     parser.add_argument(
         "--dataset",
         nargs="?",
@@ -42,48 +48,20 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument(
-        "--root_dir", nargs="?", type=str, help="working directory",
+        "--root_dir", nargs="?", type=str, help="Working directory",
     )
     parser.add_argument(
-        "--temp_train",
-        nargs="?",
-        type=int,
-        help="IF value >0, then the model will be trained based on the temporal feeding, else use normal trainning",
+        "--tune", nargs="?", type=str2bool, help="Tune parameter",
     )
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
-    parser.add_argument("--lr", nargs="?", type=float, help="Intial learning rate.")
-    parser.add_argument("--num_epoch", nargs="?", type=int, help="Number of max epoch.")
-
+    parser.add_argument("--lr", nargs="?", type=float, help="Initial learning rate.")
+    parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
     )
-    parser.add_argument("--optimizer", nargs="?", type=str, help="OPTI")
-    parser.add_argument("--activator", nargs="?", type=str, help="activator")
-    parser.add_argument("--alpha", nargs="?", type=float, help="ALPHA")
     return parser.parse_args()
-
-
-"""
-update hyperparameters from command line
-"""
-
-
-def update_args(config, args):
-    """Update config parameters by the received parameters from command line
-
-        Args:
-            config (dict): Initial dict of the parameters from JOSN config file.
-            args (object): An argparse Argument object with attributes being the parameters to be updated.
-
-        Returns:
-            None
-    """
-    for k, v in vars(args).items():
-        if v != None:
-            config[k] = v
-            print("Received parameters form comand line:", k, v)
 
 
 class NCF_train(TrainEngine):
@@ -97,153 +75,144 @@ class NCF_train(TrainEngine):
         Args:
             config (dict): All the parameters for the model
         """
-
         self.config = config
         super(NCF_train, self).__init__(self.config)
-        self.sample_generator = SampleGenerator(ratings=self.data.train)
+        self.load_dataset()
+        self.build_data_loader()
+        self.gpu_id, self.config["model"]["device_str"] = self.get_device()
 
-        # update model config
-        common_config = self.config.copy()
-        common_config.pop("gmf_config")
-        common_config.pop("mlp_config")
-        common_config.pop("neumf_config")
-        self.config["gmf_config"].update(common_config)
-        self.config["mlp_config"].update(common_config)
-        self.config["neumf_config"].update(common_config)
-
-    def train_epoch(self, engine, save_dir, temporal=False, time_step=0, t = 0):
-        epoch_bar = tqdm(range(self.config["num_epoch"]), file=sys.stdout)
-        best_performance = 0
-        for epoch in epoch_bar:
-            print("Epoch {} starts !".format(epoch))
-            print("-" * 80)
-            if temporal:
-                train_loader = self.sample_generator.instance_temporal_train_loader(
-                    config["num_negative"],
-                    config["batch_size"],
-                    time_step=time_step,
-                    t=t,
-                )
-            else:
-                train_loader = self.sample_generator.instance_a_train_loader(
-                    self.config["num_negative"], self.config["batch_size"]
-                )
-            engine.train_an_epoch(train_loader, epoch_id=epoch)
-            """evaluate model on vilidate and test sets"""
-            result = engine.evaluate(self.data.validate[0], epoch_id=epoch)
-            test_result = engine.evaluate(self.data.test[0], epoch_id=epoch)
-            engine.record_performance(result, test_result, epoch_id=epoch)
-            if result["ndcg_at_k@10"] > best_performance:
-                print(result)
-                engine.save_checkpoint(model_dir=save_dir)
-                best_performance = result["ndcg_at_k@10"]
-                print("save model to" + self.gmf_save_dir)
-                best_result = result
-        # save_result(result, result_file)
+    def build_data_loader(self):
+        # ToDo: Please define the directory to store the adjacent matrix
+        self.sample_generator = DataLoaderBase(ratings=self.data.train)
+        self.config["model"]["num_batch"] = (
+            self.data.n_train // self.config["model"]["batch_size"] + 1
+        )
+        self.config["model"]["n_users"] = self.data.n_users
+        self.config["model"]["n_items"] = self.data.n_items
 
     def train(self):
-        self.monitor = Monitor(
-            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
-        )
+        """ Main training navigator
 
+        Returns:
+
+        """
+
+        # Options are: 'mlp', 'gmf', 'ncf_end', and 'ncf_pre';
+        # Train NeuMF without pre-train
+        if self.config["model"]["model"] == "ncf_end":
+            self.train_ncf()
+        elif self.config["model"]["model"] == "gmf":
+            self.train_gmf()
+        elif self.config["model"]["model"] == "mlp":
+            self.train_mlp()
+        elif self.config["model"]["model"] == "ncf_pre":
+            self.train_gmf()
+            self.train_mlp()
+            self.train_ncf()
+        else:
+            raise ValueError(
+                "Model type error: Options are: 'mlp', 'gmf', 'ncf_end', and 'ncf_pre'."
+            )
+
+    def train_ncf(self):
+        """ Train NeuMF
+
+        Returns:
+            None
+        """
+        self.monitor = Monitor(
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
+        )
+        train_loader = self.sample_generator.instance_a_train_loader(
+            self.config["model"]["num_negative"], self.config["model"]["batch_size"]
+        )
+        self.engine = NeuMFEngine(self.config)
+        self.neumf_save_dir = os.path.join(
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["neumf_config"]["save_name"],
+        )
+        self._train(self.engine, train_loader, self.neumf_save_dir)
+        self.config["run_time"] = self.monitor.stop()
+        self.eval_engine.test_eval(self.data.test, self.engine.model)
+
+    def train_gmf(self):
+        """ Train GMF
+
+        Returns:
+            None
+        """
+        self.monitor = Monitor(
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
+        )
+        train_loader = self.sample_generator.instance_a_train_loader(
+            self.config["model"]["num_negative"], self.config["model"]["batch_size"]
+        )
         # Train GMF
-        self.gmf_engine = GMFEngine(self.config["gmf_config"])
-        self.gmf_save_dir = (
-            self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
+        self.engine = GMFEngine(self.config)
+        self.gmf_save_dir = os.path.join(
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["gmf_config"]["save_name"],
         )
-        self.train_epoch(engine=self.gmf_engine, save_dir=self.gmf_save_dir)
+        self._train(self.engine, train_loader, self.gmf_save_dir)
+        while self.eval_engine.n_worker:
+            print("Wait 15s for the complete of eval_engine.n_worker")
+            time.sleep(15)  # wait the
+        self.config["run_time"] = self.monitor.stop()
+        self.eval_engine.test_eval(self.data.test, self.engine.model)
 
+    def train_mlp(self):
+        """ Train MLP
 
+        Returns:
+            None
+        """
         # Train MLP
-        self.mlp_engine = MLPEngine(
-            self.config["mlp_config"], gmf_config=self.config["gmf_config"]
-        )
-        self.mlp_save_dir = (
-            self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
-        )
-        self.train_epoch(engine=self.mlp_engine, save_dir=self.mlp_save_dir)
-
-        # Train ncf
-        self.neumf_engine = NeuMFEngine(
-            self.config["neumf_config"],
-            gmf_config=self.config["gmf_config"],
-            mlp_config=self.config["mlp_config"],
-        )
-        self.neumf_save_dir = (
-            self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
-        )
-        self.train_epoch(engine=self.neumf_engine, save_dir=self.neumf_save_dir)
-
-        self.config["run_time"] = self.monitor.stop()
-
-
-    def temporal_train(self):
         self.monitor = Monitor(
-            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
+        train_loader = self.sample_generator.instance_a_train_loader(
+            self.config["model"]["num_negative"], self.config["model"]["batch_size"]
+        )
+        self.engine = MLPEngine(self.config)
+        self.mlp_save_dir = os.path.join(
+            self.config["system"]["model_save_dir"],
+            self.config["model"]["mlp_config"]["save_name"],
+        )
+        self._train(self.engine, train_loader, self.mlp_save_dir)
 
-        time_step = self.config["temp_train"]
-        for t in range(time_step):
-            self.gmf_engine = GMFEngine(self.config["gmf_config"])
-            self.gmf_save_dir = (
-                self.config["model_ckp_file"] + self.config["gmf_config"]["save_name"]
-            )
-            self.train_epoch(engine=self.gmf_engine, save_dir=self.gmf_save_dir, temporal=True,time_step=time_step,t=t)
-
-            self.mlp_engine = MLPEngine(
-                self.config["mlp_config"], gmf_config=self.config["gmf_config"]
-            )
-            self.mlp_save_dir = (
-                self.config["model_ckp_file"] + self.config["mlp_config"]["save_name"]
-            )
-            self.train_epoch(engine=self.mlp_engine, save_dir=self.mlp_save_dir, temporal=True,time_step=time_step,t=t)
-
-            self.neumf_engine = NeuMFEngine(
-                self.config["neumf_config"],
-                gmf_config=self.config["gmf_config"],
-                mlp_config=self.config["mlp_config"],
-            )
-            self.neumf_save_dir = (
-                self.config["model_ckp_file"] + self.config["neumf_config"]["save_name"]
-            )
-            self.train_epoch(engine=self.neumf_engine, save_dir=self.neumf_save_dir, temporal=True,time_step=time_step,t=t)
-
+        while self.eval_engine.n_worker:
+            print("Wait 15s for the complete of eval_engine.n_worker")
+            time.sleep(15)  # wait the
         self.config["run_time"] = self.monitor.stop()
+        self.eval_engine.test_eval(self.data.test, self.engine.model)
 
-    def test(self):
-        """
-        Prediction and evalution on test set
-        """
-        result_para = {
-            "model": [self.config["model"]],
-            "dataset": [self.config["dataset"]],
-            "data_split": [self.config["data_split"]],
-            "temp_train": [self.config["temp_train"]],
-            "emb_dim": [int(self.config["emb_dim"])],
-            "lr": [self.config["lr"]],
-            "batch_size": [int(self.config["batch_size"])],
-            "optimizer": [self.config["optimizer"]],
-            "num_epoch": [self.config["num_epoch"]],
-            "remarks": [self.config["model_run_id"]],
-        }
 
-        """
-        load the best model in terms of the validate
-        """
-        self.neumf_engine.resume_checkpoint(model_dir=self.neumf_save_dir)
-        for i in range(10):
-            result = self.neumf_engine.evaluate(self.data.test[i], epoch_id=0)
-            print(result)
-            result["time"] = [self.config["run_time"]]
-            result.update(result_para)
-            result_df = pd.DataFrame(result)
-            save_to_csv(result_df, self.config["result_file"])
+def tune_train(config):
+    """Train the model with a hypyer-parameter tuner (ray)
+
+    Args:
+        config (dict): All the parameters for the model
+
+    Returns:
+
+    """
+    train_engine = NCF_train(DictToObject(config))
+    best_performance = train_engine.train()
+    tune.track.log(valid_metric=best_performance)
+    train_engine.test()
+    while train_engine.eval_engine.n_worker > 0:
+        time.sleep(20)
 
 
 if __name__ == "__main__":
     args = parse_args()
-    config = {}
-    update_args(config, args)
-    ncf = NCF_train(config)
-    ncf.train()
-    ncf.test()
+    print(args)
+    if args.tune:
+        print("Start tune hyper-parameters ...")
+        train_engine = NCF_train(args)
+        train_engine.tune(tune_train)
+    else:
+        print("Run application with single config ...")
+        train_engine = NCF_train(args)
+        train_engine.train()
+        train_engine.test()

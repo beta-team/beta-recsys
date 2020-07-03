@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from beta_rec.models.torch_engine import Engine
+
+from beta_rec.models.torch_engine import ModelEngine
 
 
 class Triple2vec(nn.Module):
@@ -22,7 +23,6 @@ class Triple2vec(nn.Module):
         self.init_emb()
 
     def init_emb(self):
-        #         initrange = 0.5 / self.emb_dim
         self.user_emb.weight.data.uniform_(-0.01, 0.01)
         self.item_emb1.weight.data.uniform_(-0.01, 0.01)
         self.item_emb2.weight.data.uniform_(-0.01, 0.01)
@@ -96,12 +96,12 @@ class Triple2vec(nn.Module):
         return scores
 
 
-class Triple2vecEngine(Engine):
+class Triple2vecEngine(ModelEngine):
     """Engine for training Triple model"""
 
     def __init__(self, config):
         self.config = config
-        self.model = Triple2vec(config)
+        self.model = Triple2vec(config["model"])
         super(Triple2vecEngine, self).__init__(config)
 
     def train_single_batch(self, batch_data, ratings=None):
@@ -118,7 +118,6 @@ class Triple2vecEngine(Engine):
         self.model.train()
         total_loss = 0
         for batch_id, sample in enumerate(train_loader):
-            assert isinstance(sample, torch.LongTensor)
             pos_u = torch.tensor(
                 [triple[0] for triple in sample], dtype=torch.int64, device=self.device,
             )
@@ -129,18 +128,24 @@ class Triple2vecEngine(Engine):
                 [triple[2] for triple in sample], dtype=torch.int64, device=self.device,
             )
             neg_u = torch.tensor(
-                self.data.user_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.user_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
             neg_i_1 = torch.tensor(
-                self.data.item_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.item_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
 
             neg_i_2 = torch.tensor(
-                self.data.item_sampler.sample(self.config["n_neg"], len(sample)),
+                self.data.item_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )

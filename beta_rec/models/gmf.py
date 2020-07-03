@@ -1,5 +1,8 @@
 import torch
-from beta_rec.models.torch_engine import Engine
+import torch.nn as nn
+
+from beta_rec.models.torch_engine import ModelEngine
+from beta_rec.utils.common_util import timeit
 
 
 class GMF(torch.nn.Module):
@@ -8,18 +11,16 @@ class GMF(torch.nn.Module):
         self.config = config
         self.num_users = config["n_users"]
         self.num_items = config["n_items"]
-        self.latent_dim = config["latent_dim"]
+        self.emb_dim = config["emb_dim"]
 
         self.embedding_user = torch.nn.Embedding(
-            num_embeddings=self.num_users, embedding_dim=self.latent_dim
+            num_embeddings=self.num_users, embedding_dim=self.emb_dim
         )
         self.embedding_item = torch.nn.Embedding(
-            num_embeddings=self.num_items, embedding_dim=self.latent_dim
+            num_embeddings=self.num_items, embedding_dim=self.emb_dim
         )
-
-        self.affine_output = torch.nn.Linear(
-            in_features=self.latent_dim, out_features=1
-        )
+        self.init_weight()
+        self.affine_output = torch.nn.Linear(in_features=self.emb_dim, out_features=1)
         self.logistic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):
@@ -37,14 +38,16 @@ class GMF(torch.nn.Module):
             return self.forward(user_indices, item_indices)
 
     def init_weight(self):
-        pass
+        nn.init.normal_(self.embedding_user.weight, std=0.01)
+        nn.init.normal_(self.embedding_user.weight, std=0.01)
 
 
-class GMFEngine(Engine):
+class GMFEngine(ModelEngine):
     """Engine for training & evaluating GMF model"""
 
     def __init__(self, config):
-        self.model = GMF(config)
+        self.model = GMF(config["model"])
+        self.loss = torch.nn.BCELoss()
         super(GMFEngine, self).__init__(config)
 
     def train_single_batch(self, users, items, ratings):
@@ -62,6 +65,7 @@ class GMFEngine(Engine):
         loss = loss.item()
         return loss
 
+    @timeit
     def train_an_epoch(self, train_loader, epoch_id):
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
@@ -74,12 +78,3 @@ class GMFEngine(Engine):
             total_loss += loss
         print("[Training Epoch {}], Loss {}".format(epoch_id, total_loss))
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
-
-    def load_pretrain_weights(self):
-        """Loading weights from trained GMF model"""
-        gmf_model = GMF(self.config)
-        self.resume_checkpoint(
-            self.config["model_ckp_file"] + self.config["save_name"], gmf_model
-        )
-        self.model.embedding_user.weight.data = gmf_model.embedding_user.weight.data
-        self.model.embedding_item.weight.data = gmf_model.embedding_item.weight.data

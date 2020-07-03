@@ -1,18 +1,22 @@
-import sys
-
-sys.path.append("../")
 import argparse
+import os
+import time
+
+import torch
 from ray import tune
-from beta_rec.train_engine import TrainEngine
+from torch.utils.data import DataLoader
+
+from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.triple2vec import Triple2vecEngine
-from beta_rec.utils.common_util import update_args
+from beta_rec.utils.common_util import DictToObject, str2bool
+from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """
-    Parse args from command line
-    Returns:
+    """ Parse args from command line
 
+        Returns:
+            args object.
     """
     parser = argparse.ArgumentParser(description="Run Triple2vec..")
     parser.add_argument(
@@ -23,7 +27,7 @@ def parse_args():
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
-    # these settings will be updated.
+    # These settings will used to update the parameters received from the config file.
     parser.add_argument(
         "--dataset",
         nargs="?",
@@ -40,29 +44,16 @@ def parse_args():
         "--root_dir", nargs="?", type=str, help="working directory",
     )
     parser.add_argument(
-        "--percent",
-        nargs="?",
-        type=float,
-        help="The percentage of the subset of the data set, only available on instacart data set.",
+        "--tune", nargs="?", type=str2bool, help="Tune parameters",
     )
     parser.add_argument(
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
     parser.add_argument(
-        "--temp_train",
-        nargs="?",
-        type=int,
-        help="IF value >0, then the model will be trained based on the temporal feeding, else use normal trainning",
-    )
-    parser.add_argument(
-        "--use_bias", nargs="?", type=int, help="",
-    )
-    parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
-    parser.add_argument("--num_epoch", nargs="?", type=int, help="Number of max epoch.")
-
+    parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
     )
@@ -84,8 +75,28 @@ class Triple2vec_train(TrainEngine):
 
         self.config = config
         super(Triple2vec_train, self).__init__(self.config)
-        self.sample_triple()
+        self.gpu_id, self.config["device_str"] = self.get_device()
+
+    def train(self):
+        self.load_dataset()
         self.engine = Triple2vecEngine(self.config)
+        self.engine.data = self.data
+        self.train_data = self.data.sample_triple()
+        train_loader = DataLoader(
+            torch.LongTensor(self.train_data.to_numpy()).to(self.engine.device),
+            batch_size=self.config["model"]["batch_size"],
+            shuffle=True,
+            drop_last=True,
+        )
+        self.monitor = Monitor(
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
+        )
+        self.model_save_dir = os.path.join(
+            self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
+        )
+        self._train(self.engine, train_loader, self.model_save_dir)
+        self.config["run_time"] = self.monitor.stop()
+        return self.eval_engine.best_valid_performance
 
 
 def tune_train(config):
@@ -97,16 +108,23 @@ def tune_train(config):
     Returns:
 
     """
-    triple2vec = Triple2vec_train(config)
-    best_performance = triple2vec.train()
-    tune.track.log(best_ndcg=best_performance)
-    triple2vec.test()
+    train_engine = Triple2vec_train(DictToObject(config))
+    best_performance = train_engine.train()
+    tune.track.log(valid_metric=best_performance)
+    train_engine.test()
+    while train_engine.eval_engine.n_worker > 0:
+        time.sleep(20)
 
 
 if __name__ == "__main__":
     args = parse_args()
-    config = {}
-    update_args(config, args)
-    triple2vec = Triple2vec_train(config)
-    triple2vec.train()
-    triple2vec.test()
+    print(args)
+    if args.tune:
+        print("Start tune hyper-parameters ...")
+        train_engine = Triple2vec_train(args)
+        train_engine.tune(tune_train)
+    else:
+        print("Run application with single config ...")
+        train_engine = Triple2vec_train(args)
+        train_engine.train()
+        train_engine.test()
