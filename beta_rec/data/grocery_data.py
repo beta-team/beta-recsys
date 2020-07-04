@@ -26,7 +26,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 def intersect_train_test(train, test):
-    """ Get the intersect lists of users and items that exist in both train and test
+    """Get the intersect lists of users and items that exist in both train and test.
 
     Args:
         train (DataFrame):
@@ -35,7 +35,6 @@ def intersect_train_test(train, test):
     Returns:
         users (list): users list
         items (list): items list
-
     """
     users = list(
         set(train[DEFAULT_USER_COL].unique().flatten()).intersection(
@@ -51,6 +50,7 @@ def intersect_train_test(train, test):
 
 
 def get_feat_dic(fea_array):
+    """Get feature dictionary."""
     fea_dic = {}
     for row in fea_array:
         fea_dic[row[0]] = row[1:]
@@ -58,9 +58,9 @@ def get_feat_dic(fea_array):
 
 
 def calc_sim(A):
-    """Fastest way to calculate the cosine similarity
-    see:
-    https://stackoverflow.com/questions/17627219/
+    """Fastest way to calculate the cosine similarity.
+
+    See reference: https://stackoverflow.com/questions/17627219/
     """
     similarity = np.dot(A, A.T)
 
@@ -82,7 +82,7 @@ def calc_sim(A):
 
 
 def get_D_inv(adj):
-    """ Missing docs
+    """Missing docs.
 
     Args:
         adj:
@@ -98,7 +98,7 @@ def get_D_inv(adj):
 
 
 def check_adj_if_equal(adj):
-    """ Missing docs
+    """Missing docs.
 
     Args:
         adj:
@@ -114,12 +114,10 @@ def check_adj_if_equal(adj):
 
 
 class GroceryData(object):
-    """
-        Base Dataset class for all the model
-    """
+    """Grocery dataset class for all the model."""
 
     def __init__(self, config):
-        """Constructor
+        """Init GroceryData Class.
 
         Args:
             config:
@@ -155,8 +153,10 @@ class GroceryData(object):
             self.init_user_fea()
 
     def sample_triple_time(self, dump=True, load_save=False):
-        """
-        Sample triples or load triples samples from files. Only applicable for basket based Recommender
+        """Sample triples or load triples samples from files.
+
+        This method is only applicable for basket based Recommender.
+
         Returns:
             None
 
@@ -192,8 +192,10 @@ class GroceryData(object):
         return my_sampler.sample_by_time(self.config["model"]["time_step"])
 
     def sample_triple(self, dump=True, load_save=False):
-        """
-        Sample triples or load triples samples from files. Only applicable for basket based Recommender
+        """Sample triples or load triples samples from files.
+
+        This method is only applicable for basket based Recommender.
+
         Returns:
             None
 
@@ -224,7 +226,7 @@ class GroceryData(object):
         return my_sampler.sample()
 
     def generate_train_data(self):
-        """ Generate a rating matrix for interactions
+        """Generate a rating matrix for interactions.
 
         Returns:
             (sigma_matrix, rating_matrix)
@@ -255,9 +257,8 @@ class GroceryData(object):
         """Generate a sparse matrix for interactions.
 
         Returns:
-            coo_matrix
+            coo_matrix.
         """
-
         train_data = (
             self.train.groupby(["col_user", "col_item"])
             .sum()
@@ -271,13 +272,13 @@ class GroceryData(object):
         return sp.coo_matrix((ratings_record, (user_record, movie_record)))
 
     def _intersect_train_test(self, train, test, implicit=True):
-        """ process the dataset to reindex userID and itemID, also set rating as implicit feedback
+        """Process the dataset to reindex userID and itemID, also set rating as implicit feedback.
 
-        Parameters:
-            train (pandas.DataFrame): training data with at least columns (col_user, col_item, col_rating)
+        Args:
+            train (pandas.DataFrame): training data with at least columns (col_user, col_item, col_rating).
             test (pandas.DataFrame): test data with at least columns (col_user, col_item, col_rating)
-                    test can be None, if so, we only process the training data
-            implicit (bool): if true, set rating>0 to rating = 1
+                    test can be None, if so, we only process the training data.
+            implicit (bool): if true, set rating>0 to rating = 1.
 
         Returns:
             list: train and test pandas.DataFrame Dataset, which have been reindexed.
@@ -333,8 +334,9 @@ class GroceryData(object):
         return self._reindex(train, implicit)
 
     def _reindex_list(self, df_list):
-        """_reindex for list of dataset. For example, validate and test can be a list for evaluation
+        """Reindex for list of dataset.
 
+        For example, validate and test can be a list for evaluation.
         """
         df_list_new = []
         for df in df_list:
@@ -346,18 +348,16 @@ class GroceryData(object):
         return df_list_new
 
     def _reindex(self, df, implicit=True):
-        """
-        Process dataset to reindex userID and itemID, also set rating as implicit feedback
+        """Process dataset to reindex userID and itemID, also set rating as implicit feedback.
 
         Parameters:
-            df (pandas.DataFrame): dataframe with at least columns (col_user, col_item, col_rating)
-            implicit (bool): if true, set rating>0 to rating = 1
+            df (pandas.DataFrame): dataframe with at least columns (col_user, col_item, col_rating).
+            implicit (bool): if true, set rating>0 to rating = 1.
 
         Returns:
             list: train and test pandas.DataFrame Dataset, which have been reindexed.
 
         """
-
         # If testing dataset is None
         if df is None:
             return None
@@ -374,10 +374,7 @@ class GroceryData(object):
         return df
 
     def init_item_fea(self):
-        """
-        initialize item feature
-
-        """
+        """Initialize item feature."""
         config = self.config
         if "item_fea_type" in config["dataset"]:
             fea_type = config["dataset"]["item_fea_type"]
@@ -514,11 +511,7 @@ class GroceryData(object):
             self.item_feature = get_random_rep(self.n_items, self.random_dim)
 
     def init_user_fea(self):
-        """
-        initialize user feature
-        VBCAR model
-
-        """
+        """Initialize user feature for VBCAR model."""
         if "user_fea_type" in self.config["dataset"]:
             fea_type = self.config["dataset"]["user_fea_type"]
         else:
@@ -540,10 +533,12 @@ class GroceryData(object):
             # load_user_fea(config)
 
     def get_adj_mat(self):
-        """ Get the adjacent matrix, if not previously stored then call the function to create
-        This method is for NGCF model
+        """Get the adjacent matrix.
+
+        If not previously stored then call the function to create. This method is for NGCF model.
+
         Return:
-            Different types of adjacment matrix
+            Different types of adjacent matrix.
         """
         self.init_train_items()
 
@@ -587,7 +582,7 @@ class GroceryData(object):
         return adj_mat, norm_adj_mat, mean_adj_mat
 
     def load_user_item_fea(self):
-        """ Load user and item features from datasets.
+        """Load user and item features from datasets.
 
         Returns:
 
@@ -606,8 +601,11 @@ class GroceryData(object):
         self.item_feat = np.stack(item_feat_li)
 
     def make_fea_sim_mat(self):
-        """ Note that the first column is the user/item ID
-        Returns
+        """Make feature similarity matrix.
+
+        Note that the first column is the user/item ID.
+
+        Returns:
             normalized_adj_single
         """
         self.load_user_item_fea()
@@ -620,8 +618,7 @@ class GroceryData(object):
         )
 
     def create_adj_mat(self):
-        """ Create adjacent matirx from the user-item interaction matrix
-        """
+        """Create adjacent matrix from the user-item interaction."""
         t1 = time()
         adj_mat = sp.dok_matrix(
             (self.n_users + self.n_items, self.n_users + self.n_items), dtype=np.float32
@@ -647,7 +644,7 @@ class GroceryData(object):
         print("refresh negative pools", time() - t1)
 
     def sample(self, batch_size):
-        """ Sample users, their positive items and negative items
+        """Sample users, their positive items and negative items.
 
         Returns:
             users (list)
@@ -795,9 +792,7 @@ class GroceryData(object):
         neg_length = np.zeros(batch_size, dtype=np.int32)
 
         def sample_negative_item(user_id, n_items, users_items, items_users):
-            """
-            Uniformly sample a negative item
-            """
+            """Uniformly sample a negative item."""
             if user_id > n_items:
                 raise ValueError(
                     "Trying to sample user id: {} > user count: {}".format(
