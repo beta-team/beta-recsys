@@ -76,14 +76,16 @@ class MFEngine(ModelEngine):
     def __init__(self, config):
         self.config = config
         print_dict_as_table(config, tag="MF model config")
-        self.model = MF(config)
+        self.model = MF(config["model"])
         self.reg = (
-            config["reg"] if "reg" in config else 0.0
+            config["model"]["reg"] if "reg" in config else 0.0
         )  # the regularization coefficient.
-        self.batch_size = config["batch_size"]
+        self.batch_size = config["model"]["batch_size"]
         super(MFEngine, self).__init__(config)
         self.model.to(self.device)
-        self.loss = self.config["loss"] if "loss" in self.config else "bpr"
+        self.loss = (
+            self.config["model"]["loss"] if "loss" in self.config["model"] else "bpr"
+        )
         print(f"using {self.loss} loss...")
 
     def train_single_batch(self, batch_data):

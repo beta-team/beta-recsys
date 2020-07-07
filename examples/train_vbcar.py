@@ -2,6 +2,7 @@ import argparse
 import math
 import os
 import sys
+import time
 
 import torch
 from ray import tune
@@ -160,6 +161,8 @@ def tune_train(config):
     best_performance = train_engine.train()
     tune.track.log(valid_metric=best_performance)
     train_engine.test()
+    while train_engine.eval_engine.n_worker > 0:
+        time.sleep(20)
 
 
 if __name__ == "__main__":
