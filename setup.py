@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 url = "https://github.com/beta-team/beta-recsys"
 
 install_requires = [
@@ -39,12 +39,12 @@ tests_require = ["pytest", "pytest-cov", "mock"]
 setup(
     name="beta-recsys",
     version=__version__,
-    description="BETA-Recsys: Build, Evaluate and Tune under A same framework for Recommendations",
+    description="Beta-RecSys: Beta-RecSys: Build, Evaluate and Tune Automated Recommender Systems",
     author_email="recsys.beta@gmail.com",
     url=url,
     download_url="{}/archive/{}.tar.gz".format(url, __version__),
     keywords=["pytorch", "recommender system", "recommendations"],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
