@@ -24,9 +24,9 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "Beta-recsys"
-copyright = "2020, Beta-team"
-author = "Beta-team"
+project = "BETA-RecSys"
+copyright = "2020, BETA-team"
+author = "BETA-team"
 
 
 # -- General configuration ---------------------------------------------------

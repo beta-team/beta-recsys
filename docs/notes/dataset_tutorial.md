@@ -1,4 +1,4 @@
-# DataSet Tutorial For BETA-Recsys
+# DataSet Tutorial For Beta-Recsys
 
 Author: Yucheng Liang
 
@@ -6,7 +6,10 @@ Last Update Time: 2020-05-29
 
 ## Introduction
 
-BETA-Recsys provides users a wide range of datasets for recommendation system training. For convenience, we preprocess a number of datasets for you to train, getting you rid of splitting them on you local machine. Also this framework provides users a set of useful interfaces for data split.
+Beta-Recsys
+
+
+ provides users a wide range of datasets for recommendation system training. For convenience, we preprocess a number of datasets for you to train, getting you rid of splitting them on you local machine. Also this framework provides users a set of useful interfaces for data split.
 
 ---
 
@@ -102,7 +105,10 @@ Also, we provide some information about the dataset content such as the number o
 
 ### Download Data
 
-BETA-Recsys provides download interface for users to download different dataset. Here is an example:
+Beta-Recsys
+
+
+ provides download interface for users to download different dataset. Here is an example:
 
 ```python
 import sys
