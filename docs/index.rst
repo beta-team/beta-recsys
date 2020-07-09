@@ -1,9 +1,9 @@
-.. Beta-recsys documentation master file, created by
+.. Beta-RecSys documentation master file, created by
    sphinx-quickstart on Mon May 25 15:25:07 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Beta-recsys's documentation!
+Beta-RecSys Documentation
 =======================================
 .. image:: https://codecov.io/gh/leungyukshing/beta-recsys/branch/develop/graph/badge.svg
   :target: https://codecov.io/gh/leungyukshing/beta-recsys
@@ -15,8 +15,14 @@ Welcome to Beta-recsys's documentation!
    :maxdepth: 1
    :caption: Notes
 
-   notes/beta-recsys
-   notes/dataset_tutorial
+   notes/installation
+   notes/introduction
+   notes/framework
+   notes/datasets
+   notes/dataloaders
+   notes/models
+   notes/evaluation
+   notes/tuning
 
 .. toctree::
    :maxdepth: 1
