@@ -17,9 +17,13 @@ from beta_rec.utils.constants import (
 )
 
 
-class DataBase:
+class DataBase(object):
+    r"""A plain DataBase object modeling a single graph with various
+        (optional) attributes:
+
+    """
     def __init__(
-        self, split_dataset, intersection=True, binarize=True,
+        self, s, intersection=True, binarize=True,
     ):
         self.train, self.valid, self.test = split_dataset
 
