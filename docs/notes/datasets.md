@@ -1,8 +1,4 @@
-# DataSet Tutorial For Beta-Recsys
-
-Author: Yucheng Liang
-
-Last Update Time: 2020-05-29
+# DataSets
 
 ## Introduction
 

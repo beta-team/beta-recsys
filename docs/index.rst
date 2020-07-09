@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Beta-RecSys's documentation!
+Beta-RecSys Documentation
 =======================================
 .. image:: https://codecov.io/gh/leungyukshing/beta-recsys/branch/develop/graph/badge.svg
   :target: https://codecov.io/gh/leungyukshing/beta-recsys
@@ -16,7 +16,13 @@ Welcome to Beta-RecSys's documentation!
    :caption: Notes
 
    notes/installation
-   notes/dataset_tutorial
+   notes/introduction
+   notes/framework
+   notes/datasets
+   notes/dataloaders
+   notes/models
+   notes/evaluation
+   notes/tuning
 
 .. toctree::
    :maxdepth: 1
