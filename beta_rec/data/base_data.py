@@ -153,7 +153,7 @@ class BaseData(object):
                     inplace=True,
                 )
 
-        print("After intersection, test set [0] statistics")
+        print("After intersection, testing set [0] statistics")
         print(
             tabulate(
                 self.test[0].agg(["count", "nunique"])
@@ -166,7 +166,7 @@ class BaseData(object):
                 disable_numparse=True,
             )
         )
-        print("After intersection, valid set [0] statistics")
+        print("After intersection, validation set [0] statistics")
         print(
             tabulate(
                 self.valid[0].agg(["count", "nunique"])
