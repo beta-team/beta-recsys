@@ -1,12 +1,16 @@
 import argparse
 import os
+import sys
 import time
+
+sys.path.append("../")
+
+from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.mf import MFEngine
 from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.monitor import Monitor
-from ray import tune
 
 
 def parse_args():

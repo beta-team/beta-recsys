@@ -4,7 +4,10 @@ import os
 import sys
 import time
 
+sys.path.append("../")
+
 import torch
+from ray import tune
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
@@ -13,7 +16,6 @@ from beta_rec.models.vbcar import VBCAREngine
 from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
-from ray import tune
 
 
 def parse_args():

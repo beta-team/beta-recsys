@@ -26,5 +26,5 @@ flake8-black==0.1.2
 wheel~=0.34.2
 sphinx_markdown_tables~=0.0.14
 flake8-isort~=3.0.0
-isort==4.3.20
+isort==4.3.21
 ax-platform==0.1.13
