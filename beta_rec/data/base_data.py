@@ -21,6 +21,7 @@ class BaseData(object):
             split_dataset (train,valid,test): the split dataset, a tuple consisting of training (DataFrame),
             validate/list of validate (DataFrame), testing/list of testing (DataFrame).
             intersect (bool, optional): remove users and items of test/valid sets that do not exist in the train set.
+            If the model is able to predict for new users and new items, this can be :obj:`False`.
             (default: :obj:`True`)
             binarize (bool, optional): binarize the rating column of train set 0 or 1, i.e. implicit feedback.
             (default: :obj:`True`)
