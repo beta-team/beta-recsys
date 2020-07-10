@@ -5,16 +5,15 @@ import string
 import sys
 from datetime import datetime
 
-import GPUtil
-import ray
 import torch
-from ray import tune
 from tabulate import tabulate
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+import GPUtil
+import ray
 from beta_rec.core.eval_engine import EvalEngine
-from beta_rec.data.grocery_data import GroceryData
+from beta_rec.data.base_data import DataBase
+from beta_rec.datasets.data_load import load_split_dataset
 from beta_rec.utils import logger
 from beta_rec.utils.common_util import (
     ensureDir,
@@ -23,6 +22,7 @@ from beta_rec.utils.common_util import (
     update_args,
 )
 from beta_rec.utils.constants import MAX_N_UPDATE
+from ray import tune
 
 
 class TrainEngine(object):
@@ -197,19 +197,9 @@ class TrainEngine(object):
 
     def load_dataset(self):
         """Load dataset."""
-        self.data = GroceryData(self.config)
+        self.data = DataBase(load_split_dataset(self.config))
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
-
-    # noinspection PyTypeChecker
-    def build_data_loader(self):
-        """Build DataLoader."""
-        self.train_loader = DataLoader(
-            torch.LongTensor(self.data.sample_triple()).to(self.engine.device),
-            batch_size=self.config["model"]["batch_size"],
-            shuffle=True,
-            drop_last=True,
-        )
 
     def check_early_stop(self, engine, model_dir, epoch):
         """Check if early stop criterion is triggered.

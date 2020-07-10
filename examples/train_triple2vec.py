@@ -3,13 +3,13 @@ import os
 import time
 
 import torch
-from ray import tune
 from torch.utils.data import DataLoader
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.triple2vec import Triple2vecEngine
 from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.monitor import Monitor
+from ray import tune
 
 
 def parse_args():

@@ -3,8 +3,9 @@ import time
 from threading import Thread
 
 import cpuinfo
-import GPUtil
 import psutil
+
+import GPUtil
 from tensorboardX import SummaryWriter
 
 

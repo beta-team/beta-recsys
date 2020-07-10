@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import torch
 from prometheus_client import Gauge, start_http_server
-from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
 import beta_rec.utils.evaluation as eval_model
@@ -17,6 +16,7 @@ from beta_rec.utils.constants import (
     DEFAULT_USER_COL,
 )
 from beta_rec.utils.seq_evaluation import mrr, precision, recall
+from tensorboardX import SummaryWriter
 
 lock_train_eval = Lock()
 lock_test_eval = Lock()
