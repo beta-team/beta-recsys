@@ -1,6 +1,10 @@
 # Beta-RecSys
 
-Beta-RecSys is a benchmark system for recently proposed neural network based recommendation models.  It is featured with a unified pipeline of data processing , model configuration, hyper-parameter tuning and performance evaluation. So it provides fast and convenient comparisons with state-of-the-art neural recommentation models, such as NCF, NGCF and LightGCN, for various recommendation scenerios and tasks on multiple datasets.
+Beta-RecSys an open source project for Building, Evaluating and Tuning Automated Recommender Systems.
+Beta-RecSys aims to provide a practical data toolkit for building end-to-end recommendation systems in a standardized way.
+It provided means for dataset preparation and splitting using common strategies, a generalized model engine for implementing recommender models using Pytorch with a lot of models available out-of-the-box,
+as well as a unified training, validation, tuning and testing pipeline. Furthermore, Beta-RecSys is designed to be both modular and extensible, enabling new models to be quickly added to the framework.
+It is deployable in a wide range of environments via pre-built docker containers and supports distributed parameter tuning using Ray.
 
 Details of each folder in this repository are
 
