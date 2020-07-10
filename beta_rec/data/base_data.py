@@ -14,7 +14,7 @@ from beta_rec.utils.constants import (
 )
 
 
-class DataBase(object):
+class BaseData(object):
     r"""A plain DataBase object modeling general recommendation data. Re_index all the users and items from raw dataset.
 
         Args:

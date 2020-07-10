@@ -20,7 +20,6 @@
         "dataset": "dunnhumby",
         "data_split": "temporal",
         "item_fea_type": "random",
-        "validate": true,
         "download": false,
         "random": false,
         "test_rate": 0.2,

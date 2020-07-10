@@ -8,6 +8,7 @@ import pandas as pd
 import scipy.sparse as sp
 from tabulate import tabulate
 
+from beta_rec.data.base_data import BaseData
 from beta_rec.datasets.data_load import (
     load_item_fea_dic,
     load_split_dataset,
@@ -113,7 +114,7 @@ def check_adj_if_equal(adj):
     return temp
 
 
-class GroceryData(object):
+class GroceryData(BaseData):
     """Grocery dataset class for all the model."""
 
     def __init__(self, config):

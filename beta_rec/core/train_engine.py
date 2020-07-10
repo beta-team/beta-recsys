@@ -13,7 +13,7 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 from beta_rec.core.eval_engine import EvalEngine
-from beta_rec.data.base_data import DataBase
+from beta_rec.data.base_data import BaseData
 from beta_rec.datasets.data_load import load_split_dataset
 from beta_rec.utils import logger
 from beta_rec.utils.common_util import (
@@ -197,7 +197,7 @@ class TrainEngine(object):
 
     def load_dataset(self):
         """Load dataset."""
-        self.data = DataBase(load_split_dataset(self.config))
+        self.data = BaseData(load_split_dataset(self.config))
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
 
@@ -236,14 +236,9 @@ class TrainEngine(object):
                 break
             engine.train_an_epoch(train_loader, epoch_id=epoch)
             """evaluate model on validation and test sets"""
-            if self.config["dataset"]["validate"]:
-                self.eval_engine.train_eval(
-                    self.data.valid[0], self.data.test[0], engine.model, epoch
-                )
-            else:
-                self.eval_engine.train_eval(
-                    None, self.data.test[0], engine.model, epoch
-                )
+            self.eval_engine.train_eval(
+                self.data.valid[0], self.data.test[0], engine.model, epoch
+            )
 
     def tune(self, runable):
         """Tune parameters using ray.tune."""

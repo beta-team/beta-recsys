@@ -19,8 +19,6 @@
     "dataset": {
         "dataset": "ml_100k",
         "data_split": "leave_one_out",
-        "validate": true,
-        "train_validate": 1,
         "download": false,
         "random": false,
         "test_rate": 0.2,
