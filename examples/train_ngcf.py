@@ -1,6 +1,12 @@
+"""
+   isort:skip_file
+"""
 import argparse
 import os
+import sys
 import time
+
+sys.path.append("../")
 
 import numpy as np
 import torch

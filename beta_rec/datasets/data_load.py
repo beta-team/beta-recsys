@@ -6,6 +6,7 @@ from beta_rec.datasets.instacart import Instacart, Instacart_25
 from beta_rec.datasets.last_fm import LastFM
 from beta_rec.datasets.movielens import Movielens_1m, Movielens_25m, Movielens_100k
 from beta_rec.datasets.tafeng import Tafeng
+from beta_rec.utils.common_util import print_dict_as_table
 
 
 def load_user_fea_dic(config, fea_type):
@@ -81,6 +82,7 @@ def load_split_dataset(config):
         valid_data list(DataFrame): List of interactions for validation.
         test_data list(DataFrame): List of interactions for testing.
     """
+    print_dict_as_table(config["dataset"], tag="Dataset config")
     dataset_mapping = {
         "ml_100k": Movielens_100k,
         "ml_1m": Movielens_1m,

@@ -19,14 +19,13 @@
     "dataset": {
         "dataset": "ml_100k",
         "data_split": "leave_one_out",
-        "validate": true,
         "download": false,
         "random": false,
         "test_rate": 0.2,
         "by_user": false,
         "n_test": 10,
         "n_negative": 100,
-        "result_col": ["dataset","data_split","validate"]
+        "result_col": ["dataset","data_split","test_rate","n_negative"]
     },
     "model": {
         "model": "MF",

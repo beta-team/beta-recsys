@@ -8,7 +8,7 @@ install_requires = [
     "prometheus_client~=0.8.0",
     "tensorboardX~=2.0",
     "ray~=0.8.5",
-    "torch==1.4.0",
+    "torch==1.5.0",
     "numpy==1.18.1",
     "pytest==5.4.1",
     "flake8==3.7.9",

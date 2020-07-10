@@ -1,10 +1,14 @@
 # Installation
 
-Welcome to Read the Beta-RecSys docs
+## Clone all the source codes from github
 
-## How to install
+```shell
+$ git clone https://github.com/beta-team/beta-recsys.git
+```
 
-### Install Beta-RecSys using setup.py from github
+We recommend you to use the Beta-RecSys as a non-build-in library, so that you can easily understand the structure of the Beta-RecSys framework.
+
+## Install Beta-RecSys using setup.py from github
 
 - Install and record the installed files 
 ```shell
@@ -19,5 +23,9 @@ $ python setup.py install --record files.txt
 $ cd $project_path$
 $ xargs rm -rf < files.txt
 ```
+
+## Install Beta-RecSys using pip
+
+> TBA
 
 

@@ -179,7 +179,7 @@ class DatasetBase(object):
                 self.preprocess()
         data = get_dataframe_from_npz(processed_file_path)
         print("-" * 80)
-        print("raw interaction statistics")
+        print("Loaded raw interaction statistics")
         print(
             tabulate(
                 data.agg(["count", "nunique"]),

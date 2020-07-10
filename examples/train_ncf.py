@@ -1,6 +1,12 @@
+"""
+   isort:skip_file
+"""
 import argparse
 import os
+import sys
 import time
+
+sys.path.append("../")
 
 from ray import tune
 
