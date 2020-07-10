@@ -1,3 +1,6 @@
+"""
+   isort:skip_file
+"""
 import argparse
 import os
 import sys
