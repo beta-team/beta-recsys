@@ -112,6 +112,8 @@ class VBCAR_train(TrainEngine):
         self.config["model"]["alpha_step"] = (1 - self.config["model"]["alpha"]) / (
             self.config["model"]["max_epoch"]
         )
+        self.config["user_fea"] = self.data.user_feature
+        self.config["item_fea"] = self.data.item_feature
         self.engine = VBCAREngine(self.config)
         self.engine.data = self.data
         assert hasattr(self, "engine"), "Please specify the exact model engine !"

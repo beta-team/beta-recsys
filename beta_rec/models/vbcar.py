@@ -1,9 +1,8 @@
+from beta_rec.models.torch_engine import ModelEngine
+from beta_rec.utils.common_util import timeit
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-from beta_rec.models.torch_engine import ModelEngine
-from beta_rec.utils.common_util import timeit
 
 
 class VBCAR(nn.Module):
@@ -32,38 +31,41 @@ class VBCAR(nn.Module):
             self.act = lambda x: x
 
     def init_layers(self):
+        self.user_emb = nn.Embedding(self.n_users, self.emb_dim)
+        self.item_emb = nn.Embedding(self.n_items, self.emb_dim)
+        init_range = 0.1 * (self.emb_dim) ** (-1 / 2)
+        self.item_emb.weight.data.uniform_(-init_range, init_range)
         self.fc_u_1_mu = nn.Linear(self.user_fea_dim, self.late_dim)
-        self.fc_u_2_mu = nn.Linear(self.late_dim, self.emb_dim)
-        self.fc_u_1_std = nn.Linear(self.user_fea_dim, self.late_dim)
-        self.fc_u_2_std = nn.Linear(self.late_dim, self.emb_dim)
+        self.fc_u_2_mu = nn.Linear(self.late_dim, self.emb_dim * 2)
         self.fc_i_1_mu = nn.Linear(self.item_fea_dim, self.late_dim)
-        self.fc_i_2_mu = nn.Linear(self.late_dim, self.emb_dim)
-        self.fc_i_1_std = nn.Linear(self.item_fea_dim, self.late_dim)
-        self.fc_i_2_std = nn.Linear(self.late_dim, self.emb_dim)
+        self.fc_i_2_mu = nn.Linear(self.late_dim, self.emb_dim * 2)
 
     def init_feature(self, user_fea, item_fea):
         self.user_fea = user_fea
         self.item_fea = item_fea
-        self.user_fea_dim = user_fea.embedding_dim
-        self.item_fea_dim = item_fea.embedding_dim
+        self.user_fea_dim = user_fea.size()[1]
+        self.item_fea_dim = item_fea.size()[1]
 
     def user_encode(self, index):
-        x = self.user_fea(index)
-        mu = self.fc_u_2_mu(self.act(self.fc_u_1_mu(x)))
-        std = self.fc_u_2_std(self.act(self.fc_u_1_std(x)))
+        x = self.user_fea[index]
+        x = self.fc_u_2_mu(self.act(self.fc_u_1_mu(x)))
+        mu = x[:, : self.emb_dim]
+        std = x[:, self.emb_dim :]
         return mu, std
 
     def item_encode(self, index):
-        x = self.item_fea(index)
-        mu = self.fc_i_2_mu(self.act(self.fc_i_1_mu(x)))
-        std = self.fc_i_2_std(self.act(self.fc_i_1_std(x)))
+        x = self.item_fea[index]
+        x = self.fc_i_2_mu(self.act(self.fc_i_1_mu(x)))
+        mu = x[:, : self.emb_dim]
+        std = x[:, self.emb_dim :]
         return mu, std
 
     def reparameterize(self, gaussian):
         mu, std = gaussian
         std = torch.exp(0.5 * std)
         eps = torch.randn_like(std)
-        return mu + eps * std
+        # return mu + std * eps
+        return mu
 
     """
     D_KL
@@ -73,7 +75,7 @@ class VBCAR(nn.Module):
         mean1, std1 = dis1
         if dis2 is None:
             mean2 = torch.zeros(mean1.size(), device=self.device)
-            std2 = torch.ones(std1.size(), device=self.device)
+            std2 = torch.ones(mean1.size(), device=self.device)
         else:
             mean2, std2 = dis2
         var1 = std1.pow(2) + self.esp
@@ -104,21 +106,27 @@ class VBCAR(nn.Module):
     def forward(self, batch_data):
         pos_u, pos_i_1, pos_i_2, neg_u, neg_i_1, neg_i_2 = batch_data
         pos_u_dis = self.user_encode(pos_u)
-        emb_u = self.reparameterize(pos_u_dis)
+        emb_u = torch.cat((self.reparameterize(pos_u_dis), self.user_emb(pos_u)), dim=1)
         pos_i_1_dis = self.item_encode(pos_i_1)
-        emb_i_1 = self.reparameterize(pos_i_1_dis)
+        emb_i_1 = torch.cat(
+            (self.reparameterize(pos_i_1_dis), self.item_emb(pos_i_1)), dim=1
+        )
         pos_i_2_dis = self.item_encode(pos_i_2)
-        emb_i_2 = self.reparameterize(pos_i_2_dis)
+        emb_i_2 = torch.cat(
+            (self.reparameterize(pos_i_2_dis), self.item_emb(pos_i_2)), dim=1
+        )
         neg_u_dis = self.user_encode(neg_u.view(-1))
-        emb_u_neg = self.reparameterize(neg_u_dis).view(-1, self.n_neg, self.emb_dim)
+        emb_u_neg = torch.cat(
+            (self.reparameterize(neg_u_dis), self.user_emb(neg_u.view(-1))), dim=1
+        ).view(-1, self.n_neg, self.emb_dim * 2)
         neg_i_1_dis = self.item_encode(neg_i_1.view(-1))
-        emb_i_1_neg = self.reparameterize(neg_i_1_dis).view(
-            -1, self.n_neg, self.emb_dim
-        )
+        emb_i_1_neg = torch.cat(
+            (self.reparameterize(neg_i_1_dis), self.item_emb(neg_i_1.view(-1))), dim=1
+        ).view(-1, self.n_neg, self.emb_dim * 2)
         neg_i_2_dis = self.item_encode(neg_i_2.view(-1))
-        emb_i_2_neg = self.reparameterize(neg_i_2_dis).view(
-            -1, self.n_neg, self.emb_dim
-        )
+        emb_i_2_neg = torch.cat(
+            (self.reparameterize(neg_i_2_dis), self.item_emb(neg_i_2.view(-1))), dim=1
+        ).view(-1, self.n_neg, self.emb_dim * 2)
 
         input_emb_u = emb_i_1 + emb_i_2
         u_pos_score = torch.mul(emb_u, input_emb_u).squeeze()
@@ -149,7 +157,7 @@ class VBCAR(nn.Module):
 
         i_2_score = -1 * (torch.sum(i_2_pos_score) + torch.sum(i_2_neg_score))
 
-        GEN = (u_score + i_1_score + i_2_score) / self.batch_size
+        GEN = (u_score + i_1_score + i_2_score) / (3 * self.batch_size)
         KLD = (
             self.kl_div(pos_u_dis)
             + self.kl_div(pos_i_1_dis)
@@ -157,9 +165,10 @@ class VBCAR(nn.Module):
             + self.kl_div(neg_u_dis)
             + self.kl_div(neg_i_1_dis)
             + self.kl_div(neg_i_2_dis)
-        ) / self.batch_size
+        ) / (3 * self.batch_size)
         self.kl_loss = KLD.item()
-        #         return GEN/ (3 * self.batch_size)
+        self.rec_loss = GEN.item()
+        # return GEN
         return (1 - self.alpha) * (GEN) + (self.alpha * KLD)
 
     def predict(self, users, items):
@@ -167,7 +176,12 @@ class VBCAR(nn.Module):
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
         with torch.no_grad():
             scores = torch.mul(
-                self.user_encode(users_t)[0], self.item_encode(items_t)[0],
+                torch.cat(
+                    (self.user_encode(users_t)[0], self.user_emb(users_t)), dim=1
+                ),
+                torch.cat(
+                    (self.item_encode(items_t)[0], self.item_emb(items_t)), dim=1
+                ),
             ).sum(dim=1)
         return scores
 
@@ -178,17 +192,18 @@ class VBCAREngine(ModelEngine):
     def __init__(self, config):
         self.config = config
         self.model = VBCAR(config["model"])
-        if config["model"]["feature_type"] == "random":
-            user_fea = nn.Embedding(
-                config["model"]["n_users"], self.config["model"]["late_dim"]
-            ).to(torch.device(self.config["model"]["device_str"]))
-            item_fea = nn.Embedding(
-                config["model"]["n_items"], self.config["model"]["late_dim"]
-            ).to(torch.device(self.config["model"]["device_str"]))
-        else:
-            pass
-            # todo
-            # user_fea, item_fea load feature
+        user_fea = torch.tensor(
+            config["user_fea"],
+            requires_grad=False,
+            device=config["model"]["device_str"],
+            dtype=torch.float32,
+        )
+        item_fea = torch.tensor(
+            config["item_fea"],
+            requires_grad=False,
+            device=config["model"]["device_str"],
+            dtype=torch.float32,
+        )
         self.model.init_feature(user_fea, item_fea)
         self.model.init_layers()
         super(VBCAREngine, self).__init__(config)
@@ -208,6 +223,7 @@ class VBCAREngine(ModelEngine):
         self.model.train()
         total_loss = 0
         kl_loss = 0
+        rec_loss = 0
         #         with autograd.detect_anomaly():
         for batch_id, sample in enumerate(train_loader):
             assert isinstance(sample, torch.Tensor)
@@ -221,23 +237,17 @@ class VBCAREngine(ModelEngine):
                 [triple[2] for triple in sample], dtype=torch.int64, device=self.device,
             )
             neg_u = torch.tensor(
-                self.data.user_sampler.sample(
-                    self.config["model"]["n_neg"], len(sample)
-                ),
+                self.data.user_sampler.sample(self.config["model"]["n_neg"], len(sample)),
                 dtype=torch.int64,
                 device=self.device,
             )
             neg_i_1 = torch.tensor(
-                self.data.item_sampler.sample(
-                    self.config["model"]["n_neg"], len(sample)
-                ),
+                self.data.item_sampler.sample(self.config["model"]["n_neg"], len(sample)),
                 dtype=torch.int64,
                 device=self.device,
             )
             neg_i_2 = torch.tensor(
-                self.data.item_sampler.sample(
-                    self.config["model"]["n_neg"], len(sample)
-                ),
+                self.data.item_sampler.sample(self.config["model"]["n_neg"], len(sample)),
                 dtype=torch.int64,
                 device=self.device,
             )
@@ -245,15 +255,13 @@ class VBCAREngine(ModelEngine):
             loss = self.train_single_batch(batch_data)
             total_loss += loss
             kl_loss += self.model.kl_loss
+            rec_loss += self.model.rec_loss
         total_loss = total_loss / self.config["model"]["batch_size"]
+        rec_loss = rec_loss / self.config["model"]["batch_size"]
         kl_loss = kl_loss / self.config["model"]["batch_size"]
         print(
             "[Training Epoch {}], log_like_loss {} kl_loss: {} alpha: {} lr: {}".format(
-                epoch_id,
-                total_loss - kl_loss,
-                kl_loss,
-                self.model.alpha,
-                self.config["model"]["lr"],
+                epoch_id, rec_loss, kl_loss, self.model.alpha, self.config["model"]["lr"],
             )
         )
         self.writer.add_scalars(

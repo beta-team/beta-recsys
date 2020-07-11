@@ -11,7 +11,8 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 class GroceryData(BaseData, Auxiliary):
-    r"""A Grocery Data object, which consist one more order/basket column than the BaseData. Re_index all the users and items from raw dataset.
+    r"""A Grocery Data object, which consist one more order/basket column than the BaseData. Re_index all the users and
+    items from raw dataset.
 
         Args:
             split_dataset (train,valid,test): the split dataset, a tuple consisting of training (DataFrame),

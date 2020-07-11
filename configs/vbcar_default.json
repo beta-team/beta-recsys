@@ -17,21 +17,21 @@
         "result_file": "vbcar_result.csv"
     },
     "dataset": {
-        "dataset": "dunnhumby",
+        "dataset": "tafeng",
         "data_split": "temporal",
         "item_fea_type": "random",
         "download": false,
         "random": false,
         "test_rate": 0.2,
         "by_user": false,
-        "n_test": 10,
+        "n_test": 1,
         "n_negative": 100,
         "result_col": ["dataset","data_split","test_rate","n_negative","item_fea_type"]
     },
     "model": {
         "model": "VBCAR",
         "config_id": "default",
-        "n_sample": 1000000,
+        "n_sample": 100000,
         "emb_dim": 64,
         "late_dim": 256,
         "feature_type": "random",
