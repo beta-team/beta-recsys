@@ -1,16 +1,7 @@
-import random
-from collections import defaultdict
-from time import time
-
 import numpy as np
-import pandas as pd
-import scipy.sparse as sp
 
-from beta_rec.datasets.data_load import load_item_fea_dic, load_user_item_feature
-from beta_rec.utils.common_util import get_random_rep, normalized_adj_single
-from beta_rec.utils.constants import DEFAULT_ITEM_COL, DEFAULT_USER_COL
-
-pd.options.mode.chained_assignment = None  # default='warn'
+from beta_rec.datasets.data_load import load_item_fea_dic
+from beta_rec.utils.common_util import get_random_rep
 
 
 class Auxiliary(object):
@@ -23,8 +14,8 @@ class Auxiliary(object):
 
     def __init__(self, config, n_users, n_items):
         self.config = config
-        self.n_users = 0
-        self.n_items = 0
+        self.n_users = n_users
+        self.n_items = n_items
         self.random_dim = 512
         # subset of the dataset. use a small set of users and items if >0, otherwise use full dataset
         if "random_dim" in config:

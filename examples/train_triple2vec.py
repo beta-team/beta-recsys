@@ -88,7 +88,7 @@ class Triple2vec_train(TrainEngine):
     def load_dataset(self):
         """Load dataset."""
         split_data = load_split_dataset(self.config)
-        self.data = GroceryData(split_data, self.config)
+        self.data = GroceryData(split_dataset=split_data, config=self.config)
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
 
