@@ -64,12 +64,7 @@ class VBCAR(nn.Module):
         mu, std = gaussian
         std = torch.exp(0.5 * std)
         eps = torch.randn_like(std)
-        # return mu + std * eps
-        return mu
-
-    """
-    D_KL
-    """
+        return mu + std * eps
 
     def kl_div(self, dis1, dis2=None, neg=False):
         mean1, std1 = dis1
