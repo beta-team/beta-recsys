@@ -140,11 +140,13 @@ Users can simply ignore these functions because when you use custom parameters i
 
 ## Data Split
 
-For users who are willing to split some datasets that is not covered by our framework, we still provide various methods to make it easy to split huge data, without caring the details. There are 6 main methods for users to split data.
+For users who are willing to split some datasets that are not covered by our framework, we still provide various methods to make it easy to split huge data, without caring the implementation details. There are 6 main methods for users to split data.
 
 ### random_split
 
-This method will select a portion of records based on the given `test_rate` randomly.
+This method splits data into random train and test subsets.
+
+This method will first shuffle all the data and then select a portion of records based on the given `test_rate` randomly.
 
 ### random_basket_split
 
@@ -156,7 +158,11 @@ This method will first rank all the records by time (if a timestamp column is pr
 
 ### leave_one_basket
 
+This method provides train/test indices to split data in train/test sets. Each sample **is used once** as a test set while the remaining samples form the training set.
+
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last basket.
+
+Due to the high number of test sets this method can be very costly.
 
 ### temporal_split
 
@@ -165,6 +171,8 @@ This method will first rank all the records by time (if a timestamp column is pr
 ### temporal_basket_split
 
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last portion of baskets.
+
+---
 
 ## More
 
