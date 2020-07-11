@@ -1,8 +1,9 @@
-from beta_rec.models.torch_engine import ModelEngine
-from beta_rec.utils.common_util import timeit
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+from beta_rec.models.torch_engine import ModelEngine
+from beta_rec.utils.common_util import timeit
 
 
 class VBCAR(nn.Module):
