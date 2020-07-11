@@ -11,7 +11,7 @@ sys.path.append("../")
 from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
-from beta_rec.data.data_base import DataLoaderBase
+from beta_rec.data.deprecated_data_base import DataLoaderBase
 from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine

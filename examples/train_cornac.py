@@ -13,7 +13,7 @@ import pandas as pd
 
 import beta_rec.utils.constants as Constants
 import beta_rec.utils.evaluation as eval_model
-from beta_rec.data import grocery_data
+from beta_rec.data import deprecated_data
 from beta_rec.utils import logger
 from beta_rec.utils.common_util import save_to_csv
 
@@ -204,7 +204,7 @@ if __name__ == "__main__":
 
     models = [pop, mf, pmf, bpr, vaecf, nmf, neumf]
     # add our own eval
-    data = grocery_data.GroceryData(config)
+    data = deprecated_data.GroceryData(config)
 
     num_users = data.n_users
     num_items = data.n_items
