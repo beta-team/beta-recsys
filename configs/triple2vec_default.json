@@ -20,14 +20,13 @@
         "dataset": "dunnhumby",
         "data_split": "temporal",
         "item_fea_type": "random",
-        "validate": true,
         "download": false,
         "random": false,
         "test_rate": 0.2,
         "by_user": false,
         "n_test": 10,
         "n_negative": 100,
-        "result_col": ["dataset","data_split","validate"]
+        "result_col": ["dataset","data_split","test_rate","n_negative"]
     },
     "model": {
         "model": "Triple2vec",

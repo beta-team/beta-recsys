@@ -258,7 +258,7 @@ def load_split_data(path, n_test=10):
     train_file = os.path.join(path, "train.npz")
     train_data = get_dataframe_from_npz(train_file)
     print("-" * 80)
-    print("train_data statistics")
+    print("Loaded training set statistics")
     print(
         tabulate(
             train_data.agg(["count", "nunique"]),
@@ -270,7 +270,7 @@ def load_split_data(path, n_test=10):
     if not n_test:
         valid_df = get_dataframe_from_npz(os.path.join(path, "valid.npz"))
         test_df = get_dataframe_from_npz(os.path.join(path, "test.npz"))
-        print("valid_data statistics")
+        print("Loaded validation set statistics")
         print(
             tabulate(
                 valid_df.agg(["count", "nunique"]),
@@ -279,7 +279,7 @@ def load_split_data(path, n_test=10):
                 disable_numparse=True,
             )
         )
-        print("test_data statistics")
+        print("Loaded testing set statistics")
         print(
             tabulate(
                 test_df.agg(["count", "nunique"]),

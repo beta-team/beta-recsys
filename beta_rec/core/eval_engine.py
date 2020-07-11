@@ -256,7 +256,7 @@ class EvalEngine(object):
             )
         return predictions
 
-    def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0, k=10):
+    def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0):
         """Evaluate the performance for a (validation) dataset with multiThread.
 
         Args:
