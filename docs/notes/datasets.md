@@ -140,11 +140,13 @@ Users can simply ignore these functions because when you use custom parameters i
 
 ## Data Split
 
-For users who are willing to split some datasets that is not covered by our framework, we still provide various methods to make it easy to split huge data, without caring the details. There are 6 main methods for users to split data.
+For users who are willing to split some datasets that are not covered by our framework, we still provide various methods to make it easy to split huge data, without caring the implementation details. There are 6 main methods for users to split data.
 
 ### random_split
 
-This method will select a portion of records based on the given `test_rate` randomly.
+This method splits data into random train and test subsets.
+
+This method will first shuffle all the data and then select a portion of records based on the given `test_rate` randomly.
 
 ### random_basket_split
 
