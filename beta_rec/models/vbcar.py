@@ -237,17 +237,23 @@ class VBCAREngine(ModelEngine):
                 [triple[2] for triple in sample], dtype=torch.int64, device=self.device,
             )
             neg_u = torch.tensor(
-                self.data.user_sampler.sample(self.config["model"]["n_neg"], len(sample)),
+                self.data.user_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
             neg_i_1 = torch.tensor(
-                self.data.item_sampler.sample(self.config["model"]["n_neg"], len(sample)),
+                self.data.item_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
             neg_i_2 = torch.tensor(
-                self.data.item_sampler.sample(self.config["model"]["n_neg"], len(sample)),
+                self.data.item_sampler.sample(
+                    self.config["model"]["n_neg"], len(sample)
+                ),
                 dtype=torch.int64,
                 device=self.device,
             )
@@ -261,7 +267,11 @@ class VBCAREngine(ModelEngine):
         kl_loss = kl_loss / self.config["model"]["batch_size"]
         print(
             "[Training Epoch {}], log_like_loss {} kl_loss: {} alpha: {} lr: {}".format(
-                epoch_id, rec_loss, kl_loss, self.model.alpha, self.config["model"]["lr"],
+                epoch_id,
+                rec_loss,
+                kl_loss,
+                self.model.alpha,
+                self.config["model"]["lr"],
             )
         )
         self.writer.add_scalars(
