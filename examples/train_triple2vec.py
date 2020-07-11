@@ -16,6 +16,8 @@ from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.triple2vec import Triple2vecEngine
 from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.monitor import Monitor
+from beta_rec.datasets.data_load import load_split_dataset
+from beta_rec.data.grocery_data import GroceryData
 
 
 def parse_args():
@@ -82,6 +84,13 @@ class Triple2vec_train(TrainEngine):
         self.config = config
         super(Triple2vec_train, self).__init__(self.config)
         self.gpu_id, self.config["device_str"] = self.get_device()
+
+    def load_dataset(self):
+        """Load dataset."""
+        split_data = load_split_dataset(self.config)
+        self.data = GroceryData(split_dataset=split_data, config=self.config)
+        self.config["model"]["n_users"] = self.data.n_users
+        self.config["model"]["n_items"] = self.data.n_items
 
     def train(self):
         self.load_dataset()

@@ -7,6 +7,7 @@ from tabulate import tabulate
 from torch.utils.data import DataLoader
 
 from beta_rec.data.data_loaders import PairwiseNegativeDataset, RatingDataset
+from beta_rec.utils.alias_table import AliasTable
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
@@ -58,12 +59,12 @@ class BaseData(object):
 
         self._re_index()
 
-        # self.item_sampler = AliasTable(
-        #     self.train[DEFAULT_ITEM_COL].value_counts().to_dict()
-        # )
-        # self.user_sampler = AliasTable(
-        #     self.train[DEFAULT_USER_COL].value_counts().to_dict()
-        # )
+        self.item_sampler = AliasTable(
+            self.train[DEFAULT_ITEM_COL].value_counts().to_dict()
+        )
+        self.user_sampler = AliasTable(
+            self.train[DEFAULT_USER_COL].value_counts().to_dict()
+        )
 
     def _binarize(self, bin_thld):
         """Binarize ratings into 0 or 1, i.e. implicit feedback."""

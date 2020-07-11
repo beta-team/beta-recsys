@@ -13,7 +13,7 @@ import torch
 from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
-from beta_rec.data.data_base import DataLoaderBase
+from beta_rec.data.deprecated_data_base import DataLoaderBase
 from beta_rec.models.ngcf import NGCFEngine
 from beta_rec.utils.common_util import DictToObject
 from beta_rec.utils.constants import MAX_N_UPDATE
