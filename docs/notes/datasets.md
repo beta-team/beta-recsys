@@ -156,7 +156,11 @@ This method will first rank all the records by time (if a timestamp column is pr
 
 ### leave_one_basket
 
+This method provides train/test indices to split data in train/test sets. Each sample **is used once** as a test set while the remaining samples form the training set.
+
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last basket.
+
+Due to the high number of test sets this method can be very costly.
 
 ### temporal_split
 
@@ -165,6 +169,8 @@ This method will first rank all the records by time (if a timestamp column is pr
 ### temporal_basket_split
 
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last portion of baskets.
+
+---
 
 ## More
 
