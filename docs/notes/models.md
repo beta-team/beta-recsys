@@ -2,8 +2,6 @@
 
 ## How to build your models under torch_engine.py
 
-## General Recommenders
-
 ### MF
 
 **Matrix Factorization (MF)** used in recommender systems decomposes user-item interaction matrix $D \in R^{m \times n}$ into the product of two lower dimensionality rectangular matrices $U \in R^{m \times k}$ and $V \in R^{n \times k}$, making the product of  $UV^T$ close to the real $D$ matrix as much as possible. Matrix Factorization is the mainstream algorithm based on implicit factors.
@@ -49,12 +47,3 @@ where $h$ denotes the weights of **NCF**.
 ### VLML
 
 ### PAIRWISE_GMF
-
-
-
-
-
-
-
-### 
-
