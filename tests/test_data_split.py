@@ -23,6 +23,7 @@ from beta_rec.utils.constants import (
 
 
 def generate_temporal_testdata():
+    """Generate temporal data for testing."""
     data = {
         DEFAULT_USER_COL: [0, 1, 0, 0, 0, 1, 1, 0, 2, 2],
         DEFAULT_ORDER_COL: [0, 1, 0, 0, 2, 3, 4, 0, 5, 5],
@@ -35,6 +36,7 @@ def generate_temporal_testdata():
 
 
 def generate_data():
+    """Generate data for testing."""
     data = {
         DEFAULT_USER_COL: [0, 0, 0, 0, 1, 1, 1, 2, 2, 2],
         DEFAULT_ORDER_COL: [0, 1, 2, 2, 3, 4, 5, 6, 7, 8],
@@ -47,6 +49,7 @@ def generate_data():
 
 
 def generate_data_by_user():
+    """Generate data by user for testing."""
     data = {
         DEFAULT_USER_COL: [0, 0, 0, 0, 1, 1, 1, 1],
         DEFAULT_ORDER_COL: [0, 1, 2, 2, 3, 4, 5, 5],
@@ -59,7 +62,10 @@ def generate_data_by_user():
 
 
 class TestDataSplit(unittest.TestCase):
+    """TestDataSplit Class."""
+
     def test_temporal_split(self):
+        """Test temporal split."""
         testdata = generate_temporal_testdata()
 
         # check shape
@@ -100,6 +106,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[1, 3], 10)
 
     def test_temporal_split_by_user(self):
+        """Test temporal split by user."""
         testdata = generate_data_by_user()
 
         # check shape
@@ -140,6 +147,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[1, 3], 60)
 
     def test_temporal_basket_split(self):
+        """Test temporal basket split."""
         testdata = generate_temporal_testdata()
 
         data = temporal_basket_split(testdata, test_rate=0.1, by_user=False)
@@ -172,6 +180,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[1, 3], 10)
 
     def test_temporal_basket_split_by_user(self):
+        """Test temporal basket split by user."""
         testdata = generate_data_by_user()
 
         data = temporal_basket_split(testdata, test_rate=0.1, by_user=True)
@@ -216,6 +225,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[3, 3], 60)
 
     def test_leave_one_item(self):
+        """Test leave one item."""
         testdata = generate_data()
         print(testdata)
         data = leave_one_out(testdata)
@@ -260,6 +270,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[2, 3], 10)
 
     def test_leave_one_basket(self):
+        """Test leave one basket."""
         testdata = generate_data()
 
         data = leave_one_basket(testdata)
@@ -308,6 +319,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[3, 3], 10)
 
     def my_shuffle_side_effect(*args, **kwargs):
+        """Define shuffle side effect."""
         a = args[1]
         _, last = a[0], a[len(a) - 1]
         temp = a[0].copy()
@@ -317,6 +329,7 @@ class TestDataSplit(unittest.TestCase):
 
     @mock.patch("sklearn.utils.shuffle")
     def test_random_split(self, mock_shuffle):
+        """Test random split."""
         testdata = generate_data()
 
         # mock sklearn.utils.shuffle
@@ -349,6 +362,7 @@ class TestDataSplit(unittest.TestCase):
 
     @mock.patch("sklearn.utils.shuffle")
     def test_random_basket_split(self, mock_shuffle):
+        """Test random basket split."""
         testdata = generate_data()
 
         # mock sklearn.utils.shuffle
@@ -388,6 +402,7 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.iloc[0, 3], 10)
 
     def test_generate_parameterized_path(self):
+        """Test generate parameterized path."""
         path1 = generate_parameterized_path(
             test_rate=0, random=False, n_negative=100, by_user=True
         )
