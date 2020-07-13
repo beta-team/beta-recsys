@@ -18,7 +18,7 @@ def precision(ground_truth, prediction):
 
 
 def recall(ground_truth, prediction):
-    """Compute Recall metric
+    """Compute Recall metric.
 
     Args:
         ground_truth (List): the ground truth set or sequence
@@ -74,7 +74,5 @@ def count_a_in_b_unique(a, b):
 
 
 def remove_duplicates(li):
-    """Remove duplicated items in the list.
-
-    """
+    """Remove duplicated items in the list."""
     return [list(x) for x in set(tuple(x) for x in li)]

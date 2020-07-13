@@ -14,7 +14,10 @@ from beta_rec.utils.constants import (
 
 
 class Sampler(object):
+    """Sampler Class."""
+
     def __init__(self, df_train, sample_file, n_sample, dump=True, load_save=False):
+        """Init Sampler Class."""
         self.sample_file = sample_file
         self.df_train = df_train
         self.n_sample = n_sample
@@ -23,6 +26,7 @@ class Sampler(object):
         print("Initialize Sampler!")
 
     def sample(self):
+        """Generate samples."""
         if self.load_save:
             if os.path.exists(self.sample_file):
                 return self.load_triples_from_file(self.sample_file)
@@ -69,6 +73,7 @@ class Sampler(object):
         return triple_df
 
     def sample_by_time(self, time_step):
+        """Generate samples by time."""
         if self.load_save:
             if os.path.exists(self.sample_file):
                 return self.load_triples_from_file(self.sample_file)
@@ -130,5 +135,6 @@ class Sampler(object):
         return triple_df
 
     def load_triples_from_file(self, triple_file):
+        """Load triples from file."""
         print("Loading triples from file:", triple_file)
         return pd.read_csv(triple_file)
