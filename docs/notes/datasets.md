@@ -27,11 +27,11 @@ Here we present some basic staticstics for the datasets in our framework.
 |       [HetRec](http://ir.ii.uam.es/hetrec2011/) LastFM       |        ✔️         |      ✔️      |      ✔️       |
 |             [Yelp](https://www.yelp.com/dataset)             |        ✔️         |      ✖️      |      ✔️       |
 |  [Gowalla](https://snap.stanford.edu/data/loc-Gowalla.html)  |        ✔️         |      ✖️      |      ✔️       |
-| [Yoochoose](https://2015.recsyschallenge.com/challenge.html) |                  |             |              |
-|    [Diginetica](https://cikm2016.cs.iupui.edu/cikm-cup/)     |                  |             |              |
-| [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |                  |             |              |
-| [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |                  |             |              |
-| [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |                  |             |              |
+| [Yoochoose](https://2015.recsyschallenge.com/challenge.html) |        ✔️         |      ✖️      |      ✔️       |
+|    [Diginetica](https://cikm2016.cs.iupui.edu/cikm-cup/)     |        ✔️         |      ✖️      |      ✔️       |
+| [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |        ✔️         |      ✖️      |      ✔️       |
+| [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |        ✔️         |      ✖️      |      ✔️       |
+| [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |        ✔️         |      ✖️      |      ✔️       |
 
 Because some split methods require a specific features, like `random_basket` expect the dataset has a **Basket** column. Here we list all the split methods for each dataset.
 
@@ -48,7 +48,7 @@ The prerequisite for each split methods are:
 | :----------------------------------------------------------: | :---------------: | :------------------: | :--------: | :---------------: | :----------: | :-------------: |
 | [MovieLens-100K](https://grouplens.org/datasets/movielens/100k/) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✔️       |        ✖️        |
 | [MovieLens-1M](https://grouplens.org/datasets/movielens/1m/) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✔️       |        ✖️        |
-| [MovieLens-25M](https://grouplens.org/datasets/movielens/25m/) |         ✔️         |          ✖️           |     ✔️      |                   |              |                 |
+| [MovieLens-25M](https://grouplens.org/datasets/movielens/25m/) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 |    [Last.FM](https://grouplens.org/datasets/hetrec-2011/)    |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✖️       |        ✖️        |
 | [Epinions](http://www.trustlet.org/downloaded_epinions.html) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✖️       |        ✖️        |
 | [Tafeng](https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✔️       |        ✖️        |
@@ -59,13 +59,13 @@ The prerequisite for each split methods are:
 |     [HetRec](http://ir.ii.uam.es/hetrec2011/) MoiveLens      |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✔️       |        ✖️        |
 |     [HetRec](http://ir.ii.uam.es/hetrec2011/) Delicious      |         ✔️         |          ✔️           |     ✔️      |         ✖️         |      ✖️       |        ✖️        |
 |       [HetRec](http://ir.ii.uam.es/hetrec2011/) LastFM       |         ✔️         |          ✔️           |     ✔️      |         ✔️         |      ✔️       |        ✔️        |
-|             [Yelp](https://www.yelp.com/dataset)             |         ✔️         |          ✖️           |     ✔️      |                   |              |                 |
-|  [Gowalla](https://snap.stanford.edu/data/loc-Gowalla.html)  |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✖️       |        ✖️        |
-| [Yoochoose](https://2015.recsyschallenge.com/challenge.html) |         ✔️         |                      |     ✔️      |                   |              |                 |
-|    [Diginetica](https://cikm2016.cs.iupui.edu/cikm-cup/)     |         ✔️         |                      |     ✔️      |                   |              |                 |
-| [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |         ✔️         |                      |     ✔️      |                   |              |                 |
-| [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |         ✔️         |                      |     ✔️      |                   |              |                 |
-| [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |         ✔️         |                      |     ✔️      |                   |              |                 |
+|             [Yelp](https://www.yelp.com/dataset)             |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+|  [Gowalla](https://snap.stanford.edu/data/loc-Gowalla.html)  |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Yoochoose](https://2015.recsyschallenge.com/challenge.html) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+|    [Diginetica](https://cikm2016.cs.iupui.edu/cikm-cup/)     |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 
 Also, we provide some information about the dataset content such as the number of items, users and so on. This may give you a brief view of the dataset.
 
@@ -167,6 +167,8 @@ Due to the high number of test sets this method can be very costly.
 ### temporal_split
 
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last portion of records.
+
+This splitting approach is for evaluating how well a model performs on segments drawn from the same time series but excluded from the training set.
 
 ### temporal_basket_split
 
