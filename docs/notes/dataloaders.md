@@ -9,15 +9,15 @@ In this note, we use the *grocery data* as an example to describe the workflow o
 
 First, BaseData is the base class in the DataLoaders workflow. The BaseData provides various general functions to model the input data (namely the generated train/valid/test data). Currently, the BaseData includes the following functions：
 
-- `_binarize(bin_thld)`: It converts the ground truth (e.g. explicit user ratings) into binarize data with given threshold *bin_thld*.
-- `_normalize()`: It applies the min-max normalisation to the ground truth data.
-- `_re_index()`: It reindexes the identification of users and items to avoid conflictions or user/item indexing error after applying user/item filtering approaches.
-- `_intersect()`: It intersects validation and test datasets with the training dataset to remove users or items that only exist in the training dataset but not in the validation and testing dataset.
+- `_binarize(bin_thld)` : It converts the ground truth (e.g. explicit user ratings) into binarize data with given threshold *bin_thld*.
+- `_normalize()` : It applies the min-max normalisation to the ground truth data.
+- `_re_index()` : It reindexes the identification of users and items to avoid conflictions or user/item indexing error after applying user/item filtering approaches.
+- `_intersect()` : It intersects validation and test datasets with the training dataset to remove users or items that only exist in the training dataset but not in the validation and testing dataset.
 
 Additionally, BaseData also includes common types of data loader instances to enable fast implementation of loading data for a recommendation model. It has the following instances at this stage:
 
-- `instance_bce_loader()`: It structured data into < 𝑢𝑠𝑒𝑟,𝑖𝑡𝑒𝑚, 𝑟𝑎𝑡𝑖𝑛𝑔 > to address pointwise tasks. For example, the binary cross-entropy loss can be applied to learn the pointwise prediction results.
-- `instance_bpr_loader()`: It structured data into < 𝑢𝑠𝑒𝑟, 𝑝𝑜𝑠𝑖𝑡𝑖𝑣𝑒_𝑖𝑡𝑒𝑚, 𝑛𝑒𝑔𝑎𝑡𝑖𝑣𝑒_𝑖𝑡𝑒𝑚(𝑠) > for a pair-wise comparison usage (e.g. Bayesian Personalised Ranking). 
+- `instance_bce_loader()` : It structured data into < 𝑢𝑠𝑒𝑟,𝑖𝑡𝑒𝑚, 𝑟𝑎𝑡𝑖𝑛𝑔 > to address pointwise tasks. For example, the binary cross-entropy loss can be applied to learn the pointwise prediction results.
+- `instance_bpr_loader()` : It structured data into < 𝑢𝑠𝑒𝑟, 𝑝𝑜𝑠𝑖𝑡𝑖𝑣𝑒_𝑖𝑡𝑒𝑚, 𝑛𝑒𝑔𝑎𝑡𝑖𝑣𝑒_𝑖𝑡𝑒𝑚(𝑠) > for a pair-wise comparison usage (e.g. Bayesian Personalised Ranking). 
 
 ---
 ## TaskData
