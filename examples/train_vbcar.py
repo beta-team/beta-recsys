@@ -1,8 +1,13 @@
+"""
+   isort:skip_file
+"""
 import argparse
 import math
 import os
 import sys
 import time
+
+sys.path.append("../")
 
 import torch
 from ray import tune
@@ -14,6 +19,8 @@ from beta_rec.models.vbcar import VBCAREngine
 from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
+from beta_rec.datasets.data_load import load_split_dataset
+from beta_rec.data.grocery_data import GroceryData
 
 
 def parse_args():
@@ -89,6 +96,13 @@ class VBCAR_train(TrainEngine):
         self.config = config
         super(VBCAR_train, self).__init__(self.config)
 
+    def load_dataset(self):
+        """Load dataset."""
+        split_data = load_split_dataset(self.config)
+        self.data = GroceryData(split_dataset=split_data, config=self.config)
+        self.config["model"]["n_users"] = self.data.n_users
+        self.config["model"]["n_items"] = self.data.n_items
+
     def train(self):
         """Default train implementation
 
@@ -98,12 +112,14 @@ class VBCAR_train(TrainEngine):
         self.config["model"]["alpha_step"] = (1 - self.config["model"]["alpha"]) / (
             self.config["model"]["max_epoch"]
         )
+        self.config["user_fea"] = self.data.user_feature
+        self.config["item_fea"] = self.data.item_feature
         self.engine = VBCAREngine(self.config)
+        self.engine.data = self.data
         assert hasattr(self, "engine"), "Please specify the exact model engine !"
         self.monitor = Monitor(
             log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
-        self.engine.data = self.data
         print("Start training... ")
         epoch_bar = tqdm(range(self.config["model"]["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:

@@ -75,7 +75,7 @@ class MF(torch.nn.Module):
 class MFEngine(ModelEngine):
     def __init__(self, config):
         self.config = config
-        print_dict_as_table(config, tag="MF model config")
+        print_dict_as_table(config["model"], tag="MF model config")
         self.model = MF(config["model"])
         self.reg = (
             config["model"]["reg"] if "reg" in config else 0.0

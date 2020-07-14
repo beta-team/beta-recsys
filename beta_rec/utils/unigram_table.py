@@ -4,12 +4,14 @@ import numpy as np
 
 
 class UnigramTable:
-    """
+    """UnigramTable Class.
+
     A list of indices of tokens in the vocab following a power law distribution,
     used to draw negative samples.
     """
 
     def __init__(self, obj_freq):
+        """Init UnigramTable Class."""
         vocab_size = len(obj_freq)
         self.vocab_size = vocab_size
         power = 0.75
@@ -55,6 +57,7 @@ class UnigramTable:
         self.table = table
 
     def sample(self, count, obj_num=1, no_repeat=False):
+        """Generate samples."""
         nd_samples = []
         for i in range(obj_num):
             indices = np.random.randint(low=0, high=len(self.table), size=count)

@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "Beta-recsys"
+project = "Beta-RecSys"
 copyright = "2020, Beta-team"
 author = "Beta-team"
 
@@ -55,7 +55,7 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
-html_logo = "_static/img/recSys_logo.png"
+html_logo = "_static/img/Logo.svg"
 html_static_path = ["_static"]
 
 # source_parsers = {

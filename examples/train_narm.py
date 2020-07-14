@@ -1,6 +1,11 @@
+"""
+   isort:skip_file
+"""
 import argparse
 import os
 import sys
+
+sys.path.append("../")
 
 from torch.utils.data import DataLoader
 from tqdm import tqdm
