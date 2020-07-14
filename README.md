@@ -75,7 +75,7 @@ TBD
 
 ## Contributing
 
-TBD: this project welcomes contributions and suggestions. Please make sure to read the [Contributing Guide](https://github.com/NTMC-Community/MatchZoo-py/blob/master/CONTRIBUTING.md) before creating a pull request.
+TBD: this project welcomes contributions and suggestions. Please make sure to read the [Contributing Guide](https://github.com/beta-team/community/blob/master/Python Coding and Docstrings Style Guidelines.MD) before creating a pull request. 
 
 ## Citation
 
