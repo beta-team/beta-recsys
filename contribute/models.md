@@ -7,18 +7,6 @@ Our **# Beta-RecSys** is an open source project for Building, Evaluating and Tun
 Our team is keen on keeping a nice, clean and documented code so that every single file can be understood by other researchers and developers. Therefore, shall we suggest those ,who would like to contribute to this project to follow the designed format. Indeed, those **Pull requests**, which do not follow the format can not pass the our **CI test**. We use *black-formatter, flake8-docstrings* and *isort* to format our code.
 
 ## Directory & file structure
-cornac    
-│
-└───cornac
-│   │
-│   └───models
-│       │   __init__.py
-│       │   recommender.py
-│       │
-│       └───pmf
-│           │   __init__.py
-│           │   recom_pmf.py
-│           │   requirements.txt
 
 Beta_Recsys 
 │
