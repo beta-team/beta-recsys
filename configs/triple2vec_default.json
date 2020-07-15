@@ -1,0 +1,50 @@
+{
+    "system": {
+        "root_dir": "../",
+        "log_dir": "logs/",
+        "result_dir": "results/",
+        "process_dir": "processes/",
+        "checkpoint_dir": "checkpoints/",
+        "dataset_dir": "datasets/",
+        "run_dir": "runs/",
+        "tune_dir": "tune_results/",
+        "device": "gpu",
+        "seed": 2020,
+        "metrics": ["ndcg", "precision", "recall", "map"],
+        "k": [5,10,20],
+        "valid_metric": "ndcg",
+        "valid_k": 10,
+        "result_file": "triple2vec_result.csv"
+    },
+    "dataset": {
+        "dataset": "dunnhumby",
+        "data_split": "temporal",
+        "item_fea_type": "random",
+        "download": false,
+        "random": false,
+        "test_rate": 0.2,
+        "by_user": false,
+        "n_test": 10,
+        "n_negative": 100,
+        "result_col": ["dataset","data_split","test_rate","n_negative"]
+    },
+    "model": {
+        "model": "Triple2vec",
+        "config_id": "default",
+        "n_sample": 1000000,
+        "emb_dim": 64,
+        "n_neg": 5,
+        "lr": 0.0005,
+        "batch_size": 256,
+        "batch_eval": true,
+        "dropout": 0.0,
+        "optimizer": "adam",
+        "l2_regularization": 0.01,
+        "max_epoch": 120,
+        "save_name": "triple2vec.model",
+        "result_col": ["model","emb_dim","batch_size","n_sample","optimizer","lr"]
+    },
+    "tunable": [
+        {"name": "lr", "type": "choice", "values": [0.0005,0.00025]}
+    ]
+}
