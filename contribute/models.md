@@ -7,7 +7,7 @@ Our **# Beta-RecSys** is an open source project for Building, Evaluating and Tun
 Our team is keen on keeping a nice, clean and documented code so that every single file can be understood by other researchers and developers. Therefore, shall we suggest those ,who would like to contribute to this project to follow the designed format. Indeed, those **Pull requests**, which do not follow the format can not pass the our **CI test**. We use *black-formatter, flake8-docstrings* and *isort* to format our code.
 
 ## Directory & file structure
-
+“”“
 Beta_Recsys 
 │
 └───beta_rec
@@ -21,7 +21,7 @@ Beta_Recsys
 │   └───**new_confg.json**
 └───examples
 │   └───**new_example.py**
-
+”“”
 In the file structure you may find the directory (in bold) where you need to add a new file for your model.
 ## Create a model in 3 steps
 
