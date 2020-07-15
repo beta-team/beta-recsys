@@ -1,6 +1,6 @@
 # Add your own model
 
-Our **# Beta-RecSys** is an open source project for Building, Evaluating and Tuning Automated Recommender Systems. We are delight to see more recommender models to be added into our project. Therefore, our **# beta-team** sincerely invite researchers and developers from the recommerdation community to contribute to our project. Below is a tutorial about how to intergrate an implementation of a new model, either a model you think is important or a novel model proposed by yourself.
+Our ** Beta-RecSys** is an open source project for Building, Evaluating and Tuning Automated Recommender Systems. We are delight to see more recommender models to be added into our project. Therefore, our ** beta-team** sincerely invite researchers and developers from the recommerdation community to contribute to our project. Below is a tutorial about how to intergrate an implementation of a new model, either a model you think is important or a novel model proposed by yourself.
 
 
 ## Code format
