@@ -8,7 +8,10 @@ sys.path.append("../")
 
 
 class TestMovielens(unittest.TestCase):
+    """TestMovielens Class."""
+
     def test_preprocess(self):
+        """Test preprocess raw data."""
         ml_100k = Movielens_100k()
         ml_100k.preprocess()
         self.assertTrue(os.path.exists(os.getcwd() + "/datasets/ml_100k/raw/ml_100k"))

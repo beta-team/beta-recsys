@@ -8,15 +8,13 @@ from datetime import datetime
 import GPUtil
 import ray
 import torch
-from ax.service.ax_client import AxClient
 from ray import tune
-from ray.tune.suggest.ax import AxSearch
 from tabulate import tabulate
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from beta_rec.core.eval_engine import EvalEngine
-from beta_rec.data.grocery_data import GroceryData
+from beta_rec.data.base_data import BaseData
+from beta_rec.datasets.data_load import load_split_dataset
 from beta_rec.utils import logger
 from beta_rec.utils.common_util import (
     ensureDir,
@@ -28,10 +26,10 @@ from beta_rec.utils.constants import MAX_N_UPDATE
 
 
 class TrainEngine(object):
-    """Training engine for all the models.
-    """
+    """Training engine for all the models."""
 
     def __init__(self, args):
+        """Init TrainEngine Class."""
         self.data = None
         self.train_loader = None
         self.monitor = None
@@ -42,8 +40,8 @@ class TrainEngine(object):
         self.eval_engine = EvalEngine(self.config)
 
     def get_device(self):
-        """
-            Get one gpu id that have the most available memory.
+        """Get one gpu id that have the most available memory.
+
         Returns:
             (int, str): The gpu id (None if no available gpu) and the the device string (pytorch style).
         """
@@ -85,18 +83,14 @@ class TrainEngine(object):
         return gpu_id, device_str
 
     def prepare_env(self):
-        """Prepare running environment
-            - Load parameters from json files.
-            - Initialize system folders, model name and the paths to be saved.
-            - Initialize resource monitor.
-            - Initialize random seed.
-            - Initialize logging.
+        """Prepare running environment.
 
-        Args:
-            args (ArgumentParser): Args received from command line. Should have the parameter of args.config_file.
-
+        * Load parameters from json files.
+        * Initialize system folders, model name and the paths to be saved.
+        * Initialize resource monitor.
+        * Initialize random seed.
+        * Initialize logging.
         """
-
         # Load config file from json
         with open(self.args.config_file) as config_params:
             print(f"loading config file {self.args.config_file}")
@@ -185,8 +179,7 @@ class TrainEngine(object):
         return config
 
     def initialize_folders(self, config):
-        """ Initialize the whole directory structure of the project
-        """
+        """Initialize the whole directory structure of the project."""
         dirs = [
             "log_dir",
             "result_dir",
@@ -197,32 +190,21 @@ class TrainEngine(object):
             "dataset_dir",
         ]
         base_dir = config["system"]["root_dir"]
-        for dir in dirs:
-            path = os.path.join(base_dir, config["system"][dir])
+        for directory in dirs:
+            path = os.path.join(base_dir, config["system"][directory])
             if not os.path.exists(path):
                 os.makedirs(path)
 
     def load_dataset(self):
-        """ Default implementation of building Data
-        """
-        self.data = GroceryData(self.config)
+        """Load dataset."""
+        self.data = BaseData(load_split_dataset(self.config))
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
 
-    # noinspection PyTypeChecker
-    def build_data_loader(self):
-        """ Default implementation of building DataLoader
-        """
-        self.train_loader = DataLoader(
-            torch.LongTensor(self.data.sample_triple()).to(self.engine.device),
-            batch_size=self.config["model"]["batch_size"],
-            shuffle=True,
-            drop_last=True,
-        )
-
     def check_early_stop(self, engine, model_dir, epoch):
-        """ Check if early stop criterion is triggered
-        Save model if previous epoch have already obtained better result
+        """Check if early stop criterion is triggered.
+
+        Save model if previous epoch have already obtained better result.
 
         Args:
             epoch (int): epoch num
@@ -254,21 +236,12 @@ class TrainEngine(object):
                 break
             engine.train_an_epoch(train_loader, epoch_id=epoch)
             """evaluate model on validation and test sets"""
-            if self.config["dataset"]["validate"]:
-                self.eval_engine.train_eval(
-                    self.data.valid[0], self.data.test[0], engine.model, epoch
-                )
-            else:
-                self.eval_engine.train_eval(
-                    None, self.data.test[0], engine.model, epoch
-                )
+            self.eval_engine.train_eval(
+                self.data.valid[0], self.data.test[0], engine.model, epoch
+            )
 
     def tune(self, runable):
-        """
-        Tune parameters unsing ray.tune
-        Returns:
-
-        """
+        """Tune parameters using ray.tune."""
         config = vars(self.args)
         if "tune" in config:
             config["tune"] = False
@@ -293,6 +266,7 @@ class TrainEngine(object):
             config=config,
             local_dir=self.config["system"]["tune_dir"],
             # temp_dir=self.config["system"]["tune_dir"] + "/temp",
+            resources_per_trial={"cpu": 3, "gpu": 1},
         )
         df = analysis.dataframe()
         df.to_csv(
@@ -303,25 +277,23 @@ class TrainEngine(object):
         )
         print(tabulate(df, headers=df.columns, tablefmt="psql"))
 
-    def ax_tune(self, runable):
-        # todo still cannot runable yet.
-        ax = AxClient(enforce_sequential_optimization=False)
-        # verbose_logging=False,
-        ax.create_experiment(
-            name=self.config["model"]["model"],
-            parameters=self.config["tunable"],
-            objective_name="valid_metric",
-        )
-        tune.run(
-            runable,
-            num_samples=30,
-            search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
-            verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
-            # To use GPU, specify: resources_per_trial={"gpu": 1}.
-        )
+    # def ax_tune(self, runable):
+    #     # todo still cannot runable yet.
+    #     ax = AxClient(enforce_sequential_optimization=False)
+    #     # verbose_logging=False,
+    #     ax.create_experiment(
+    #         name=self.config["model"]["model"],
+    #         parameters=self.config["tunable"],
+    #         objective_name="valid_metric",
+    #     )
+    #     tune.run(
+    #         runable,
+    #         num_samples=30,
+    #         search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
+    #         verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
+    #         # To use GPU, specify: resources_per_trial={"gpu": 1}.
+    #     )
 
     def test(self):
-        """Evaluate the performance for the testing sets based on the final model.
-
-        """
+        """Evaluate the performance for the testing sets based on the final model."""
         self.eval_engine.test_eval(self.data.test, self.engine.model)

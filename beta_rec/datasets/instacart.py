@@ -50,10 +50,11 @@ class Instacart(DatasetBase):
     product for the next time, we construct it with structure [order_id, product_id].
     """
 
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Init Instacart Class."""
         super().__init__(
             "instacart",
+            root_dir=root_dir,
             manual_download_url=INSTACART_URL,
             processed_leave_one_out_url=INSTACART_LEAVE_ONE_OUT_URL,
             processed_random_split_url=INSTACART_RANDOM_SPLIT_URL,

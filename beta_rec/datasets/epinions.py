@@ -26,10 +26,11 @@ EPIONIONS_RANDOM_SPLIT_URL = (
 class Epinions(DatasetBase):
     """Epinions Dataset."""
 
-    def __init__(self):
+    def __init__(self, root_dir=None):
         """Init Epinions Class."""
         super().__init__(
             "epinions",
+            root_dir=root_dir,
             url=EPINIONS_URL,
             processed_leave_one_out_url=EPIONIONS_LEAVE_ONE_OUT_URL,
             processed_random_split_url=EPIONIONS_RANDOM_SPLIT_URL,

@@ -1,10 +1,21 @@
-.. Beta-recsys documentation master file, created by
-   sphinx-quickstart on Mon May 25 15:25:07 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+:github_url: https://github.com/beta-team/beta-recsys
 
-Welcome to Beta-recsys's documentation!
-=======================================
+.. image:: _static/img/Logo.svg
+
+Beta-RecSys Documentation
+
+========================================================================================================================
+
+Beta-RecSys an open source project for Building, Evaluating and Tuning Automated Recommender Systems.
+Beta-RecSys aims to provide a practical data toolkit for building end-to-end recommendation systems in a standardized
+way. It provided means for dataset preparation and splitting using common strategies, a generalized model engine for
+implementing recommender models using Pytorch with a lot of models available out-of-the-box, as well as a unified
+training, validation, tuning and testing pipeline. Furthermore, Beta-RecSys is designed to be both modular and
+extensible, enabling new models to be quickly added to the framework. It is deployable in a wide range of environments
+via pre-built docker containers and supports distributed parameter tuning using Ray.
+
+========================================================================================================================
+
 .. image:: https://codecov.io/gh/leungyukshing/beta-recsys/branch/develop/graph/badge.svg
   :target: https://codecov.io/gh/leungyukshing/beta-recsys
 
@@ -15,14 +26,21 @@ Welcome to Beta-recsys's documentation!
    :maxdepth: 1
    :caption: Notes
 
-   notes/beta-recsys
-   notes/dataset_tutorial
+   notes/installation
+   notes/introduction
+   notes/framework
+   notes/datasets
+   notes/dataloaders
+   notes/models
+   notes/evaluation
+   notes/tuning
 
 .. toctree::
    :maxdepth: 1
    :caption: Package Reference
 
-   modules/beta_rec
+   modules/core
+   modules/data
    modules/datasets
    modules/models
    modules/utils

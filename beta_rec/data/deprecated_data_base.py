@@ -18,19 +18,20 @@ from beta_rec.utils.constants import (
 
 
 class UserItemRatingDataset(Dataset):
-    """Wrapper, convert <user, item, rating> Tensor into Pytorch Dataset"""
+    """Wrapper, convert <user, item, rating> Tensor into Pytorch Dataset."""
 
     def __init__(self, user_tensor, item_tensor, target_tensor):
-        """
-        args:
+        """Init UserItemRatingDataset Class.
 
-            target_tensor: torch.Tensor, the corresponding rating for <user, item> pair
+        Args:
+            target_tensor: torch.Tensor, the corresponding rating for <user, item> pair.
         """
         self.user_tensor = user_tensor
         self.item_tensor = item_tensor
         self.target_tensor = target_tensor
 
     def __getitem__(self, index):
+        """Get an item from dataset."""
         return (
             self.user_tensor[index],
             self.item_tensor[index],
@@ -38,32 +39,34 @@ class UserItemRatingDataset(Dataset):
         )
 
     def __len__(self):
+        """Get the size of the dataset."""
         return self.user_tensor.size(0)
 
 
 class RatingNegativeDataset(Dataset):
-    """Wrapper, convert <user, item, rating> Tensor into Pytorch Dataset,
-    which contains negative items with rating being 0.0
+    """RatingNegativeDataset.
+
+    Wrapper, convert <user, item, rating> Tensor into Pytorch Dataset, which contains negative items with rating
+    being 0.0.
     """
 
     def __init__(self, user_tensor, item_tensor, rating_tensor):
-        """
-        args:
+        """Init RatingNegativeDataset Class.
 
-            target_tensor: torch.Tensor, the corresponding rating for <user, item> pair
+        Args:
+            target_tensor: torch.Tensor, the corresponding rating for <user, item> pair.
         """
         self.user_tensor = user_tensor
         self.item_tensor = item_tensor
         self.rating_tensor = rating_tensor
 
     def __getitem__(self, index):
-        """
+        """Get an item from the dataset.
 
         Args:
             index:
 
         Returns: users, pos_items, neg_items, pos_ratings, neg_ratings
-
         """
         return (
             self.user_tensor[index],
@@ -84,23 +87,25 @@ class RatingNegativeDataset(Dataset):
         # )
 
     def __len__(self):
+        """Get the size of the dataset."""
         return self.user_tensor.size(0)
 
 
 class PairwiseNegativeDataset(Dataset):
-    """Wrapper, convert <user, pos_item, neg_item> Tensor into Pytorch Dataset"""
+    """Wrapper, convert <user, pos_item, neg_item> Tensor into Pytorch Dataset."""
 
     def __init__(self, user_tensor, pos_item_tensor, neg_item_tensor):
-        """
-        args:
+        """Init PairwiseNegativeDataset Class.
 
-            target_tensor: torch.Tensor, the corresponding rating for <user, item> pair
+        Args:
+            target_tensor: torch.Tensor, the corresponding rating for <user, item> pair.
         """
         self.user_tensor = user_tensor
         self.pos_item_tensor = pos_item_tensor
         self.neg_item_tensor = neg_item_tensor
 
     def __getitem__(self, index):
+        """Get an item from the dataset."""
         return (
             self.user_tensor[index],
             self.pos_item_tensor[index],
@@ -108,14 +113,16 @@ class PairwiseNegativeDataset(Dataset):
         )
 
     def __len__(self):
+        """Get the size of the dataset."""
         return self.user_tensor.size(0)
 
 
 class DataLoaderBase(object):
-    """Construct dataset for NCF"""
+    """Construct dataset for NCF."""
 
     def __init__(self, ratings):
-        """
+        """Init DataLoaderBase Class.
+
         Args:
             ratings: pd.DataFrame, which contains 4 columns = ['userId', 'itemId', 'rating', 'timestamp']
         """
@@ -136,20 +143,20 @@ class DataLoaderBase(object):
         self.negatives = self._sample_negative(ratings)
 
     def _normalize(self, ratings):
-        """normalize into [0, 1] from [0, max_rating], explicit feedback"""
+        """Normalize into [0, 1] from [0, max_rating], explicit feedback."""
         ratings = deepcopy(ratings)
         max_rating = ratings.rating.max()
         ratings[DEFAULT_RATING_COL] = ratings.rating * 1.0 / max_rating
         return ratings
 
     def _binarize(self, ratings):
-        """binarize into 0 or 1, imlicit feedback"""
+        """Binarize into 0 or 1, imlicit feedback."""
         ratings = deepcopy(ratings)
         ratings[DEFAULT_RATING_COL][ratings[DEFAULT_RATING_COL] > 0] = 1.0
         return ratings
 
     def _sample_negative(self, ratings):
-        """return all negative items & 100 sampled negative items"""
+        """Return all negative items & 100 sampled negative items."""
         interact_status = (
             ratings.groupby(DEFAULT_USER_COL)[DEFAULT_ITEM_COL]
             .apply(set)
@@ -165,7 +172,7 @@ class DataLoaderBase(object):
         return interact_status[[DEFAULT_USER_COL, "negative_items", "negative_samples"]]
 
     def instance_a_train_loader(self, num_negatives, batch_size):
-        """instance train loader for one training epoch"""
+        """Instance train loader for one training epoch."""
         users, items, ratings = [], [], []
         train_ratings = pd.merge(
             self.ratings,
@@ -191,11 +198,11 @@ class DataLoaderBase(object):
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     def uniform_negative_train_loader(self, num_negatives, batch_size, device):
-        """ Instance a Data_loader for training
-        Sample 'num_negatives' negative items for each user, and shuffle them with positive items.
-        A batch of data in this DataLoader is suitable for a binary cross-entropy loss
-        # todo implement the item popularity-biased sampling
+        """Instance a Data_loader for training.
 
+        Sample 'num_negatives' negative items for each user, and shuffle them with positive items.
+        A batch of data in this DataLoader is suitable for a binary cross-entropy loss.
+        # todo implement the item popularity-biased sampling
         """
         users, items, ratings = [], [], []
         train_ratings = pd.merge(
@@ -222,11 +229,11 @@ class DataLoaderBase(object):
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     def pairwise_negative_train_loader(self, batch_size, device):
-        """ Instance a pairwise Data_loader for training
-        Sample ONE negative items for each user-item pare, and shuffle them with positive items.
-        A batch of data in this DataLoader is suitable for a binary cross-entropy loss
-        # todo implement the item popularity-biased sampling
+        """Instance a pairwise Data_loader for training.
 
+        Sample ONE negative items for each user-item pare, and shuffle them with positive items.
+        A batch of data in this DataLoader is suitable for a binary cross-entropy loss.
+        # todo implement the item popularity-biased sampling
         """
         users, pos_items, neg_items = [], [], []
         train_ratings = pd.merge(
@@ -250,7 +257,7 @@ class DataLoaderBase(object):
 
     @property
     def evaluate_data(self):
-        """create evaluate data"""
+        """Create evaluation data."""
         test_ratings = pd.merge(
             self.test_ratings,
             self.negatives[[DEFAULT_USER_COL, "negative_samples"]],
@@ -276,12 +283,13 @@ class DataLoaderBase(object):
         return test_df
 
     def get_adj_mat(self, config):
-        """ Get the adjacent matrix, if not previously stored then call the function to create
-        This method is for NGCF model
-        Return:
-            Different types of adjacment matrix
-        """
+        """Get the adjacent matrix, if not previously stored then call the function to create.
 
+        This method is for NGCF model.
+
+        Returns:
+            Different types of adjacment matrix.
+        """
         process_file_name = (
             "ngcf_"
             + config["dataset"]["dataset"]
@@ -320,8 +328,7 @@ class DataLoaderBase(object):
         return adj_mat, norm_adj_mat, mean_adj_mat
 
     def create_adj_mat(self):
-        """ Create adjacent matirx from the user-item interaction matrix
-        """
+        """Create adjacent matirx from the user-item interaction matrix."""
         adj_mat = sp.dok_matrix(
             (self.n_users + self.n_items, self.n_users + self.n_items), dtype=np.float32
         )

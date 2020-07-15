@@ -24,41 +24,44 @@ TAOBAO_TIPS = """
 
 
 class Taobao(DatasetBase):
-    def __init__(self):
-        """Taobao
+    """Taobao Dataset.
 
-        Taobao dataset.
-        This dataset is created by randomly selecting about 1 million users who have
-        behaviors including click, purchase, adding item to shopping cart and item
-        favoring during November 25 to December 03, 2017.
+    This dataset is created by randomly selecting about 1 million users who have
+    behaviors including click, purchase, adding item to shopping cart and item
+    favoring during November 25 to December 03, 2017.
 
-        The dataset is organized in a very similar form to MovieLens-20M, i.e., each
-        line represents a specific user-item interaction, which consists of user ID,
-        item ID, item's category ID, behavior type and timestamp, separated by commas.
+    The dataset is organized in a very similar form to MovieLens-20M, i.e., each
+    line represents a specific user-item interaction, which consists of user ID,
+    item ID, item's category ID, behavior type and timestamp, separated by commas.
 
-        The dataset can not be download by the url,
-        you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=649'
-        then put it into the directory `taobao/raw`
-        """
+    The dataset can not be download by the url,
+    you need to down the dataset by 'https://tianchi.aliyun.com/dataset/dataDetail?dataId=649'
+    then put it into the directory `taobao/raw`.
+    """
+
+    def __init__(self, root_dir=None):
+        """Init Taobao Class."""
         super().__init__(
-            "taobao", manual_download_url=TAOBAO_URL, tips=TAOBAO_TIPS,
+            "taobao",
+            root_dir=root_dir,
+            manual_download_url=TAOBAO_URL,
+            tips=TAOBAO_TIPS,
         )
 
     def preprocess(self):
-        """Preprocess the raw file
+        """Preprocess the raw file.
 
         Preprocess the file downloaded via the url,
         convert it to a dataframe consist of the user-item interaction
-        and save in the processed directory
+        and save in the processed directory.
 
         Download datasets if not existed.
-        taobao_name: UserBehavior.csv
+        taobao_name: UserBehavior.csv.
 
         1. Download taobao dataset if this dataset is not existed.
         2. Load taobao <taobao-interaction> table from 'taobao.csv'.
         3. Save dataset model.
         """
-
         # Step 1: Download taobao dataset if this dataset is not existed.
         taobao_path = os.path.join(self.raw_path, self.dataset_name, "taobao.csv")
         if not os.path.exists(taobao_path):

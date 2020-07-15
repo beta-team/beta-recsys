@@ -2,22 +2,23 @@ import numpy as np
 
 
 class AliasTable:
-    """
+    """AliasTable Class.
+
     A list of indices of tokens in the vocab following a power law distribution,
     used to draw negative samples.
     """
 
     def __init__(self, obj_freq):
-        """Initialize an AliasTable
+        """Initialize an AliasTable.
 
         Args:
           obj_freq: A list of indices of tokens in the vocab following a power law distribution, used to draw negative samples.
 
         Returns:
-          None
+          None.
 
         Raises:
-          ValueError: obj_freq is invalid type
+          ValueError: obj_freq is invalid type.
         """
         vocab_size = len(obj_freq)
         self.vocab_size = vocab_size
@@ -79,18 +80,18 @@ class AliasTable:
         self.index2Label = index2Label
 
     def sample(self, count, obj_num=1, no_repeat=False):
-        """Draw sample(s) from AliasTable
+        """Generate samples.
 
         Args:
-          count: the number of tokens in a draw
-          obj_num: the number of draws
-          no_repeat: whether repeat tokens are allowed in a single draw
+          count: the number of tokens in a draw.
+          obj_num: the number of draws.
+          no_repeat: whether repeat tokens are allowed in a single draw.
 
         Returns:
-          A list of tokens
+          A list of tokens.
 
         Raises:
-          ValueError: count is larger than vocab_size when no_repeat is True
+          ValueError: count is larger than vocab_size when no_repeat is True.
         """
         nd_samples = []
         for i in range(obj_num):

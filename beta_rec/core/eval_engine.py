@@ -23,11 +23,11 @@ lock_test_eval = Lock()
 
 
 def detect_port(port, ip="127.0.0.1"):
-    """  Test whether the port is occupied.
+    """Test whether the port is occupied.
 
     Args:
-        port (int): port number
-        ip (str): Ip address
+        port (int): port number.
+        ip (str): Ip address.
 
     Returns:
         True -- it's possible to listen on this port for TCP/IPv4 or TCP/IPv6
@@ -48,17 +48,16 @@ def detect_port(port, ip="127.0.0.1"):
 
 
 def evaluate(data_df, predictions, metrics, k_li):
-    """ Evaluate the performance of a prediction by different metrics
+    """Evaluate the performance of a prediction by different metrics.
 
     Args:
-        data_df (DataFrame): the dataset to be evaluated
-        predictions (narray): 1-D array. The predicted scores for each user-item pair in the dataset
-        metrics (list):  metrics to be evaluated
-        k_li (int or list): top k (s) to be evaluated
+        data_df (DataFrame): the dataset to be evaluated.
+        predictions (narray): 1-D array. The predicted scores for each user-item pair in the dataset.
+        metrics (list):  metrics to be evaluated.
+        k_li (int or list): top k (s) to be evaluated.
 
     Returns:
-        result_dic (dict): Performance result
-
+        result_dic (dict): Performance result.
     """
     user_ids = data_df[DEFAULT_USER_COL].to_numpy()
     item_ids = data_df[DEFAULT_ITEM_COL].to_numpy()
@@ -91,7 +90,7 @@ def evaluate(data_df, predictions, metrics, k_li):
 
 @timeit
 def train_eval_worker(testEngine, valid_df, test_df, valid_pred, test_pred, epoch):
-    """ Thread worker for the evaluation during training
+    """Start a worker for the evaluation during training.
 
     Args:
         testEngine:
@@ -103,7 +102,6 @@ def train_eval_worker(testEngine, valid_df, test_df, valid_pred, test_pred, epoc
 
     Returns:
         (dict,dict): dictionary with performances on validation and testing sets.
-
     """
     testEngine.n_worker += 1
     valid_result = evaluate(
@@ -146,12 +144,14 @@ def train_eval_worker(testEngine, valid_df, test_df, valid_pred, test_pred, epoc
 
 @timeit
 def test_eval_worker(testEngine, eval_data_df, prediction):
-    """
-    Prediction and evaluation on the testing set
+    """Start a worker for the evaluation during training.
+
+    Prediction and evaluation on the testing set.
     """
     result_para = {
         "run_time": [testEngine.config["run_time"]],
     }
+    testEngine.n_worker += 1
     for cfg in ["model", "dataset"]:
         for col in testEngine.config[cfg]["result_col"]:
             result_para[col] = [testEngine.config[cfg][col]]
@@ -167,16 +167,15 @@ def test_eval_worker(testEngine, eval_data_df, prediction):
     result_df = pd.DataFrame(test_result_dic)
     save_to_csv(result_df, testEngine.config["system"]["result_file"])
     lock_test_eval.release()
+    testEngine.n_worker -= 1
     return test_result_dic
 
 
 class EvalEngine(object):
-    """The base evaluation engine.
-
-    """
+    """The base evaluation engine."""
 
     def __init__(self, config):
-        """ Constructor
+        """Init EvalEngine Class.
 
         Args:
             config (dict): parameters for the model
@@ -214,25 +213,20 @@ class EvalEngine(object):
         print("Initializing test engine ...")
 
     def flush(self):
-        """ Flush eval_engine
-
-        Returns:
-
-        """
+        """Flush eval_engine."""
         self.n_no_update = 0
         self.best_valid_performance = 0
 
     def predict(self, data_df, model, batch_eval=False):
-        """ Make prediction for a trained model
+        """Make prediction for a trained model.
 
         Args:
-            data_df (DataFrame): A dataset to be evaluated
-            model: A trained model
-            batch_eval (Boolean): A signal to indicate if the model is evaluated in batches
+            data_df (DataFrame): A dataset to be evaluated.
+            model: A trained model.
+            batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
 
         Returns:
-            array: predicted scores
-
+            array: predicted scores.
         """
         user_ids = data_df[DEFAULT_USER_COL].to_numpy()
         item_ids = data_df[DEFAULT_ITEM_COL].to_numpy()
@@ -262,19 +256,15 @@ class EvalEngine(object):
             )
         return predictions
 
-    def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0, k=10):
+    def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0):
         """Evaluate the performance for a (validation) dataset with multiThread.
 
         Args:
-            valid_data_df (DataFrame): A validation dataset
-            test_data_df (DataFrame): A testing dataset
-            model: trained model
-            epoch_id: epoch_id
-            k (int or list): top k result to be evaluate
-
-        Returns:
-            None
-
+            valid_data_df (DataFrame): A validation dataset.
+            test_data_df (DataFrame): A testing dataset.
+            model: trained model.
+            epoch_id: epoch_id.
+            k (int or list): top k result to be evaluate.
         """
         valid_pred = self.predict(valid_data_df, model, self.batch_eval)
         test_pred = self.predict(test_data_df, model, self.batch_eval)
@@ -290,13 +280,8 @@ class EvalEngine(object):
 
         Args:
             test_df_list (list): (testing) dataset list.
-            model: trained model
-
-        Returns:
-            None
-
+            model: trained model.
         """
-
         if type(test_df_list) is not list:  # compatible for testing a single test set
             test_df_list = [test_df_list]
         for i, test_data_df in enumerate(test_df_list):
@@ -309,16 +294,12 @@ class EvalEngine(object):
             worker.start()
 
     def record_performance(self, valid_result, test_result, epoch_id):
-        """Record perforance result on tensorboard
+        """Record perforance result on tensorboard.
 
         Args:
-            valid_result (dict): Performance result of validation set
-            test_result (dict): Performance result of testing set
-            epoch_id (int): epoch_id
-
-        Returns:
-            None
-
+            valid_result (dict): Performance result of validation set.
+            test_result (dict): Performance result of testing set.
+            epoch_id (int): epoch_id.
         """
         for metric in self.metrics:
             self.writer.add_scalars(
@@ -331,12 +312,7 @@ class EvalEngine(object):
             )
 
     def init_prometheus_client(self):
-        """Initialize the prometheus http client
-
-        Returns:
-            None
-
-        """
+        """Initialize the prometheus http client."""
         if "port" not in self.config["system"]:
             port = 8003
         else:
@@ -366,16 +342,11 @@ class EvalEngine(object):
         self.gauges_valid = gauges_valid
 
     def expose_performance(self, valid_result, test_result):
-        """
-        Expose performance to a http_client
+        """Expose performance to a http_client.
 
         Args:
-            valid_result (dict): Performance result of validation set
-            test_result (dict): Performance result of testing set
-
-        Returns:
-            None
-
+            valid_result (dict): Performance result of validation set.
+            test_result (dict): Performance result of testing set.
         """
         for metric in self.metrics:
             self.gauges_valid[metric].labels(*self.labels).set(
@@ -386,9 +357,7 @@ class EvalEngine(object):
             )
 
     def init_prometheus_env(self):
-        """ Initialize prometheus environment
-
-        """
+        """Initialize prometheus environment."""
         self.tunable = []
         self.labels = []
 
@@ -408,17 +377,14 @@ class EvalEngine(object):
 
 
 class SeqEvalEngine(object):
-    """The base evaluation engine for sequential recommendation.
-
-    """
+    """The base evaluation engine for sequential recommendation."""
 
     def __init__(self, config):
-        """ Constructor.
+        """Init SeqEvalEngine Class.
 
         Args:
             config (dict): parameters for the model.
         """
-
         self.config = config  # model configuration, should be a dic
         self.metrics = config["system"]["metrics"]
         self.valid_metric = config["system"]["valid_metric"]
@@ -435,7 +401,7 @@ class SeqEvalEngine(object):
         scroll=True,
         step=1,
     ):
-        """Runs sequential evaluation of a recommender over a set of test sequences.
+        """Run sequential evaluation of a recommender over a set of test sequences.
 
         Args:
             recommender (object): the instance of the recommender to test.
@@ -574,7 +540,7 @@ class SeqEvalEngine(object):
         return eval_res / eval_cnt
 
     def get_test_sequences(self, test_data, given_k):
-        """Run evaluation only over sequences longer than abs(LAST_K)
+        """Run evaluation only over sequences longer than abs(LAST_K).
 
         Args:
             test_data (pandas.DataFrame): Test set.
@@ -670,7 +636,6 @@ class SeqEvalEngine(object):
         Returns:
             None
         """
-
         METRICS = {"precision": precision, "recall": recall, "mrr": mrr}
         TOPN = k  # length of the recommendation list
 
