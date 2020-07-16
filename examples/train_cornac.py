@@ -29,6 +29,11 @@ config = {
 
 
 def parse_args():
+    """Parse args from command line.
+
+    Returns:
+        args object.
+    """
     parser = argparse.ArgumentParser(description="Run cornac model..")
     # If the following settings are specified with command line,
     # these settings will be updated.
@@ -65,6 +70,7 @@ update hyperparameters from command line
 
 
 def update_args(config, args):
+    """Update args."""
     #     print(vars(args))
     for k, v in vars(args).items():
         if v is not None:
@@ -73,6 +79,7 @@ def update_args(config, args):
 
 
 def my_eval(eval_data_df, model):
+    """Missing Doc."""
     u_indices = eval_data_df[Constants.DEFAULT_USER_COL].to_numpy()
     i_indices = eval_data_df[Constants.DEFAULT_ITEM_COL].to_numpy()
     r_preds = np.fromiter(

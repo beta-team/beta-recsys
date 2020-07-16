@@ -86,10 +86,7 @@ def get_D_inv(adj):
     """Missing docs.
 
     Args:
-        adj:
-
-    Returns:
-
+        adj: adjacent matrix.
     """
     rowsum = np.array(adj.sum(1))
     d_inv = np.power(rowsum, -1).flatten()
@@ -102,10 +99,10 @@ def check_adj_if_equal(adj):
     """Missing docs.
 
     Args:
-        adj:
+        adj: adjacent matrix.
 
     Returns:
-
+        a lapacian matrix.
     """
     dense_A = np.array(adj.todense())
     degree = np.sum(dense_A, axis=1, keepdims=False)
@@ -583,11 +580,7 @@ class GroceryData(BaseData):
         return adj_mat, norm_adj_mat, mean_adj_mat
 
     def load_user_item_fea(self):
-        """Load user and item features from datasets.
-
-        Returns:
-
-        """
+        """Load user and item features from datasets."""
         print("Load user and item features from datasets")
         user_feat, item_feat = load_user_item_feature(self.config)
         user_feat_li = [None for i in range(self.n_users)]
@@ -637,6 +630,7 @@ class GroceryData(BaseData):
         return adj_mat.tocsr(), norm_adj_mat.tocsr(), mean_adj_mat.tocsr()
 
     def negative_pool(self):
+        """Missing Doc."""
         t1 = time()
         for u in self.train_items.keys():
             neg_items = list(set(range(self.n_items)) - set(self.train_items[u]))
@@ -647,6 +641,8 @@ class GroceryData(BaseData):
     def sample(self, batch_size):
         """Sample users, their positive items and negative items.
 
+        Args:
+            batch_size: the size of a batch for sampling.
         Returns:
             users (list)
             pos_items (list)
@@ -693,6 +689,7 @@ class GroceryData(BaseData):
         return users, pos_items, neg_items
 
     def sample_all_users_pos_items(self):
+        """Missing Doc."""
         self.all_train_users = []
 
         self.all_train_pos_items = []
@@ -701,7 +698,10 @@ class GroceryData(BaseData):
             self.all_train_pos_items += self.train_items[u]
 
     def epoch_sample(self):
+        """Missing Doc."""
+
         def sample_neg_items_for_u(u, num):
+            """Missing Doc."""
             neg_items = []
             while True:
                 if len(neg_items) == num:
@@ -722,6 +722,7 @@ class GroceryData(BaseData):
         return users, pos_items, neg_items
 
     def init_train_items(self):
+        """Missing Doc."""
         self.n_train = 0
         self.train_items = {}
         self.R = sp.dok_matrix((self.n_users, self.n_items), dtype=np.float32)
@@ -736,9 +737,10 @@ class GroceryData(BaseData):
                 self.n_train += 1
 
     def neighbour_process(self):
+        """Missing Doc."""
         user_np = np.array(self.train[DEFAULT_USER_COL])
         item_np = np.array(self.train[DEFAULT_ITEM_COL])
-        # Neighborhods
+        # Neighborhoods
         users_items = defaultdict(set)
         items_users = defaultdict(set)
         zip_list = list(zip(user_np, item_np))
@@ -763,18 +765,19 @@ class GroceryData(BaseData):
         )
 
     def cmn_train_loader(self, batch_size: int, neighborhood: bool, neg_count: int):
-        """
-        Batch data together as (user, item, negative item), pos_neighborhood,
-        length of neighborhood, negative_neighborhood, length of negative neighborhood
+        """Load train data for CMN.
 
-        if neighborhood is False returns only user, item, negative_item so we
+        Batch data together as (user, item, negative item), pos_neighborhood,
+        length of neighborhood, negative_neighborhood, length of negative neighborhood.
+
+        If neighborhood is False returns only user, item, negative_item so we
         can reuse this for non-neighborhood-based methods.
 
-        :param batch_size: size of the batch
-        :param neighborhood: return the neighborhood information or not
+        :param batch_size: size of the batch.
+        :param neighborhood: return the neighborhood information or not.
         :param neg_count: number of negative samples to uniformly draw per a pos
-                          example
-        :return: generator
+                          example.
+        :return: generator.
         """
         # Allocate inputs
         (

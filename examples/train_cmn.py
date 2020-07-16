@@ -19,10 +19,10 @@ from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """ Parse args from command line
+    """Parse args from command line.
 
-        Returns:
-            args object.
+    Returns:
+        args object.
     """
     parser = argparse.ArgumentParser(description="Run cmn..")
     parser.add_argument(
@@ -47,17 +47,14 @@ def parse_args():
 
 
 class cmn_train(TrainEngine):
-    """ An instance class from the TrainEngine base class
-
-    """
+    """An instance class from the TrainEngine base class."""
 
     def __init__(self, config):
-        """Constructor
+        """Initialize CMN_train Class.
 
         Args:
-            config (dict): All the parameters for the model
+            config (dict): All the parameters for the model.
         """
-
         self.config = config
         super(cmn_train, self).__init__(self.config)
         self.load_dataset()
@@ -66,6 +63,7 @@ class cmn_train(TrainEngine):
         self.gpu_id, self.config["device_str"] = self.get_device()
 
     def train_gmf(self):
+        """Train GMF."""
         self.monitor = Monitor(
             log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
         )
@@ -104,6 +102,7 @@ class cmn_train(TrainEngine):
         return np.array(user_embed), np.array(item_embed)
 
     def train(self):
+        """Train the model."""
         if self.config["pretrain"] == "gmf":
             user_embed, item_embed = self.train_gmf()
             model = self.cmnengine(
