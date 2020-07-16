@@ -26,11 +26,10 @@ from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """Parse args from command line
+    """Parse args from command line.
 
     Returns:
         args object.
-
     """
     parser = argparse.ArgumentParser(description="Run NARM..")
     parser.add_argument(
@@ -91,15 +90,13 @@ def parse_args():
 
 
 class NARM_train(TrainEngine):
-    """ An instance class from the TrainEngine base class
-
-    """
+    """An instance class from the TrainEngine base class."""
 
     def __init__(self, config):
-        """Constructor
+        """Initialize NARM_trian Class.
 
         Args:
-            config (dict): All the parameters for the model
+            config (dict): All the parameters for the model.
         """
         self.config = config
         super(NARM_train, self).__init__(self.config)
@@ -109,11 +106,7 @@ class NARM_train(TrainEngine):
         self.seq_eval_engine = SeqEvalEngine(self.config)
 
     def load_dataset_seq(self):
-        """ Default implementation of building dataset
-
-        Returns:
-            None
-        """
+        """Build a dataset for model."""
         # ml = Movielens_100k()
         # ml.download()
         # ml.load_interaction()
@@ -133,13 +126,11 @@ class NARM_train(TrainEngine):
         self.config["n_items"] = self.train_data.col_item.nunique() + 1
 
     def build_data_loader(self):
-        """ Convert users' interactions to sequences
+        """Convert users' interactions to sequences.
 
         Returns:
             load_train_data (DataLoader): training set.
-
         """
-
         # reindex items from 1
         self.train_data, self.valid_data, self.test_data = reindex_items(
             self.train_data, self.valid_data, self.test_data
@@ -168,11 +159,7 @@ class NARM_train(TrainEngine):
         return self.load_train_data
 
     def _train(self, engine, train_loader, save_dir):
-        """Train the model with epochs
-
-        Retruns:
-            None
-        """
+        """Train the model with epochs."""
         epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:
             print("Epoch {} starts !".format(epoch))
@@ -188,11 +175,7 @@ class NARM_train(TrainEngine):
             )
 
     def train(self):
-        """ Train and test NARM
-
-        Returns:
-            None
-        """
+        """Train and test NARM."""
         self.monitor = Monitor(
             log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
         )
