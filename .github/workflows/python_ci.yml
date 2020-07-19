@@ -83,7 +83,7 @@ jobs:
     - name: Check rst file syntax
       run: |
         # use rstcheck
-        rstcheck notes/*.rst
+        rstcheck docs/notes/*.rst -r
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml # optional
