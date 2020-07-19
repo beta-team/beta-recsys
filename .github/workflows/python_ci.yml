@@ -80,6 +80,10 @@ jobs:
       run: |
         # use isort to check
         isort . --check-only --recursive --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=88
+    - name: Check rst file syntax
+      run: |
+        # use rstcheck
+        rstcheck docs/notes/*.rst -r
     - uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml # optional
