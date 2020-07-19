@@ -2,10 +2,10 @@ beta\_rec.utils package
 =======================
 
 
-beta\_rec.utils.aliasTable module
+beta\_rec.utils.alias\_table module
 ---------------------------------
 
-.. automodule:: beta_rec.utils.aliasTable
+.. automodule:: beta_rec.utils.alias_table
    :members:
    :undoc-members:
    :show-inheritance:
@@ -22,14 +22,6 @@ beta\_rec.utils.constants module
 --------------------------------
 
 .. automodule:: beta_rec.utils.constants
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-beta\_rec.utils.data\_util module
----------------------------------
-
-.. automodule:: beta_rec.utils.data_util
    :members:
    :undoc-members:
    :show-inheritance:
@@ -74,6 +66,14 @@ beta\_rec.utils.onedrive module
    :undoc-members:
    :show-inheritance:
 
+beta\_rec.utils.seq\_evaluation module
+-------------------------------
+
+.. automodule:: beta_rec.utils.seq_evaluation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 beta\_rec.utils.triple\_sampler module
 --------------------------------------
 
@@ -82,10 +82,10 @@ beta\_rec.utils.triple\_sampler module
    :undoc-members:
    :show-inheritance:
 
-beta\_rec.utils.unigramTable module
+beta\_rec.utils.unigram\_table module
 -----------------------------------
 
-.. automodule:: beta_rec.utils.unigramTable
+.. automodule:: beta_rec.utils.unigram_table
    :members:
    :undoc-members:
    :show-inheritance:

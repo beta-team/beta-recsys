@@ -106,14 +106,6 @@ beta\_rec.datasets.movielens module
    :undoc-members:
    :show-inheritance:
 
-beta\_rec.datasets.nmf\_data\_utils module
-------------------------------------------
-
-.. automodule:: beta_rec.datasets.nmf_data_utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 beta\_rec.datasets.retailrocket module
 --------------------------------------
 
