@@ -45,6 +45,13 @@ via pre-built docker containers and supports distributed parameter tuning using 
    modules/models
    modules/utils
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Contribute Guidance
+
+   contribute/models
+   contribute/standardization-of-code-format-and-documentation
+
 Indices and tables
 ==================
 
