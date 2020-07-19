@@ -25,7 +25,7 @@ We use [Google style](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/exa
 - [Docstring with Google style](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
 - [Isort to sort imports alphabetically, and automatically separated into sections.](https://pypi.org/project/isort/)
 
-**If you are using Pycharm, it will be convenient to deploy **black** and **isort** commands as [External Tools](https://www.jetbrains.com/help/pycharm/configuring-third-party-tools.html).**
+**If you are using Pycharm, it will be convenient to deploy black and isort commands as [External Tools](https://www.jetbrains.com/help/pycharm/configuring-third-party-tools.html).**
 
 **Use the following args to make it [compatible](https://github.com/timothycrosley/isort/issues/694#issuecomment-564261886) with black. **
 
@@ -173,15 +173,15 @@ Example:
 
 If you want to link a class to its definition in comments, you can write comments like the following:
 
-![1591520192198](/img/docs/img13.png)
+![Jump to a class definition](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img13.png)
 
 ### Return Type
 
 There are many ways to write returns. Just choose one of them and clarify the values and types.
 
-![1591520240907](/img/docs/img14.png)
+![return type1](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img14.png)
 
-![1591520255156](/img/docs/img15.png)
+![return type2](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img15.png)
 
 ------
 
@@ -198,23 +198,23 @@ In this part, we try to collect
 There should be **no space** between the first letter and the `"""` in the first line of comment. And the first character should **use uppercase**.
 
 
-| Code Example                         | Documentation                        |
-| ------------------------------------ | ------------------------------------ |
-| ![1591513795011](/img/docs/img1.png) | ![1591514054954](/img/docs/img2.png) |
-| ![1591513943295](/img/docs/img3.png) | ![1591514086911](/img/docs/img4.png) |
+| Code Example                                                 | Documentation                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![code example1](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img1.png) | ![result1](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img2.png) |
+| ![code example2](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img3.png) | ![result2](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img4.png) |
 
 ### 2. Newlines
 
 There should be a new line between summary and details in a comment block. But in the detail part, there should be no newline.
 
-| Code Example                         | Documentation                         |
-| ------------------------------------ | ------------------------------------- |
-| ![1591516116811](/img/docs/img9.png) | ![1591515840206](/img/docs/img10.png) |
+| Code Example                                                 | Documentation                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![code example3](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img9.png) | ![result3](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img10.png) |
 
 ------
 
 ## Action Item
 
-- [ ] Correct all typos in code, including code and comments.
-- [ ] Correct all naming that do not match the naming rules.
+- [x] Correct all typos in code, including code and comments.
+- [x] Correct all naming that do not match the naming rules.
 - [ ] Format all comments, adding usage example, more informative description etc.
