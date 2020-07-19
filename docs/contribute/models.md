@@ -27,52 +27,56 @@ In the file structure you may find the directory (in bold) where you need to add
 ## Create a model in 3 steps
 
 ### 1.  create new_model.py
-      
+
     from beta_rec.models.torch_engine import ModelEngine  
     from beta_rec.utils.common_util import print_dict_as_table, timeit  
-      
-      
+
+
+​      
     class NEWMODEL(torch.nn.Module):  
         """ A pytorch Module for a new model
      """  
       def __init__(self, config):  
             super(MF, self).__init__()  
             Parameters
-			----------
-
-		    References
-		    ----------
+    		----------
+    
+    	    References
+    	    ----------
       
         def forward(self, batch_data):  
             """  
       
-			    Args: batch_data: tuple consists of (users, pos_items neg_items), which must be LongTensor  
-			     Returns: 
-		     """ 
-
+    		    Args: batch_data: tuple consists of (users, pos_items neg_items), which must be LongTensor  
+    		     Returns: 
+    	     """ 
+    
             return scores
       
         def predict(self, users, items):  
             """ Model prediction
-			     Args: users (int, or list of int):  user id(s) items (int, or list of int):  item id(s) Return: scores (int, or list of int): predicted scores of these user-item pairs """  users_t = torch.LongTensor(users).to(self.device)  
+    		     Args: users (int, or list of int):  user id(s) items (int, or list of int):  item id(s) Return: scores (int, or list of int): predicted scores of these user-item pairs """  users_t = torch.LongTensor(users).to(self.device)  
             items_t = torch.LongTensor(items).to(self.device)  
             with torch.no_grad():  
                 scores = 
             return scores  
-      
-      
+
+
+​      
     class NEWMODELEngine(ModelEngine):  
         def __init__(self, config):  
 
-      
+
+​      
         def train_single_batch(self, batch_data):  
             """ Train a single batch  
-      
+
    
+
         @timeit  
       def train_an_epoch(self, train_loader, epoch_id):  
             
-		      for batch_data in train_loader:  
+    	      for batch_data in train_loader:  
                 loss, reg = self.train_single_batch(batch_data)  
                 total_loss += loss  
                 regularizer += reg  
@@ -151,8 +155,9 @@ You also need a .json file, which includes all parameters for your models. This 
     from beta_rec.models.new_model import NEWMODELEngine  
     from beta_rec.utils.common_util import DictToObject, str2bool  
     from beta_rec.utils.monitor import Monitor  
-      
-      
+
+
+​      
     def parse_args():  
         """ Parse args from command line  
       
@@ -202,8 +207,9 @@ You also need a .json file, which includes all parameters for your models. This 
             "--batch_size", nargs="?", type=int, help="Batch size for training."  
       )  
         return parser.parse_args()  
-      
-      
+
+
+​      
     class NEW_train(TrainEngine):  
         def __init__(self, args):  
             print(args)  
@@ -241,22 +247,24 @@ You also need a .json file, which includes all parameters for your models. This 
             self._train(self.engine, train_loader, self.model_save_dir)  
             self.config["run_time"] = self.monitor.stop()  
             return self.eval_engine.best_valid_performance  
-      
-      
+
+
+​      
     def tune_train(config):  
         """Train the model with a hypyer-parameter tuner (ray)  
       
      Args: config (dict): All the parameters for the model  
      Returns:  
      """  
-	    train_engine = NEW_train(DictToObject(config))  
+        train_engine = NEW_train(DictToObject(config))  
         best_performance = train_engine.train()  
         train_engine.test()  
         while train_engine.eval_engine.n_worker > 0:  
             time.sleep(20)  
         tune.track.log(valid_metric=best_performance)  
-      
-      
+
+
+​      
     if __name__ == "__main__":  
         args = parse_args()  
         if args.tune:  
