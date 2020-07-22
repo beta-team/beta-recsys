@@ -11,7 +11,7 @@
         "device": "gpu",
         "seed": 2020,
         "metrics": ["ndcg", "precision", "recall", "map"],
-        "k": [10],
+        "k": [5, 10],
         "valid_metric": "ndcg",
         "valid_k": 10,
         "result_file": "result.csv"

@@ -61,8 +61,8 @@ def mrr(ground_truth, prediction):
 
 
 def ndcg(ground_truth, prediction):
-    """Compute NDCG metric.
-
+    """Compute Normalized Discounted Cumulative Gain (NDCG) metric.
+    
     Args:
         ground_truth (List): the ground truth set or sequence
         prediction (List): the predicted set or sequence
@@ -70,15 +70,27 @@ def ndcg(ground_truth, prediction):
     Returns:
         ndcg (float): the value of the metric
     """
-    ground_truth = remove_duplicates(ground_truth)
-    prediction = remove_duplicates(prediction)
-    sequence = [1 if i in ground_truth else 0 for i in prediction]
+    # ground_truth = remove_duplicates(ground_truth)
+    # prediction = remove_duplicates(prediction)
+    gt_pos = [1 if i in ground_truth else 0 for i in prediction]
+    pd_rank = [rank for rank, i in enumerate(prediction) if i in ground_truth]
 
-    # we have groud-truth relevance of some answers to a query:
-    true_relevance = np.asarray([list(sequence)])
-    # we predict some scores (relevance) for the answers
-    scores = np.asarray([np.ones(len(sequence))])
-    ndcg = ndcg_score(true_relevance, scores)
+    def dcg_score(gt_pos, pd_rank):
+        ranked_scores = np.take(gt_pos, pd_rank)
+        gain = 2 ** ranked_scores - 1
+        discounts = [np.log2(rank + 2) for rank in pd_rank]
+        return np.sum(gain / discounts)
+
+    if len(pd_rank) != 0:
+        dcg = dcg_score(gt_pos, pd_rank)
+
+        i_gt_pos = [gt_pos[i] for i in np.argsort(gt_pos)[::-1]]
+        i_pd_rank = [rank for rank, i in enumerate(i_gt_pos) if i not in [0]]
+        idcg = dcg_score(i_gt_pos, i_pd_rank)
+        ndcg = dcg / idcg
+    else:
+        ndcg = 0.0
+
     return ndcg
 
 
