@@ -16,7 +16,7 @@ from beta_rec.utils.constants import (
     DEFAULT_PREDICTION_COL,
     DEFAULT_USER_COL,
 )
-from beta_rec.utils.seq_evaluation import mrr, precision, recall
+from beta_rec.utils.seq_evaluation import ndcg, mrr, precision, recall
 
 lock_train_eval = Lock()
 lock_test_eval = Lock()
@@ -486,8 +486,8 @@ class SeqEvalEngine(object):
             ground_truth[:look_ahead] if look_ahead != "all" else ground_truth
         )
         ground_truth = list(map(lambda x: [x], ground_truth))  # list of list format
-
-        if not user_profile or not ground_truth:
+        
+        if len(user_profile)==0 or len(ground_truth)==0:
             # if any of the two missing all evaluation functions are 0
             return np.zeros(len(evaluation_functions))
 
@@ -570,14 +570,14 @@ class SeqEvalEngine(object):
             None
 
         """
-        METRICS = {"precision": precision, "recall": recall, "mrr": mrr}
+        METRICS = {"ndcg":ndcg, "precision": precision, "recall": recall, "mrr": mrr}
         TOPN = k  # length of the recommendation list
 
         # GIVEN_K=-1, LOOK_AHEAD=1, STEP=1 corresponds to the classical next-item evaluation
-        GIVEN_K = self.config["GIVEN_K"]
-        LOOK_AHEAD = self.config["LOOK_AHEAD"]
-        STEP = self.config["STEP"]
-        scroll = self.config["scroll"]
+        GIVEN_K = self.config["model"]["GIVEN_K"]
+        LOOK_AHEAD = self.config["model"]["LOOK_AHEAD"]
+        STEP = self.config["model"]["STEP"]
+        scroll = self.config["model"]["scroll"]
 
         # valid data
         valid_sequences = self.get_test_sequences(valid_data, GIVEN_K)
@@ -636,14 +636,14 @@ class SeqEvalEngine(object):
         Returns:
             None
         """
-        METRICS = {"precision": precision, "recall": recall, "mrr": mrr}
+        METRICS = {"ndcg":ndcg, "precision": precision, "recall": recall, "mrr": mrr}
         TOPN = k  # length of the recommendation list
 
         # GIVEN_K=-1, LOOK_AHEAD=1, STEP=1 corresponds to the classical next-item evaluation
-        GIVEN_K = self.config["GIVEN_K"]
-        LOOK_AHEAD = self.config["LOOK_AHEAD"]
-        STEP = self.config["STEP"]
-        scroll = self.config["scroll"]
+        GIVEN_K = self.config["model"]["GIVEN_K"]
+        LOOK_AHEAD = self.config["model"]["LOOK_AHEAD"]
+        STEP = self.config["model"]["STEP"]
+        scroll = self.config["model"]["scroll"]
 
         # test data
         test_sequences = self.get_test_sequences(test_data, GIVEN_K)
@@ -667,3 +667,4 @@ class SeqEvalEngine(object):
         )
         for mname, mvalue in zip(METRICS.keys(), test_results):
             print("\t{}@{}: {:.4f}".format(mname, TOPN, mvalue))
+
