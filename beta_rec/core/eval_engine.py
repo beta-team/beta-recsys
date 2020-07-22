@@ -16,7 +16,7 @@ from beta_rec.utils.constants import (
     DEFAULT_PREDICTION_COL,
     DEFAULT_USER_COL,
 )
-from beta_rec.utils.seq_evaluation import ndcg, mrr, precision, recall
+from beta_rec.utils.seq_evaluation import mrr, ndcg, precision, recall
 
 lock_train_eval = Lock()
 lock_test_eval = Lock()
