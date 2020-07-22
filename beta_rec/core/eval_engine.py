@@ -486,8 +486,8 @@ class SeqEvalEngine(object):
             ground_truth[:look_ahead] if look_ahead != "all" else ground_truth
         )
         ground_truth = list(map(lambda x: [x], ground_truth))  # list of list format
-        
-        if len(user_profile)==0 or len(ground_truth)==0:
+
+        if len(user_profile) == 0 or len(ground_truth) == 0:
             # if any of the two missing all evaluation functions are 0
             return np.zeros(len(evaluation_functions))
 
@@ -570,7 +570,7 @@ class SeqEvalEngine(object):
             None
 
         """
-        METRICS = {"ndcg":ndcg, "precision": precision, "recall": recall, "mrr": mrr}
+        METRICS = {"ndcg": ndcg, "precision": precision, "recall": recall, "mrr": mrr}
         TOPN = k  # length of the recommendation list
 
         # GIVEN_K=-1, LOOK_AHEAD=1, STEP=1 corresponds to the classical next-item evaluation
@@ -636,7 +636,7 @@ class SeqEvalEngine(object):
         Returns:
             None
         """
-        METRICS = {"ndcg":ndcg, "precision": precision, "recall": recall, "mrr": mrr}
+        METRICS = {"ndcg": ndcg, "precision": precision, "recall": recall, "mrr": mrr}
         TOPN = k  # length of the recommendation list
 
         # GIVEN_K=-1, LOOK_AHEAD=1, STEP=1 corresponds to the classical next-item evaluation
@@ -667,4 +667,3 @@ class SeqEvalEngine(object):
         )
         for mname, mvalue in zip(METRICS.keys(), test_results):
             print("\t{}@{}: {:.4f}".format(mname, TOPN, mvalue))
-

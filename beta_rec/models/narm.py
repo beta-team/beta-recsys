@@ -190,7 +190,9 @@ class NARMEngine(ModelEngine):
         """
         pred = self.predict(user_profile, batch=1)
 
-        pred = pd.DataFrame(data=pred, index=np.arange(self.config["dataset"]["n_items"]))
+        pred = pd.DataFrame(
+            data=pred, index=np.arange(self.config["dataset"]["n_items"])
+        )
 
         # sort items by predicted score
         pred.sort_values(0, ascending=False, inplace=True)

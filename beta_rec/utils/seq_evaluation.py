@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.metrics import ndcg_score
 
+
 def precision(ground_truth, prediction):
     """Compute Precision metric.
 
@@ -58,6 +59,7 @@ def mrr(ground_truth, prediction):
             break
     return rr
 
+
 def ndcg(ground_truth, prediction):
     """Compute NDCG metric.
     
@@ -70,12 +72,7 @@ def ndcg(ground_truth, prediction):
     """
     ground_truth = remove_duplicates(ground_truth)
     prediction = remove_duplicates(prediction)
-    sequence = [
-    1 
-    if i in ground_truth
-    else 0
-    for i in prediction
-    ]
+    sequence = [1 if i in ground_truth else 0 for i in prediction]
 
     # we have groud-truth relevance of some answers to a query:
     true_relevance = np.asarray([list(sequence)])
