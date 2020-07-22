@@ -21,7 +21,6 @@ from beta_rec.datasets.seq_data_utils import (
     reindex_items,
 )
 from beta_rec.models.narm import NARMEngine
-from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
 
 

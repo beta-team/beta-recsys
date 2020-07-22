@@ -62,7 +62,7 @@ def mrr(ground_truth, prediction):
 
 def ndcg(ground_truth, prediction):
     """Compute NDCG metric.
-    
+
     Args:
         ground_truth (List): the ground truth set or sequence
         prediction (List): the predicted set or sequence
