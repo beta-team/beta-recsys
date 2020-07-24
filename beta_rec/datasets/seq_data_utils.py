@@ -31,7 +31,7 @@ def load_dataset(config):
         "instacart": Instacart,
         "instacart_25": Instacart_25,
     }
-    dataset = dataset_mapping[config["dataset"]]()
+    dataset = dataset_mapping[config["dataset"]["dataset"]]()
     return dataset
 
 

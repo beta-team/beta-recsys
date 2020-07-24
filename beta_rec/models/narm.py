@@ -29,13 +29,13 @@ class NARM(nn.Module):
     def __init__(self, config):
         super(NARM, self).__init__()
         self.config = config
-        self.n_items = config["n_items"]
-        self.hidden_size = config["hidden_size"]
-        self.batch_size = config["batch_size"]
-        self.n_layers = config["n_layers"]
-        self.dropout_input = config["dropout_input"]
-        self.dropout_hidden = config["dropout_hidden"]
-        self.embedding_dim = config["embedding_dim"]
+        self.n_items = config["dataset"]["n_items"]
+        self.hidden_size = config["model"]["hidden_size"]
+        self.batch_size = config["model"]["batch_size"]
+        self.n_layers = config["model"]["n_layers"]
+        self.dropout_input = config["model"]["dropout_input"]
+        self.dropout_hidden = config["model"]["dropout_hidden"]
+        self.embedding_dim = config["model"]["embedding_dim"]
         self.emb = nn.Embedding(self.n_items, self.embedding_dim, padding_idx=0)
         self.emb_dropout = nn.Dropout(self.dropout_input)
         self.gru = nn.GRU(self.embedding_dim, self.hidden_size, self.n_layers)
@@ -101,8 +101,8 @@ class NARMEngine(ModelEngine):
         super(NARMEngine, self).__init__(config)
         self.scheduler = StepLR(
             self.optimizer,
-            step_size=self.config["lr_dc_step"],
-            gamma=self.config["lr_dc"],
+            step_size=self.config["model"]["lr_dc_step"],
+            gamma=self.config["model"]["lr_dc"],
         )
         self.loss_func = nn.CrossEntropyLoss()
         print(self.model)
@@ -190,7 +190,9 @@ class NARMEngine(ModelEngine):
         """
         pred = self.predict(user_profile, batch=1)
 
-        pred = pd.DataFrame(data=pred, index=np.arange(self.config["n_items"]))
+        pred = pd.DataFrame(
+            data=pred, index=np.arange(self.config["dataset"]["n_items"])
+        )
 
         # sort items by predicted score
         pred.sort_values(0, ascending=False, inplace=True)
