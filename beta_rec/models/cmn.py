@@ -77,7 +77,7 @@ class CollaborativeMemoryNetwork(nn.Module):
         input_neighborhood_lengths_negative,
         evaluation=False,
     ):
-        """Missing Doc."""
+        """Train the model."""
         # get embeddings from user memory
         cur_user = self.user_memory(input_users)
         # cur_user_output = self.user_output(input_users)
@@ -121,7 +121,7 @@ class CollaborativeMemoryNetwork(nn.Module):
         return score, negative_output
 
     def predict(self, users, items):
-        """Missing Doc."""
+        """Predict result with the model."""
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
         user_embedding = self.user_memory(users_t)
@@ -200,7 +200,12 @@ class cmnEngine(ModelEngine):
         return loss
 
     def train_an_epoch(self, train_loader, epoch_id):
-        """Missing Doc."""
+        """Train the model in one epoch.
+
+        Args:
+            epoch_id (int): the number of epoch.
+            train_loader (function): user, pos_items and neg_items generator.
+        """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0.0
@@ -262,7 +267,7 @@ class cmnEngine(ModelEngine):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def bpr_loss(self, pos_score, neg_score):
-        """Missing Doc."""
+        """Calculate BPR loss."""
         difference = pos_score - neg_score
         eps = 1e-12
         loss = -1 * torch.log(torch.sigmoid(difference) + eps)

@@ -5,11 +5,10 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class LightGCN(torch.nn.Module):
-    """Model initialisation, embedding generation and prediction of NGCF
-
-    """
+    """Model initialisation, embedding generation and prediction of NGCF."""
 
     def __init__(self, config, norm_adj):
+        """Initialize LightGCN Class."""
         super(LightGCN, self).__init__()
         self.config = config
         self.n_users = config["n_users"]
@@ -25,7 +24,7 @@ class LightGCN(torch.nn.Module):
         self.init_emb()
 
     def dropout(self, x, keep_prob):
-
+        """Drop out some layers."""
         size = x.size()
         index = x.indices().t()
         values = x.values()
@@ -38,17 +37,19 @@ class LightGCN(torch.nn.Module):
         return g
 
     def init_emb(self):
-        # Initialise users and items' embeddings
+        """Initialize users and items' embeddings."""
+        # Initialize users and items' embeddings
         nn.init.xavier_uniform_(self.user_embedding.weight)
         nn.init.xavier_uniform_(self.item_embedding.weight)
 
     def forward(self, norm_adj):
-        """ Perform GNN function on users and item embeddings
+        """Train GNN on users and item embeddings.
+
         Args:
-            norm_adj (torch sparse tensor): the norm adjacent matrix of the user-item interaction matrix
+            norm_adj (torch sparse tensor): the norm adjacent matrix of the user-item interaction matrix.
         Returns:
-            u_g_embeddings (tensor): processed user embeddings
-            i_g_embeddings (tensor): processed item embeddings
+            u_g_embeddings (tensor): processed user embeddings.
+            i_g_embeddings (tensor): processed item embeddings.
         """
         all_emb = torch.cat(
             (self.user_embedding.weight, self.item_embedding.weight), dim=0
@@ -73,12 +74,13 @@ class LightGCN(torch.nn.Module):
         return u_g_embeddings, i_g_embeddings
 
     def predict(self, users, items):
-        """ Model prediction: dot product of users and items embeddings
+        """Predict result with the model.
+
         Args:
-            users (int, or list of int):  user id
-            items (int, or list of int):  item id
+            users (int, or list of int):  user id.
+            items (int, or list of int):  item id.
         Return:
-            scores (int): dot product
+            scores (int): dot product.
         """
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
@@ -95,9 +97,12 @@ class LightGCN(torch.nn.Module):
 
 
 class LightGCNEngine(ModelEngine):
+    """LightGCNEngine Class."""
+
     # A class includes train an epoch and train a batch of NGCF
 
     def __init__(self, config):
+        """Initialize LightGCNEngine Class."""
         self.config = config
         self.regs = config["regs"]  # reg is the regularisation
         self.decay = self.regs[0]
@@ -109,11 +114,12 @@ class LightGCNEngine(ModelEngine):
         self.model.to(self.device)
 
     def train_single_batch(self, batch_data):
-        """
+        """Train the model in a single batch.
+
         Args:
-            batch_data (list): batch users, positive items and negative items
+            batch_data (list): batch users, positive items and negative items.
         Return:
-            loss (float): batch loss
+            loss (float): batch loss.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
@@ -143,10 +149,11 @@ class LightGCNEngine(ModelEngine):
         return loss
 
     def train_an_epoch(self, train_loader, epoch_id):
-        """ Generate batch data for each batch
+        """Train the model in one epoch.
+        
         Args:
-            epoch_id (int):
-            train_loader (function): user, pos_items and neg_items generator
+            epoch_id (int): the number of epoch.
+            train_loader (function): user, pos_items and neg_items generator.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
@@ -159,7 +166,7 @@ class LightGCNEngine(ModelEngine):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def loss_comput(self, usersE, pos_itemsE, neg_itemsE, users, pos_item, neg_item):
-        # Calculate BPR loss
+        """Calculate BPR loss."""
         pos_scores = torch.sum(torch.mul(usersE, pos_itemsE), dim=1)
         neg_scores = torch.sum(torch.mul(usersE, neg_itemsE), dim=1)
         userEmb0 = self.model.user_embedding(
