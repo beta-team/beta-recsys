@@ -150,7 +150,7 @@ class LightGCNEngine(ModelEngine):
 
     def train_an_epoch(self, train_loader, epoch_id):
         """Train the model in one epoch.
-        
+
         Args:
             epoch_id (int): the number of epoch.
             train_loader (function): user, pos_items and neg_items generator.
