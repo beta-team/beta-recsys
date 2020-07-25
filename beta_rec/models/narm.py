@@ -15,18 +15,18 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class NARM(nn.Module):
-    """Neural Attentive Session Based Recommendation Model Class
+    """Neural Attentive Session Based Recommendation Model Class.
 
     Args:
-        n_items(int): the number of items
-        hidden_size(int): the hidden size of gru
-        embedding_dim(int): the dimension of item embedding
+        n_items(int): the number of items.
+        hidden_size(int): the hidden size of gru.
+        embedding_dim(int): the dimension of item embedding.
         batch_size(int):
-        n_layers(int): the number of gru layers
-
+        n_layers(int): the number of gru layers.
     """
 
     def __init__(self, config):
+        """Initialize NARM Class."""
         super(NARM, self).__init__()
         self.config = config
         self.n_items = config["dataset"]["n_items"]
@@ -48,6 +48,7 @@ class NARM(nn.Module):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def forward(self, seq, lengths):
+        """Train the model."""
         hidden = self.init_hidden(seq.size(1))
         embs = self.emb_dropout(self.emb(seq))
         embs = pack_padded_sequence(embs, lengths)
@@ -87,15 +88,17 @@ class NARM(nn.Module):
         return scores
 
     def init_hidden(self, batch_size):
+        """Initialize hidden layers."""
         return torch.zeros(
             (self.n_layers, batch_size, self.hidden_size), requires_grad=True
         ).to(self.device)
 
 
 class NARMEngine(ModelEngine):
-    """Engine for training & evaluating NARM model"""
+    """Engine for training & evaluating NARM model."""
 
     def __init__(self, config):
+        """Initialize NARMEngine Class."""
         self.config = config
         self.model = NARM(config)
         super(NARMEngine, self).__init__(config)
@@ -108,6 +111,12 @@ class NARMEngine(ModelEngine):
         print(self.model)
 
     def train_an_epoch(self, train_loader, epoch):
+        """Train the model in one epoch.
+
+        Args:
+            epoch_id (int): the number of epoch.
+            train_loader (function): user, pos_items and neg_items generator.
+        """
         assert hasattr(self, "model"), "Please specify the exact model !"
 
         st = time.time()
@@ -143,7 +152,7 @@ class NARMEngine(ModelEngine):
         return mean_loss
 
     def predict(self, user_profile, batch=1):
-        """Gives user profile, predict the next item.
+        """Predict the next item given user profile.
 
         Args:
             user_profile (List): Contains the item IDs of the events.
@@ -151,9 +160,7 @@ class NARMEngine(ModelEngine):
 
         Returns:
             preds (List): Prediction scores for selected items for every event of the batch.
-
         """
-
         seq = [user_profile]
         labels = [[0]]  # fake label
 
@@ -178,15 +185,14 @@ class NARMEngine(ModelEngine):
         return preds
 
     def recommend(self, user_profile, user_id=None):
-        """ Make a recommendation.
+        """Make a recommendation.
 
         Args:
             user_profile (List): Contains the item IDs of the events.
             user_id (None): users' id for personalised recommenation.
 
-        Reurns:
+        Returns:
             List: item and score pairs.
-
         """
         pred = self.predict(user_profile, batch=1)
 

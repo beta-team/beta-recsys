@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.metrics import ndcg_score
 
 
 def precision(ground_truth, prediction):
@@ -62,13 +61,13 @@ def mrr(ground_truth, prediction):
 
 def ndcg(ground_truth, prediction):
     """Compute Normalized Discounted Cumulative Gain (NDCG) metric.
-    
+
     Args:
-        ground_truth (List): the ground truth set or sequence
-        prediction (List): the predicted set or sequence
+        ground_truth (List): the ground truth set or sequence.
+        prediction (List): the predicted set or sequence.
 
     Returns:
-        ndcg (float): the value of the metric
+        ndcg (float): the value of the metric.
     """
     # ground_truth = remove_duplicates(ground_truth)
     # prediction = remove_duplicates(prediction)
@@ -98,11 +97,11 @@ def count_a_in_b_unique(a, b):
     """Count unique items.
 
     Args:
-        a (List): list of lists
-        b (List): list of lists
+        a (List): list of lists.
+        b (List): list of lists.
 
     Returns:
-        count (int): number of elements of a in b
+        count (int): number of elements of a in b.
     """
     count = 0
     for el in a:

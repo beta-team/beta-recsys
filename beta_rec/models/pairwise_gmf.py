@@ -17,12 +17,15 @@ def truncated_normal_(tensor, mean=0, std=1):
 
 
 class PairwiseGMF(nn.Module):
-    def __init__(self, config):
-        """
-        Constructs the user/item memories and user/item external memory/outputs
+    """PairwiseGMF Class.
 
-        Also add the embedding lookups
-        """
+    Constructs the user/item memories and user/item external memory/outputs.
+
+    Also add the embedding lookups.
+    """
+
+    def __init__(self, config):
+        """Initialize PairwiseGMF Class."""
         super(PairwiseGMF, self).__init__()
         self.n_users = config["n_users"]
         self.n_items = config["n_items"]
@@ -42,10 +45,10 @@ class PairwiseGMF(nn.Module):
         self.v.weight.requires_grad = True
 
     def forward(self, input_users, input_items, input_items_negative):
-        """
-        Construct the model; main part of it goes here
-        """
+        """Train the model.
 
+        Construct the model; main part of it goes here.
+        """
         # [batch, embedding size]
         cur_user = self.user_memory(input_users)
         # Item memories a query
@@ -58,12 +61,15 @@ class PairwiseGMF(nn.Module):
         return pos_score, neg_score
 
     def predict(self):
-
+        """Predict result with the model."""
         pass
 
 
 class PairwiseGMFEngine(ModelEngine):
+    """PairwiseGMFEngine Class."""
+
     def __init__(self, config):
+        """Initialize PairwiseGMFEngine CLass."""
         self.config = config
         self.model = PairwiseGMF(config)
         self.regs = config["regs"]  # reg is the regularisation
@@ -73,11 +79,12 @@ class PairwiseGMFEngine(ModelEngine):
         super(PairwiseGMFEngine, self).__init__(config)
 
     def train_single_batch(self, batch_data):
-        """
+        """Train the model in a single batch.
+
         Args:
-            batch_data (list): batch users, positive items and negative items
+            batch_data (list): batch users, positive items and negative items.
         Return:
-            loss (float): batch loss
+            loss (float): batch loss.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
@@ -108,6 +115,7 @@ class PairwiseGMFEngine(ModelEngine):
         return loss
 
     def train_an_epoch(self, train_loader, epoch_id):
+        """Train the model in one epoch."""
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0.0
@@ -133,7 +141,17 @@ class PairwiseGMFEngine(ModelEngine):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def bpr_loss(self, pos_score, neg_score):
+        """Bayesian Personalised Ranking (BPR) pairwise loss function.
 
+        Note that the sizes of pos_scores and neg_scores should be equal.
+
+        Args:
+            pos_scores (tensor): Tensor containing predictions for known positive items.
+            neg_scores (tensor): Tensor containing predictions for sampled negative items.
+
+        Returns:
+            loss.
+        """
         difference = pos_score - neg_score
         eps = 1e-12
         loss = -1 * torch.log(torch.sigmoid(difference) + eps)

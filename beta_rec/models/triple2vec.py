@@ -6,7 +6,10 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class Triple2vec(nn.Module):
+    """Triple2vec Class."""
+
     def __init__(self, config):
+        """Initialize Triple2vec Class."""
         super(Triple2vec, self).__init__()
         self.config = config
         self.n_users = config["n_users"]
@@ -23,6 +26,7 @@ class Triple2vec(nn.Module):
         self.init_emb()
 
     def init_emb(self):
+        """Initialize embeddings."""
         self.user_emb.weight.data.uniform_(-0.01, 0.01)
         self.item_emb1.weight.data.uniform_(-0.01, 0.01)
         self.item_emb2.weight.data.uniform_(-0.01, 0.01)
@@ -30,6 +34,7 @@ class Triple2vec(nn.Module):
         self.item_bias.weight.data.fill_(0.0)
 
     def forward(self, batch_data):
+        """Train the model."""
         if self.use_bias:
             self.item_emb2 = self.item_emb1
         pos_u, pos_i_1, pos_i_2, neg_u, neg_i_1, neg_i_2 = batch_data
@@ -86,6 +91,7 @@ class Triple2vec(nn.Module):
         return (u_score + i_1_score + i_2_score) / (3 * self.batch_size)
 
     def predict(self, users, items):
+        """Predict result with the model."""
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
         with torch.no_grad():
@@ -97,14 +103,16 @@ class Triple2vec(nn.Module):
 
 
 class Triple2vecEngine(ModelEngine):
-    """Engine for training Triple model"""
+    """Engine for training Triple model."""
 
     def __init__(self, config):
+        """Initialize Triple2vecEngine Class."""
         self.config = config
         self.model = Triple2vec(config["model"])
         super(Triple2vecEngine, self).__init__(config)
 
     def train_single_batch(self, batch_data, ratings=None):
+        """Train the model in a single batch."""
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
         loss = self.model.forward(batch_data)
@@ -114,6 +122,7 @@ class Triple2vecEngine(ModelEngine):
         return loss
 
     def train_an_epoch(self, train_loader, epoch_id):
+        """Train the model in one epoch."""
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0
