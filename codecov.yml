@@ -1,0 +1,16 @@
+comment: no
+
+coverage:
+  range: 20..50
+
+  status:
+    project:
+      default:
+        enabled: yes
+        target: auto
+        threshold: 10%
+
+    patch:
+      default:
+        enabled: false
+    changes: no

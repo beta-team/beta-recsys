@@ -22,39 +22,38 @@ from beta_rec.utils.constants import (
 
 
 class PandasHash:
-    """Wrapper class to allow pandas objects (DataFrames or Series) to be hashable"""
+    """Wrapper class to allow pandas objects (DataFrames or Series) to be hashable."""
 
     # reserve space just for a single pandas object
     __slots__ = "pandas_object"
 
     def __init__(self, pandas_object):
-        """Initialize class
-        Args:
-            pandas_object (pd.DataFrame|pd.Series): pandas object
-        """
+        """Initialize PandasHash class.
 
+        Args:
+            pandas_object (pd.DataFrame|pd.Series): pandas object.
+        """
         if not isinstance(pandas_object, (pd.DataFrame, pd.Series)):
             raise TypeError("Can only wrap pandas DataFrame or Series objects")
         self.pandas_object = pandas_object
 
     def __eq__(self, other):
-        """Overwrite equality comparison
+        """Overwrite equality comparison.
+
         Args:
-            other (pd.DataFrame|pd.Series): pandas object to compare
+            other (pd.DataFrame|pd.Series): pandas object to compare.
 
         Returns:
-            bool: whether other object is the same as this one
+            bool: whether other object is the same as this one.
         """
-
         return hash(self) == hash(other)
 
     def __hash__(self):
-        """Overwrite hash operator for use with pandas objects
+        """Overwrite hash operator for use with pandas objects.
 
         Returns:
-            int: hashed value of object
+            int: hashed value of object.
         """
-
         hashable = tuple(self.pandas_object.values.tobytes())
         if isinstance(self.pandas_object, pd.DataFrame):
             hashable += tuple(self.pandas_object.columns)
@@ -64,16 +63,15 @@ class PandasHash:
 
 
 def has_columns(df, columns):
-    """Check if DataFrame has necessary columns
+    """Check if DataFrame has necessary columns.
 
     Args:
-        df (pd.DataFrame): DataFrame
-        columns (list(str): columns to check for
+        df (pd.DataFrame): DataFrame.
+        columns (list(str): columns to check for.
 
     Returns:
-        bool: True if DataFrame has specified columns
+        bool: True if DataFrame has specified columns.
     """
-
     result = True
     for column in columns:
         if column not in df.columns:
@@ -84,17 +82,16 @@ def has_columns(df, columns):
 
 
 def has_same_base_dtype(df_1, df_2, columns=None):
-    """Check if specified columns have the same base dtypes across both DataFrames
+    """Check if specified columns have the same base dtypes across both DataFrames.
 
     Args:
-        df_1 (pd.DataFrame): first DataFrame
-        df_2 (pd.DataFrame): second DataFrame
-        columns (list(str)): columns to check, None checks all columns
+        df_1 (pd.DataFrame): first DataFrame.
+        df_2 (pd.DataFrame): second DataFrame.
+        columns (list(str)): columns to check, None checks all columns.
 
     Returns:
-        bool: True if DataFrames columns have the same base dtypes
+        bool: True if DataFrames columns have the same base dtypes.
     """
-
     if columns is None:
         if any(set(df_1.columns).symmetric_difference(set(df_2.columns))):
             print(
@@ -118,14 +115,14 @@ def has_same_base_dtype(df_1, df_2, columns=None):
 
 
 def check_column_dtypes(func):
-    """Checks columns of DataFrame inputs
+    """Check columns of DataFrame inputs.
 
     This includes the checks on
-        1. whether the input columns exist in the input DataFrames
+        1. whether the input columns exist in the input DataFrames.
         2. whether the data types of col_user as well as col_item are matched in the two input DataFrames.
 
     Args:
-        func (function): function that will be wrapped
+        func (function): function that will be wrapped.
     """
 
     @wraps(func)
@@ -139,17 +136,16 @@ def check_column_dtypes(func):
         *args,
         **kwargs
     ):
-        """Check columns of DataFrame inputs
+        """Check columns of DataFrame inputs.
 
         Args:
-            rating_true (pd.DataFrame): True data
-            rating_pred (pd.DataFrame): Predicted data
-            col_user (str): column name for user
-            col_item (str): column name for item
-            col_rating (str): column name for rating
-            col_prediction (str): column name for prediction
+            rating_true (pd.DataFrame): True data.
+            rating_pred (pd.DataFrame): Predicted data.
+            col_user (str): column name for user.
+            col_item (str): column name for item.
+            col_rating (str): column name for rating.
+            col_prediction (str): column name for prediction.
         """
-
         if not has_columns(rating_true, [col_user, col_item, col_rating]):
             raise ValueError("Missing columns in true rating DataFrame")
         if not has_columns(rating_pred, [col_user, col_item, col_prediction]):
@@ -174,19 +170,19 @@ def check_column_dtypes(func):
 
 
 def lru_cache_df(maxsize, typed=False):
-    """Least-recently-used cache decorator
+    """Least-recently-used cache decorator.
 
     Args:
-        maxsize (int|None): max size of cache, if set to None cache is boundless
-        typed (bool): arguments of different types are cached separately
+        maxsize (int|None): max size of cache, if set to None cache is boundless.
+        typed (bool): arguments of different types are cached separately.
     """
 
     def to_pandas_hash(val):
-        """Return PandaHash object if input is a DataFrame otherwise return input unchanged"""
+        """Return PandaHash object if input is a DataFrame otherwise return input unchanged."""
         return PandasHash(val) if isinstance(val, pd.DataFrame) else val
 
     def from_pandas_hash(val):
-        """Extract DataFrame if input is PandaHash object otherwise return input unchanged"""
+        """Extract DataFrame if input is PandaHash object otherwise return input unchanged."""
         return val.pandas_object if isinstance(val, PandasHash) else val
 
     def decorating_function(user_function):
@@ -223,23 +219,23 @@ def merge_rating_true_pred(
     col_rating=DEFAULT_RATING_COL,
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
-    """Join truth and prediction data frames on userID and itemID and return the true
-    and predicted rated with the correct index.
+    """Join truth and prediction data frames on userID and itemID.
+
+    Joint truth and prediction DataFrames on userID and itemID and return the true and predicted rated with the
+    correct index.
 
     Args:
-        rating_true (pd.DataFrame): True data
-        rating_pred (pd.DataFrame): Predicted data
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
+        rating_true (pd.DataFrame): True data.
+        rating_pred (pd.DataFrame): Predicted data.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
 
     Returns:
-        np.array: Array with the true ratings
-        np.array: Array with the predicted ratings
-
+        np.array: Array with the true ratings.
+        np.array: Array with the predicted ratings.
     """
-
     # pd.merge will apply suffixes to columns which have the same name across both dataframes
     suffixes = ["_true", "_pred"]
     rating_true_pred = pd.merge(
@@ -260,20 +256,19 @@ def rmse(
     col_rating=DEFAULT_RATING_COL,
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
-    """Calculate Root Mean Squared Error
+    """Calculate Root Mean Squared Error.
 
     Args:
-        rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs
-        rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
+        rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs.
+        rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
 
     Returns:
-        float: Root mean squared error
+        float: Root mean squared error.
     """
-
     y_true, y_pred = merge_rating_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -296,17 +291,16 @@ def mae(
     """Calculate Mean Absolute Error.
 
     Args:
-        rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs
-        rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
+        rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs.
+        rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
 
     Returns:
         float: Mean Absolute Error.
     """
-
     y_true, y_pred = merge_rating_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -326,20 +320,19 @@ def rsquared(
     col_rating=DEFAULT_RATING_COL,
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
-    """Calculate R squared
+    """Calculate R squared.
 
     Args:
-        rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs
-        rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
+        rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs.
+        rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
 
     Returns:
         float: R squared (min=0, max=1).
     """
-
     y_true, y_pred = merge_rating_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -362,17 +355,16 @@ def exp_var(
     """Calculate explained variance.
 
     Args:
-        rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs
-        rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
+        rating_true (pd.DataFrame): True data. There should be no duplicate (userID, itemID) pairs.
+        rating_pred (pd.DataFrame): Predicted data. There should be no duplicate (userID, itemID) pairs.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
 
     Returns:
         float: Explained variance (min=0, max=1).
     """
-
     y_true, y_pred = merge_rating_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -392,9 +384,10 @@ def auc(
     col_rating=DEFAULT_RATING_COL,
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
-    """Calculate the Area-Under-Curve metric for implicit feedback typed
-    recommender, where rating is binary and prediction is float number ranging
-    from 0 to 1.
+    """Calculate the Area-Under-Curve metric.
+
+    Calculate the Aread-Under-Curve metric for implicit feedback typed recommender, where rating is binary and
+    prediction is float number ranging from 0 to 1.
 
     https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_the_curve
 
@@ -405,17 +398,16 @@ def auc(
         scores on the entire prediction results regardless the users.
 
     Args:
-        rating_true (pd.DataFrame): True data
-        rating_pred (pd.DataFrame): Predicted data
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
+        rating_true (pd.DataFrame): True data.
+        rating_pred (pd.DataFrame): Predicted data.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
 
     Returns:
-        float: auc_score (min=0, max=1)
+        float: auc_score (min=0, max=1).
     """
-
     y_true, y_pred = merge_rating_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -435,24 +427,24 @@ def logloss(
     col_rating=DEFAULT_RATING_COL,
     col_prediction=DEFAULT_PREDICTION_COL,
 ):
-    """Calculate the logloss metric for implicit feedback typed
-    recommender, where rating is binary and prediction is float number ranging
-    from 0 to 1.
+    """Calculate the logloss metric.
+
+    Calculate the logloss metric for implicit feedback typed recommender, where rating is binary and prediction is
+    float number ranging from 0 to 1.
 
     https://en.wikipedia.org/wiki/Loss_functions_for_classification#Cross_entropy_loss_(Log_Loss)
 
     Args:
-        rating_true (pd.DataFrame): True data
-        rating_pred (pd.DataFrame): Predicted data
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
+        rating_true (pd.DataFrame): True data.
+        rating_pred (pd.DataFrame): Predicted data.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
 
     Returns:
-        float: log_loss_score (min=-inf, max=inf)
+        float: log_loss_score (min=-inf, max=inf).
     """
-
     y_true, y_pred = merge_rating_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -477,26 +469,25 @@ def merge_ranking_true_pred(
     k=DEFAULT_K,
     threshold=DEFAULT_THRESHOLD,
 ):
-    """Filter truth and prediction data frames on common users
+    """Filter truth and prediction data frames on common users.
 
     Args:
-        rating_true (pd.DataFrame): True DataFrame
-        rating_pred (pd.DataFrame): Predicted DataFrame
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
-        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
-        k (int): number of top k items per user (optional)
-        threshold (float): threshold of top items per user (optional)
+        rating_true (pd.DataFrame): True DataFrame.
+        rating_pred (pd.DataFrame): Predicted DataFrame.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
+        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold'].
+        k (int): number of top k items per user (optional).
+        threshold (float): threshold of top items per user (optional).
 
     Returns:
         pd.DataFrame, pd.DataFrame, int:
             DataFrame of recommendation hits
             DataFrmae of hit counts vs actual relevant items per user
-            number of unique user ids
+            number of unique user ids.
     """
-
     # make sure the true data have no negative items
     rating_true = rating_true[rating_true[col_rating] >= 1]
 
@@ -562,20 +553,19 @@ def precision_at_k(
     user in rating_pred is less than k.
 
     Args:
-        rating_true (pd.DataFrame): True DataFrame
-        rating_pred (pd.DataFrame): Predicted DataFrame
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
-        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
-        k (int): number of top k items per user
-        threshold (float): threshold of top items per user (optional)
+        rating_true (pd.DataFrame): True DataFrame.
+        rating_pred (pd.DataFrame): Predicted DataFrame.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
+        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold'].
+        k (int): number of top k items per user.
+        threshold (float): threshold of top items per user (optional).
 
     Returns:
-        float: precision at k (min=0, max=1)
+        float: precision at k (min=0, max=1).
     """
-
     df_hit, df_hit_count, n_users = merge_ranking_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -607,21 +597,20 @@ def recall_at_k(
     """Recall at K.
 
     Args:
-        rating_true (pd.DataFrame): True DataFrame
-        rating_pred (pd.DataFrame): Predicted DataFrame
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
-        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
-        k (int): number of top k items per user
-        threshold (float): threshold of top items per user (optional)
+        rating_true (pd.DataFrame): True DataFrame.
+        rating_pred (pd.DataFrame): Predicted DataFrame.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
+        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold'].
+        k (int): number of top k items per user.
+        threshold (float): threshold of top items per user (optional).
 
     Returns:
         float: recall at k (min=0, max=1). The maximum value is 1 even when fewer than
             k items exist for a user in rating_true.
     """
-
     df_hit, df_hit_count, n_users = merge_ranking_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -651,25 +640,24 @@ def ndcg_at_k(
     k=DEFAULT_K,
     threshold=DEFAULT_THRESHOLD,
 ):
-    """Normalized Discounted Cumulative Gain (nDCG).
+    """Compute Normalized Discounted Cumulative Gain (nDCG).
 
     Info: https://en.wikipedia.org/wiki/Discounted_cumulative_gain
 
     Args:
-        rating_true (pd.DataFrame): True DataFrame
-        rating_pred (pd.DataFrame): Predicted DataFrame
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
-        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
-        k (int): number of top k items per user
-        threshold (float): threshold of top items per user (optional)
+        rating_true (pd.DataFrame): True DataFrame.
+        rating_pred (pd.DataFrame): Predicted DataFrame.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
+        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold'].
+        k (int): number of top k items per user.
+        threshold (float): threshold of top items per user (optional).
 
     Returns:
         float: nDCG at k (min=0, max=1).
     """
-
     df_hit, df_hit_count, n_users = merge_ranking_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -712,7 +700,8 @@ def map_at_k(
     k=DEFAULT_K,
     threshold=DEFAULT_THRESHOLD,
 ):
-    """Mean Average Precision at k
+    """Mean Average Precision at k.
+
     The implementation of MAP is referenced from Spark MLlib evaluation metrics.
     https://spark.apache.org/docs/2.3.0/mllib-evaluation-metrics.html#ranking-systems
 
@@ -726,20 +715,19 @@ def map_at_k(
         relevant items in the ground truth data, instead of k.
 
     Args:
-        rating_true (pd.DataFrame): True DataFrame
-        rating_pred (pd.DataFrame): Predicted DataFrame
-        col_user (str): column name for user
-        col_item (str): column name for item
-        col_rating (str): column name for rating
-        col_prediction (str): column name for prediction
-        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold']
-        k (int): number of top k items per user
-        threshold (float): threshold of top items per user (optional)
+        rating_true (pd.DataFrame): True DataFrame.
+        rating_pred (pd.DataFrame): Predicted DataFrame.
+        col_user (str): column name for user.
+        col_item (str): column name for item.
+        col_rating (str): column name for rating.
+        col_prediction (str): column name for prediction.
+        relevancy_method (str): method for determining relevancy ['top_k', 'by_threshold'].
+        k (int): number of top k items per user.
+        threshold (float): threshold of top items per user (optional).
 
     Returns:
         float: MAP at k (min=0, max=1).
     """
-
     df_hit, df_hit_count, n_users = merge_ranking_true_pred(
         rating_true=rating_true,
         rating_pred=rating_pred,
@@ -767,24 +755,25 @@ def map_at_k(
 def get_top_k_items(
     dataframe, col_user=DEFAULT_USER_COL, col_rating=DEFAULT_RATING_COL, k=DEFAULT_K
 ):
-    """Get the input customer-item-rating tuple in the format of Pandas
+    """Get the input customer-item-rating tuple in the format of Pandas.
+
     DataFrame, output a Pandas DataFrame in the dense format of top k items
     for each user.
+
     Note:
         if it is implicit rating, just append a column of constants to be
         ratings.
 
     Args:
         dataframe (pandas.DataFrame): DataFrame of rating data (in the format
-        customerID-itemID-rating)
-        col_user (str): column name for user
-        col_rating (str): column name for rating
-        k (int): number of items for each user
+        customerID-itemID-rating).
+        col_user (str): column name for user.
+        col_rating (str): column name for rating.
+        k (int): number of items for each user.
 
     Returns:
-        pd.DataFrame: DataFrame of top k items for each user
+        pd.DataFrame: DataFrame of top k items for each user.
     """
-
     # Sort dataframe by col_user and (top k) col_rating
     top_k_items = (
         dataframe.groupby(col_user, as_index=False)
