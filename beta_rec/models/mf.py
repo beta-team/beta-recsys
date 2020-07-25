@@ -124,7 +124,7 @@ class MFEngine(ModelEngine):
 
         Args:
             train_loader (DataLoader):
-            epoch_id (int):
+            epoch_id (int): the number of epoch.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
