@@ -12,7 +12,6 @@ from ray import tune
 from tabulate import tabulate
 from tqdm import tqdm
 
-import ray
 from beta_rec.core.eval_engine import EvalEngine
 from beta_rec.data.base_data import BaseData
 from beta_rec.datasets.data_load import load_split_dataset
@@ -24,7 +23,6 @@ from beta_rec.utils.common_util import (
     update_args,
 )
 from beta_rec.utils.constants import MAX_N_UPDATE
-from ray import tune
 
 
 class TrainEngine(object):
