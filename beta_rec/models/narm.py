@@ -208,8 +208,10 @@ class NARMEngine(ModelEngine):
 
     @staticmethod
     def get_recommendation_list(recommendation):
+        """Missing Doc."""
         return list(map(lambda x: x[0], recommendation))
 
     @staticmethod
     def get_recommendation_confidence_list(recommendation):
+        """Missing Doc."""
         return list(map(lambda x: x[1], recommendation))

@@ -76,6 +76,7 @@ class VBCAR(nn.Module):
         return mu + std * eps
 
     def kl_div(self, dis1, dis2=None, neg=False):
+        """Missing Doc."""
         mean1, std1 = dis1
         if dis2 is None:
             mean2 = torch.zeros(mean1.size(), device=self.device)

@@ -95,7 +95,6 @@ class NCF_train(TrainEngine):
 
     def train(self):
         """Train the model."""
-
         # Options are: 'mlp', 'gmf', 'ncf_end', and 'ncf_pre';
         # Train NeuMF without pre-train
         if self.config["model"]["model"] == "ncf_end":
