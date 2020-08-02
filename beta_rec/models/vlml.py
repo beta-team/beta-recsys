@@ -5,7 +5,10 @@ import torch.nn.functional as F
 
 
 class VariableLengthMemoryLayer(nn.Module):
+    """VariableLengthMemoryLayer Class."""
+
     def __init__(self, hops, emb_dim, device):
+        """Initialize VariableLenghtMemoryLayer Class."""
         super(VariableLengthMemoryLayer, self).__init__()
 
         self.hops = hops
@@ -23,16 +26,15 @@ class VariableLengthMemoryLayer(nn.Module):
         self.hop_mapping = nn.ModuleDict(self.hop_mapping)
 
     def mask_mod(self, inputs, mask_length, maxlen=None):
-        """
+        """Use a memory mask.
+
         Apply a memory mask such that the values we mask result in being the
         minimum possible value we can represent with a float32.
 
-        :param inputs: [batch size, length], dtype=tf.float32
-        :param memory_mask: [batch_size] shape Tensor of ints indicating the
-            length of inputs
-        :param maxlen: Sets the maximum length of the sequence; if None infered
-            from inputs
-        :returns: [batch size, length] dim Tensor with the mask applied
+        :param inputs: [batch size, length], dtype=tf.float32.
+        :param memory_mask: [batch_size] shape Tensor of ints indicating the length of inputs.
+        :param maxlen: Sets the maximum length of the sequence; if None, inferred from inputs.
+        :returns: [batch size, length] dim Tensor with the mask applied.
         """
         # [batch_size, length] => Sequence Mask
         memory_mask = torch.arange(maxlen).to(self.device).expand(
@@ -57,18 +59,17 @@ class VariableLengthMemoryLayer(nn.Module):
     def apply_attention_memory(
         self, memory, output_memory, query, memory_mask=None, maxlen=None
     ):
-        """
-            :param memory: [batch size, max length, embedding size],
-                typically Matrix M
-            :param output_memory: [batch size, max length, embedding size],
-                typically Matrix C
-            :param query: [batch size, embed size], typically u
-            :param memory_mask: [batch size] dim Tensor, the length of each
-                sequence if variable length
-            :param maxlen: int/Tensor, the maximum sequence padding length; if None it
-                infers based on the max of memory_mask
+        """Apply attention memory.
+
+        Args:
+            :param memory: [batch size, max length, embedding size], typically Matrix M.
+            :param output_memory: [batch size, max length, embedding size], typically Matrix C.
+            :param query: [batch size, embed size], typically u.
+            :param memory_mask: [batch size] dim Tensor, the length of each sequence if variable length.
+            :param maxlen: int/Tensor, the maximum sequence padding length; if None it infers based on the max of
+                memory_mask.
             :returns: AttentionOutput
-                 output: [batch size, embedding size]
+                 output: [batch size, embedding size].
                  weight: [batch size, max length], the attention weights applied to
                          the output representation.
         """
@@ -90,6 +91,7 @@ class VariableLengthMemoryLayer(nn.Module):
         return {"weight": attention, "output": weighted_output}
 
     def forward(self, query, memory, output_memory, seq_length, maxlen=32):
+        """Train the model."""
         # find maximum length of sequences in this batch
         cur_max = torch.max(seq_length).item()
         # slice to max length

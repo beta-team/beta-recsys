@@ -1,6 +1,4 @@
-"""
-   isort:skip_file
-"""
+"""isort:skip_file."""
 import argparse
 import os
 import sys
@@ -21,10 +19,10 @@ from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """ Parse args from command line
+    """Parse args from command line.
 
-        Returns:
-            args object.
+    Returns:
+        args object.
     """
     parser = argparse.ArgumentParser(description="Run LightGCN..")
     parser.add_argument(
@@ -55,8 +53,7 @@ def parse_args():
 
 
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
-    """Convert a scipy sparse matrix to a torch sparse tensor.
-    """
+    """Convert a scipy sparse matrix to a torch sparse tensor."""
     sparse_mx = sparse_mx.tocoo().astype(np.float32)
     indices = torch.from_numpy(
         np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64)
@@ -67,17 +64,14 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
 
 
 class LightGCN_train(TrainEngine):
-    """ An instance class from the TrainEngine base class
-
-    """
+    """An instance class from the TrainEngine base class."""
 
     def __init__(self, config):
-        """Constructor
+        """Initialize LightGCN_train Class.
 
         Args:
-            config (dict): All the parameters for the model
+            config (dict): All the parameters for the model.
         """
-
         self.config = config
         super(LightGCN_train, self).__init__(config)
         self.load_dataset()
@@ -85,6 +79,7 @@ class LightGCN_train(TrainEngine):
         self.engine = LightGCNEngine(self.config["model"])
 
     def build_data_loader(self):
+        """Missing Doc."""
         # ToDo: Please define the directory to store the adjacent matrix
         self.sample_generator = DataLoaderBase(ratings=self.data.train)
         adj_mat, norm_adj_mat, mean_adj_mat = self.sample_generator.get_adj_mat(
@@ -99,6 +94,7 @@ class LightGCN_train(TrainEngine):
         self.config["model"]["n_items"] = self.data.n_items
 
     def train(self):
+        """Train the model."""
         self.monitor = Monitor(
             log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
@@ -130,18 +126,16 @@ class LightGCN_train(TrainEngine):
         self.config["run_time"] = self.monitor.stop()
 
     def test(self):
+        """Test the model."""
         self.engine.resume_checkpoint(model_dir=self.model_save_dir)
         super(LightGCN_train, self).test()
 
 
 def tune_train(config):
-    """Train the model with a hypyer-parameter tuner (ray)
+    """Train the model with a hypyer-parameter tuner (ray).
 
     Args:
-        config (dict): All the parameters for the model
-
-    Returns:
-
+        config (dict): All the parameters for the model.
     """
     train_engine = LightGCN_train(DictToObject(config))
     best_performance = train_engine.train()

@@ -31,6 +31,7 @@ TOL = 0.0001
 
 @pytest.fixture
 def rating_true():
+    """Generate testing data."""
     return pd.DataFrame(
         {
             DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
@@ -61,6 +62,7 @@ def rating_true():
 
 @pytest.fixture
 def rating_pred():
+    """Generate testing data."""
     return pd.DataFrame(
         {
             DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
@@ -111,6 +113,7 @@ def rating_pred():
 
 @pytest.fixture
 def rating_nohit():
+    """Generate testing data."""
     return pd.DataFrame(
         {
             DEFAULT_USER_COL: [1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
@@ -141,7 +144,7 @@ def rating_nohit():
 
 @pytest.fixture
 def rating_true_binary(rating_true):
-    # Convert true ratings to binary
+    """Convert true ratings to binary."""
     rating_true[DEFAULT_RATING_COL] = rating_true[DEFAULT_RATING_COL].apply(
         lambda x: 1.0 if x >= 3 else 0.0
     )
@@ -150,7 +153,7 @@ def rating_true_binary(rating_true):
 
 @pytest.fixture
 def rating_pred_binary(rating_pred):
-    # Normalize the predictions
+    """Normalize the predictions."""
     rating_pred[DEFAULT_PREDICTION_COL] = minmax_scale(
         rating_pred[DEFAULT_PREDICTION_COL].astype(float)
     )
@@ -158,7 +161,10 @@ def rating_pred_binary(rating_pred):
 
 
 def test_column_dtypes_match(rating_true, rating_pred):
-    # Change data types of true and prediction data, and there should type error produced
+    """Test whether column dtypes match.
+
+    Change data types of true and prediction data, and there should type error produced.
+    """
     rating_true[DEFAULT_USER_COL] = rating_true[DEFAULT_USER_COL].astype(str)
     rating_true[DEFAULT_RATING_COL] = rating_true[DEFAULT_RATING_COL].astype(str)
 
@@ -175,6 +181,7 @@ def test_column_dtypes_match(rating_true, rating_pred):
 
 
 def test_merge_rating(rating_true, rating_pred):
+    """Test merge rating of two DataFrame."""
     y_true, y_pred = merge_rating_true_pred(
         rating_true,
         rating_pred,
@@ -192,6 +199,7 @@ def test_merge_rating(rating_true, rating_pred):
 
 
 def test_merge_ranking(rating_true, rating_pred):
+    """Test merge ranking of two DataFrame."""
     data_hit, data_hit_count, n_users = merge_ranking_true_pred(
         rating_true,
         rating_pred,
@@ -213,6 +221,7 @@ def test_merge_ranking(rating_true, rating_pred):
 
 
 def test_python_rmse(rating_true, rating_pred):
+    """Test rmse metric."""
     assert (
         rmse(
             rating_true=rating_true,
@@ -225,6 +234,7 @@ def test_python_rmse(rating_true, rating_pred):
 
 
 def test_python_mae(rating_true, rating_pred):
+    """Test mae metric."""
     assert (
         mae(
             rating_true=rating_true,
@@ -237,6 +247,7 @@ def test_python_mae(rating_true, rating_pred):
 
 
 def test_python_rsquared(rating_true, rating_pred):
+    """Test rspquared metric."""
     assert rsquared(
         rating_true=rating_true,
         rating_pred=rating_true,
@@ -246,6 +257,7 @@ def test_python_rsquared(rating_true, rating_pred):
 
 
 def test_python_exp_var(rating_true, rating_pred):
+    """Test exp_var metric."""
     assert exp_var(
         rating_true=rating_true,
         rating_pred=rating_true,
@@ -255,6 +267,7 @@ def test_python_exp_var(rating_true, rating_pred):
 
 
 def test_python_ndcg_at_k(rating_true, rating_pred, rating_nohit):
+    """Test ndcg_at_k metric."""
     assert (
         ndcg_at_k(
             rating_true=rating_true,
@@ -269,6 +282,7 @@ def test_python_ndcg_at_k(rating_true, rating_pred, rating_nohit):
 
 
 def test_python_map_at_k(rating_true, rating_pred, rating_nohit):
+    """Test map_at_k metric."""
     assert (
         map_at_k(
             rating_true=rating_true,
@@ -283,6 +297,7 @@ def test_python_map_at_k(rating_true, rating_pred, rating_nohit):
 
 
 def test_python_precision(rating_true, rating_pred, rating_nohit):
+    """Test precision metric."""
     assert (
         precision_at_k(
             rating_true=rating_true,
@@ -345,6 +360,7 @@ def test_python_precision(rating_true, rating_pred, rating_nohit):
 
 
 def test_python_recall(rating_true, rating_pred, rating_nohit):
+    """Test recall metric."""
     assert recall_at_k(
         rating_true=rating_true,
         rating_pred=rating_true,
@@ -356,6 +372,7 @@ def test_python_recall(rating_true, rating_pred, rating_nohit):
 
 
 def test_python_auc(rating_true_binary, rating_pred_binary):
+    """Test auc metric."""
     assert auc(
         rating_true=rating_true_binary,
         rating_pred=rating_true_binary,
@@ -371,6 +388,7 @@ def test_python_auc(rating_true_binary, rating_pred_binary):
 
 
 def test_python_logloss(rating_true_binary, rating_pred_binary):
+    """Test logloss metric."""
     assert logloss(
         rating_true=rating_true_binary,
         rating_pred=rating_true_binary,
@@ -386,6 +404,7 @@ def test_python_logloss(rating_true_binary, rating_pred_binary):
 
 
 def test_python_errors(rating_true, rating_pred):
+    """Test raise errors."""
     with pytest.raises(ValueError):
         rmse(rating_true, rating_true, col_user="not_user")
 

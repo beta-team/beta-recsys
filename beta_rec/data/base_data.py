@@ -18,18 +18,16 @@ from beta_rec.utils.constants import (
 class BaseData(object):
     r"""A plain DataBase object modeling general recommendation data. Re_index all the users and items from raw dataset.
 
-        Args:
-            split_dataset (train,valid,test): the split dataset, a tuple consisting of training (DataFrame),
+    Args:
+        split_dataset (train,valid,test): the split dataset, a tuple consisting of training (DataFrame),
             validate/list of validate (DataFrame), testing/list of testing (DataFrame).
-            intersect (bool, optional): remove users and items of test/valid sets that do not exist in the train set.
-            If the model is able to predict for new users and new items, this can be :obj:`False`.
-            (default: :obj:`True`)
-            binarize (bool, optional): binarize the rating column of train set 0 or 1, i.e. implicit feedback.
-            (default: :obj:`True`)
-            bin_thld (int, optional):  the threshold of binarization (default: :obj:`0`)
-            normalize (bool, optional): normalize the rating column of train set into [0, 1], i.e. explicit feedback.
-            (default: :obj:`False`)
-
+        intersect (bool, optional): remove users and items of test/valid sets that do not exist in the train set. If the
+            model is able to predict for new users and new items, this can be :obj:`False`. (default: :obj:`True`).
+        binarize (bool, optional): binarize the rating column of train set 0 or 1, i.e. implicit feedback.
+            (default: :obj:`True`).
+        bin_thld (int, optional): the threshold of binarization (default: :obj:`0`) normalize (bool, optional): normalize
+            the rating column of train.
+            set into [0, 1], i.e. explicit feedback. (default: :obj:`False`).
     """
 
     def __init__(
@@ -40,6 +38,7 @@ class BaseData(object):
         bin_thld=0.0,
         normalize=False,
     ):
+        """Initialize BaseData Class."""
         self.train, self.valid, self.test = split_dataset
         self.user_pool = list(self.train[DEFAULT_USER_COL].unique())
         self.item_pool = list(self.train[DEFAULT_ITEM_COL].unique())
@@ -100,7 +99,6 @@ class BaseData(object):
 
         For example, validate and test can be a list for evaluation.
         """
-
         # Reindex user and item index
         self.user2id = dict(zip(np.array(self.user_pool), np.arange(self.n_users)))
         self.id2user = {self.user2id[k]: k for k in self.user2id}
@@ -128,8 +126,7 @@ class BaseData(object):
                 )
 
     def _intersect(self):
-        """Intersect validation and test datasets with train datasets and then reindex userID and itemID
-        """
+        """Intersect validation and test datasets with train datasets and then reindex userID and itemID."""
         for data in [self.valid, self.test]:
             if isinstance(data, list):
                 for sub_data in data:
