@@ -6,7 +6,8 @@
 
 ## Goal
 ------
-The goal of this project is to build a flexible framework and unified interfaces for recommender systems (RecSys), with which all the RecSys practitioner and researchers are able to 1) test/evaluate existing models and 2) build/modify their own new models easily. Hence, the code readability is extremely critical. We hope to build a powerful framework with concise codes, which allows others to understand our code in an easy way, even contribute to our project.
+The goal of this project is to build a flexible framework and unified interfaces for recommender systems (RecSys), with which all the RecSys practitioner and researchers are able to 1) test/evaluate existing models and 2) build/modify their own new models easily. Hence, the code readability is extremely critical. Our team is keen on keeping a nice, clean and documented code so that every single file can be understood by other researchers and developers. Therefore, shall we suggest those ,who would like to contribute to this project to follow the designed format. Indeed, those **Pull requests**, which do not follow the format can not pass the our **CI test**. We use *black-formatter, flake8-docstrings* and *isort* to format our code.
+
 
 In addition, we try to maintain informative documentation, which requires a formatted comment style in codes. Stacking everything into documentation is quite easy, but clear, formatted documentation will be more helpful, and that's what we want to achieve.
 
