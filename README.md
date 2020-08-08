@@ -82,5 +82,5 @@ This project welcomes contributions and suggestions. Please make sure to read th
 If you use Beta-RecSys in you research, please use the following BibTex entry.
 
 ```
-TBD
+Zaiqiao Meng, Richard McCreadie, Craig Macdonald, Iadh Ounis, Shangsong Liang, Siwei Liu, Guangtao Zeng, Liang Junha, Yucheng Liang, Qiang Zhang, Yaxiong Wu, Xi Wang. BETA-Rec: Build, Evaluate and Tune Automated Recommender Systems. RecSys 2020.
 ```
