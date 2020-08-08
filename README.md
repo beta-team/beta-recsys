@@ -69,9 +69,6 @@ The following is a list of recommender models currently available in the reposit
 - [VBCAR](beta_rec/models/vbcar.py) is an implementation of [Variational Bayesian Context-aware Representation for Grocery Recommendation](https://arxiv.org/abs/1909.07705).
 - [LightGCN](beta_rec/models/lightgcn.py) is an implementation of [LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126).
 
-### Preliminary Comparison
-
-TBD
 
 ## Contributing
 
