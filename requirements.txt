@@ -22,7 +22,7 @@ py-cpuinfo~=5.0.0
 psutil~=5.7.0
 tabulate~=0.8.7
 py7zr~=0.6
-flake8-black==0.1.2
+flake8-black==0.2.1
 wheel~=0.34.2
 sphinx_markdown_tables~=0.0.14
 flake8-isort~=3.0.0
