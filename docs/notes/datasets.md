@@ -69,15 +69,15 @@ The prerequisite for each split methods are:
 
 Also, we provide some information about the dataset content such as the number of items, users and so on. This may give you a brief view of the dataset.
 
-|                         **Dataset**                          |    Rows    |   User    | **Item**  | Rating | **Timestamp** |
+|                         **Dataset**                          |    #Interactions    |   #User    | #Item  | #Rating | #Timestamp |
 | :----------------------------------------------------------: | :--------: | :-------: | :-------: | :----: | :-----------: |
 | [MovieLens-100K](https://grouplens.org/datasets/movielens/100k/) |  100,000   |    943    |   1,682   |   5    |    49,282     |
 | [MovieLens-1M](https://grouplens.org/datasets/movielens/1m/) | 1,000,209  |   6,040   |   3,706   |   5    |    458,455    |
 | [MovieLens-25M](https://grouplens.org/datasets/movielens/25m/) | 25,000,095 |  162,541  |  59,047   |   10   |  20,115,267   |
 |    [Last.FM](https://grouplens.org/datasets/hetrec-2011/)    |   92,834   |   1,892   |  17,632   | 5,436  |       1       |
 | [Epinions](http://www.trustlet.org/downloaded_epinions.html) |  664,825   |  40,163   |  139,738  |   5    |       1       |
-| [Tafeng](https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/) |            |           |           |        |               |
-| [Dunnhumby](https://www.kaggle.com/frtgnn/dunnhumby-the-complete-journey) |    500     |    28     |    463    |   1    |      N/A      |
+| [Tafeng](https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/) |      464118      |     9238      |    7973       |     1   |     464118     |
+| [Dunnhumby](https://www.kaggle.com/frtgnn/dunnhumby-the-complete-journey) |    2595732    | 2500     |    92339     |    1    |      2595732      |
 | [Instacart](https://www.instacart.com/datasets/grocery-shopping-2017) | 33,819,106 |  206,209  |  49,685   |   1    |   3,346,083   |
 |    [citeulike-a](https://github.com/js05212/citeulike-a)     |  204,986   |    240    |  16,980   |   1    |       1       |
 | [citeulike-t](https://github.com/changun/CollMetric/tree/master/citeulike-t) |  134,860   |    216    |  25,584   |   1    |       1       |
