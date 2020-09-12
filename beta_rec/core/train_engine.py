@@ -5,13 +5,11 @@ import string
 import sys
 from datetime import datetime
 
+from tqdm import tqdm
+
 import GPUtil
 import ray
 import torch
-from ray import tune
-from tabulate import tabulate
-from tqdm import tqdm
-
 from beta_rec.core.eval_engine import EvalEngine
 from beta_rec.data.base_data import BaseData
 from beta_rec.datasets.data_load import load_split_dataset
@@ -23,6 +21,8 @@ from beta_rec.utils.common_util import (
     update_args,
 )
 from beta_rec.utils.constants import MAX_N_UPDATE
+from ray import tune
+from tabulate import tabulate
 
 
 class TrainEngine(object):
@@ -219,14 +219,13 @@ class TrainEngine(object):
         if self.eval_engine.n_no_update >= MAX_N_UPDATE:
             # stop training if early stop criterion is triggered
             print(
-                "Early stop criterion triggered, no performance update for {:} times".format(
-                    MAX_N_UPDATE
-                )
+                "Early stop criterion triggered, no performance update for {:} times"
+                .format(MAX_N_UPDATE)
             )
             return True
         return False
 
-    def _train(self, engine, train_loader, save_dir):
+    def _train(self, engine, train_loader, save_dir, valid_df=None, test_df=None):
         self.eval_engine.flush()
         epoch_bar = tqdm(range(self.config["model"]["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:
@@ -236,9 +235,12 @@ class TrainEngine(object):
                 break
             engine.train_an_epoch(train_loader, epoch_id=epoch)
             """evaluate model on validation and test sets"""
-            self.eval_engine.train_eval(
-                self.data.valid[0], self.data.test[0], engine.model, epoch
-            )
+            if (valid_df is None) & (test_df is None):
+                self.eval_engine.train_eval(
+                    self.data.valid[0], self.data.test[0], engine.model, epoch
+                )
+            else:
+                self.eval_engine.train_eval(valid_df, test_df, engine.model, epoch)
 
     def tune(self, runable):
         """Tune parameters using ray.tune."""
