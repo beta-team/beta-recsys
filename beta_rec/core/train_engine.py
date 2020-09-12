@@ -271,13 +271,14 @@ class TrainEngine(object):
             resources_per_trial={"cpu": 3, "gpu": 1},
         )
         df = analysis.dataframe()
-        df.to_csv(
-            os.path.join(
-                self.config["system"]["tune_dir"],
-                f"{self.config['system']['model_run_id']}_tune_result.csv",
-            )
+        tune_result_dir = os.path.join(
+            self.config["system"]["tune_dir"],
+            f"{self.config['system']['model_run_id']}_tune_result.csv",
         )
+        print(f"Tuning results are saved in {tune_result_dir}")
+        df.to_csv(tune_result_dir)
         print(tabulate(df, headers=df.columns, tablefmt="psql"))
+        return df
 
     # def ax_tune(self, runable):
     #     # todo still cannot runable yet.
