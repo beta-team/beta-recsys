@@ -1,11 +1,15 @@
+"""isort:skip_file."""
 import argparse
 import os
+import sys
 import time
+
+sys.path.append("../")
 
 from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
-from beta_rec.data.data_base import DataLoaderBase
+from beta_rec.data.deprecated_data_base import DataLoaderBase
 from beta_rec.models.gmf import GMFEngine
 from beta_rec.models.mlp import MLPEngine
 from beta_rec.models.ncf import NeuMFEngine
@@ -14,10 +18,10 @@ from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """ Parse args from command line
+    """Parse args from command line.
 
-        Returns:
-            args object.
+    Returns:
+        args object.
     """
     parser = argparse.ArgumentParser(description="Run NCF..")
     parser.add_argument(
@@ -65,15 +69,13 @@ def parse_args():
 
 
 class NCF_train(TrainEngine):
-    """ An instance class from the TrainEngine base class
-
-        """
+    """An instance class from the TrainEngine base class."""
 
     def __init__(self, config):
-        """Constructor
+        """Initialize NCF_train Class.
 
         Args:
-            config (dict): All the parameters for the model
+            config (dict): All the parameters for the model.
         """
         self.config = config
         super(NCF_train, self).__init__(self.config)
@@ -82,6 +84,7 @@ class NCF_train(TrainEngine):
         self.gpu_id, self.config["model"]["device_str"] = self.get_device()
 
     def build_data_loader(self):
+        """Missing Doc."""
         # ToDo: Please define the directory to store the adjacent matrix
         self.sample_generator = DataLoaderBase(ratings=self.data.train)
         self.config["model"]["num_batch"] = (
@@ -91,12 +94,7 @@ class NCF_train(TrainEngine):
         self.config["model"]["n_items"] = self.data.n_items
 
     def train(self):
-        """ Main training navigator
-
-        Returns:
-
-        """
-
+        """Train the model."""
         # Options are: 'mlp', 'gmf', 'ncf_end', and 'ncf_pre';
         # Train NeuMF without pre-train
         if self.config["model"]["model"] == "ncf_end":
@@ -115,11 +113,7 @@ class NCF_train(TrainEngine):
             )
 
     def train_ncf(self):
-        """ Train NeuMF
-
-        Returns:
-            None
-        """
+        """Train NeuMF."""
         self.monitor = Monitor(
             log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
@@ -136,11 +130,7 @@ class NCF_train(TrainEngine):
         self.eval_engine.test_eval(self.data.test, self.engine.model)
 
     def train_gmf(self):
-        """ Train GMF
-
-        Returns:
-            None
-        """
+        """Train GMF."""
         self.monitor = Monitor(
             log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
@@ -161,11 +151,7 @@ class NCF_train(TrainEngine):
         self.eval_engine.test_eval(self.data.test, self.engine.model)
 
     def train_mlp(self):
-        """ Train MLP
-
-        Returns:
-            None
-        """
+        """Train MLP."""
         # Train MLP
         self.monitor = Monitor(
             log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
@@ -188,13 +174,10 @@ class NCF_train(TrainEngine):
 
 
 def tune_train(config):
-    """Train the model with a hypyer-parameter tuner (ray)
+    """Train the model with a hypyer-parameter tuner (ray).
 
     Args:
-        config (dict): All the parameters for the model
-
-    Returns:
-
+        config (dict): All the parameters for the model.
     """
     train_engine = NCF_train(DictToObject(config))
     best_performance = train_engine.train()

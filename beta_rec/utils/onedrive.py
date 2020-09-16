@@ -13,7 +13,7 @@ nest_asyncio.apply()
 class OneDrive:
     """Download shared file/folder to localhost with persisted structure.
 
-    Download shared file/folder from Onedrive without authentication.
+    Download shared file/folder from OneDrive without authentication.
 
     params:
     `str:url`: url to the shared one drive folder or file
@@ -24,6 +24,7 @@ class OneDrive:
     """
 
     def __init__(self, url=None, path=None):
+        """Init OneDrive Class."""
         if not (url and path):
             raise ValueError("URL to shared resource or path to download is missing.")
 
@@ -40,9 +41,7 @@ class OneDrive:
         )
 
     def _token(self, url):
-        """ Decode share link
-
-        """
+        """Decode share link."""
         result = "u!" + b64encode(url.encode()).decode()
         result = result.rstrip("=")
         result = result.replace("/", "_")
@@ -52,12 +51,11 @@ class OneDrive:
     def _traverse_url(self, url, name=""):
         """Traverse the folder tree and store leaf urls with filename.
 
-        Get all the shared files given the url
+        Get all the shared files given the url.
 
         Args:
             url: the shared link of files/folder
         """
-
         r = self.session.get(f"{self.prefix}{self._token(url)}{self.suffix}").json()
         name = name + os.sep + r["name"]
 
@@ -103,9 +101,9 @@ class OneDrive:
             )
 
     def download(self):
-        """Download files from Onedrive
+        """Download files from OneDrive.
 
-        Download files from Onedrive with the given share link
+        Download files from OneDrive with the given share link.
         """
         print("Traversing public folder\n")
         self.to_download = []

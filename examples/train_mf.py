@@ -1,21 +1,24 @@
+"""isort:skip_file."""
 import argparse
 import os
+import sys
 import time
+
+sys.path.append("../")
 
 from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
-from beta_rec.data.data_base import DataLoaderBase
 from beta_rec.models.mf import MFEngine
 from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """ Parse args from command line
+    """Parse args from command line.
 
-        Returns:
-            args object.
+    Returns:
+        args object.
     """
     parser = argparse.ArgumentParser(description="Run MF..")
     parser.add_argument(
@@ -67,17 +70,16 @@ def parse_args():
 
 
 class MF_train(TrainEngine):
+    """MF_train Class."""
+
     def __init__(self, args):
+        """Initialize MF_train Class."""
         print(args)
         super(MF_train, self).__init__(args)
 
-    def build_data_loader(self):
-        # ToDo: Please define the directory to store the adjacent matrix
-        self.sample_generator = DataLoaderBase(ratings=self.data.train)
-
     def train(self):
+        """Train the model."""
         self.load_dataset()
-        self.build_data_loader()
         self.gpu_id, self.config["device_str"] = self.get_device()
         """ Main training navigator
 
@@ -89,14 +91,15 @@ class MF_train(TrainEngine):
             log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
         if self.config["model"]["loss"] == "bpr":
-            train_loader = self.sample_generator.pairwise_negative_train_loader(
-                self.config["model"]["batch_size"], self.config["model"]["device_str"]
+            train_loader = self.data.instance_bpr_loader(
+                batch_size=self.config["model"]["batch_size"],
+                device=self.config["model"]["device_str"],
             )
         elif self.config["model"]["loss"] == "bce":
-            train_loader = self.sample_generator.uniform_negative_train_loader(
-                self.config["model"]["num_negative"],
-                self.config["model"]["batch_size"],
-                self.config["model"]["device_str"],
+            train_loader = self.data.instance_bce_loader(
+                num_negative=self.config["model"]["num_negative"],
+                batch_size=self.config["model"]["batch_size"],
+                device=self.config["model"]["device_str"],
             )
         else:
             raise ValueError(
@@ -113,13 +116,10 @@ class MF_train(TrainEngine):
 
 
 def tune_train(config):
-    """Train the model with a hypyer-parameter tuner (ray)
+    """Train the model with a hypyer-parameter tuner (ray).
 
     Args:
-        config (dict): All the parameters for the model
-
-    Returns:
-
+        config (dict): All the parameters for the model.
     """
     train_engine = MF_train(DictToObject(config))
     best_performance = train_engine.train()

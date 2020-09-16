@@ -10,11 +10,11 @@ import ray
 import torch
 from ray import tune
 from tabulate import tabulate
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from beta_rec.core.eval_engine import EvalEngine
-from beta_rec.data.grocery_data import GroceryData
+from beta_rec.data.base_data import BaseData
+from beta_rec.datasets.data_load import load_split_dataset
 from beta_rec.utils import logger
 from beta_rec.utils.common_util import (
     ensureDir,
@@ -197,19 +197,9 @@ class TrainEngine(object):
 
     def load_dataset(self):
         """Load dataset."""
-        self.data = GroceryData(self.config)
+        self.data = BaseData(load_split_dataset(self.config))
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
-
-    # noinspection PyTypeChecker
-    def build_data_loader(self):
-        """Build DataLoader."""
-        self.train_loader = DataLoader(
-            torch.LongTensor(self.data.sample_triple()).to(self.engine.device),
-            batch_size=self.config["model"]["batch_size"],
-            shuffle=True,
-            drop_last=True,
-        )
 
     def check_early_stop(self, engine, model_dir, epoch):
         """Check if early stop criterion is triggered.
@@ -246,14 +236,9 @@ class TrainEngine(object):
                 break
             engine.train_an_epoch(train_loader, epoch_id=epoch)
             """evaluate model on validation and test sets"""
-            if self.config["dataset"]["validate"]:
-                self.eval_engine.train_eval(
-                    self.data.valid[0], self.data.test[0], engine.model, epoch
-                )
-            else:
-                self.eval_engine.train_eval(
-                    None, self.data.test[0], engine.model, epoch
-                )
+            self.eval_engine.train_eval(
+                self.data.valid[0], self.data.test[0], engine.model, epoch
+            )
 
     def tune(self, runable):
         """Tune parameters using ray.tune."""

@@ -1,12 +1,8 @@
-# DataSet Tutorial For BETA-Recsys
-
-Author: Yucheng Liang
-
-Last Update Time: 2020-05-29
+# DataSets
 
 ## Introduction
 
-BETA-Recsys provides users a wide range of datasets for recommendation system training. For convenience, we preprocess a number of datasets for you to train, getting you rid of splitting them on you local machine. Also this framework provides users a set of useful interfaces for data split.
+Beta-Recsys provides users a wide range of datasets for recommendation system training. For convenience, we preprocess a number of datasets for you to train, getting you rid of splitting them on you local machine. Also this framework provides users a set of useful interfaces for data split.
 
 ---
 
@@ -31,11 +27,11 @@ Here we present some basic staticstics for the datasets in our framework.
 |       [HetRec](http://ir.ii.uam.es/hetrec2011/) LastFM       |        ✔️         |      ✔️      |      ✔️       |
 |             [Yelp](https://www.yelp.com/dataset)             |        ✔️         |      ✖️      |      ✔️       |
 |  [Gowalla](https://snap.stanford.edu/data/loc-Gowalla.html)  |        ✔️         |      ✖️      |      ✔️       |
-| [Yoochoose](https://2015.recsyschallenge.com/challenge.html) |                  |             |              |
-|    [Diginetica](https://cikm2016.cs.iupui.edu/cikm-cup/)     |                  |             |              |
-| [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |                  |             |              |
-| [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |                  |             |              |
-| [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |                  |             |              |
+| [Yoochoose](https://2015.recsyschallenge.com/challenge.html) |        ✔️         |      ✖️      |      ✔️       |
+|    [Diginetica](https://cikm2016.cs.iupui.edu/cikm-cup/)     |        ✔️         |      ✖️      |      ✔️       |
+| [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |        ✔️         |      ✖️      |      ✔️       |
+| [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |        ✔️         |      ✖️      |      ✔️       |
+| [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |        ✔️         |      ✖️      |      ✔️       |
 
 Because some split methods require a specific features, like `random_basket` expect the dataset has a **Basket** column. Here we list all the split methods for each dataset.
 
@@ -52,7 +48,7 @@ The prerequisite for each split methods are:
 | :----------------------------------------------------------: | :---------------: | :------------------: | :--------: | :---------------: | :----------: | :-------------: |
 | [MovieLens-100K](https://grouplens.org/datasets/movielens/100k/) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✔️       |        ✖️        |
 | [MovieLens-1M](https://grouplens.org/datasets/movielens/1m/) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✔️       |        ✖️        |
-| [MovieLens-25M](https://grouplens.org/datasets/movielens/25m/) |         ✔️         |          ✖️           |     ✔️      |                   |              |                 |
+| [MovieLens-25M](https://grouplens.org/datasets/movielens/25m/) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 |    [Last.FM](https://grouplens.org/datasets/hetrec-2011/)    |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✖️       |        ✖️        |
 | [Epinions](http://www.trustlet.org/downloaded_epinions.html) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✖️       |        ✖️        |
 | [Tafeng](https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✔️       |        ✖️        |
@@ -63,25 +59,25 @@ The prerequisite for each split methods are:
 |     [HetRec](http://ir.ii.uam.es/hetrec2011/) MoiveLens      |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✔️       |        ✖️        |
 |     [HetRec](http://ir.ii.uam.es/hetrec2011/) Delicious      |         ✔️         |          ✔️           |     ✔️      |         ✖️         |      ✖️       |        ✖️        |
 |       [HetRec](http://ir.ii.uam.es/hetrec2011/) LastFM       |         ✔️         |          ✔️           |     ✔️      |         ✔️         |      ✔️       |        ✔️        |
-|             [Yelp](https://www.yelp.com/dataset)             |         ✔️         |          ✖️           |     ✔️      |                   |              |                 |
-|  [Gowalla](https://snap.stanford.edu/data/loc-Gowalla.html)  |         ✔️         |          ✖️           |     ✔️      |         ✖️         |      ✖️       |        ✖️        |
-| [Yoochoose](https://2015.recsyschallenge.com/challenge.html) |         ✔️         |                      |     ✔️      |                   |              |                 |
-|    [Diginetica](https://cikm2016.cs.iupui.edu/cikm-cup/)     |         ✔️         |                      |     ✔️      |                   |              |                 |
-| [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |         ✔️         |                      |     ✔️      |                   |              |                 |
-| [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |         ✔️         |                      |     ✔️      |                   |              |                 |
-| [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |         ✔️         |                      |     ✔️      |                   |              |                 |
+|             [Yelp](https://www.yelp.com/dataset)             |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+|  [Gowalla](https://snap.stanford.edu/data/loc-Gowalla.html)  |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Yoochoose](https://2015.recsyschallenge.com/challenge.html) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+|    [Diginetica](https://cikm2016.cs.iupui.edu/cikm-cup/)     |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 
 Also, we provide some information about the dataset content such as the number of items, users and so on. This may give you a brief view of the dataset.
 
-|                         **Dataset**                          |    Rows    |   User    | **Item**  | Rating | **Timestamp** |
+|                         **Dataset**                          |    #Interactions    |   #User    | #Item  | #Rating | #Timestamp |
 | :----------------------------------------------------------: | :--------: | :-------: | :-------: | :----: | :-----------: |
 | [MovieLens-100K](https://grouplens.org/datasets/movielens/100k/) |  100,000   |    943    |   1,682   |   5    |    49,282     |
 | [MovieLens-1M](https://grouplens.org/datasets/movielens/1m/) | 1,000,209  |   6,040   |   3,706   |   5    |    458,455    |
 | [MovieLens-25M](https://grouplens.org/datasets/movielens/25m/) | 25,000,095 |  162,541  |  59,047   |   10   |  20,115,267   |
 |    [Last.FM](https://grouplens.org/datasets/hetrec-2011/)    |   92,834   |   1,892   |  17,632   | 5,436  |       1       |
 | [Epinions](http://www.trustlet.org/downloaded_epinions.html) |  664,825   |  40,163   |  139,738  |   5    |       1       |
-| [Tafeng](https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/) |            |           |           |        |               |
-| [Dunnhumby](https://www.kaggle.com/frtgnn/dunnhumby-the-complete-journey) |    500     |    28     |    463    |   1    |      N/A      |
+| [Tafeng](https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/) |      464118      |     9238      |    7973       |     1   |     464118     |
+| [Dunnhumby](https://www.kaggle.com/frtgnn/dunnhumby-the-complete-journey) |    2595732    | 2500     |    92339     |    1    |      2595732      |
 | [Instacart](https://www.instacart.com/datasets/grocery-shopping-2017) | 33,819,106 |  206,209  |  49,685   |   1    |   3,346,083   |
 |    [citeulike-a](https://github.com/js05212/citeulike-a)     |  204,986   |    240    |  16,980   |   1    |       1       |
 | [citeulike-t](https://github.com/changun/CollMetric/tree/master/citeulike-t) |  134,860   |    216    |  25,584   |   1    |       1       |
@@ -102,7 +98,10 @@ Also, we provide some information about the dataset content such as the number o
 
 ### Download Data
 
-BETA-Recsys provides download interface for users to download different dataset. Here is an example:
+Beta-Recsys
+
+
+ provides download interface for users to download different dataset. Here is an example:
 
 ```python
 import sys
@@ -141,11 +140,13 @@ Users can simply ignore these functions because when you use custom parameters i
 
 ## Data Split
 
-For users who are willing to split some datasets that is not covered by our framework, we still provide various methods to make it easy to split huge data, without caring the details. There are 6 main methods for users to split data.
+For users who are willing to split some datasets that are not covered by our framework, we still provide various methods to make it easy to split huge data, without caring the implementation details. There are 6 main methods for users to split data.
 
 ### random_split
 
-This method will select a portion of records based on the given `test_rate` randomly.
+This method splits data into random train and test subsets.
+
+This method will first shuffle all the data and then select a portion of records based on the given `test_rate` randomly.
 
 ### random_basket_split
 
@@ -157,15 +158,23 @@ This method will first rank all the records by time (if a timestamp column is pr
 
 ### leave_one_basket
 
+This method provides train/test indices to split data in train/test sets. Each sample **is used once** as a test set while the remaining samples form the training set.
+
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last basket.
+
+Due to the high number of test sets this method can be very costly.
 
 ### temporal_split
 
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last portion of records.
 
+This splitting approach is for evaluating how well a model performs on segments drawn from the same time series but excluded from the training set.
+
 ### temporal_basket_split
 
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last portion of baskets.
+
+---
 
 ## More
 

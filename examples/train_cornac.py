@@ -1,5 +1,9 @@
+"""isort:skip_file."""
 import argparse
+import sys
 from datetime import datetime
+
+sys.path.append("../")
 
 import cornac
 import numpy as np
@@ -7,9 +11,10 @@ import pandas as pd
 
 import beta_rec.utils.constants as Constants
 import beta_rec.utils.evaluation as eval_model
-from beta_rec.data import grocery_data
+from beta_rec.data import deprecated_data
 from beta_rec.utils import logger
 from beta_rec.utils.common_util import save_to_csv
+
 
 base_string = "abcdefghijklmnopqrstuvwxyz"
 
@@ -22,6 +27,11 @@ config = {
 
 
 def parse_args():
+    """Parse args from command line.
+
+    Returns:
+        args object.
+    """
     parser = argparse.ArgumentParser(description="Run cornac model..")
     # If the following settings are specified with command line,
     # these settings will be updated.
@@ -58,6 +68,7 @@ update hyperparameters from command line
 
 
 def update_args(config, args):
+    """Update args."""
     #     print(vars(args))
     for k, v in vars(args).items():
         if v is not None:
@@ -66,6 +77,7 @@ def update_args(config, args):
 
 
 def my_eval(eval_data_df, model):
+    """Missing Doc."""
     u_indices = eval_data_df[Constants.DEFAULT_USER_COL].to_numpy()
     i_indices = eval_data_df[Constants.DEFAULT_ITEM_COL].to_numpy()
     r_preds = np.fromiter(
@@ -197,7 +209,7 @@ if __name__ == "__main__":
 
     models = [pop, mf, pmf, bpr, vaecf, nmf, neumf]
     # add our own eval
-    data = grocery_data.GroceryData(config)
+    data = deprecated_data.GroceryData(config)
 
     num_users = data.n_users
     num_items = data.n_items

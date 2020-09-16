@@ -1,6 +1,10 @@
+"""isort:skip_file."""
 import argparse
 import os
+import sys
 import time
+
+sys.path.append("../")
 
 import torch
 from ray import tune
@@ -10,13 +14,15 @@ from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.triple2vec import Triple2vecEngine
 from beta_rec.utils.common_util import DictToObject, str2bool
 from beta_rec.utils.monitor import Monitor
+from beta_rec.datasets.data_load import load_split_dataset
+from beta_rec.data.grocery_data import GroceryData
 
 
 def parse_args():
-    """ Parse args from command line
+    """Parse args from command line.
 
-        Returns:
-            args object.
+    Returns:
+        args object.
     """
     parser = argparse.ArgumentParser(description="Run Triple2vec..")
     parser.add_argument(
@@ -62,22 +68,27 @@ def parse_args():
 
 
 class Triple2vec_train(TrainEngine):
-    """ An instance class from the TrainEngine base class
-
-    """
+    """An instance class from the TrainEngine base class."""
 
     def __init__(self, config):
-        """Constructor
+        """Init Triple2vec_train Class.
 
         Args:
-            config (dict): All the parameters for the model
+            config (dict): All the parameters for the model.
         """
-
         self.config = config
         super(Triple2vec_train, self).__init__(self.config)
         self.gpu_id, self.config["device_str"] = self.get_device()
 
+    def load_dataset(self):
+        """Load dataset."""
+        split_data = load_split_dataset(self.config)
+        self.data = GroceryData(split_dataset=split_data, config=self.config)
+        self.config["model"]["n_users"] = self.data.n_users
+        self.config["model"]["n_items"] = self.data.n_items
+
     def train(self):
+        """Train the model."""
         self.load_dataset()
         self.engine = Triple2vecEngine(self.config)
         self.engine.data = self.data
@@ -100,13 +111,10 @@ class Triple2vec_train(TrainEngine):
 
 
 def tune_train(config):
-    """Train the model with a hypyer-parameter tuner (ray)
+    """Train the model with a hypyer-parameter tuner (ray).
 
     Args:
-        config (dict): All the parameters for the model
-
-    Returns:
-
+        config (dict): All the parameters for the model.
     """
     train_engine = Triple2vec_train(DictToObject(config))
     best_performance = train_engine.train()

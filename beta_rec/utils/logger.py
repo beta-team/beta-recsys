@@ -7,6 +7,7 @@ DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def init_logger(log_file_name="log", console=True, error=True, debug=False):
+    """Initialize logger."""
     logger = logging.getLogger()
     logger.setLevel("DEBUG")
     formatter = logging.Formatter(BASIC_FORMAT, DATE_FORMAT)
@@ -38,6 +39,7 @@ def init_logger(log_file_name="log", console=True, error=True, debug=False):
 
 
 def get_logger(filename="default", level="info"):
+    """Get logger."""
     logger = logging.getLogger()
 
     formatter = logging.Formatter(BASIC_FORMAT, DATE_FORMAT)
@@ -56,7 +58,10 @@ def get_logger(filename="default", level="info"):
 
 
 class Logger(object):
+    """Logger Class."""
+
     def __init__(self, filename="default", stdout=None, stderr=None):
+        """Initialize Logger Class."""
         self.stdout = stdout
         self.stderr = stderr
         self.fileno = sys.stdout.fileno
@@ -64,6 +69,7 @@ class Logger(object):
         self.message = ""
 
     def write(self, message):
+        """Log out message."""
         if message == "" or message is None:
             return
         elif "\n" in message:
@@ -92,11 +98,13 @@ class Logger(object):
             self.message += message
 
     def flush(self):
+        """Missing Doc."""
         pass
 
 
 # capture stderr and stdout
 def init_std_logger(log_file="default"):
+    """Initialize std logger."""
     print("logs will save in file:", log_file, ".stdout.log", ".stderr.log")
     sys.stdout = Logger(log_file + ".stdout.log", stdout=sys.stdout)
     sys.stderr = Logger(log_file + ".stderr.log", stderr=sys.stderr)

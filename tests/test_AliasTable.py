@@ -5,9 +5,12 @@ from beta_rec.utils.alias_table import AliasTable
 
 
 class TestAliasTable(unittest.TestCase):
+    """TestAliasTable Class."""
+
     @mock.patch("numpy.random.randint")
     @mock.patch("numpy.random.uniform")
     def test_list(self, mock_uniform, mock_randint):
+        """Test AliasTable with list as input."""
         obj_freq = [6, 4, 1, 1]
         self.aliasTable = AliasTable(obj_freq)
 
@@ -38,6 +41,7 @@ class TestAliasTable(unittest.TestCase):
     @mock.patch("numpy.random.randint")
     @mock.patch("numpy.random.uniform")
     def test_dict(self, mock_uniform, mock_randint):
+        """Test AliasTable with dictionary as input."""
         obj_freq = {100: 6, 102: 4, 103: 1, 104: 1}
         self.aliasTable = AliasTable(obj_freq)
 
@@ -67,8 +71,9 @@ class TestAliasTable(unittest.TestCase):
         self.assertEqual(result[3], 102)
 
     def test_2dim_list(self):
+        """Test AliasTable with 2-dimension list as input."""
         obj_freq = [[1, 2, 3], [4, 5, 6]]
         try:
-            self.aliastable = AliasTable(obj_freq)
+            self.aliasTable = AliasTable(obj_freq)
         except ValueError as e:
             self.assertEqual(type(e), ValueError)

@@ -7,11 +7,10 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class NGCF(torch.nn.Module):
-    """Model initialisation, embedding generation and prediction of NGCF
-
-    """
+    """Model initialisation, embedding generation and prediction of NGCF."""
 
     def __init__(self, config, norm_adj):
+        """Initialize NGCF Class."""
         super(NGCF, self).__init__()
         self.config = config
         self.n_users = config["n_users"]
@@ -41,17 +40,19 @@ class NGCF(torch.nn.Module):
         self.init_emb()
 
     def init_emb(self):
-        # Initialise users and items' embeddings
+        """Initialize users and itmes' embeddings."""
+        # Initialize users and items' embeddings
         nn.init.xavier_uniform_(self.user_embedding.weight)
         nn.init.xavier_uniform_(self.item_embedding.weight)
 
     def forward(self, norm_adj):
-        """ Perform GNN function on users and item embeddings
+        """Perform GNN function on users and item embeddings.
+
         Args:
-            norm_adj (torch sparse tensor): the norm adjacent matrix of the user-item interaction matrix
+            norm_adj (torch sparse tensor): the norm adjacent matrix of the user-item interaction matrix.
         Returns:
-            u_g_embeddings (tensor): processed user embeddings
-            i_g_embeddings (tensor): processed item embeddings
+            u_g_embeddings (tensor): processed user embeddings.
+            i_g_embeddings (tensor): processed item embeddings.
         """
         ego_embeddings = torch.cat(
             (self.user_embedding.weight, self.item_embedding.weight), dim=0
@@ -77,14 +78,14 @@ class NGCF(torch.nn.Module):
         return u_g_embeddings, i_g_embeddings
 
     def predict(self, users, items):
-        """ Model prediction: dot product of users and items embeddings
-        Args:
-            users (int, or list of int):  user id
-            items (int, or list of int):  item id
-        Return:
-            scores (int): dot product
-        """
+        """Predict result with the model.
 
+        Args:
+            users (int, or list of int):  user id.
+            items (int, or list of int):  item id.
+        Return:
+            scores (int): dot product.
+        """
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
 
@@ -97,9 +98,12 @@ class NGCF(torch.nn.Module):
 
 
 class NGCFEngine(ModelEngine):
+    """NGCFEngine Class."""
+
     # A class includes train an epoch and train a batch of NGCF
 
     def __init__(self, config):
+        """Initialize NGCFEngine Class."""
         self.config = config
         self.regs = config["regs"]  # reg is the regularisation
         self.decay = self.regs[0]
@@ -110,11 +114,12 @@ class NGCFEngine(ModelEngine):
         self.model.to(self.device)
 
     def train_single_batch(self, batch_data):
-        """
+        """Train the model in a single batch.
+
         Args:
-            batch_data (list): batch users, positive items and negative items
+            batch_data (list): batch users, positive items and negative items.
         Return:
-            loss (float): batch loss
+            loss (float): batch loss.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
@@ -139,10 +144,11 @@ class NGCFEngine(ModelEngine):
         return loss
 
     def train_an_epoch(self, train_loader, epoch_id):
-        """ Generate batch data for each batch
+        """Train the model in one epoch.
+
         Args:
-            epoch_id (int):
-            train_loader (function): user, pos_items and neg_items generator
+            epoch_id (int): the number of epoch.
+            train_loader (function): user, pos_items and neg_items generator.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
@@ -155,6 +161,17 @@ class NGCFEngine(ModelEngine):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def bpr_loss(self, users, pos_items, neg_items):
+        """Bayesian Personalised Ranking (BPR) pairwise loss function.
+
+        Note that the sizes of pos_scores and neg_scores should be equal.
+
+        Args:
+            pos_scores (tensor): Tensor containing predictions for known positive items.
+            neg_scores (tensor): Tensor containing predictions for sampled negative items.
+
+        Returns:
+            loss.
+        """
         # Calculate BPR loss
         pos_scores = torch.sum(torch.mul(users, pos_items), dim=1)
         neg_scores = torch.sum(torch.mul(users, neg_items), dim=1)

@@ -14,7 +14,7 @@ from beta_rec.utils.constants import (
 )
 
 # download_url
-DUNNHUMBY_URL = r"https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip"
+manual_download_url = r"https://www.kaggle.com/frtgnn/dunnhumby-the-complete-journey/"
 
 # processed data url
 DUNNHUMBY_LEAVE_ONE_BASKET_URL = (
@@ -42,7 +42,7 @@ class Dunnhumby(DatasetBase):
 
     If the dataset can not be download by the url,
     you need to down the dataset by the link:
-        'https://www.dunnhumby.com/sites/default/files/sourcefiles/dunnhumby_The-Complete-Journey.zip'
+        'https://www.kaggle.com/frtgnn/dunnhumby-the-complete-journey/'
     then put it into the directory `dunnhumby/raw`
     """
 
@@ -51,7 +51,8 @@ class Dunnhumby(DatasetBase):
         super().__init__(
             "dunnhumby",
             root_dir=root_dir,
-            url=DUNNHUMBY_URL,
+            url=None,
+            manual_download_url=manual_download_url,
             processed_leave_one_basket_url=DUNNHUMBY_LEAVE_ONE_BASKET_URL,
             processed_leave_one_out_url=DUNNHUMBY_LEAVE_ONE_OUT_URL,
             processed_random_split_url=DUNNHUMBY_RANDOM_SPLIT_URL,
@@ -62,11 +63,11 @@ class Dunnhumby(DatasetBase):
         self.load_temporal_split = self.load_temporal_basket_split
 
     @timeit
-    def parse_raw_data(self, data_base_dir="./dunnhumby_The-Complete-Journey"):
+    def parse_raw_data(self, data_base_dir="./unzip/"):
         """Parse raw dunnhumby csv data from transaction_data.csv.
 
         Args:
-            data_base_dir (path): Default dir is "./dunnhumby - The Complete Journey CSV".
+            data_base_dir (path): Default dir is "./unzip/".
 
         Returns:
             DataFrame of interactions.
@@ -121,16 +122,14 @@ class Dunnhumby(DatasetBase):
             print("Raw file doesn't exist, try to download it.")
             self.download()
         zip_file_name = os.path.join(self.raw_path, "dunnhumby.zip")
-        unzip_file_name = os.path.join(self.raw_path, "dunnhumby_The-Complete-Journey")
+        unzip_file_name = os.path.join(self.raw_path, "unzip")
         if not os.path.exists(unzip_file_name):
-            un_zip(zip_file_name)
+            un_zip(zip_file_name, unzip_file_name)
 
         if not os.path.exists(
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz")
         ):
-            data = self.parse_raw_data(
-                os.path.join(unzip_file_name, "dunnhumby - The Complete Journey CSV")
-            )
+            data = self.parse_raw_data(unzip_file_name)
             self.save_dataframe_as_npz(
                 data,
                 os.path.join(

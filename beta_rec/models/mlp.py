@@ -6,7 +6,10 @@ from beta_rec.utils.common_util import timeit
 
 
 class MLP(torch.nn.Module):
+    """MLP Class."""
+
     def __init__(self, config):
+        """Initialize MLP Class."""
         super(MLP, self).__init__()
         self.config = config
         self.n_users = config["n_users"]
@@ -35,6 +38,7 @@ class MLP(torch.nn.Module):
         self.logistic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):
+        """Train the model."""
         user_embedding = self.embedding_user(user_indices)
         item_embedding = self.embedding_item(item_indices)
         vector = torch.cat(
@@ -47,26 +51,36 @@ class MLP(torch.nn.Module):
         return rating
 
     def predict(self, user_indices, item_indices):
+        """Predict result with the model."""
         user_indices = torch.LongTensor(user_indices).to(self.device)
         item_indices = torch.LongTensor(item_indices).to(self.device)
         with torch.no_grad():
             return self.forward(user_indices, item_indices)
 
     def init_weight(self):
+        """Initialize weight in the model."""
         nn.init.normal_(self.embedding_user.weight, std=0.01)
         nn.init.normal_(self.embedding_user.weight, std=0.01)
 
 
 class MLPEngine(ModelEngine):
-    """Engine for training & evaluating GMF model"""
+    """Engine for training & evaluating GMF model."""
 
     def __init__(self, config):
+        """Initialize MLPEngine Class."""
         self.model = MLP(config["model"])
         self.loss = torch.nn.BCELoss()
         super(MLPEngine, self).__init__(config)
         self.model.to(self.device)
 
     def train_single_batch(self, users, items, ratings):
+        """Train the model in a single batch.
+
+        Args:
+            batch_data (list): batch users, positive items and negative items.
+        Return:
+            loss (float): batch loss.
+        """
         assert hasattr(self, "model"), "Please specify the exact model !"
         users, items, ratings = (
             users.to(self.device),
@@ -83,6 +97,12 @@ class MLPEngine(ModelEngine):
 
     @timeit
     def train_an_epoch(self, train_loader, epoch_id):
+        """Train the model in one epoch.
+
+        Args:
+            epoch_id (int): the number of epoch.
+            train_loader (function): user, pos_items and neg_items generator.
+        """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0

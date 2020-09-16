@@ -15,27 +15,27 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class NARM(nn.Module):
-    """Neural Attentive Session Based Recommendation Model Class
+    """Neural Attentive Session Based Recommendation Model Class.
 
     Args:
-        n_items(int): the number of items
-        hidden_size(int): the hidden size of gru
-        embedding_dim(int): the dimension of item embedding
+        n_items(int): the number of items.
+        hidden_size(int): the hidden size of gru.
+        embedding_dim(int): the dimension of item embedding.
         batch_size(int):
-        n_layers(int): the number of gru layers
-
+        n_layers(int): the number of gru layers.
     """
 
     def __init__(self, config):
+        """Initialize NARM Class."""
         super(NARM, self).__init__()
         self.config = config
-        self.n_items = config["n_items"]
-        self.hidden_size = config["hidden_size"]
-        self.batch_size = config["batch_size"]
-        self.n_layers = config["n_layers"]
-        self.dropout_input = config["dropout_input"]
-        self.dropout_hidden = config["dropout_hidden"]
-        self.embedding_dim = config["embedding_dim"]
+        self.n_items = config["dataset"]["n_items"]
+        self.hidden_size = config["model"]["hidden_size"]
+        self.batch_size = config["model"]["batch_size"]
+        self.n_layers = config["model"]["n_layers"]
+        self.dropout_input = config["model"]["dropout_input"]
+        self.dropout_hidden = config["model"]["dropout_hidden"]
+        self.embedding_dim = config["model"]["embedding_dim"]
         self.emb = nn.Embedding(self.n_items, self.embedding_dim, padding_idx=0)
         self.emb_dropout = nn.Dropout(self.dropout_input)
         self.gru = nn.GRU(self.embedding_dim, self.hidden_size, self.n_layers)
@@ -48,6 +48,7 @@ class NARM(nn.Module):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def forward(self, seq, lengths):
+        """Train the model."""
         hidden = self.init_hidden(seq.size(1))
         embs = self.emb_dropout(self.emb(seq))
         embs = pack_padded_sequence(embs, lengths)
@@ -87,27 +88,35 @@ class NARM(nn.Module):
         return scores
 
     def init_hidden(self, batch_size):
+        """Initialize hidden layers."""
         return torch.zeros(
             (self.n_layers, batch_size, self.hidden_size), requires_grad=True
         ).to(self.device)
 
 
 class NARMEngine(ModelEngine):
-    """Engine for training & evaluating NARM model"""
+    """Engine for training & evaluating NARM model."""
 
     def __init__(self, config):
+        """Initialize NARMEngine Class."""
         self.config = config
         self.model = NARM(config)
         super(NARMEngine, self).__init__(config)
         self.scheduler = StepLR(
             self.optimizer,
-            step_size=self.config["lr_dc_step"],
-            gamma=self.config["lr_dc"],
+            step_size=self.config["model"]["lr_dc_step"],
+            gamma=self.config["model"]["lr_dc"],
         )
         self.loss_func = nn.CrossEntropyLoss()
         print(self.model)
 
     def train_an_epoch(self, train_loader, epoch):
+        """Train the model in one epoch.
+
+        Args:
+            epoch_id (int): the number of epoch.
+            train_loader (function): user, pos_items and neg_items generator.
+        """
         assert hasattr(self, "model"), "Please specify the exact model !"
 
         st = time.time()
@@ -143,7 +152,7 @@ class NARMEngine(ModelEngine):
         return mean_loss
 
     def predict(self, user_profile, batch=1):
-        """Gives user profile, predict the next item.
+        """Predict the next item given user profile.
 
         Args:
             user_profile (List): Contains the item IDs of the events.
@@ -151,9 +160,7 @@ class NARMEngine(ModelEngine):
 
         Returns:
             preds (List): Prediction scores for selected items for every event of the batch.
-
         """
-
         seq = [user_profile]
         labels = [[0]]  # fake label
 
@@ -178,19 +185,20 @@ class NARMEngine(ModelEngine):
         return preds
 
     def recommend(self, user_profile, user_id=None):
-        """ Make a recommendation.
+        """Make a recommendation.
 
         Args:
             user_profile (List): Contains the item IDs of the events.
             user_id (None): users' id for personalised recommenation.
 
-        Reurns:
+        Returns:
             List: item and score pairs.
-
         """
         pred = self.predict(user_profile, batch=1)
 
-        pred = pd.DataFrame(data=pred, index=np.arange(self.config["n_items"]))
+        pred = pd.DataFrame(
+            data=pred, index=np.arange(self.config["dataset"]["n_items"])
+        )
 
         # sort items by predicted score
         pred.sort_values(0, ascending=False, inplace=True)
@@ -200,8 +208,10 @@ class NARMEngine(ModelEngine):
 
     @staticmethod
     def get_recommendation_list(recommendation):
+        """Missing Doc."""
         return list(map(lambda x: x[0], recommendation))
 
     @staticmethod
     def get_recommendation_confidence_list(recommendation):
+        """Missing Doc."""
         return list(map(lambda x: x[1], recommendation))
