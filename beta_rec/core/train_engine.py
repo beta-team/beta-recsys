@@ -219,8 +219,8 @@ class TrainEngine(object):
         if self.eval_engine.n_no_update >= MAX_N_UPDATE:
             # stop training if early stop criterion is triggered
             print(
-                "Early stop criterion triggered, no performance update for {:} times"
-                .format(MAX_N_UPDATE)
+                "Early stop criterion triggered, no performance update for"
+                f" {MAX_N_UPDATE} times"
             )
             return True
         return False
