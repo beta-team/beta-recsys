@@ -1,6 +1,5 @@
-requests~=2.23.0
-prometheus_client~=0.8.0
-tensorboardX~=2.0
+requests==2.24.0
+tensorboardX==2.0
 ray==0.8.5
 torch==1.6.0
 numpy==1.18.1
@@ -24,10 +23,10 @@ py7zr~=0.6
 flake8-black==0.2.1
 wheel~=0.34.2
 sphinx_markdown_tables~=0.0.14
-flake8-isort~=3.0.0
-flake8-docstrings~=1.5.0
+flake8-isort==3.8.3
+flake8-docstrings==1.5.0
 isort==5.5.2
 ax-platform==0.1.13
 rstcheck~=3.3.1
-black==19.10b0
+black==20.8b1
 munch==2.5.0
