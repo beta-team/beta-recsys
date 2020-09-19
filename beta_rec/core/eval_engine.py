@@ -110,14 +110,15 @@ def train_eval_worker(testEngine, valid_df, test_df, valid_pred, test_pred, epoc
     test_result = evaluate(test_df, test_pred, testEngine.metrics, testEngine.valid_k)
     lock_train_eval.acquire()
     testEngine.record_performance(valid_result, test_result, epoch)
-    testEngine.expose_performance(valid_result, test_result)
+    # testEngine.expose_performance(valid_result, test_result)
     if (
         valid_result[f"{testEngine.valid_metric}@{testEngine.valid_k}"]
         > testEngine.best_valid_performance
     ):
         testEngine.n_no_update = 0
         print(
-            f"Current testEngine.best_valid_performance {testEngine.best_valid_performance}"
+            "Current testEngine.best_valid_performance"
+            f" {testEngine.best_valid_performance}"
         )
         testEngine.best_valid_performance = valid_result[
             f"{testEngine.valid_metric}@{testEngine.valid_k}"
@@ -209,7 +210,7 @@ class EvalEngine(object):
         self.n_worker = 0
         self.n_no_update = 0
         self.best_valid_performance = 0
-        self.init_prometheus_env()
+        # self.init_prometheus_env()
         print("Initializing test engine ...")
 
     def flush(self):
@@ -323,7 +324,8 @@ class EvalEngine(object):
         else:
             print(f"[Warning]: port {port} was already in use. ")
             print(
-                "If you need to use prometheus, please check that port or specify another port number."
+                "If you need to use prometheus, please check that port or specify"
+                " another port number."
             )
         gauges_test = {}
         gauges_valid = {}

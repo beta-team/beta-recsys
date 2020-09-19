@@ -25,7 +25,7 @@
 *.ipynb_checkpoints
 *.ipynb_checkpoints/
 *.npy
-*.ipynb
+#*.ipynb
 *.ckpt.*
 .coverage
 coverage.xml
