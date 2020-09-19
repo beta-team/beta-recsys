@@ -25,29 +25,42 @@ def tune_train(config):
 
 
 class MatrixFactorization(Recommender):
+    """The Matrix Factorization Mode."""
+
     def __init__(self, config):
+        """Initialize the config of this recommender.
+
+        Args:
+            config:
+        """
         super(MatrixFactorization, self).__init__(config, name="MF")
 
     def init_engine(self, data):
+        """Initialize the required parameters for the model.
+
+        Args:
+            data: the Dataset object.
+
+        """
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items
         self.engine = MFEngine(self.config)
 
     def train(self, data):
-        """Main training navigator
+        """Training the model.
+
+        Args:
+            data: the Dataset object.
 
         Returns:
             dict: save k,v for "best_valid_performance" and "model_save_dir"
-        """
 
-        """Tune the model."""
-        if ("tune" in self.args) and (self.args["tune"]):
+        """
+        if ("tune" in self.args) and (self.args["tune"]):  # Tune the model.
             self.args.data = data
             return self.tune(tune_train)
 
-        """Train the model."""
-        self.gpu_id, self.config["device_str"] = self.get_device()
-        # Train NeuMF without pre-train
+        self.gpu_id, self.config["device_str"] = self.get_device()  # Train the model.
 
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items

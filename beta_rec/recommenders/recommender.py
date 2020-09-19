@@ -3,7 +3,15 @@ from munch import munchify
 
 
 class Recommender(TrainEngine):
+    """The recommender base class."""
+
     def __init__(self, config, name=""):
+        """Initialize model config.
+
+        Args:
+            config: model config.
+            name: the name of the Recommender.
+        """
         self.name = name
         config = munchify(config)
         super(Recommender, self).__init__(config)
@@ -12,42 +20,44 @@ class Recommender(TrainEngine):
         """Train a model, need to be implement for each model.
 
         Args:
-            train_df:
-            valid_df:
-            test_df:
+            train_df: The input DataFrame training dataset.
+            valid_df: The validation dataset.
+            test_df: The testing datasets.
 
         Returns:
-
+            dict: A dictionary of validation performance result.
         """
         pass
 
     def test(self, test_df):
-        """Score and Evaluate for a dataframe data
+        """Score and Evaluate for a dataframe data.
 
         Args:
-            test_df:
+            test_df: The input DataFrame user-item pairs.
 
         Returns:
+            None
 
         """
         self.eval_engine.test_eval(test_df, self.engine.model)
 
     def load(self, model_dir):
-        """Load a trained model
+        """Load a trained model.
 
         Args:
-            model_dir:
+            model_dir: model saving path.
 
         Returns:
+            Recommender: loaded model
 
         """
         self.engine.resume_checkpoint(model_dir)
 
     def predict(self, data_df):
-        """
+        """Predict scores for a input DataFrame user-item pairs.
 
         Args:
-            data_df:
+            data_df: The input DataFrame user-item pairs.
 
         Returns:
             numpy array: the predict score for the user-item pairs
