@@ -1,11 +1,12 @@
 import os
 import time
 
+from munch import munchify
+from ray import tune
+
 from beta_rec.models.mf import MFEngine
 from beta_rec.recommenders import Recommender
 from beta_rec.utils.monitor import Monitor
-from munch import munchify
-from ray import tune
 
 
 def tune_train(config):
