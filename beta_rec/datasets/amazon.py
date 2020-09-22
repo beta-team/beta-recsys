@@ -12,8 +12,10 @@ from beta_rec.utils.constants import (
 )
 
 # Download URL.
-AMAZON_Amazon_Instant_Video_URL = "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles" \
-                                  "/reviews_Amazon_Instant_Video.json.gz"
+AMAZON_Amazon_Instant_Video_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Amazon_Instant_Video.json.gz"
+)
 
 
 class AmazonInstantVideo(DatasetBase):
@@ -45,11 +47,25 @@ class AmazonInstantVideo(DatasetBase):
         data = self.get_data_frame_from_gzip_file(file_name)
 
         # rename columns
-        data = data.rename(columns={"reviewerID": DEFAULT_USER_COL, "asin": DEFAULT_ITEM_COL, "overall": DEFAULT_RATING_COL,
-                                "unixReviewTime": DEFAULT_TIMESTAMP_COL})
+        data = data.rename(
+            columns={
+                "reviewerID": DEFAULT_USER_COL,
+                "asin": DEFAULT_ITEM_COL,
+                "overall": DEFAULT_RATING_COL,
+                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
+            }
+        )
 
         # select necessary columns
-        data = pd.DataFrame(data, columns=[DEFAULT_USER_COL, DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_TIMESTAMP_COL])
+        data = pd.DataFrame(
+            data,
+            columns=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
 
         self.save_dataframe_as_npz(
             data,
@@ -57,7 +73,7 @@ class AmazonInstantVideo(DatasetBase):
         )
 
     def parse_gzip_file(self, path):
-        g = gzip.open(path, 'rb')
+        g = gzip.open(path, "rb")
         for l in g:
             yield eval(l)
 
@@ -67,6 +83,4 @@ class AmazonInstantVideo(DatasetBase):
         for d in self.parse_gzip_file(path):
             df[i] = d
             i += 1
-        return pd.DataFrame.from_dict(df, orient='index')
-
-
+        return pd.DataFrame.from_dict(df, orient="index")
