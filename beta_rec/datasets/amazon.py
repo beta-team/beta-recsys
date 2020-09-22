@@ -73,11 +73,24 @@ class AmazonInstantVideo(DatasetBase):
         )
 
     def parse_gzip_file(self, path):
+        """Parse gzip file.
+
+        Args:
+            path: the file path of gzip file.
+        """
         g = gzip.open(path, "rb")
         for l in g:
             yield eval(l)
 
     def get_data_frame_from_gzip_file(self, path):
+        """Get dataframe from a gzip file.
+
+        Args:
+            path the file path of gzip file.
+
+        Returns:
+            A dataframe extracted from the gzip file.
+        """
         i = 0
         df = {}
         for d in self.parse_gzip_file(path):
