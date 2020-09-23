@@ -18,7 +18,7 @@ def download_file(url, store_file_path):
         the archive format of the suffix.
     """
     filename = url.split("/")[-1]
-    print(f"Start downloading file {filename}...")
+    print(f"Start downloading file {filename} with url {url}...")
 
     if "1drv.ms" in url:
         # allow downloading raw data from Onedrive

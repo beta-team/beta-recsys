@@ -69,18 +69,14 @@ The following is a list of recommender models currently available in the reposit
 - [VBCAR](beta_rec/models/vbcar.py) is an implementation of [Variational Bayesian Context-aware Representation for Grocery Recommendation](https://arxiv.org/abs/1909.07705).
 - [LightGCN](beta_rec/models/lightgcn.py) is an implementation of [LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126).
 
-### Preliminary Comparison
-
-TBD
 
 ## Contributing
 
-This project welcomes contributions and suggestions. Please make sure to read the [Contributing Guide](https://github.com/beta-team/community/blob/master/Python%20Coding%20and%20Docstrings%20Style%20Guidelines.MD) before creating a pull request. 
+This project welcomes contributions and suggestions. Please make sure to read the [Contributing Guide](https://beta-recsys.readthedocs.io/en/latest/contribute/standardization-of-code-format-and-documentation.html#) before creating a pull request. 
 
 ## Citation
 
-If you use Beta-RecSys in you research, please use the following BibTex entry.
+If you use Beta-RecSys in you research, we would appreciate citations to the following paper:
 
-```
-TBD
-```
+- Zaiqiao Meng, Richard McCreadie, Craig Macdonald, Iadh Ounis, Shangsong Liang, Siwei Liu, Guangtao Zeng, Junhua Liang, Yucheng Liang, Qiang Zhang, Yaxiong Wu, Xi Wang. BETA-Rec: Build, Evaluate and Tune Automated Recommender Systems. RecSys 2020.
+
