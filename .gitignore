@@ -25,7 +25,7 @@
 *.ipynb_checkpoints
 *.ipynb_checkpoints/
 *.npy
-*.ipynb
+#*.ipynb
 *.ckpt.*
 .coverage
 coverage.xml
@@ -50,3 +50,5 @@ tune_results/
 tmp/
 docs/_build
 files.txt
+generate_processed_data.ipynb
+test_dataset_base.ipynb

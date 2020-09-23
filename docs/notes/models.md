@@ -47,7 +47,7 @@ where $h$ denotes the weights of **NCF**.
 
 ### Triple2Vec
 
-**Triple2Vec** is a technique to directly embed edges in knowledge graphs, which builds upon three main ingredients: the notion of line graph, an edge weighting mechanism both for line graphs derived from knowledge graphs and homogeneous graph, and a strategy based on graph walks on the weighted triple line graph that can preserve proximity between nodes. You can find more details in the origin [paper](https://arxiv.org/pdf/1905.11691v1.pdf).
+**Triple2Vec** A model that learns user and item embeddings by training a Skip-gram model based on sampled triples. Triple2vec uses the Skip-gram model to recover the sampled triples (i.e. a user and two items occurring in the same basket of that user) from the users' baskets for product representations and purchase prediction. [paper](https://www.microsoft.com/en-us/research/uploads/prod/2019/01/cikm18_mwan.pdf).
 
 ### VBCAR
 
