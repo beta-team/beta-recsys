@@ -1,6 +1,14 @@
+# coding=utf-8
+
+"""
+This is the implementation of experimental pipeline.
+
+This class is still under development.
+"""
+
+
 class Experiment:
-    """ The experiment class that enables the flow of an experiment with
-        this beta-rec platform.
+    """This enables the flow of an experiment with the beta-rec platform.
 
     Args:
     datasets: array of :obj: '<beta_rec.datasets>', required
@@ -18,30 +26,27 @@ class Experiment:
         Path to a directory for storing trained models and logs. If None,
         models will NOT be stored and logs will be saved in the current
         working directory.
-    verbose: bool, optional, default: False
-        print running logs to the terminal. If False, the print information
-        will be hidden.
     """
 
     def __init__(
-        self, datasets, models, metrics, model_dir=None, save_dir=None, verbose=False,
+        self, datasets, models, metrics, model_dir=None, save_dir=None,
     ):
+        """Initialise required inputs for the expriment pipeline."""
         self.datasets = datasets
         self.models = models
         self.metrics = metrics
-        self.verbose = verbose
         self.save_dir = save_dir
         self.config = {"config_file": "../configs/mf_default.json"}
 
     def run(self):
-        """Run the experiment"""
+        """Run the experiment."""
         for data in self.datasets:
             for model in self.models:
                 model.train(data)
                 model.test(data.test[0])
 
     def load_pretrained_model(self):
-        """Load the pretrained model"""
+        """Load the pretrained model."""
         for data in self.datasets:
             for model in self.models:
                 model.init_engine(data)
