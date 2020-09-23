@@ -3,7 +3,7 @@ import pathlib
 import pkg_resources
 from setuptools import find_packages, setup
 
-__version__ = "0.1.0"
+__version__ = "0.2.1"
 url = "https://github.com/beta-team/beta-recsys"
 
 
