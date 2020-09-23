@@ -112,17 +112,27 @@ class DatasetBase(object):
             self.raw_path, os.path.splitext(os.path.basename(self.url))[0]
         )
         file_format = self.url.split(".")[-1]
-        raw_file_path = os.path.join(
-            self.raw_path, f"{self.dataset_name}.{file_format}"
-        )
+        if "amazon" in self.url:
+            raw_file_path = os.path.join(
+                self.raw_path, f"{self.dataset_name}.json.{file_format}"
+            )
+        else:
+            raw_file_path = os.path.join(
+                self.raw_path, f"{self.dataset_name}.{file_format}"
+            )
         if "1drv.ms" in self.url:
             file_format = "zip"
             raw_file_path = os.path.join(
                 self.raw_path, f"{self.dataset_name}.{file_format}"
             )
         if not os.path.exists(raw_file_path):
+            print(f"download_file: url: {self.url}, raw_file_path: {raw_file_path}")
             download_file(self.url, raw_file_path)
-            if file_format == "gz":
+            if "amazon" in raw_file_path:
+                # amazon dataset do not unzip
+                print("amazon dataset do not decompress")
+                return
+            elif file_format == "gz":
                 file_name = raw_file_path.replace(".gz", "")
                 with gzip.open(raw_file_path, "rb") as fin:
                     with open(file_name, "wb") as fout:

@@ -74,8 +74,8 @@ def save_dataframe_as_npz(data, data_file):
         data (DataFrame): DataFrame to be saved.
         data_file: Target file path.
     """
-    user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=np.long)
-    item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=np.long)
+    user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=data[DEFAULT_USER_COL].dtypes)
+    item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=data[DEFAULT_ITEM_COL].dtypes)
     ratings = data[DEFAULT_RATING_COL].to_numpy(dtype=np.float32)
     data_dic = {
         "user_ids": user_ids,
