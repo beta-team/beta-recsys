@@ -3,7 +3,7 @@ import pathlib
 import pkg_resources
 from setuptools import find_packages, setup
 
-__version__ = "0.1.0"
+__version__ = "0.2.1"
 url = "https://github.com/beta-team/beta-recsys"
 
 
@@ -19,10 +19,7 @@ tests_require = ["pytest", "pytest-cov", "mock"]
 setup(
     name="beta-recsys",
     version=__version__,
-    description=(
-        "Beta-RecSys: Beta-RecSys: Build, Evaluate and Tune Automated Recommender"
-        " Systems"
-    ),
+    description="Beta-RecSys: Build, Evaluate and Tune Automated Recommender Systems",
     author_email="recsys.beta@gmail.com",
     url=url,
     download_url="{}/archive/{}.tar.gz".format(url, __version__),

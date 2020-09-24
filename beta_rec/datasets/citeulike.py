@@ -60,7 +60,7 @@ class CiteULikeA(DatasetBase):
         """Preprocess the raw file.
 
         Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.W
+        and save in the processed directory.
         """
         file_name = os.path.join(self.raw_path, self.dataset_name, "citeulike_a.dat")
         if not os.path.exists(file_name):
