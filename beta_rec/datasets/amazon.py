@@ -4,6 +4,7 @@ import os
 import pandas as pd
 
 from beta_rec.datasets.dataset_base import DatasetBase
+from beta_rec.utils.common_util import get_data_frame_from_gzip_file
 from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
@@ -44,7 +45,7 @@ class AmazonInstantVideo(DatasetBase):
             self.download()
 
         # parse json data
-        data = self.get_data_frame_from_gzip_file(file_name)
+        data = get_data_frame_from_gzip_file(file_name)
 
         # rename columns
         data = data.rename(
@@ -71,29 +72,3 @@ class AmazonInstantVideo(DatasetBase):
             data,
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
-
-    def parse_gzip_file(self, path):
-        """Parse gzip file.
-
-        Args:
-            path: the file path of gzip file.
-        """
-        g = gzip.open(path, "rb")
-        for l in g:
-            yield eval(l)
-
-    def get_data_frame_from_gzip_file(self, path):
-        """Get dataframe from a gzip file.
-
-        Args:
-            path the file path of gzip file.
-
-        Returns:
-            A dataframe extracted from the gzip file.
-        """
-        i = 0
-        df = {}
-        for d in self.parse_gzip_file(path):
-            df[i] = d
-            i += 1
-        return pd.DataFrame.from_dict(df, orient="index")
