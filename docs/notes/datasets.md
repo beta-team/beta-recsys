@@ -32,6 +32,7 @@ Here we present some basic staticstics for the datasets in our framework.
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |        ✔️         |      ✖️      |      ✔️       |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |        ✔️         |      ✖️      |      ✔️       |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |        ✔️         |      ✖️      |      ✔️       |
+| [Amazon Reviews](http://jmcauley.ucsd.edu/data/amazon/links.html) |        ✔️         |             |              |
 
 Because some split methods require a specific features, like `random_basket` expect the dataset has a **Basket** column. Here we list all the split methods for each dataset.
 
@@ -66,6 +67,7 @@ The prerequisite for each split methods are:
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Amazon Reviews](http://jmcauley.ucsd.edu/data/amazon/links.html) |                   |                      |            |                   |              |                 |
 
 Also, we provide some information about the dataset content such as the number of items, users and so on. This may give you a brief view of the dataset.
 
@@ -91,6 +93,8 @@ Also, we provide some information about the dataset content such as the number o
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) | 3,835,331  |  37,376   |  930,607  |   1    |    698,889    |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) | 12,256,906 |  10,000   | 2,876,947 |   1    |       1       |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) | 2,756,101  | 1,407,58  |  235,061  |   1    |   2,749,921   |
+| [Amazon Reviews -- Amazon Instant Video](http://jmcauley.ucsd.edu/data/amazon/links.html) | 583,933 | 426,922 | 23,965 | 5 | 3,027 |
+| [Amazon Reviews -- Amazon Instant Video](http://jmcauley.ucsd.edu/data/amazon/links.html) |  |  |  |  |  |
 
 ---
 
