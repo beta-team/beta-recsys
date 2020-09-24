@@ -96,7 +96,7 @@ Also, we provide some information about the dataset content such as the number o
 | [Amazon Reviews -- Amazon Instant Video](http://jmcauley.ucsd.edu/data/amazon/links.html) | 583,933 | 426,922 | 23,965 | 5 | 3,027 |
 | [Amazon Reviews -- Musical Instruments](http://jmcauley.ucsd.edu/data/amazon/links.html) | 500,176 | 339,231 | 83,046 | 5 | 5,339 |
 | [Amazon Reviews -- Digital Music](http://jmcauley.ucsd.edu/data/amazon/links.html) | 836,006 | 478,235 | 266,414 | 5 | 5,941 |
-| [Amazon Reviews -- Baby](http://jmcauley.ucsd.edu/data/amazon/links.html) |  |  |  |  |  |
+| [Amazon Reviews -- Grocery and Gourmet Food](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,297,156 | 768,438 | 166,049 | 5 | 3,831 |
 | [Amazon Reviews -- Patio, Lawn and Garden](http://jmcauley.ucsd.edu/data/amazon/links.html) | 993,490 | 714,791 | 105,984 | 5 | 4,929 |
 
 ---
