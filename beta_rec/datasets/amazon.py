@@ -26,7 +26,7 @@ AMAZON_Digital_Music_URL = (
 )
 AMAZON_Baby_URL = (
     "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Patio_Lawn_and_Garden.json.gz"
+    "/reviews_Baby.json.gz"
 )
 AMAZON_Patio_Lawn_Garden_URL = (
     "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
