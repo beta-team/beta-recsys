@@ -440,7 +440,7 @@ class AmazonPetSupplies(DatasetBase):
         super().__init__(
             dataset_name="amazon-pet-suppplies",
             root_dir=root_dir,
-            url=AMAZON_Automotive_URL,
+            url=AMAZON_Pet_Supplies_URL,
         )
 
     def preprocess(self):
