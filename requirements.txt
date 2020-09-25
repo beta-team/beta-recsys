@@ -2,7 +2,7 @@ requests==2.24.0
 tensorboardX==2.1
 ray==0.8.5
 torch==1.6.0
-numpy==1.15.4
+numpy==1.16.0
 tqdm==4.45.0
 pytest==5.4.1
 flake8==3.7.9
