@@ -17,26 +17,44 @@ class Experiment:
             the evaluation method (e.g. ['load_leave_one_out'])
     models: array of :obj:`<beta_rec.recommenders>`, required
         A collection of recommender models to evaluate, e.g., [MF, GCN].
-    metrics: array of string, required
-        A collection of metrics to use to evaluate the recommender models, \
-        e.g., [NDCG, MRR, Recall].
+    metrics: array of string, default: None and every model has its default
+        evaluation metrics in the configuration file.
+        A collection of metrics to use to evaluate all the recommender
+        models, e.g., ['ndcg', 'precision', 'recall'].
+    eval_score: array of integer, default: None and every model has its default
+        evaluation score in the configuration file.
+        A list integer values to define evaluation scope on, \
+        e.g., [1, 10, 20].
     model_dir: str, optional, default: None
         Path to a directory for loading a pretrained model
     save_dir: str, optional, default: None
         Path to a directory for storing trained models and logs. If None,
         models will NOT be stored and logs will be saved in the current
         working directory.
+    result_file: str, optional, default: None and every model will be saved
+        in a result file that indicated in the configuration.
+        The name of the result saving file, which starts with the model name
+        and followed by the given result file string as the affix.
     """
 
     def __init__(
-        self, datasets, models, metrics, model_dir=None, save_dir=None,
+        self,
+        datasets,
+        models,
+        metrics=None,
+        eval_scopes=None,
+        model_dir=None,
+        result_file=None,
+        save_dir=None,
     ):
         """Initialise required inputs for the expriment pipeline."""
         self.datasets = datasets
         self.models = models
         self.metrics = metrics
+        self.eval_scopes = eval_scopes
+        self.result_file = result_file
         self.save_dir = save_dir
-        self.config = {"config_file": "../configs/mf_default.json"}
+        self.update_config()
 
     def run(self):
         """Run the experiment."""
@@ -52,3 +70,20 @@ class Experiment:
                 model.init_engine(data)
                 model.load(model_dir=self.model_dir)
                 model.predict(data.test[0])
+
+    def update_config(self):
+        """Update the configuration of models."""
+        if self.metrics is not None:
+            for model in self.models:
+                model.config["system"]["metrics"] = self.metrics
+        if self.eval_scopes is not None:
+            for model in self.models:
+                model.config["system"]["k"] = self.eval_scopes
+        if self.result_file is not None:
+            for model in self.models:
+                model.config["system"]["result_file"] = (
+                    self.config["model"]["model"] + self.result_file
+                )
+        if self.save_dir is not None:
+            for model in self.models:
+                model.config["system"]["result_dir"] = self.save_dir
