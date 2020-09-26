@@ -1,3 +1,7 @@
+# coding=utf-8
+
+"""This is the core implementation of the evaluation."""
+import concurrent.futures
 import os
 import socket
 from threading import Lock, Thread
@@ -285,14 +289,16 @@ class EvalEngine(object):
         """
         if type(test_df_list) is not list:  # compatible for testing a single test set
             test_df_list = [test_df_list]
+        return_value_list = []
         for i, test_data_df in enumerate(test_df_list):
             test_pred = self.predict(test_data_df, model, self.batch_eval)
-            worker = Thread(
-                target=test_eval_worker,
-                args=(self, test_data_df, test_pred),
-                name="test_{}".format(i),
-            )
-            worker.start()
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(
+                    test_eval_worker, self, test_data_df, test_pred
+                )
+                return_value = future.result()
+                return_value_list.append(return_value)
+        return return_value_list
 
     def record_performance(self, valid_result, test_result, epoch_id):
         """Record perforance result on tensorboard.
@@ -461,7 +467,7 @@ class SeqEvalEngine(object):
         return metrics / len(test_sequences)
 
     def evaluate_sequence(
-        self, recommender, seq, evaluation_functions, user, given_k, look_ahead, top_n
+        self, recommender, seq, evaluation_functions, user, given_k, look_ahead, top_n,
     ):
         """Compute metrics for each sequence.
 
@@ -536,7 +542,7 @@ class SeqEvalEngine(object):
         eval_cnt = 0
         for gk in range(given_k, len(seq), step):
             eval_res += self.evaluate_sequence(
-                recommender, seq, evaluation_functions, user, gk, look_ahead, top_n
+                recommender, seq, evaluation_functions, user, gk, look_ahead, top_n,
             )
             eval_cnt += 1
         return eval_res / eval_cnt
@@ -572,7 +578,12 @@ class SeqEvalEngine(object):
             None
 
         """
-        METRICS = {"ndcg": ndcg, "precision": precision, "recall": recall, "mrr": mrr}
+        METRICS = {
+            "ndcg": ndcg,
+            "precision": precision,
+            "recall": recall,
+            "mrr": mrr,
+        }
         TOPN = self.config["system"]["valid_k"]  # length of the recommendation list
 
         # GIVEN_K=-1, LOOK_AHEAD=1, STEP=1 corresponds to the classical next-item evaluation
@@ -638,7 +649,12 @@ class SeqEvalEngine(object):
         Returns:
             None
         """
-        METRICS = {"ndcg": ndcg, "precision": precision, "recall": recall, "mrr": mrr}
+        METRICS = {
+            "ndcg": ndcg,
+            "precision": precision,
+            "recall": recall,
+            "mrr": mrr,
+        }
         TOPNs = self.config["system"]["k"]  # length of the recommendation list
 
         # GIVEN_K=-1, LOOK_AHEAD=1, STEP=1 corresponds to the classical next-item evaluation
