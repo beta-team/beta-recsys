@@ -5,8 +5,9 @@ from munch import munchify
 from ray import tune
 
 from beta_rec.models.mf import MFEngine
-from beta_rec.recommenders import Recommender
 from beta_rec.utils.monitor import Monitor
+
+from .recommender import Recommender
 
 
 def tune_train(config):
@@ -59,7 +60,12 @@ class MatrixFactorization(Recommender):
         """
         if ("tune" in self.args) and (self.args["tune"]):  # Tune the model.
             self.args.data = data
-            return self.tune(tune_train)
+            tune_result = self.tune(tune_train)
+            best_result = tune_result.loc[tune_result["valid_metric"].idxmax()]
+            return {
+                "valid_metric": best_result["valid_metric"],
+                "model_save_dir": best_result["model_save_dir"],
+            }
 
         self.gpu_id, self.config["device_str"] = self.get_device()  # Train the model.
 
