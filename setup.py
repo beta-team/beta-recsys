@@ -17,7 +17,7 @@ setup_requires = ["pytest-runner", "isort"]
 tests_require = ["pytest", "pytest-cov", "mock"]
 
 setup(
-    name="beta-recsys",
+    name="beta-rec",
     version=__version__,
     description="Beta-RecSys: Build, Evaluate and Tune Automated Recommender Systems",
     author_email="recsys.beta@gmail.com",

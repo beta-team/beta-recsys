@@ -32,6 +32,7 @@ Here we present some basic staticstics for the datasets in our framework.
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |        ✔️         |      ✖️      |      ✔️       |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |        ✔️         |      ✖️      |      ✔️       |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |        ✔️         |      ✖️      |      ✔️       |
+| [Amazon Reviews](http://jmcauley.ucsd.edu/data/amazon/links.html) |        ✔️         |             |              |
 
 Because some split methods require a specific features, like `random_basket` expect the dataset has a **Basket** column. Here we list all the split methods for each dataset.
 
@@ -66,6 +67,7 @@ The prerequisite for each split methods are:
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Amazon Reviews](http://jmcauley.ucsd.edu/data/amazon/links.html) |                   |                      |            |                   |              |                 |
 
 Also, we provide some information about the dataset content such as the number of items, users and so on. This may give you a brief view of the dataset.
 
@@ -91,6 +93,14 @@ Also, we provide some information about the dataset content such as the number o
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) | 3,835,331  |  37,376   |  930,607  |   1    |    698,889    |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) | 12,256,906 |  10,000   | 2,876,947 |   1    |       1       |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) | 2,756,101  | 1,407,58  |  235,061  |   1    |   2,749,921   |
+| [Amazon Reviews -- Amazon Instant Video](http://jmcauley.ucsd.edu/data/amazon/links.html) | 583,933 | 426,922 | 23,965 | 5 | 3,027 |
+| [Amazon Reviews -- Musical Instruments](http://jmcauley.ucsd.edu/data/amazon/links.html) | 500,176 | 339,231 | 83,046 | 5 | 5,339 |
+| [Amazon Reviews -- Digital Music](http://jmcauley.ucsd.edu/data/amazon/links.html) | 836,006 | 478,235 | 266,414 | 5 | 5,941 |
+| [Amazon Reviews -- Baby](http://jmcauley.ucsd.edu/data/amazon/links.html) | 915,446 | 531,890 | 64,426 | 5 | 4,869 |
+| [Amazon Reviews -- Grocery and Gourmet Food](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,297,156 | 768,438 | 166,049 | 5 | 3,831 |
+| [Amazon Reviews -- Patio, Lawn and Garden](http://jmcauley.ucsd.edu/data/amazon/links.html) | 993,490 | 714,791 | 105,984 | 5 | 4,929 |
+| [Amazon Reviews -- Automotive](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,373,768 | 851,418 | 320,112 | 5 | 3,704 |
+| [Amazon Reviews -- Automotive](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,235,316 | 740,985 | 103,288 | 5 | 3,900 |
 
 ---
 
