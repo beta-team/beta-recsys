@@ -5,6 +5,28 @@ This is the implementation of experimental pipeline.
 
 This class is still under development.
 """
+import pandas as pd
+from tabulate import tabulate
+
+
+def print_result_as_table(results, tag=None):
+    """Print results as a table."""
+    eval_infos = set()
+    for result in results:
+        eval_infos.update(result.keys())
+    eval_infos = list(eval_infos)
+    print("-" * 80)
+    if tag is not None:
+        print(tag)
+    for result in results:
+        for eval_info in eval_infos:
+            if eval_info not in result:
+                result["eval_info"] = "--"
+    df = pd.DataFrame(results)
+    df = df.set_index("model")
+    df = df.T
+    print(tabulate(df, headers=df.columns, tablefmt="psql"))
+    print("-" * 80)
 
 
 class Experiment:
@@ -58,10 +80,13 @@ class Experiment:
 
     def run(self):
         """Run the experiment."""
+        results = []
         for data in self.datasets:
             for model in self.models:
                 model.train(data)
-                model.test(data.test[0])
+                result = model.test(data.test[0])
+                results.extend(result)
+        print_result_as_table(results)
 
     def load_pretrained_model(self):
         """Load the pretrained model."""
@@ -80,9 +105,14 @@ class Experiment:
             for model in self.models:
                 model.config["system"]["k"] = self.eval_scopes
         if self.result_file is not None:
-            for model in self.models:
+            for idx, model in enumerate(self.models):
                 model.config["system"]["result_file"] = (
-                    self.config["model"]["model"] + self.result_file
+                    "model_"
+                    + str(idx)
+                    + "_"
+                    + self.config["model"]["model"]
+                    + "_"
+                    + self.result_file
                 )
         if self.save_dir is not None:
             for model in self.models:
