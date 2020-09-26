@@ -26,7 +26,7 @@ AMAZON_Digital_Music_URL = (
 )
 AMAZON_Baby_URL = (
     "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Patio_Lawn_and_Garden.json.gz"
+    "/reviews_Baby.json.gz"
 )
 AMAZON_Patio_Lawn_Garden_URL = (
     "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
@@ -440,7 +440,7 @@ class AmazonPetSupplies(DatasetBase):
         super().__init__(
             dataset_name="amazon-pet-suppplies",
             root_dir=root_dir,
-            url=AMAZON_Automotive_URL,
+            url=AMAZON_Pet_Supplies_URL,
         )
 
     def preprocess(self):
