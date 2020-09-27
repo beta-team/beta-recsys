@@ -10,7 +10,6 @@
 *.class
 *.classpath
 *.csv
-
 *.emb
 *.log
 *.model
