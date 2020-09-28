@@ -119,9 +119,7 @@ class AmazonDataset(DatasetBase):
     def __init__(self, dataset_name, url, root_dir):
         r"""Init AmazonDataset Class."""
         super().__init__(
-            dataset_name=dataset_name,
-            root_dir=root_dir,
-            url=url,
+            dataset_name=dataset_name, root_dir=root_dir, url=url,
         )
 
     def preprocess(self):
@@ -410,24 +408,7 @@ class AmazonBooks(AmazonDataset):
     def __init__(self, root_dir=None):
         r"""Init AmazonBooks Class."""
         super().__init__(
-            dataset_name="amazon-books",
-            root_dir=root_dir,
-            url=AMAZON_Books_URL,
-        )
-
-
-class AmazonBooks(AmazonDataset):
-    r"""AmazonBooks.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonBooks Class."""
-        super().__init__(
-            dataset_name="amazon-books",
-            root_dir=root_dir,
-            url=AMAZON_Books_URL,
+            dataset_name="amazon-books", root_dir=root_dir, url=AMAZON_Books_URL,
         )
 
 
