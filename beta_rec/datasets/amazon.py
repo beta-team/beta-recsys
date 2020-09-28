@@ -62,19 +62,19 @@ AMAZON_Video_Games_URL = (
 )
 AMAZON_Tools_and_Home_Improvement_URL = (
     "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "reviews_Tools_and_Home_Improvement.json.gz"
+    "/reviews_Tools_and_Home_Improvement.json.gz"
 )
 AMAZON_Beauty_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/"
-    "reviews_Beauty.json.gz"
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Beauty.json.gz"
 )
 AMAZON_Apps_for_Android_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/"
-    "reviews_Apps_for_Android.json.gz"
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Apps_for_Android.json.gz"
 )
 AMAZON_Office_Products_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/"
-    "reviews_Office_Products.json.gz"
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Office_Products.json.gz"
 )
 
 
@@ -925,9 +925,7 @@ class AmazonOfficeProducts(DatasetBase):
         Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
         and save in the processed directory.
         """
-        file_name = os.path.join(
-            self.raw_path, "amazon-tools-and-home-improvement.json.gz"
-        )
+        file_name = os.path.join(self.raw_path, "amazon-office-products.json.gz")
         print(f"file_name: {file_name}")
         if not os.path.exists(file_name):
             self.download()

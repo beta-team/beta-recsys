@@ -100,7 +100,15 @@ Also, we provide some information about the dataset content such as the number o
 | [Amazon Reviews -- Grocery and Gourmet Food](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,297,156 | 768,438 | 166,049 | 5 | 3,831 |
 | [Amazon Reviews -- Patio, Lawn and Garden](http://jmcauley.ucsd.edu/data/amazon/links.html) | 993,490 | 714,791 | 105,984 | 5 | 4,929 |
 | [Amazon Reviews -- Automotive](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,373,768 | 851,418 | 320,112 | 5 | 3,704 |
-| [Amazon Reviews -- Automotive](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,235,316 | 740,985 | 103,288 | 5 | 3,900 |
+| [Amazon Reviews -- Pet Supplies](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,235,316 | 740,985 | 103,288 | 5 | 3,900 |
+| [Amazon Reviews -- Cell Phones and Accessories](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3447249 | 2261045 | 319678 | 5 | 4724 |
+| [Amazon Reviews -- Health and Personal Care](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2982326 | 1851132 | 252331 | 5 | 4733 |
+| [Amazon Reviews -- Toys and Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2252771 | 1342911 | 327698 | 5 | 5151 |
+| [Amazon Reviews -- Video Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1324753 | 826767 | 50210 | 5 | 5396 |
+| [Amazon Reviews -- Tools and Home Improvement](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1926047 | 1212468 | 260659 | 5 | 5366 |
+| [Amazon Reviews -- Beauty](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2023070 | 1210271 | 249274 | 5 | 4231 |
+| [Amazon Reviews -- Apps for Android](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2638173 | 1323884 | 61275 | 5 | 1283 |
+| [Amazon Reviews -- Office Products](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1243186 | 909314 | 130006 | 5 | 5400 |
 
 ---
 
