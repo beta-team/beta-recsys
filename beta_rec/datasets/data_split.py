@@ -197,7 +197,7 @@ def feed_neg_sample(data, negative_num, item_sampler):
         dtype=np.long,
     )
     for index, user_items in interact_status.iterrows():
-        u = int(user_items[DEFAULT_USER_COL])
+        u = user_items[DEFAULT_USER_COL]
         pos_items = set(user_items[DEFAULT_ITEM_COL])  # item set for user u
         pos_items_li = list(pos_items)  # the positive items should be unique
         n_pos_items = len(pos_items_li)  # number of positive item for user u
@@ -211,7 +211,7 @@ def feed_neg_sample(data, negative_num, item_sampler):
             neg_items_li = list(neg_items - pos_items)[:negative_num]
         # filter the positive items and truncate the first negative_num
         df_items = np.append(pos_items_li, neg_items_li)
-        df_users = np.array([u] * (n_pos_items + n_neg_items), dtype=np.long)
+        df_users = np.array([u] * (n_pos_items + n_neg_items), dtype=type(u))
         pos_rating = []
 
         if unique_rating_num != 1:
