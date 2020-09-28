@@ -62,23 +62,110 @@ AMAZON_Video_Games_URL = (
 )
 AMAZON_Tools_and_Home_Improvement_URL = (
     "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "reviews_Tools_and_Home_Improvement.json.gz"
+    "/reviews_Tools_and_Home_Improvement.json.gz"
 )
 AMAZON_Beauty_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/"
-    "reviews_Beauty.json.gz"
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Beauty.json.gz"
 )
 AMAZON_Apps_for_Android_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/"
-    "reviews_Apps_for_Android.json.gz"
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Apps_for_Android.json.gz"
 )
 AMAZON_Office_Products_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/"
-    "reviews_Office_Products.json.gz"
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Office_Products.json.gz"
+)
+AMAZON_Books_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Books.json.gz"
+)
+AMAZON_Electronics_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Electronics.json.gz"
+)
+AMAZON_Movies_and_TV_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Movies_and_TV.json.gz"
+)
+AMAZON_CDs_and_Vinyl_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_CDs_and_Vinyl.json.gz"
+)
+AMAZON_Clothing_Shoes_and_Jewelry_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Clothing_Shoes_and_Jewelry.json.gz"
+)
+AMAZON_Home_and_Kitchen_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Home_and_Kitchen.json.gz"
+)
+AMAZON_Kindle_Store_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Kindle_Store.json.gz"
+)
+AMAZON_Sports_and_Outdoors_URL = (
+    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
+    "/reviews_Sports_and_Outdoors.json.gz"
 )
 
 
-class AmazonInstantVideo(DatasetBase):
+class AmazonDataset(DatasetBase):
+    r"""AmazonDataset.
+
+    Amazon base dataset.
+    """
+
+    def __init__(self, dataset_name, url, root_dir):
+        r"""Init AmazonDataset Class."""
+        super().__init__(
+            dataset_name=dataset_name,
+            root_dir=root_dir,
+            url=url,
+        )
+
+    def preprocess(self):
+        """Preprocess the raw file.
+
+        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
+        and save in the processed directory.
+        """
+        file_name = os.path.join(self.raw_path, f"{self.dataset_name}.json.gz")
+        print(f"file_name: {file_name}")
+        if not os.path.exists(file_name):
+            self.download()
+
+        # parse json data
+        data = get_data_frame_from_gzip_file(file_name)
+
+        # rename columns
+        data = data.rename(
+            columns={
+                "reviewerID": DEFAULT_USER_COL,
+                "asin": DEFAULT_ITEM_COL,
+                "overall": DEFAULT_RATING_COL,
+                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
+            }
+        )
+
+        # select necessary columns
+        data = pd.DataFrame(
+            data,
+            columns=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
+
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
+
+
+class AmazonInstantVideo(AmazonDataset):
     r"""AmazonInstantVideo.
 
     Amazon Review dataset.
@@ -92,48 +179,8 @@ class AmazonInstantVideo(DatasetBase):
             url=AMAZON_Amazon_Instant_Video_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-amazon-instant-video.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonMusicalInstruments(DatasetBase):
+class AmazonMusicalInstruments(AmazonDataset):
     r"""AmazonMusicalInstruments.
 
     Amazon Review dataset.
@@ -147,48 +194,8 @@ class AmazonMusicalInstruments(DatasetBase):
             url=AMAZON_Musical_Instruments_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-musical-instruments.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonDigitalMusic(DatasetBase):
+class AmazonDigitalMusic(AmazonDataset):
     r"""AmazonDigitalMusic.
 
     Amazon Review dataset.
@@ -202,48 +209,8 @@ class AmazonDigitalMusic(DatasetBase):
             url=AMAZON_Digital_Music_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-digital-music.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonBaby(DatasetBase):
+class AmazonBaby(AmazonDataset):
     r"""AmazonBaby.
 
     Amazon Review dataset.
@@ -255,48 +222,8 @@ class AmazonBaby(DatasetBase):
             dataset_name="amazon-baby", root_dir=root_dir, url=AMAZON_Baby_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-baby.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonPatioLawnGarden(DatasetBase):
+class AmazonPatioLawnGarden(AmazonDataset):
     r"""AmazonPatioLawnGarden.
 
     Amazon Review dataset.
@@ -310,48 +237,8 @@ class AmazonPatioLawnGarden(DatasetBase):
             url=AMAZON_Patio_Lawn_Garden_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-patio-lawn-garden.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonGroceryGourmetFood(DatasetBase):
+class AmazonGroceryGourmetFood(AmazonDataset):
     r"""AmazonGroceryGourmetFood.
 
     Amazon Review dataset.
@@ -365,48 +252,8 @@ class AmazonGroceryGourmetFood(DatasetBase):
             url=AMAZON_Grocery_Gourmet_Food_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-grocery-gourmet-food.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonAutomotive(DatasetBase):
+class AmazonAutomotive(AmazonDataset):
     r"""AmazonAutomotive.
 
     Amazon Review dataset.
@@ -420,48 +267,8 @@ class AmazonAutomotive(DatasetBase):
             url=AMAZON_Automotive_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-automotive.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonPetSupplies(DatasetBase):
+class AmazonPetSupplies(AmazonDataset):
     r"""AmazonPetSupplies.
 
     Amazon Review dataset.
@@ -475,48 +282,8 @@ class AmazonPetSupplies(DatasetBase):
             url=AMAZON_Pet_Supplies_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-pet-suppplies.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonCellPhonesAndAccessories(DatasetBase):
+class AmazonCellPhonesAndAccessories(AmazonDataset):
     r"""AmazonCellPhonesAndAccessories.
 
     Amazon Review dataset.
@@ -530,50 +297,8 @@ class AmazonCellPhonesAndAccessories(DatasetBase):
             url=AMAZON_Cell_Phones_and_Accessories_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(
-            self.raw_path, "amazon-cell-phones-and-accessories.json.gz"
-        )
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonHealthAndPersonalCare(DatasetBase):
+class AmazonHealthAndPersonalCare(AmazonDataset):
     r"""AmazonHealthAndPersonalCare.
 
     Amazon Review dataset.
@@ -587,50 +312,8 @@ class AmazonHealthAndPersonalCare(DatasetBase):
             url=AMAZON_Health_and_Personal_Care_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(
-            self.raw_path, "amazon-health-and-personal-care.json.gz"
-        )
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonToysAndGames(DatasetBase):
+class AmazonToysAndGames(AmazonDataset):
     r"""AmazonToysAndGames.
 
     Amazon Review dataset.
@@ -644,48 +327,8 @@ class AmazonToysAndGames(DatasetBase):
             url=AMAZON_Toys_and_Games_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-toys-and-games.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonVideoGames(DatasetBase):
+class AmazonVideoGames(AmazonDataset):
     r"""AmazonVideoGames.
 
     Amazon Review dataset.
@@ -699,48 +342,8 @@ class AmazonVideoGames(DatasetBase):
             url=AMAZON_Video_Games_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-video-games.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonToolsAndHomeImprovement(DatasetBase):
+class AmazonToolsAndHomeImprovement(AmazonDataset):
     r"""AmazonToolsAndHomeImprovement.
 
     Amazon Review dataset.
@@ -754,50 +357,8 @@ class AmazonToolsAndHomeImprovement(DatasetBase):
             url=AMAZON_Tools_and_Home_Improvement_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(
-            self.raw_path, "amazon-tools-and-home-improvement.json.gz"
-        )
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonBeauty(DatasetBase):
+class AmazonBeauty(AmazonDataset):
     r"""AmazonBeauty.
 
     Amazon Review dataset.
@@ -809,48 +370,8 @@ class AmazonBeauty(DatasetBase):
             dataset_name="amazon-beauty", root_dir=root_dir, url=AMAZON_Beauty_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-beauty.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonAppsForAndroid(DatasetBase):
+class AmazonAppsForAndroid(AmazonDataset):
     r"""AmazonAppsForAndroid.
 
     Amazon Review dataset.
@@ -864,48 +385,8 @@ class AmazonAppsForAndroid(DatasetBase):
             url=AMAZON_Apps_for_Android_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(self.raw_path, "amazon-apps-for-android.json.gz")
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
-
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
-        )
-
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
-        )
-
-
-class AmazonOfficeProducts(DatasetBase):
+class AmazonOfficeProducts(AmazonDataset):
     r"""AmazonOfficeProducts.
 
     Amazon Review dataset.
@@ -919,44 +400,137 @@ class AmazonOfficeProducts(DatasetBase):
             url=AMAZON_Office_Products_URL,
         )
 
-    def preprocess(self):
-        """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
-        """
-        file_name = os.path.join(
-            self.raw_path, "amazon-tools-and-home-improvement.json.gz"
-        )
-        print(f"file_name: {file_name}")
-        if not os.path.exists(file_name):
-            self.download()
+class AmazonBooks(AmazonDataset):
+    r"""AmazonBooks.
 
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
+    Amazon Review dataset.
+    """
 
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
+    def __init__(self, root_dir=None):
+        r"""Init AmazonBooks Class."""
+        super().__init__(
+            dataset_name="amazon-books",
+            root_dir=root_dir,
+            url=AMAZON_Books_URL,
         )
 
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
-                DEFAULT_USER_COL,
-                DEFAULT_ITEM_COL,
-                DEFAULT_RATING_COL,
-                DEFAULT_TIMESTAMP_COL,
-            ],
+
+class AmazonBooks(AmazonDataset):
+    r"""AmazonBooks.
+
+    Amazon Review dataset.
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init AmazonBooks Class."""
+        super().__init__(
+            dataset_name="amazon-books",
+            root_dir=root_dir,
+            url=AMAZON_Books_URL,
         )
 
-        self.save_dataframe_as_npz(
-            data,
-            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+
+class AmazonElectronics(AmazonDataset):
+    r"""AmazonElectronics.
+
+    Amazon Review dataset.
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init AmazonElectronics Class."""
+        super().__init__(
+            dataset_name="amazon-electronics",
+            root_dir=root_dir,
+            url=AMAZON_Electronics_URL,
+        )
+
+
+class AmazonMoviesAndTV(AmazonDataset):
+    r"""AmazonMoviesAndTV.
+
+    Amazon Review dataset.
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init AmazonMoviesAndTV Class."""
+        super().__init__(
+            dataset_name="amazon-movies-and-tv",
+            root_dir=root_dir,
+            url=AMAZON_Movies_and_TV_URL,
+        )
+
+
+class AmazonCDsAndVinyl(AmazonDataset):
+    r"""AmazonCDsAndVinyl.
+
+    Amazon Review dataset.
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init AmazonCDsAndVinyl Class."""
+        super().__init__(
+            dataset_name="amazon-cds-and-vinyl",
+            root_dir=root_dir,
+            url=AMAZON_CDs_and_Vinyl_URL,
+        )
+
+
+class AmazonClothingShoesAndJewelry(AmazonDataset):
+    r"""AmazonClothingShoesAndJewelry.
+
+    Amazon Review dataset.
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init AmazonClothingShoesAndJewelry Class."""
+        super().__init__(
+            dataset_name="amazon-clothing_shoes_and_jewelry",
+            root_dir=root_dir,
+            url=AMAZON_Clothing_Shoes_and_Jewelry_URL,
+        )
+
+
+class AmazonHomeAndKitchen(AmazonDataset):
+    r"""AmazonHomeAndKitchen.
+
+    Amazon Review dataset.
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init AmazonHomeAndKitchen Class."""
+        super().__init__(
+            dataset_name="amazon-home-and-kitchen",
+            root_dir=root_dir,
+            url=AMAZON_Home_and_Kitchen_URL,
+        )
+
+
+class AmazonKindleStore(AmazonDataset):
+    r"""AmazonKindleStore.
+
+    Amazon Review dataset.
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init AmazonKindleStore Class."""
+        super().__init__(
+            dataset_name="amazon-kindle-store",
+            root_dir=root_dir,
+            url=AMAZON_Kindle_Store_URL,
+        )
+
+
+class AmazonSportsAndOutdoors(AmazonDataset):
+    r"""AmazonSportsAndOutdoors.
+
+    Amazon Review dataset.
+    """
+
+    def __init__(self, root_dir=None):
+        r"""Init AmazonSportsAndOutdoors Class."""
+        super().__init__(
+            dataset_name="amazon-sports-and-outdoors",
+            root_dir=root_dir,
+            url=AMAZON_Sports_and_Outdoors_URL,
         )
