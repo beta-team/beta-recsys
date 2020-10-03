@@ -1,15 +1,15 @@
 import os
 import time
 
+import numpy as np
+import torch
 from munch import munchify
 from ray import tune
 
+from beta_rec.data.deprecated_data_base import DataLoaderBase
 from beta_rec.models.ngcf import NGCFEngine
 from beta_rec.recommenders import Recommender
 from beta_rec.utils.monitor import Monitor
-from beta_rec.data.deprecated_data_base import DataLoaderBase
-import torch
-import numpy as np
 
 
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
