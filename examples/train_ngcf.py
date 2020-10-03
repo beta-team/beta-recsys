@@ -14,7 +14,6 @@ from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.deprecated_data_base import DataLoaderBase
 from beta_rec.models.ngcf import NGCFEngine
 from beta_rec.utils.common_util import DictToObject
-from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
 
@@ -38,7 +37,7 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str, default=True, help="Tun parameter",
+        "--tune", nargs="?", type=str, default=False, help="Tun parameter",
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
     parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
@@ -70,23 +69,22 @@ class NGCF_train(TrainEngine):
             config (dict): All the parameters for the model.
         """
         self.config = config
+        print(config)
         super(NGCF_train, self).__init__(self.config)
         self.load_dataset()
         self.build_data_loader()
-        self.engine = NGCFEngine(self.config["model"])
 
     def build_data_loader(self):
         """Missing Doc."""
         # ToDo: Please define the directory to store the adjacent matrix
+        self.gpu_id, self.config["model"]["device_str"] = self.get_device()
         self.sample_generator = DataLoaderBase(ratings=self.data.train)
         adj_mat, norm_adj_mat, mean_adj_mat = self.sample_generator.get_adj_mat(
             self.config
         )
         norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj_mat)
         self.config["model"]["norm_adj"] = norm_adj
-        self.config["model"]["num_batch"] = (
-            self.data.n_train // self.config["model"]["batch_size"] + 1
-        )
+
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
 
@@ -98,34 +96,28 @@ class NGCF_train(TrainEngine):
         self.model_save_dir = os.path.join(
             self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
         )
-        for epoch in range(self.config["model"]["max_epoch"]):
-            print(f"Epoch {epoch} starts !")
-            print("-" * 80)
-            if epoch > 0 and self.eval_engine.n_no_update == 0:
-                # previous epoch have already obtained better result
-                self.engine.save_checkpoint(model_dir=self.model_save_dir)
 
-            if self.eval_engine.n_no_update >= MAX_N_UPDATE:
-                print(
-                    "Early stop criterion triggered, no performance update for {:} times".format(
-                        MAX_N_UPDATE
-                    )
-                )
-                break
+        if self.config["model"]["loss"] == "bpr":
+            train_loader = self.data.instance_bpr_loader(
+                batch_size=self.config["model"]["batch_size"],
+                device=self.config["model"]["device_str"],
+            )
+        elif self.config["model"]["loss"] == "bce":
+            train_loader = self.data.instance_bce_loader(
+                num_negative=self.config["model"]["num_negative"],
+                batch_size=self.config["model"]["batch_size"],
+                device=self.config["model"]["device_str"],
+            )
+        else:
+            raise ValueError(
+                f"Unsupported loss type {self.config['loss']}, try other options: 'bpr' or 'bce'"
+            )
 
-            train_loader = self.sample_generator.pairwise_negative_train_loader(
-                self.config["model"]["batch_size"], self.config["model"]["device_str"]
-            )
-            self.engine.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
-            self.eval_engine.train_eval(
-                self.data.valid[0], self.data.test[0], self.engine.model, epoch
-            )
+        self.engine = NGCFEngine(self.config)
+        self._train(self.engine, train_loader, self.model_save_dir)
         self.config["run_time"] = self.monitor.stop()
 
-    def test(self):
-        """Test the model."""
-        self.engine.resume_checkpoint(model_dir=self.model_dir)
-        super(NGCF_train, self).test()
+        return self.eval_engine.best_valid_performance
 
 
 def tune_train(config):
