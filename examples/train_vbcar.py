@@ -1,6 +1,4 @@
-"""
-   isort:skip_file
-"""
+"""isort:skip_file."""
 import argparse
 import math
 import os
@@ -24,10 +22,10 @@ from beta_rec.data.grocery_data import GroceryData
 
 
 def parse_args():
-    """ Parse args from command line
+    """Parse args from command line.
 
-        Returns:
-            args object.
+    Returns:
+        args object.
     """
     parser = argparse.ArgumentParser(description="Run VBCAR..")
     parser.add_argument(
@@ -83,15 +81,13 @@ def parse_args():
 
 
 class VBCAR_train(TrainEngine):
-    """ An instance class from the TrainEngine base class
-
-    """
+    """An instance class from the TrainEngine base class."""
 
     def __init__(self, config):
-        """Constructor
+        """Initialize VBCAR_train Class.
 
-                Args:
-                    config (dict): All the parameters for the model
+        Args:
+            config (dict): All the parameters for the model.
         """
         self.config = config
         super(VBCAR_train, self).__init__(self.config)
@@ -104,9 +100,7 @@ class VBCAR_train(TrainEngine):
         self.config["model"]["n_items"] = self.data.n_items
 
     def train(self):
-        """Default train implementation
-
-        """
+        """Train the model."""
         self.load_dataset()
         self.train_data = self.data.sample_triple()
         self.config["model"]["alpha_step"] = (1 - self.config["model"]["alpha"]) / (
@@ -165,13 +159,10 @@ class VBCAR_train(TrainEngine):
 
 
 def tune_train(config):
-    """Train the model with a hypyer-parameter tuner (ray)
+    """Train the model with a hypyer-parameter tuner (ray).
 
     Args:
         config (dict): All the parameters for the model
-
-    Returns:
-
     """
     train_engine = VBCAR_train(DictToObject(config))
     best_performance = train_engine.train()

@@ -9,11 +9,10 @@ from tensorboardX import SummaryWriter
 
 
 class Monitor(Thread):
-    """
-    initialize monitor, log_dir and gpu_id are needed.
-    """
+    """Monitor Class."""
 
     def __init__(self, log_dir, delay=1, gpu_id=0, verbose=False):
+        """Initialize monitor, log_dir and gpu_id are needed."""
         super(Monitor, self).__init__()
 
         DEVICE_ID_LIST = GPUtil.getAvailable(
@@ -69,6 +68,7 @@ class Monitor(Thread):
         self.start()
 
     def write_cpu_status(self):
+        """Write CPU status."""
         CPU_load = psutil.Process(self.pid).cpu_percent(interval=1)
         self.writer.add_scalars(
             "device/cpu", {"CPU_load (%)": CPU_load}, self.count,
@@ -76,6 +76,7 @@ class Monitor(Thread):
         self.CPU_load.append(CPU_load)
 
     def write_mem_status(self):
+        """Write memory usage status."""
         memoryUsed = (
             psutil.Process(self.pid).memory_info()[0] / 2.0 ** 30
         )  # current app memory use in GB
@@ -85,6 +86,7 @@ class Monitor(Thread):
         self.memoryUsed.append(memoryUsed)
 
     def write_gpu_status(self):
+        """Write gpu usage status."""
         self.GPU = GPUtil.getGPUs()[self.gpu_id]
         GPU_load = self.GPU.load * 100
         GPU_memoryUsed = self.GPU.memoryUsed / self.GPU_memoryTotal * 100
@@ -102,6 +104,7 @@ class Monitor(Thread):
         self.GPU_memoryFree.append(GPU_memoryFree)
 
     def run(self):
+        """Run the monitor."""
         while not self.stopped:
             self.count += 1
             self.write_cpu_status()
@@ -110,6 +113,7 @@ class Monitor(Thread):
                 self.write_gpu_status()
 
     def stop(self):
+        """Stop the monitor."""
         self.run_time = time.time() - self.start_time
         print("Program running time:%d seconds" % self.run_time)
         self.stopped = True
@@ -117,6 +121,7 @@ class Monitor(Thread):
 
 
 def print_gpu_stat(gpu_id=None):
+    """Print GPU status."""
     if gpu_id is None:
         gpu_ids = GPUtil.getAvailable(limit=10)
         for gpu_id in gpu_ids:
@@ -152,6 +157,7 @@ some static methods
 
 
 def print_cpu_stat():
+    """Print CPU status."""
     print(
         "Cpu count: {:d} \t brand: {:s}".format(
             os.cpu_count(), cpuinfo.get_cpu_info()["brand"]
@@ -163,6 +169,7 @@ def print_cpu_stat():
 
 
 def print_mem_stat(memoryInfo=None):
+    """Print memory status."""
     # Main memory info
     if memoryInfo is None:
         memoryInfo = (
@@ -178,6 +185,7 @@ def print_mem_stat(memoryInfo=None):
 
 # print current devices available
 def devices_status():
+    """Print current devices status."""
     print_cpu_stat()
     print_mem_stat()
     print_gpu_stat()

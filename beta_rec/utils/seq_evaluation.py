@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def precision(ground_truth, prediction):
     """Compute Precision metric.
 
@@ -56,15 +59,49 @@ def mrr(ground_truth, prediction):
     return rr
 
 
+def ndcg(ground_truth, prediction):
+    """Compute Normalized Discounted Cumulative Gain (NDCG) metric.
+
+    Args:
+        ground_truth (List): the ground truth set or sequence.
+        prediction (List): the predicted set or sequence.
+
+    Returns:
+        ndcg (float): the value of the metric.
+    """
+    # ground_truth = remove_duplicates(ground_truth)
+    # prediction = remove_duplicates(prediction)
+    gt_pos = [1 if i in ground_truth else 0 for i in prediction]
+    pd_rank = [rank for rank, i in enumerate(prediction) if i in ground_truth]
+
+    def dcg_score(gt_pos, pd_rank):
+        ranked_scores = np.take(gt_pos, pd_rank)
+        gain = 2 ** ranked_scores - 1
+        discounts = [np.log2(rank + 2) for rank in pd_rank]
+        return np.sum(gain / discounts)
+
+    if len(pd_rank) != 0:
+        dcg = dcg_score(gt_pos, pd_rank)
+
+        i_gt_pos = [gt_pos[i] for i in np.argsort(gt_pos)[::-1]]
+        i_pd_rank = [rank for rank, i in enumerate(i_gt_pos) if i not in [0]]
+        idcg = dcg_score(i_gt_pos, i_pd_rank)
+        ndcg = dcg / idcg
+    else:
+        ndcg = 0.0
+
+    return ndcg
+
+
 def count_a_in_b_unique(a, b):
     """Count unique items.
 
     Args:
-        a (List): list of lists
-        b (List): list of lists
+        a (List): list of lists.
+        b (List): list of lists.
 
     Returns:
-        count (int): number of elements of a in b
+        count (int): number of elements of a in b.
     """
     count = 0
     for el in a:

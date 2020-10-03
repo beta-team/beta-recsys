@@ -10,9 +10,12 @@ from beta_rec.models.vlml import VariableLengthMemoryLayer
 
 
 class CollaborativeMemoryNetwork(nn.Module):
+    """CollaborativeMemoryNetwork Class."""
+
     def __init__(
         self, config, user_embeddings, item_embeddings, item_user_list, device
     ):
+        """Initialize CollaborativeMemoryNetwork Class."""
         super(CollaborativeMemoryNetwork, self).__init__()
 
         self.config = config
@@ -58,7 +61,7 @@ class CollaborativeMemoryNetwork(nn.Module):
         nn.init.xavier_uniform_(self.out.weight)
 
     def output_module(self, input):
-
+        """Missing Doc."""
         output = F.relu(self.dense(input))
         output = self.out(output)
         return output.squeeze()
@@ -74,6 +77,7 @@ class CollaborativeMemoryNetwork(nn.Module):
         input_neighborhood_lengths_negative,
         evaluation=False,
     ):
+        """Train the model."""
         # get embeddings from user memory
         cur_user = self.user_memory(input_users)
         # cur_user_output = self.user_output(input_users)
@@ -117,8 +121,7 @@ class CollaborativeMemoryNetwork(nn.Module):
         return score, negative_output
 
     def predict(self, users, items):
-        """
-        """
+        """Predict result with the model."""
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
         user_embedding = self.user_memory(users_t)
@@ -130,7 +133,10 @@ class CollaborativeMemoryNetwork(nn.Module):
 
 
 class cmnEngine(ModelEngine):
+    """CMN Engine."""
+
     def __init__(self, config, user_embeddings, item_embeddings, item_user_list):
+        """Initialize CMN Engine."""
         self.config = config
         self.device = config["device_str"]
         self.model = CollaborativeMemoryNetwork(
@@ -145,11 +151,14 @@ class cmnEngine(ModelEngine):
         self.model.to(self.device)
 
     def train_single_batch(self, batch_data):
-        """
+        """Train a single batch data.
+
+        Train a single batch data.
+
         Args:
-            batch_data (list): batch users, positive items and negative items
+            batch_data (list): batch users, positive items and negative items.
         Return:
-            loss (float): batch loss
+            loss (float): batch loss.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
@@ -191,6 +200,12 @@ class cmnEngine(ModelEngine):
         return loss
 
     def train_an_epoch(self, train_loader, epoch_id):
+        """Train the model in one epoch.
+
+        Args:
+            epoch_id (int): the number of epoch.
+            train_loader (function): user, pos_items and neg_items generator.
+        """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0.0
@@ -252,7 +267,7 @@ class cmnEngine(ModelEngine):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def bpr_loss(self, pos_score, neg_score):
-
+        """Calculate BPR loss."""
         difference = pos_score - neg_score
         eps = 1e-12
         loss = -1 * torch.log(torch.sigmoid(difference) + eps)

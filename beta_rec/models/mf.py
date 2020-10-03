@@ -7,10 +7,10 @@ from beta_rec.utils.common_util import print_dict_as_table, timeit
 
 
 class MF(torch.nn.Module):
-    """ A pytorch Module for Matrix Factorization
-    """
+    """A pytorch Module for Matrix Factorization."""
 
     def __init__(self, config):
+        """Initialize MF Class."""
         super(MF, self).__init__()
         self.config = config
         self.device = self.config["device_str"]
@@ -30,13 +30,10 @@ class MF(torch.nn.Module):
         nn.init.normal_(self.item_emb.weight, 0, self.stddev)
 
     def forward(self, batch_data):
-        """
+        """Trian the model.
 
         Args:
-            batch_data: tuple consists of (users, pos_items, neg_items), which must be LongTensor
-
-        Returns:
-
+            batch_data: tuple consists of (users, pos_items, neg_items), which must be LongTensor.
         """
         users, items = batch_data
         u_emb = self.user_emb(users)
@@ -58,12 +55,13 @@ class MF(torch.nn.Module):
         return scores, regularizer
 
     def predict(self, users, items):
-        """ Model prediction: dot product of users and items embeddings
+        """Predcit result with the model.
+
         Args:
-            users (int, or list of int):  user id(s)
-            items (int, or list of int):  item id(s)
+            users (int, or list of int):  user id(s).
+            items (int, or list of int):  item id(s).
         Return:
-            scores (int, or list of int): predicted scores of these user-item pairs
+            scores (int, or list of int): predicted scores of these user-item pairs.
         """
         users_t = torch.LongTensor(users).to(self.device)
         items_t = torch.LongTensor(items).to(self.device)
@@ -73,7 +71,10 @@ class MF(torch.nn.Module):
 
 
 class MFEngine(ModelEngine):
+    """MFEngine Class."""
+
     def __init__(self, config):
+        """Initialize MFEngine Class."""
         self.config = config
         print_dict_as_table(config["model"], tag="MF model config")
         self.model = MF(config["model"])
@@ -89,12 +90,12 @@ class MFEngine(ModelEngine):
         print(f"using {self.loss} loss...")
 
     def train_single_batch(self, batch_data):
-        """ Train a single batch
+        """Train a single batch.
 
         Args:
-            batch_data (list): batch users, positive items and negative items
+            batch_data (list): batch users, positive items and negative items.
         Return:
-            loss (float): batch loss
+            loss (float): batch loss.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
@@ -119,11 +120,11 @@ class MFEngine(ModelEngine):
 
     @timeit
     def train_an_epoch(self, train_loader, epoch_id):
-        """ Train a epoch, generate batch_data from data_loader, and call train_single_batch
+        """Train a epoch, generate batch_data from data_loader, and call train_single_batch.
 
         Args:
             train_loader (DataLoader):
-            epoch_id (int):
+            epoch_id (int): the number of epoch.
         """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()

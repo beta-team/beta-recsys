@@ -32,6 +32,7 @@ Here we present some basic staticstics for the datasets in our framework.
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |        ✔️         |      ✖️      |      ✔️       |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |        ✔️         |      ✖️      |      ✔️       |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |        ✔️         |      ✖️      |      ✔️       |
+| [Amazon Reviews](http://jmcauley.ucsd.edu/data/amazon/links.html) |        ✔️         |             |              |
 
 Because some split methods require a specific features, like `random_basket` expect the dataset has a **Basket** column. Here we list all the split methods for each dataset.
 
@@ -66,18 +67,19 @@ The prerequisite for each split methods are:
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) |         ✔️         |          ✖️           |     ✔️      |         ✖️         |              |        ✖️        |
+| [Amazon Reviews](http://jmcauley.ucsd.edu/data/amazon/links.html) |                   |                      |            |                   |              |                 |
 
 Also, we provide some information about the dataset content such as the number of items, users and so on. This may give you a brief view of the dataset.
 
-|                         **Dataset**                          |    Rows    |   User    | **Item**  | Rating | **Timestamp** |
+|                         **Dataset**                          |    #Interactions    |   #User    | #Item  | #Rating | #Timestamp |
 | :----------------------------------------------------------: | :--------: | :-------: | :-------: | :----: | :-----------: |
 | [MovieLens-100K](https://grouplens.org/datasets/movielens/100k/) |  100,000   |    943    |   1,682   |   5    |    49,282     |
 | [MovieLens-1M](https://grouplens.org/datasets/movielens/1m/) | 1,000,209  |   6,040   |   3,706   |   5    |    458,455    |
 | [MovieLens-25M](https://grouplens.org/datasets/movielens/25m/) | 25,000,095 |  162,541  |  59,047   |   10   |  20,115,267   |
 |    [Last.FM](https://grouplens.org/datasets/hetrec-2011/)    |   92,834   |   1,892   |  17,632   | 5,436  |       1       |
 | [Epinions](http://www.trustlet.org/downloaded_epinions.html) |  664,825   |  40,163   |  139,738  |   5    |       1       |
-| [Tafeng](https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/) |            |           |           |        |               |
-| [Dunnhumby](https://www.kaggle.com/frtgnn/dunnhumby-the-complete-journey) |    500     |    28     |    463    |   1    |      N/A      |
+| [Tafeng](https://www.kaggle.com/chiranjivdas09/ta-feng-grocery-dataset/) |      464118      |     9238      |    7973       |     1   |     464118     |
+| [Dunnhumby](https://www.kaggle.com/frtgnn/dunnhumby-the-complete-journey) |    2595732    | 2500     |    92339     |    1    |      2595732      |
 | [Instacart](https://www.instacart.com/datasets/grocery-shopping-2017) | 33,819,106 |  206,209  |  49,685   |   1    |   3,346,083   |
 |    [citeulike-a](https://github.com/js05212/citeulike-a)     |  204,986   |    240    |  16,980   |   1    |       1       |
 | [citeulike-t](https://github.com/changun/CollMetric/tree/master/citeulike-t) |  134,860   |    216    |  25,584   |   1    |       1       |
@@ -91,6 +93,22 @@ Also, we provide some information about the dataset content such as the number o
 | [Taobao](https://tianchi.aliyun.com/dataset/dataDetail?dataId=649) | 3,835,331  |  37,376   |  930,607  |   1    |    698,889    |
 | [Ali-mobile](https://tianchi.aliyun.com/dataset/dataDetail?dataId=46) | 12,256,906 |  10,000   | 2,876,947 |   1    |       1       |
 | [Retailrocket](https://www.kaggle.com/retailrocket/ecommerce-dataset#events.csv) | 2,756,101  | 1,407,58  |  235,061  |   1    |   2,749,921   |
+| [Amazon Reviews -- Amazon Instant Video](http://jmcauley.ucsd.edu/data/amazon/links.html) | 583,933 | 426,922 | 23,965 | 5 | 3,027 |
+| [Amazon Reviews -- Musical Instruments](http://jmcauley.ucsd.edu/data/amazon/links.html) | 500,176 | 339,231 | 83,046 | 5 | 5,339 |
+| [Amazon Reviews -- Digital Music](http://jmcauley.ucsd.edu/data/amazon/links.html) | 836,006 | 478,235 | 266,414 | 5 | 5,941 |
+| [Amazon Reviews -- Baby](http://jmcauley.ucsd.edu/data/amazon/links.html) | 915,446 | 531,890 | 64,426 | 5 | 4,869 |
+| [Amazon Reviews -- Grocery and Gourmet Food](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,297,156 | 768,438 | 166,049 | 5 | 3,831 |
+| [Amazon Reviews -- Patio, Lawn and Garden](http://jmcauley.ucsd.edu/data/amazon/links.html) | 993,490 | 714,791 | 105,984 | 5 | 4,929 |
+| [Amazon Reviews -- Automotive](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,373,768 | 851,418 | 320,112 | 5 | 3,704 |
+| [Amazon Reviews -- Pet Supplies](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,235,316 | 740,985 | 103,288 | 5 | 3,900 |
+| [Amazon Reviews -- Cell Phones and Accessories](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3447249 | 2261045 | 319678 | 5 | 4724 |
+| [Amazon Reviews -- Health and Personal Care](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2982326 | 1851132 | 252331 | 5 | 4733 |
+| [Amazon Reviews -- Toys and Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2252771 | 1342911 | 327698 | 5 | 5151 |
+| [Amazon Reviews -- Video Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1324753 | 826767 | 50210 | 5 | 5396 |
+| [Amazon Reviews -- Tools and Home Improvement](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1926047 | 1212468 | 260659 | 5 | 5366 |
+| [Amazon Reviews -- Beauty](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2023070 | 1210271 | 249274 | 5 | 4231 |
+| [Amazon Reviews -- Apps for Android](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2638173 | 1323884 | 61275 | 5 | 1283 |
+| [Amazon Reviews -- Office Products](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1243186 | 909314 | 130006 | 5 | 5400 |
 
 ---
 
@@ -174,7 +192,15 @@ This splitting approach is for evaluating how well a model performs on segments 
 
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last portion of baskets.
 
+
 ---
+
+### Disclaimer on Datasets
+
+This is a utility library that downloads and prepares public datasets. We do not host or distribute these datasets, vouch for their quality or fairness, or claim that you have license to use the dataset. It is your responsibility to determine whether you have permission to use the dataset under the dataset's license.
+
+If you're a dataset owner and wish to update any part of it (description, citation, etc.), or do not want your dataset to be included in this library, please get in touch through a GitHub issue. Thanks for your contribution to the RecSys community!
+
 
 ## More
 

@@ -1,4 +1,5 @@
 import argparse
+import gzip
 import os
 import random
 import time
@@ -21,13 +22,13 @@ from beta_rec.utils.constants import (
 
 
 def normalized_adj_single(adj):
-    """ Missing docs
+    """Missing docs.
 
     Args:
         adj:
 
     Returns:
-
+        None.
     """
     rowsum = np.array(adj.sum(1))
     d_inv = np.power(rowsum, -1).flatten()
@@ -41,25 +42,21 @@ def normalized_adj_single(adj):
 
 
 def ensureDir(dir_path):
-    """Ensure a dir exist, otherwise create
+    """Ensure a dir exist, otherwise create the path.
 
     Args:
-        dir_path (str): the target dir
-    Return:
+        dir_path (str): the target dir.
     """
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
 
 def update_args(config, args):
-    """Update config parameters by the received parameters from command line
+    """Update config parameters by the received parameters from command line.
 
     Args:
         config (dict): Initial dict of the parameters from JSON config file.
         args (object): An argparse Argument object with attributes being the parameters to be updated.
-
-    Returns:
-        None
     """
     args_dic = {}
     for cfg in ["system", "model"]:
@@ -70,18 +67,44 @@ def update_args(config, args):
     print_dict_as_table(args_dic, "Received parameters from command line (or default):")
 
 
-def save_dataframe_as_npz(data, data_file):
-    """ Save DataFrame in compressed format
-    Save and convert the DataFrame to npz file.
+def parse_gzip_file(path):
+    """Parse gzip file.
+
     Args:
-        data (DataFrame): DataFrame to be saved
-        data_file: Target file path
+        path: the file path of gzip file.
+    """
+    g = gzip.open(path, "rb")
+    for l in g:
+        yield eval(l)
+
+
+def get_data_frame_from_gzip_file(path):
+    """Get dataframe from a gzip file.
+
+    Args:
+        path the file path of gzip file.
 
     Returns:
-        None
+        A dataframe extracted from the gzip file.
     """
-    user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=np.long)
-    item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=np.long)
+    i = 0
+    df = {}
+    for d in parse_gzip_file(path):
+        df[i] = d
+        i += 1
+    return pd.DataFrame.from_dict(df, orient="index")
+
+
+def save_dataframe_as_npz(data, data_file):
+    """Save DataFrame in compressed format.
+
+    Save and convert the DataFrame to npz file.
+    Args:
+        data (DataFrame): DataFrame to be saved.
+        data_file: Target file path.
+    """
+    user_ids = data[DEFAULT_USER_COL].to_numpy(dtype=data[DEFAULT_USER_COL].dtypes)
+    item_ids = data[DEFAULT_ITEM_COL].to_numpy(dtype=data[DEFAULT_ITEM_COL].dtypes)
     ratings = data[DEFAULT_RATING_COL].to_numpy(dtype=np.float32)
     data_dic = {
         "user_ids": user_ids,
@@ -100,16 +123,15 @@ def save_dataframe_as_npz(data, data_file):
 
 
 def get_dataframe_from_npz(data_file):
-    """Get the DataFrame from npz file
+    """Get the DataFrame from npz file.
 
-    Get the DataFrame from npz file
+    Get the DataFrame from npz file.
 
     Args:
-        data_file (str or Path): File path
+        data_file (str or Path): File path.
 
     Returns:
-        DataFrame:
-
+        DataFrame: the unzip data.
     """
     np_data = np.load(data_file)
     data_dic = {
@@ -126,15 +148,11 @@ def get_dataframe_from_npz(data_file):
 
 
 def un_zip(file_name, target_dir=None):
-    """ Unzip zip files
+    """Unzip zip files.
 
     Args:
         file_name (str or Path): zip file path.
         target_dir (str or Path): target path to be save the unzipped files.
-
-    Returns:
-        None
-
     """
     if target_dir is None:
         target_dir = os.path.dirname(file_name)
@@ -146,7 +164,7 @@ def un_zip(file_name, target_dir=None):
 
 
 def print_dict_as_table(dic, tag=None, columns=["keys", "values"]):
-    """Print a dictionary as table
+    """Print a dictionary as table.
 
     Args:
         dic (dict): dict object to be formatted.
@@ -155,7 +173,6 @@ def print_dict_as_table(dic, tag=None, columns=["keys", "values"]):
 
     Returns:
         None
-
     """
     print("-" * 80)
     if tag is not None:
@@ -167,11 +184,11 @@ def print_dict_as_table(dic, tag=None, columns=["keys", "values"]):
 
 
 class DictToObject(object):
-    """Python dict to object
-
-    """
+    """Python dict to object."""
 
     def __init__(self, dictionary):
+        """Initialize DictToObject Class."""
+
         def _traverse(key, element):
             if isinstance(element, dict):
                 return key, DictToObject(element)
@@ -183,20 +200,21 @@ class DictToObject(object):
 
 
 def get_random_rep(raw_num, dim):
-    """
-    Generate a random embedding from a normal (Gaussian) distribution.
+    """Generate a random embedding from a normal (Gaussian) distribution.
+
     Args:
         raw_num: Number of raw to be generated.
         dim: The dimension of the embeddings.
     Returns:
-        ndarray or scalar
+        ndarray or scalar.
         Drawn samples from the normal distribution.
     """
     return np.random.normal(size=(raw_num, dim))
 
 
 def timeit(method):
-    """Decorator for tracking the execution time for the specific method
+    """Generate decorator for tracking the execution time for the specific method.
+
     Args:
         method: The method need to timeit.
 
@@ -228,16 +246,11 @@ def timeit(method):
 
 
 def save_to_csv(result, result_file):
-    """
-    Save a result dict to disk.
+    """Save a result dict to disk.
 
     Args:
         result: The result dict to be saved.
         result_file: The file path to be saved.
-
-    Returns:
-        None
-
     """
     result_df = pd.DataFrame(result)
     if os.path.exists(result_file):
@@ -251,15 +264,10 @@ def save_to_csv(result, result_file):
 
 
 def set_seed(seed):
-    """
-    Initialize all the seed in the system
+    """Initialize all the seed in the system.
 
     Args:
         seed: A global random seed.
-
-    Returns:
-        None
-
     """
     if type(seed) != int:
         raise ValueError("Error: seed is invalid type")
@@ -271,6 +279,7 @@ def set_seed(seed):
 
 
 def str2bool(v):
+    """Convert a string to a bool variable."""
     if isinstance(v, bool):
         return v
     if v.lower() in ("yes", "true", "t", "y", "1"):

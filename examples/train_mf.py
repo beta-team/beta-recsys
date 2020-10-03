@@ -1,6 +1,4 @@
-"""
-   isort:skip_file
-"""
+"""isort:skip_file."""
 import argparse
 import os
 import sys
@@ -17,10 +15,10 @@ from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """ Parse args from command line
+    """Parse args from command line.
 
-        Returns:
-            args object.
+    Returns:
+        args object.
     """
     parser = argparse.ArgumentParser(description="Run MF..")
     parser.add_argument(
@@ -72,11 +70,15 @@ def parse_args():
 
 
 class MF_train(TrainEngine):
+    """MF_train Class."""
+
     def __init__(self, args):
+        """Initialize MF_train Class."""
         print(args)
         super(MF_train, self).__init__(args)
 
     def train(self):
+        """Train the model."""
         self.load_dataset()
         self.gpu_id, self.config["device_str"] = self.get_device()
         """ Main training navigator
@@ -114,13 +116,10 @@ class MF_train(TrainEngine):
 
 
 def tune_train(config):
-    """Train the model with a hypyer-parameter tuner (ray)
+    """Train the model with a hypyer-parameter tuner (ray).
 
     Args:
-        config (dict): All the parameters for the model
-
-    Returns:
-
+        config (dict): All the parameters for the model.
     """
     train_engine = MF_train(DictToObject(config))
     best_performance = train_engine.train()

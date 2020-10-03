@@ -7,7 +7,10 @@ from beta_rec.utils.common_util import timeit
 
 
 class VBCAR(nn.Module):
+    """VBCAR Class."""
+
     def __init__(self, config):
+        """Initialize VBCAR Class."""
         super(VBCAR, self).__init__()
         self.config = config
         self.n_users = config["n_users"]
@@ -32,6 +35,7 @@ class VBCAR(nn.Module):
             self.act = lambda x: x
 
     def init_layers(self):
+        """Initialize layers in the model."""
         self.user_emb = nn.Embedding(self.n_users, self.emb_dim)
         self.item_emb = nn.Embedding(self.n_items, self.emb_dim)
         init_range = 0.1 * (self.emb_dim) ** (-1 / 2)
@@ -42,12 +46,14 @@ class VBCAR(nn.Module):
         self.fc_i_2_mu = nn.Linear(self.late_dim, self.emb_dim * 2)
 
     def init_feature(self, user_fea, item_fea):
+        """Initialize features."""
         self.user_fea = user_fea
         self.item_fea = item_fea
         self.user_fea_dim = user_fea.size()[1]
         self.item_fea_dim = item_fea.size()[1]
 
     def user_encode(self, index):
+        """Encode user."""
         x = self.user_fea[index]
         x = self.fc_u_2_mu(self.act(self.fc_u_1_mu(x)))
         mu = x[:, : self.emb_dim]
@@ -55,6 +61,7 @@ class VBCAR(nn.Module):
         return mu, std
 
     def item_encode(self, index):
+        """Encode item."""
         x = self.item_fea[index]
         x = self.fc_i_2_mu(self.act(self.fc_i_1_mu(x)))
         mu = x[:, : self.emb_dim]
@@ -62,12 +69,14 @@ class VBCAR(nn.Module):
         return mu, std
 
     def reparameterize(self, gaussian):
+        """Re-parameterize the model."""
         mu, std = gaussian
         std = torch.exp(0.5 * std)
         eps = torch.randn_like(std)
         return mu + std * eps
 
     def kl_div(self, dis1, dis2=None, neg=False):
+        """Missing Doc."""
         mean1, std1 = dis1
         if dis2 is None:
             mean2 = torch.zeros(mean1.size(), device=self.device)
@@ -100,6 +109,7 @@ class VBCAR(nn.Module):
         return dkl
 
     def forward(self, batch_data):
+        """Train the model."""
         pos_u, pos_i_1, pos_i_2, neg_u, neg_i_1, neg_i_2 = batch_data
         pos_u_dis = self.user_encode(pos_u)
         emb_u = torch.cat((self.reparameterize(pos_u_dis), self.user_emb(pos_u)), dim=1)
@@ -168,6 +178,7 @@ class VBCAR(nn.Module):
         return (1 - self.alpha) * (GEN) + (self.alpha * KLD)
 
     def predict(self, users, items):
+        """Predict result with the model."""
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
         with torch.no_grad():
@@ -183,9 +194,10 @@ class VBCAR(nn.Module):
 
 
 class VBCAREngine(ModelEngine):
-    """Engine for training & evaluating GMF model"""
+    """Engine for training & evaluating GMF model."""
 
     def __init__(self, config):
+        """Initialize VBCAREngine Class."""
         self.config = config
         self.model = VBCAR(config["model"])
         user_fea = torch.tensor(
@@ -205,6 +217,7 @@ class VBCAREngine(ModelEngine):
         super(VBCAREngine, self).__init__(config)
 
     def train_single_batch(self, batch_data, ratings=None):
+        """Train the model in a single batch."""
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
         loss = self.model.forward(batch_data)
@@ -215,6 +228,7 @@ class VBCAREngine(ModelEngine):
 
     @timeit
     def train_an_epoch(self, train_loader, epoch_id):
+        """Train the model in one epoch."""
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0

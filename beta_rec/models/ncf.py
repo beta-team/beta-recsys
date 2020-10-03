@@ -10,7 +10,10 @@ from beta_rec.utils.common_util import timeit
 
 
 class NeuMF(torch.nn.Module):
+    """NeuMF Class."""
+
     def __init__(self, config):
+        """Initialize NeuMF Class."""
         super(NeuMF, self).__init__()
         self.config = config
         self.n_users = config["n_users"]
@@ -47,6 +50,7 @@ class NeuMF(torch.nn.Module):
         self.logistic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):
+        """Train the model."""
         user_embedding_mlp = self.embedding_user_mlp(user_indices)
         item_embedding_mlp = self.embedding_item_mlp(item_indices)
         user_embedding_mf = self.embedding_user_mf(user_indices)
@@ -67,19 +71,22 @@ class NeuMF(torch.nn.Module):
         return rating
 
     def predict(self, user_indices, item_indices):
+        """Predict the result with the model."""
         user_indices = torch.LongTensor(user_indices).to(self.device)
         item_indices = torch.LongTensor(item_indices).to(self.device)
         with torch.no_grad():
             return self.forward(user_indices, item_indices)
 
     def init_weight(self):
+        """Initialize weight in the model."""
         pass
 
 
 class NeuMFEngine(ModelEngine):
-    """Engine for training & evaluating GMF model"""
+    """Engine for training & evaluating GMF model."""
 
     def __init__(self, config):
+        """Initialize NeuMFEngine Class."""
         self.config = config
         self.model = NeuMF(config)
         self.loss = torch.nn.BCELoss()
@@ -91,6 +98,13 @@ class NeuMFEngine(ModelEngine):
             self.init_weights()
 
     def train_single_batch(self, users, items, ratings):
+        """Train the model in a single batch.
+
+        Args:
+            batch_data (list): batch users, positive items and negative items.
+        Return:
+            loss (float): batch loss.
+        """
         assert hasattr(self, "model"), "Please specify the exact model !"
         users, items, ratings = (
             users.to(self.device),
@@ -107,6 +121,12 @@ class NeuMFEngine(ModelEngine):
 
     @timeit
     def train_an_epoch(self, train_loader, epoch_id):
+        """Train the model in one epoch.
+
+        Args:
+            epoch_id (int): the number of epoch.
+            train_loader (function): user, pos_items and neg_items generator.
+        """
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0
@@ -120,6 +140,7 @@ class NeuMFEngine(ModelEngine):
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def init_weights(self):
+        """Initialize weights in the model."""
         nn.init.normal_(self.model.embedding_user_mf.weight, std=0.01)
         nn.init.normal_(self.model.embedding_item_mf.weight, std=0.01)
         nn.init.normal_(self.model.embedding_user_mlp.weight, std=0.01)
@@ -132,7 +153,7 @@ class NeuMFEngine(ModelEngine):
         )
 
     def load_pretrain_weights(self):
-        """Loading weights from trained MLP model & GMF model"""
+        """Load weights from trained MLP model & GMF model."""
         # load GMF model
         gmf_model = GMF(self.config)
         gmf_save_dir = os.path.join(

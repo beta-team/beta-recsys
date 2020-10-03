@@ -11,21 +11,21 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 class GroceryData(BaseData, Auxiliary):
-    r"""A Grocery Data object, which consist one more order/basket column than the BaseData. Re_index all the users and
-    items from raw dataset.
+    r"""A Grocery Data object, which consist one more order/basket column than the BaseData.
 
-        Args:
-            split_dataset (train,valid,test): the split dataset, a tuple consisting of training (DataFrame),
+    Re-index all the users and items from raw dataset.
+
+    Args:
+        split_dataset (train,valid,test): the split dataset, a tuple consisting of training (DataFrame),
             validate/list of validate (DataFrame), testing/list of testing (DataFrame).
-            intersect (bool, optional): remove users and items of test/valid sets that do not exist in the train set.
-            If the model is able to predict for new users and new items, this can be :obj:`False`.
-            (default: :obj:`True`)
-            binarize (bool, optional): binarize the rating column of train set 0 or 1, i.e. implicit feedback.
-            (default: :obj:`True`)
-            bin_thld (int, optional):  the threshold of binarization (default: :obj:`0`)
-            normalize (bool, optional): normalize the rating column of train set into [0, 1], i.e. explicit feedback.
-            (default: :obj:`False`)
-
+        intersect (bool, optional): remove users and items of test/valid sets that do not exist in the train set.
+            If the model is able to predict for new users and new items, this can be :obj:`False`
+            (default: :obj:`True`).
+        binarize (bool, optional): binarize the rating column of train set 0 or 1, i.e. implicit feedback.
+            (default: :obj:`True`).
+        bin_thld (int, optional):  the threshold of binarization (default: :obj:`0`).
+        normalize (bool, optional): normalize the rating column of train set into [0, 1], i.e. explicit feedback.
+            (default: :obj:`False`).
     """
 
     def __init__(
@@ -37,6 +37,7 @@ class GroceryData(BaseData, Auxiliary):
         bin_thld=0.0,
         normalize=False,
     ):
+        """Initialize GroceryData Class."""
         BaseData.__init__(
             self,
             split_dataset=split_dataset,

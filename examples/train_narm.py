@@ -1,6 +1,4 @@
-"""
-   isort:skip_file
-"""
+"""isort:skip_file."""
 import argparse
 import os
 import sys
@@ -21,16 +19,14 @@ from beta_rec.datasets.seq_data_utils import (
     reindex_items,
 )
 from beta_rec.models.narm import NARMEngine
-from beta_rec.utils.common_util import update_args
 from beta_rec.utils.monitor import Monitor
 
 
 def parse_args():
-    """Parse args from command line
+    """Parse args from command line.
 
     Returns:
         args object.
-
     """
     parser = argparse.ArgumentParser(description="Run NARM..")
     parser.add_argument(
@@ -55,12 +51,6 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument("--root_dir", nargs="?", type=str, help="working directory")
-    parser.add_argument(
-        "--percent",
-        nargs="?",
-        type=float,
-        help="The percentage of the subset of the dataset, only availbe on instacart dataset.",
-    )
     parser.add_argument(
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
@@ -91,15 +81,13 @@ def parse_args():
 
 
 class NARM_train(TrainEngine):
-    """ An instance class from the TrainEngine base class
-
-    """
+    """An instance class from the TrainEngine base class."""
 
     def __init__(self, config):
-        """Constructor
+        """Initialize NARM_trian Class.
 
         Args:
-            config (dict): All the parameters for the model
+            config (dict): All the parameters for the model.
         """
         self.config = config
         super(NARM_train, self).__init__(self.config)
@@ -109,11 +97,7 @@ class NARM_train(TrainEngine):
         self.seq_eval_engine = SeqEvalEngine(self.config)
 
     def load_dataset_seq(self):
-        """ Default implementation of building dataset
-
-        Returns:
-            None
-        """
+        """Build a dataset for model."""
         # ml = Movielens_100k()
         # ml.download()
         # ml.load_interaction()
@@ -129,17 +113,15 @@ class NARM_train(TrainEngine):
         self.test_data = self.dataset[self.dataset.col_flag == "test"]
 
         # self.dataset = Dataset(self.config)
-        self.config["n_users"] = self.train_data.col_user.nunique()
-        self.config["n_items"] = self.train_data.col_item.nunique() + 1
+        self.config["dataset"]["n_users"] = self.train_data.col_user.nunique()
+        self.config["dataset"]["n_items"] = self.train_data.col_item.nunique() + 1
 
     def build_data_loader(self):
-        """ Convert users' interactions to sequences
+        """Convert users' interactions to sequences.
 
         Returns:
             load_train_data (DataLoader): training set.
-
         """
-
         # reindex items from 1
         self.train_data, self.valid_data, self.test_data = reindex_items(
             self.train_data, self.valid_data, self.test_data
@@ -161,19 +143,15 @@ class NARM_train(TrainEngine):
         # pad the sequences with 0
         self.load_train_data = DataLoader(
             load_train_data,
-            batch_size=self.config["batch_size"],
+            batch_size=self.config["model"]["batch_size"],
             shuffle=False,
             collate_fn=collate_fn,
         )
         return self.load_train_data
 
     def _train(self, engine, train_loader, save_dir):
-        """Train the model with epochs
-
-        Retruns:
-            None
-        """
-        epoch_bar = tqdm(range(self.config["max_epoch"]), file=sys.stdout)
+        """Train the model with epochs."""
+        epoch_bar = tqdm(range(self.config["model"]["max_epoch"]), file=sys.stdout)
         for epoch in epoch_bar:
             print("Epoch {} starts !".format(epoch))
             print("-" * 80)
@@ -188,18 +166,14 @@ class NARM_train(TrainEngine):
             )
 
     def train(self):
-        """ Train and test NARM
-
-        Returns:
-            None
-        """
+        """Train and test NARM."""
         self.monitor = Monitor(
-            log_dir=self.config["run_dir"], delay=1, gpu_id=self.gpu_id
+            log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
         )
         train_loader = self.load_train_data
         self.engine = NARMEngine(self.config)
         self.narm_save_dir = os.path.join(
-            self.config["model_save_dir"], self.config["save_name"]
+            self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
         )
         self._train(self.engine, train_loader, self.narm_save_dir)
         self.config["run_time"] = self.monitor.stop()
@@ -208,8 +182,6 @@ class NARM_train(TrainEngine):
 
 if __name__ == "__main__":
     args = parse_args()
-    config = {}
-    update_args(config, args)
-    narm = NARM_train(config)
+    narm = NARM_train(args)
     narm.train()
     # narm.test() have already implemented in train()

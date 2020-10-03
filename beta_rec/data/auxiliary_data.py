@@ -7,12 +7,13 @@ from beta_rec.utils.common_util import get_random_rep
 class Auxiliary(object):
     r"""A Auxiliary Data object, which is able read various feature for users and items.
 
-        Args:
-            config (dict): configs dict.
+    Args:
+        config (dict): configs dict.
 
     """
 
     def __init__(self, config, n_users, n_items):
+        """Initialize Auxiliary Class."""
         self.config = config
         self.n_users = n_users
         self.n_items = n_items
