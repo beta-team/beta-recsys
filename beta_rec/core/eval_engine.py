@@ -331,14 +331,15 @@ class EvalEngine(object):
             )
         gauges_test = {}
         gauges_valid = {}
+        model_run_id = self.config["system"]["model_run_id"]
         for metric in self.metrics:
             gauges_test[metric] = Gauge(
-                metric + "_test",
+                metric + "_test" + f"_{model_run_id}",
                 "Model Testing Performance under " + metric,
                 self.tunable,
             )
             gauges_valid[metric] = Gauge(
-                metric + "_valid",
+                metric + "_valid" + f"_{model_run_id}",
                 "Model Validation Performance under " + metric,
                 self.tunable,
             )
