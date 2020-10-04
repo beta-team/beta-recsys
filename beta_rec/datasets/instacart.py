@@ -3,9 +3,9 @@ import random
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.common_util import un_zip
-from beta_rec.utils.constants import (
+from ..datasets.dataset_base import DatasetBase
+from ..utils.common_util import un_zip
+from ..utils.constants import (
     DEFAULT_FLAG_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_ORDER_COL,

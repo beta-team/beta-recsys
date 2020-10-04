@@ -12,17 +12,12 @@ from ray import tune
 from tabulate import tabulate
 from tqdm import tqdm
 
-from beta_rec.core.eval_engine import EvalEngine
-from beta_rec.data.base_data import BaseData
-from beta_rec.datasets.data_load import load_split_dataset
-from beta_rec.utils import logger
-from beta_rec.utils.common_util import (
-    ensureDir,
-    print_dict_as_table,
-    set_seed,
-    update_args,
-)
-from beta_rec.utils.constants import MAX_N_UPDATE
+from ..core.eval_engine import EvalEngine
+from ..data.base_data import BaseData
+from ..datasets.data_load import load_split_dataset
+from ..utils import logger
+from ..utils.common_util import ensureDir, print_dict_as_table, set_seed, update_args
+from ..utils.constants import MAX_N_UPDATE
 
 
 class TrainEngine(object):

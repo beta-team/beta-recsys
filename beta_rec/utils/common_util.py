@@ -12,7 +12,7 @@ import scipy.sparse as sp
 import torch
 from tabulate import tabulate
 
-from beta_rec.utils.constants import (
+from ..utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_ORDER_COL,
     DEFAULT_RATING_COL,

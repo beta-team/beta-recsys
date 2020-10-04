@@ -6,10 +6,10 @@ import torch
 from munch import munchify
 from ray import tune
 
-from beta_rec.data.deprecated_data_base import DataLoaderBase
-from beta_rec.models.ngcf import NGCFEngine
-from beta_rec.recommenders import Recommender
-from beta_rec.utils.monitor import Monitor
+from ..data.deprecated_data_base import DataLoaderBase
+from ..models.ngcf import NGCFEngine
+from ..recommenders import Recommender
+from ..utils.monitor import Monitor
 
 
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
