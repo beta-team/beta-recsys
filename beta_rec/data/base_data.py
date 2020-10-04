@@ -6,13 +6,9 @@ import torch
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 
-from beta_rec.data.data_loaders import PairwiseNegativeDataset, RatingDataset
-from beta_rec.utils.alias_table import AliasTable
-from beta_rec.utils.constants import (
-    DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
-    DEFAULT_USER_COL,
-)
+from ..data.data_loaders import PairwiseNegativeDataset, RatingDataset
+from ..utils.alias_table import AliasTable
+from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_USER_COL
 
 
 class BaseData(object):

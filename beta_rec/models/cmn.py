@@ -4,9 +4,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
 
-from beta_rec.models.pairwise_gmf import truncated_normal_
-from beta_rec.models.torch_engine import ModelEngine
-from beta_rec.models.vlml import VariableLengthMemoryLayer
+from ..models.pairwise_gmf import truncated_normal_
+from ..models.torch_engine import ModelEngine
+from ..models.vlml import VariableLengthMemoryLayer
 
 
 class CollaborativeMemoryNetwork(nn.Module):
