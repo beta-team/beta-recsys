@@ -109,6 +109,12 @@ Also, we provide some information about the dataset content such as the number o
 | [Amazon Reviews -- Beauty](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2023070 | 1210271 | 249274 | 5 | 4231 |
 | [Amazon Reviews -- Apps for Android](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2638173 | 1323884 | 61275 | 5 | 1283 |
 | [Amazon Reviews -- Office Products](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1243186 | 909314 | 130006 | 5 | 5400 |
+| [Amazon Reviews -- Sports And Outdoors](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3268695 | 1990521 | 478898 | 5 | 4786 |
+| [Amazon Reviews -- Kindle Store](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3205467 | 1406890 | 1406890 | 5 | 3328 |
+| [Amazon Reviews -- Home And Kitchen](http://jmcauley.ucsd.edu/data/amazon/links.html) | 4253926 | 2511610 | 410243 | 5 | 5202 |
+| [Amazon Reviews -- Clothing Shoes And Jewelry](http://jmcauley.ucsd.edu/data/amazon/links.html) | 5748920 | 3117268 | 1136004 | 5 | 4209 |
+| [Amazon Reviews -- CDs And Vinyl](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3749004 | 1578597 | 486360 | 5 | 6041 |
+| [Amazon Reviews -- Movies And TV](http://jmcauley.ucsd.edu/data/amazon/links.html) | 4607047 | 2088620 | 200941 | 5 | 6004 |
 
 ---
 
