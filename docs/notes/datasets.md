@@ -123,10 +123,7 @@ Also, we provide some information about the dataset content such as the number o
 
 ### Download Data
 
-Beta-Recsys
-
-
- provides download interface for users to download different dataset. Here is an example:
+Beta-Recsys provides download interface for users to download different dataset. Here is an example:
 
 ```python
 import sys
