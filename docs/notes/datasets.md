@@ -115,6 +115,7 @@ Also, we provide some information about the dataset content such as the number o
 | [Amazon Reviews -- Clothing Shoes And Jewelry](http://jmcauley.ucsd.edu/data/amazon/links.html) | 5,748,920 | 3,117,268 | 1,136,004 | 5 | 4,209 |
 | [Amazon Reviews -- CDs And Vinyl](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3,749,004 | 1,578,597 | 486,360 | 5 | 6,041 |
 | [Amazon Reviews -- Movies And TV](http://jmcauley.ucsd.edu/data/amazon/links.html) | 4,607,047 | 2,088,620 | 200,941 | 5 | 6,004 |
+| [Amazon Reviews -- Electronics](http://jmcauley.ucsd.edu/data/amazon/links.html) | 7,824,482 | 4,201,696 | 476,002 | 5 | 5,489 |
 | [Amazon Reviews -- Books](http://jmcauley.ucsd.edu/data/amazon/links.html) | 22,507,155 | 8,026,324 | 2,330,066 | 5 | 6,296 |
 
 ---
