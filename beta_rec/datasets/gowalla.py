@@ -3,8 +3,8 @@ import time
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.constants import (
+from ..datasets.dataset_base import DatasetBase
+from ..utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,

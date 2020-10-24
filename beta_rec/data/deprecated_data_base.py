@@ -8,8 +8,8 @@ import scipy.sparse as sp
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-from beta_rec.utils.common_util import ensureDir, normalized_adj_single
-from beta_rec.utils.constants import (
+from ..utils.common_util import ensureDir, normalized_adj_single
+from ..utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,

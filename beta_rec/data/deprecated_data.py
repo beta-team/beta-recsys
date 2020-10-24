@@ -8,20 +8,16 @@ import pandas as pd
 import scipy.sparse as sp
 from tabulate import tabulate
 
-from beta_rec.data.base_data import BaseData
-from beta_rec.datasets.data_load import (
+from ..data.base_data import BaseData
+from ..datasets.data_load import (
     load_item_fea_dic,
     load_split_dataset,
     load_user_item_feature,
 )
-from beta_rec.utils.alias_table import AliasTable
-from beta_rec.utils.common_util import ensureDir, get_random_rep, normalized_adj_single
-from beta_rec.utils.constants import (
-    DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
-    DEFAULT_USER_COL,
-)
-from beta_rec.utils.triple_sampler import Sampler
+from ..utils.alias_table import AliasTable
+from ..utils.common_util import ensureDir, get_random_rep, normalized_adj_single
+from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_USER_COL
+from ..utils.triple_sampler import Sampler
 
 pd.options.mode.chained_assignment = None  # default='warn'
 

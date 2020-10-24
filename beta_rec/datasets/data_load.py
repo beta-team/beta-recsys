@@ -1,12 +1,12 @@
 import numpy as np
 
-from beta_rec.datasets.dunnhumby import Dunnhumby
-from beta_rec.datasets.epinions import Epinions
-from beta_rec.datasets.instacart import Instacart, Instacart_25
-from beta_rec.datasets.last_fm import LastFM
-from beta_rec.datasets.movielens import Movielens_1m, Movielens_25m, Movielens_100k
-from beta_rec.datasets.tafeng import Tafeng
-from beta_rec.utils.common_util import print_dict_as_table
+from ..datasets.dunnhumby import Dunnhumby
+from ..datasets.epinions import Epinions
+from ..datasets.instacart import Instacart, Instacart_25
+from ..datasets.last_fm import LastFM
+from ..datasets.movielens import Movielens_1m, Movielens_25m, Movielens_100k
+from ..datasets.tafeng import Tafeng
+from ..utils.common_util import print_dict_as_table
 
 
 def load_user_fea_dic(config, fea_type):

@@ -100,7 +100,23 @@ Also, we provide some information about the dataset content such as the number o
 | [Amazon Reviews -- Grocery and Gourmet Food](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,297,156 | 768,438 | 166,049 | 5 | 3,831 |
 | [Amazon Reviews -- Patio, Lawn and Garden](http://jmcauley.ucsd.edu/data/amazon/links.html) | 993,490 | 714,791 | 105,984 | 5 | 4,929 |
 | [Amazon Reviews -- Automotive](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,373,768 | 851,418 | 320,112 | 5 | 3,704 |
-| [Amazon Reviews -- Automotive](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,235,316 | 740,985 | 103,288 | 5 | 3,900 |
+| [Amazon Reviews -- Pet Supplies](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,235,316 | 740,985 | 103,288 | 5 | 3,900 |
+| [Amazon Reviews -- Cell Phones and Accessories](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3,447,249 | 2,261,045 | 319,678 | 5 | 4,724 |
+| [Amazon Reviews -- Health and Personal Care](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2,982,326 | 1,851,132 | 252,331 | 5 | 4,733 |
+| [Amazon Reviews -- Toys and Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2,252,771 | 1,342,911 | 327,698 | 5 | 5,151 |
+| [Amazon Reviews -- Video Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,324,753 | 826,767 | 50,210 | 5 | 5,396 |
+| [Amazon Reviews -- Tools and Home Improvement](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,926,047 | 1,212,468 | 260,659 | 5 | 5,366 |
+| [Amazon Reviews -- Beauty](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2,023,070 | 1,210,271 | 249,274 | 5 | 4,231 |
+| [Amazon Reviews -- Apps for Android](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2,638,173 | 1,323,884 | 61,275 | 5 | 1,283 |
+| [Amazon Reviews -- Office Products](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,243,186 | 909,314 | 130,006 | 5 | 5,400 |
+| [Amazon Reviews -- Sports And Outdoors](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3,268,695 | 1,990,521 | 478,898 | 5 | 4,786 |
+| [Amazon Reviews -- Kindle Store](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3205467 | 1,406,890 | 1,406,890 | 5 | 3,328 |
+| [Amazon Reviews -- Home And Kitchen](http://jmcauley.ucsd.edu/data/amazon/links.html) | 4,253,926 | 2,511,610 | 410,243 | 5 | 5,202 |
+| [Amazon Reviews -- Clothing Shoes And Jewelry](http://jmcauley.ucsd.edu/data/amazon/links.html) | 5,748,920 | 3,117,268 | 1,136,004 | 5 | 4,209 |
+| [Amazon Reviews -- CDs And Vinyl](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3,749,004 | 1,578,597 | 486,360 | 5 | 6,041 |
+| [Amazon Reviews -- Movies And TV](http://jmcauley.ucsd.edu/data/amazon/links.html) | 4,607,047 | 2,088,620 | 200,941 | 5 | 6,004 |
+| [Amazon Reviews -- Electronics](http://jmcauley.ucsd.edu/data/amazon/links.html) | 7,824,482 | 4,201,696 | 476,002 | 5 | 5,489 |
+| [Amazon Reviews -- Books](http://jmcauley.ucsd.edu/data/amazon/links.html) | 22,507,155 | 8,026,324 | 2,330,066 | 5 | 6,296 |
 
 ---
 
@@ -108,10 +124,7 @@ Also, we provide some information about the dataset content such as the number o
 
 ### Download Data
 
-Beta-Recsys
-
-
- provides download interface for users to download different dataset. Here is an example:
+Beta-Recsys provides download interface for users to download different dataset. Here is an example:
 
 ```python
 import sys
@@ -185,6 +198,13 @@ This splitting approach is for evaluating how well a model performs on segments 
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last portion of baskets.
 
 ---
+
+### Disclaimer on Datasets
+
+This is a utility library that downloads and prepares public datasets. We do not host or distribute these datasets, vouch for their quality or fairness, or claim that you have license to use the dataset. It is your responsibility to determine whether you have permission to use the dataset under the dataset's license.
+
+If you're a dataset owner and wish to update any part of it (description, citation, etc.), or do not want your dataset to be included in this library, please get in touch through a GitHub issue. Thanks for your contribution to the RecSys community!
+
 
 ## More
 

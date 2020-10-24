@@ -6,22 +6,22 @@ import pandas as pd
 from py7zr import unpack_7zarchive
 from tabulate import tabulate
 
-from beta_rec.datasets.data_split import (
+from ..datasets.data_split import (
     filter_user_item,
     filter_user_item_order,
     generate_parameterized_path,
     load_split_data,
     split_data,
 )
-from beta_rec.utils.common_util import (
+from ..utils.common_util import (
     get_dataframe_from_npz,
     save_dataframe_as_npz,
     timeit,
     un_zip,
 )
-from beta_rec.utils.constants import DEFAULT_ORDER_COL, DEFAULT_TIMESTAMP_COL
-from beta_rec.utils.download import download_file, get_format
-from beta_rec.utils.onedrive import OneDrive
+from ..utils.constants import DEFAULT_ORDER_COL, DEFAULT_TIMESTAMP_COL
+from ..utils.download import download_file, get_format
+from ..utils.onedrive import OneDrive
 
 default_root_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
@@ -302,7 +302,7 @@ class DatasetBase(object):
             data (DataFrame): DataFrame to be split.
                 - Default is None. It will load the raw interaction, with a default filter
                 ```
-                data = filter_user_item(data, min_u_c=10, min_i_c=10)
+                data = filter_user_item(data, min_u_c=3, min_i_c=3)
                 ```
                 - Users can specify their filtered data by using filter methods in data_split.py
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
@@ -319,7 +319,7 @@ class DatasetBase(object):
         """
         if data is None:
             data = self.load_interaction()
-            data = filter_user_item(data, min_u_c=10, min_i_c=10)
+            data = filter_user_item(data, min_u_c=3, min_i_c=3)
 
         if not isinstance(data, pd.DataFrame):
             raise RuntimeError("data is not a type of DataFrame")
@@ -347,7 +347,7 @@ class DatasetBase(object):
             data (DataFrame): DataFrame to be split.
                 - Default is None. It will load the raw interaction, with a default filter
                 ```
-                data = filter_user_item_order(data, min_u_c=10, min_o_c=10, min_i_c=10)
+                data = filter_user_item_order(data, min_u_c=3, min_o_c=3, min_i_c=3)
                 ```
                 - Users can specify their filtered data by using filter methods in data_split.py
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
@@ -364,7 +364,7 @@ class DatasetBase(object):
         """
         if data is None:
             data = self.load_interaction()
-            data = filter_user_item_order(data, min_u_c=10, min_o_c=10, min_i_c=10)
+            data = filter_user_item_order(data, min_u_c=3, min_o_c=3, min_i_c=3)
 
         if not isinstance(data, pd.DataFrame):
             raise RuntimeError("data is not a type of DataFrame")
@@ -395,7 +395,7 @@ class DatasetBase(object):
             data (DataFrame): DataFrame to be split.
                 - Default is None. It will load the raw interaction, with a default filter
                 ```
-                data = filter_user_item(data, min_u_c=10, min_i_c=10)
+                data = filter_user_item(data, min_u_c=3, min_i_c=3)
                 ```
                 - Users can specify their filtered data by using filter methods in data_split.py
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
@@ -412,7 +412,7 @@ class DatasetBase(object):
         """
         if data is None:
             data = self.load_interaction()
-            data = filter_user_item(data, min_u_c=10, min_i_c=10)
+            data = filter_user_item(data, min_u_c=3, min_i_c=3)
 
         if not isinstance(data, pd.DataFrame):
             raise RuntimeError("data is not a type of DataFrame")
@@ -443,7 +443,7 @@ class DatasetBase(object):
             data (DataFrame): DataFrame to be split.
                 - Default is None. It will load the raw interaction, with a default filter
                 ```
-                data = filter_user_item_order(data, min_u_c=10, min_o_c=10, min_i_c=10)
+                data = filter_user_item_order(data, min_u_c=3, min_o_c=3, min_i_c=3)
                 ```
                 - Users can specify their filtered data by using filter methods in data_split.py
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
@@ -460,7 +460,7 @@ class DatasetBase(object):
         """
         if data is None:
             data = self.load_interaction()
-            data = filter_user_item_order(data, min_u_c=10, min_o_c=10, min_i_c=10)
+            data = filter_user_item_order(data, min_u_c=3, min_o_c=3, min_i_c=3)
 
         if not isinstance(data, pd.DataFrame):
             raise RuntimeError("data is not a type of DataFrame")

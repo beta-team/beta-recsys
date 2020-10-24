@@ -45,7 +45,7 @@ train_loader = data.instance_bpr_loader(
                 device="cpu",
             )
 
-# Instance a nce DataLoader
+# Instance a bce DataLoader
 train_loader = data.instance_bce_loader(
                 batch_size=512,
                 device="cpu",

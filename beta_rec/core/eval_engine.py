@@ -13,14 +13,10 @@ from prometheus_client import Gauge, start_http_server
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
-import beta_rec.utils.evaluation as eval_model
-from beta_rec.utils.common_util import print_dict_as_table, save_to_csv, timeit
-from beta_rec.utils.constants import (
-    DEFAULT_ITEM_COL,
-    DEFAULT_PREDICTION_COL,
-    DEFAULT_USER_COL,
-)
-from beta_rec.utils.seq_evaluation import mrr, ndcg, precision, recall
+from ..utils import evaluation as eval_model
+from ..utils.common_util import print_dict_as_table, save_to_csv, timeit
+from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_PREDICTION_COL, DEFAULT_USER_COL
+from ..utils.seq_evaluation import mrr, ndcg, precision, recall
 
 lock_train_eval = Lock()
 lock_test_eval = Lock()
@@ -114,7 +110,7 @@ def train_eval_worker(testEngine, valid_df, test_df, valid_pred, test_pred, epoc
     test_result = evaluate(test_df, test_pred, testEngine.metrics, testEngine.valid_k)
     lock_train_eval.acquire()
     testEngine.record_performance(valid_result, test_result, epoch)
-    # testEngine.expose_performance(valid_result, test_result)
+    testEngine.expose_performance(valid_result, test_result)
     if (
         valid_result[f"{testEngine.valid_metric}@{testEngine.valid_k}"]
         > testEngine.best_valid_performance
@@ -214,7 +210,7 @@ class EvalEngine(object):
         self.n_worker = 0
         self.n_no_update = 0
         self.best_valid_performance = 0
-        # self.init_prometheus_env()
+        self.init_prometheus_env()
         print("Initializing test engine ...")
 
     def flush(self):
@@ -335,14 +331,15 @@ class EvalEngine(object):
             )
         gauges_test = {}
         gauges_valid = {}
+        model_run_id = self.config["system"]["model_run_id"]
         for metric in self.metrics:
             gauges_test[metric] = Gauge(
-                metric + "_test",
+                metric + "_test" + f"_{model_run_id}",
                 "Model Testing Performance under " + metric,
                 self.tunable,
             )
             gauges_valid[metric] = Gauge(
-                metric + "_valid",
+                metric + "_valid" + f"_{model_run_id}",
                 "Model Validation Performance under " + metric,
                 self.tunable,
             )

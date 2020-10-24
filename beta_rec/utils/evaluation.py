@@ -11,7 +11,7 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 
-from beta_rec.utils.constants import (
+from ..utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_K,
     DEFAULT_PREDICTION_COL,

@@ -37,6 +37,7 @@
         "lr": 0.05,
         "optimizer": "adam",
         "mess_dropout": [0.1, 0.1, 0.1],
+        "loss": "bpr",
         "max_epoch": 50,
         "save_name": "ngcf.model",
         "result_col": ["model","emb_dim","batch_size","optimizer","lr","regs"]
