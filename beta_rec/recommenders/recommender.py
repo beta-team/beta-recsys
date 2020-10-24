@@ -40,7 +40,8 @@ class Recommender(TrainEngine):
             None
 
         """
-        self.eval_engine.test_eval(test_df, self.engine.model)
+        result = self.eval_engine.test_eval(test_df, self.engine.model)
+        return result
 
     def load(self, model_dir):
         """Load a trained model.
