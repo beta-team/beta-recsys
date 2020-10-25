@@ -39,10 +39,13 @@ ml_1m_l1o_dir = os.path.join(par_abs_dir, "datasets/ml-1m/leave_one_out")
 class Movielens_100k(DatasetBase):
     """Movielens 100k Dataset."""
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         """Init Movielens_100k Class."""
+
         super().__init__(
             "ml_100k",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=ML_100K_URL,
             processed_leave_one_out_url=ML_100K_LEAVE_ONE_OUT_URL,
@@ -175,9 +178,11 @@ class Movielens_100k(DatasetBase):
 class Movielens_1m(DatasetBase):
     """Movielens 1m Dataset."""
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         """Init Movielens_1m Class."""
-        super().__init__("ml_1m", root_dir=root_dir, url=ML_1M_URL)
+        super().__init__(
+            "ml_1m", min_u_c=min_u_c, min_i_c=min_i_c, root_dir=root_dir, url=ML_1M_URL
+        )
 
     def preprocess(self):
         """Preprocess the raw file.
@@ -210,9 +215,11 @@ class Movielens_1m(DatasetBase):
 class Movielens_25m(DatasetBase):
     """Movielens 25m Dataset."""
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         """Init Movielens_25m Class."""
-        super().__init__("ml_25m", root_dir=root_dir, url=ML_25M_URL)
+        super().__init__(
+            "ml_25m", min_u_c=min_u_c, min_i_c=min_i_c, root_dir=root_dir, url=ML_1M_URL
+        )
 
     def preprocess(self):
         """Preprocess the raw file.
