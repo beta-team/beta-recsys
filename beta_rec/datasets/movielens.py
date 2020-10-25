@@ -39,10 +39,10 @@ ml_1m_l1o_dir = os.path.join(par_abs_dir, "datasets/ml-1m/leave_one_out")
 class Movielens_100k(DatasetBase):
     """Movielens 100k Dataset."""
 
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
+    def __init__(self, dataset_name="ml_100k", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Movielens_100k Class."""
         super().__init__(
-            "ml_100k",
+            dataset_name=dataset_name,
             min_u_c=min_u_c,
             min_i_c=min_i_c,
             root_dir=root_dir,
@@ -177,10 +177,14 @@ class Movielens_100k(DatasetBase):
 class Movielens_1m(DatasetBase):
     """Movielens 1m Dataset."""
 
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
+    def __init__(self, dataset_name="ml_1m", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Movielens_1m Class."""
         super().__init__(
-            "ml_1m", min_u_c=min_u_c, min_i_c=min_i_c, root_dir=root_dir, url=ML_1M_URL
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=ML_1M_URL,
         )
 
     def preprocess(self):
@@ -214,10 +218,14 @@ class Movielens_1m(DatasetBase):
 class Movielens_25m(DatasetBase):
     """Movielens 25m Dataset."""
 
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
+    def __init__(self, dataset_name="ml_25m", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Movielens_25m Class."""
         super().__init__(
-            "ml_25m", min_u_c=min_u_c, min_i_c=min_i_c, root_dir=root_dir, url=ML_1M_URL
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=ML_1M_URL,
         )
 
     def preprocess(self):

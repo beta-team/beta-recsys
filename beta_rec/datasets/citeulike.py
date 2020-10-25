@@ -41,10 +41,12 @@ class CiteULikeA(DatasetBase):
     'https://github.com/js05212/citeulike-a', then put it into the directory `citeulike-a/raw`
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init CiteULikeA Class."""
         super().__init__(
             "citeulike-a",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=CULA_URL,
             processed_leave_one_out_url=CULA_LEAVE_ONE_OUT_URL,
@@ -118,10 +120,14 @@ class CiteULikeT(DatasetBase):
     'https://github.com/js05212/citeulike-t', and then put it into the directory `citeulike-t/raw/citeulike-t`.
     """
 
-    def __init__(self):
+    def __init__(
+        self, dataset_name="citeulike-t", min_u_c=0, min_i_c=3,
+    ):
         r"""Init CiteULikeT Class."""
         super().__init__(
-            "citeulike-t",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             manual_download_url=CULT_URL,
             processed_leave_one_out_url=CULT_LEAVE_ONE_OUT_URL,
             processed_random_split_url=CULT_RANDOM_SPLIT_URL,

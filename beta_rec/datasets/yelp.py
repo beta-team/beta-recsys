@@ -33,10 +33,12 @@ class Yelp(DatasetBase):
     then put it into the directory `yelp/raw/yelp`.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="yelp", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Yelp Class."""
         super().__init__(
-            "yelp",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=YELP_URL,
             processed_leave_one_out_url="",

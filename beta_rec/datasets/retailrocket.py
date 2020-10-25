@@ -32,10 +32,14 @@ class RetailRocket(DatasetBase):
     then put it into the directory `retailrocket/raw` and unzip it.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(
+        self, dataset_name="retailrocket", min_u_c=0, min_i_c=3, root_dir=None
+    ):
         """Init RetailRocket Class."""
         super().__init__(
-            "retailrocket",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=RETAIL_ROCKET_URL,
             tips=RETAIL_ROCKET_TIPS,
