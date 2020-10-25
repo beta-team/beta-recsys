@@ -33,6 +33,7 @@ shutil.register_unpack_format("7zip", [".7z"], unpack_7zarchive)
 
 class DatasetBase(object):
     """Base class for processing raw dataset into interactions, making and loading data splits.
+
     This is an beta dataset which can derive to other dataset.
     Several directory that store the dataset file would be created in the initial process.
 
@@ -180,7 +181,7 @@ class DatasetBase(object):
         raise RuntimeError("please implement this function!")
 
     def load_interaction(self):
-        """Load the user-item interaction. And filter users, items or orders
+        """Load the user-item interaction. And filter users, items or orders.
 
         Returns:
             DataFrame: Loaded interactions after filtering

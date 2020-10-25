@@ -41,7 +41,6 @@ class Movielens_100k(DatasetBase):
 
     def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         """Init Movielens_100k Class."""
-
         super().__init__(
             "ml_100k",
             min_u_c=min_u_c,
