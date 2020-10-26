@@ -52,10 +52,12 @@ class Gowalla(DatasetBase):
     then put it into the directory `gowalla/raw` and unzip it.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="gowalla", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Gowalla Class."""
         super().__init__(
-            "gowalla",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=GOWALLA_CHECKIN_URL,
             processed_random_split_url=GOWALLA_RANDOM_SPLIT_URL,

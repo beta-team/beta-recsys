@@ -55,10 +55,12 @@ class Diginetica(DatasetBase):
     Note: you also need unzip files in 'diginetica/raw/diginetica'.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="diginetica", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Diginetica Class."""
         super().__init__(
-            "diginetica",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=DIGINETICA_URL,
             tips=DIGINETICA_TIPS,

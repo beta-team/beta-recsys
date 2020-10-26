@@ -46,10 +46,13 @@ class Dunnhumby(DatasetBase):
     then put it into the directory `dunnhumby/raw`
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, min_o_c=0, root_dir=None):
         """Init Dunnhumby Class."""
         super().__init__(
             "dunnhumby",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            min_o_c=min_o_c,
             root_dir=root_dir,
             url=None,
             manual_download_url=manual_download_url,

@@ -6,6 +6,52 @@ Beta-Recsys provides users a wide range of datasets for recommendation system tr
 
 ---
 
+## Usage
+
+The following codes can automatically download the Movielens_100k dataset, and split it using the leave-one-out splitting strategy.
+```python
+from beta_rec.datasets.movielens import Movielens_100k
+dataset = Movielens_100k()
+split_dataset = dataset.load_leave_one_out()
+```
+
+To clean the dataset by filtering before splitting, you can use the filtering parameters.
+E.g., to filter out users that have less then 30 items and items that have less then 15 records, you can run:
+
+```python
+dataset = Movielens_100k(min_u_c=15, min_i_c=30)
+```
+with these filtering parameters showing as follows:
+
+```shell
+min_u_c: filter the items that were purchased by less than min_u_c users.
+(default: :obj:`0`)
+min_i_c: filter the users that have purchased by less than min_i_c items.
+(default: :obj:`3`)
+min_o_c: filter the users that have purchased by less than min_o_c orders.
+(default: :obj:`0`)
+```
+
+By default, the testing set will sample 100 negative items to reduce the evaluation cost.
+To reduce the bias of certain negative items, each splitting strategy will generate 10 different validation and testing sets.
+You can also specify these parameters:
+
+```python
+split_dataset = dataset.load_leave_one_out(n_test=15,n_negative=200)
+```
+
+If you want to use the data splits generate by our Beta team, you can specify the download parameter.
+
+```python
+from beta_rec.datasets.movielens import Movielens_100k
+dataset = Movielens_100k()
+split_dataset = dataset.load_leave_one_out(download=True)
+```
+
+For some very large datasets, generating negative items can be time-costly. This feature can greatly reduce some repeated work, and provide a benchmarking.
+
+> Note: 25, Oct. 2020. Now the preprocessed splits of each dataset are a bit out-of-date, we will regenerate a new version as soon as possible.
+ 
 ## Dataset Statistics
 
 Here we present some basic staticstics for the datasets in our framework.
