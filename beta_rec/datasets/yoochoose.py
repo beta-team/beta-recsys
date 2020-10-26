@@ -3,8 +3,8 @@ import os
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.constants import (
+from ..datasets.dataset_base import DatasetBase
+from ..utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
@@ -44,9 +44,15 @@ class YooChoose(DatasetBase):
     then put it into the directory `yoochoose/raw` and unzip it.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="yoochoose", min_u_c=0, min_i_c=3, root_dir=None):
         """Init YooChoose Class."""
-        super().__init__("yoochoose", root_dir=root_dir, url=YOOCHOOSE_URL)
+        super().__init__(
+            dataset_name="yelp",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=YOOCHOOSE_URL,
+        )
 
     def preprocess(self):
         """Preprocess the raw file.

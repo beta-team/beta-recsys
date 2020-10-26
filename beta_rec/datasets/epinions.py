@@ -2,12 +2,8 @@ import os
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.constants import (
-    DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
-    DEFAULT_USER_COL,
-)
+from ..datasets.dataset_base import DatasetBase
+from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_USER_COL
 
 # download_url
 EPINIONS_URL = (
@@ -26,10 +22,12 @@ EPIONIONS_RANDOM_SPLIT_URL = (
 class Epinions(DatasetBase):
     """Epinions Dataset."""
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="epinions", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Epinions Class."""
         super().__init__(
-            "epinions",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=EPINIONS_URL,
             processed_leave_one_out_url=EPIONIONS_LEAVE_ONE_OUT_URL,

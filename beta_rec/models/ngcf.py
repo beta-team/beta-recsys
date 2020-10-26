@@ -75,6 +75,7 @@ class NGCF(torch.nn.Module):
         u_g_embeddings, i_g_embeddings = torch.split(
             all_embeddings, [self.n_users, self.n_items], dim=0
         )
+
         return u_g_embeddings, i_g_embeddings
 
     def predict(self, users, items):
@@ -105,11 +106,11 @@ class NGCFEngine(ModelEngine):
     def __init__(self, config):
         """Initialize NGCFEngine Class."""
         self.config = config
-        self.regs = config["regs"]  # reg is the regularisation
+        self.regs = config["model"]["regs"]  # reg is the regularisation
         self.decay = self.regs[0]
-        self.batch_size = config["batch_size"]
-        self.norm_adj = config["norm_adj"]
-        self.model = NGCF(config, self.norm_adj)
+        self.batch_size = config["model"]["batch_size"]
+        self.norm_adj = config["model"]["norm_adj"]
+        self.model = NGCF(config["model"], self.norm_adj)
         super(NGCFEngine, self).__init__(config)
         self.model.to(self.device)
 
@@ -141,7 +142,7 @@ class NGCFEngine(ModelEngine):
         batch_loss.backward()
         self.optimizer.step()
         loss = batch_loss.item()
-        return loss
+        return loss, batch_reg_loss
 
     def train_an_epoch(self, train_loader, epoch_id):
         """Train the model in one epoch.
@@ -153,12 +154,14 @@ class NGCFEngine(ModelEngine):
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.model.train()
         total_loss = 0.0
-
+        regularizer = 0.0
         for batch_data in train_loader:
-            loss = self.train_single_batch(batch_data)
+            loss, reg = self.train_single_batch(batch_data)
             total_loss += loss
-        print("[Training Epoch {}], Loss {}".format(epoch_id, loss))
+            regularizer += reg
+        print(f"[Training Epoch {epoch_id}], Loss {loss}, Regularizer {regularizer}")
         self.writer.add_scalar("model/loss", total_loss, epoch_id)
+        self.writer.add_scalar("model/regularizer", regularizer, epoch_id)
 
     def bpr_loss(self, users, pos_items, neg_items):
         """Bayesian Personalised Ranking (BPR) pairwise loss function.

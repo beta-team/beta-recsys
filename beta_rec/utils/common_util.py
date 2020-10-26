@@ -1,4 +1,5 @@
 import argparse
+import gzip
 import os
 import random
 import time
@@ -11,7 +12,7 @@ import scipy.sparse as sp
 import torch
 from tabulate import tabulate
 
-from beta_rec.utils.constants import (
+from ..utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_ORDER_COL,
     DEFAULT_RATING_COL,
@@ -64,6 +65,34 @@ def update_args(config, args):
                 config[cfg][k] = v
                 args_dic[f"{cfg}:{k}"] = v
     print_dict_as_table(args_dic, "Received parameters from command line (or default):")
+
+
+def parse_gzip_file(path):
+    """Parse gzip file.
+
+    Args:
+        path: the file path of gzip file.
+    """
+    g = gzip.open(path, "rb")
+    for l in g:
+        yield eval(l)
+
+
+def get_data_frame_from_gzip_file(path):
+    """Get dataframe from a gzip file.
+
+    Args:
+        path the file path of gzip file.
+
+    Returns:
+        A dataframe extracted from the gzip file.
+    """
+    i = 0
+    df = {}
+    for d in parse_gzip_file(path):
+        df[i] = d
+        i += 1
+    return pd.DataFrame.from_dict(df, orient="index")
 
 
 def save_dataframe_as_npz(data, data_file):

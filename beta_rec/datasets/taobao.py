@@ -2,12 +2,8 @@ import os
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.constants import (
-    DEFAULT_ITEM_COL,
-    DEFAULT_TIMESTAMP_COL,
-    DEFAULT_USER_COL,
-)
+from ..datasets.dataset_base import DatasetBase
+from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_USER_COL
 
 # Download URL
 TAOBAO_URL = "https://tianchi.aliyun.com/dataset/dataDetail?dataId=649"
@@ -39,10 +35,12 @@ class Taobao(DatasetBase):
     then put it into the directory `taobao/raw`.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="taobao", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Taobao Class."""
         super().__init__(
-            "taobao",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=TAOBAO_URL,
             tips=TAOBAO_TIPS,

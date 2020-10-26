@@ -3,9 +3,9 @@ import random
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.common_util import un_zip
-from beta_rec.utils.constants import (
+from ..datasets.dataset_base import DatasetBase
+from ..utils.common_util import un_zip
+from ..utils.constants import (
     DEFAULT_FLAG_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_ORDER_COL,
@@ -50,10 +50,15 @@ class Instacart(DatasetBase):
     product for the next time, we construct it with structure [order_id, product_id].
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(
+        self, dataset_name="instacart", min_u_c=0, min_i_c=3, min_o_c=0, root_dir=None
+    ):
         """Init Instacart Class."""
         super().__init__(
-            "instacart",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            min_o_c=min_o_c,
             root_dir=root_dir,
             manual_download_url=INSTACART_URL,
             processed_leave_one_out_url=INSTACART_LEAVE_ONE_OUT_URL,
@@ -155,10 +160,15 @@ class Instacart_25(DatasetBase):
     product for the next time, we construct it with structure [order_id, product_id].
     """
 
-    def __init__(self):
+    def __init__(
+        self, dataset_name="instacart_25", min_u_c=0, min_i_c=3, min_o_c=0,
+    ):
         """Init Instacart_25 Class."""
         super().__init__(
-            "instacart_25",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            min_o_c=min_o_c,
             manual_download_url="https://www.kaggle.com/c/6644/download-all",
             processed_random_split_url=INSTACART_RANDOM_SPLIT_URL,
             processed_temporal_split_url=INSTACART_TEMPORAL_SPLIT_URL,
