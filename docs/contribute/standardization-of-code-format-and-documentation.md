@@ -48,7 +48,7 @@ force_grid_wrap=0
 
 Also, as **jupyter notebook** is widely used by most researchers, we are suppposed to ensure the codes in notebook also follow our code style. So we use [flake8_nb](https://pypi.org/project/flake8-nb/) to check your notebook. **Be careful** when you **black** your notebook. Because **black** can only format code in `*.py` file, it may cause terrible problem if you use **black** to format a notebook.** We strongly suggest that you should use [black_nbconvert](https://pypi.org/project/black-nbconvert/) to format your notebook safely.**
 
-**The following examples are part of `demo.py`. For complete usages, please refer to [demo.py](https://github.com/beta-team/community/blob/master/demo.py).**
+**The following examples are part of `demo.py`. For complete usages, please refer to [demo.py](https://github.com/beta-team/community/blob/master/beta_recsys/demo.py).**
 
 ### Class
 
