@@ -30,7 +30,7 @@ def tune_train(config):
         config (dict): All the parameters for the model.
     """
     data = config["data"]
-    train_engine = LGCN(munchify(config))
+    train_engine = LightGCN(munchify(config))
     result = train_engine.train(data)
     while train_engine.eval_engine.n_worker > 0:
         time.sleep(20)
@@ -48,7 +48,7 @@ class LightGCN(Recommender):
         Args:
             config:
         """
-        super(LGCN, self).__init__(config, name="NGCF")
+        super(LightGCN, self).__init__(config, name="NGCF")
 
     def init_engine(self, data):
         """Initialize the required parameters for the model.
