@@ -40,7 +40,7 @@ def tune_train(config):
 
 
 class NGCF(Recommender):
-    """The Matrix Factorization Mode."""
+    """The NGCF Model."""
 
     def __init__(self, config):
         """Initialize the config of this recommender.
