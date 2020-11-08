@@ -35,10 +35,12 @@ class Taobao(DatasetBase):
     then put it into the directory `taobao/raw`.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="taobao", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Taobao Class."""
         super().__init__(
-            "taobao",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=TAOBAO_URL,
             tips=TAOBAO_TIPS,

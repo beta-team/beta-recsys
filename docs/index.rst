@@ -1,8 +1,8 @@
 :github_url: https://github.com/beta-team/beta-recsys
 
 .. image:: _static/img/Logo.svg
-
-Beta-RecSys Documentation
+    :width: 400px
+    :align: center
 
 ========================================================================================================================
 
