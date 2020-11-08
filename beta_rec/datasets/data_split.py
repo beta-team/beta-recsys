@@ -7,9 +7,9 @@ import sklearn
 from tabulate import tabulate
 from tqdm import tqdm
 
-from beta_rec.utils.alias_table import AliasTable
-from beta_rec.utils.common_util import get_dataframe_from_npz, save_dataframe_as_npz
-from beta_rec.utils.constants import (
+from ..utils.alias_table import AliasTable
+from ..utils.common_util import get_dataframe_from_npz, save_dataframe_as_npz
+from ..utils.constants import (
     DEFAULT_FLAG_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_ORDER_COL,

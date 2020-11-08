@@ -2,9 +2,9 @@ import os
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.common_util import get_data_frame_from_gzip_file
-from beta_rec.utils.constants import (
+from ..datasets.dataset_base import DatasetBase
+from ..utils.common_util import get_data_frame_from_gzip_file
+from ..utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
@@ -116,10 +116,14 @@ class AmazonDataset(DatasetBase):
     Amazon base dataset.
     """
 
-    def __init__(self, dataset_name, url, root_dir):
+    def __init__(self, dataset_name, min_u_c=0, min_i_c=3, url=None, root_dir=None):
         r"""Init AmazonDataset Class."""
         super().__init__(
-            dataset_name=dataset_name, root_dir=root_dir, url=url,
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=url,
         )
 
     def preprocess(self):
@@ -169,10 +173,12 @@ class AmazonInstantVideo(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonInstantVideo Class."""
         super().__init__(
             dataset_name="amazon-amazon-instant-video",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Amazon_Instant_Video_URL,
         )
@@ -184,10 +190,12 @@ class AmazonMusicalInstruments(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonMusicalInstruments Class."""
         super().__init__(
             dataset_name="amazon-musical-instruments",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Musical_Instruments_URL,
         )
@@ -199,10 +207,12 @@ class AmazonDigitalMusic(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonDigitalMusic Class."""
         super().__init__(
             dataset_name="amazon-digital-music",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Digital_Music_URL,
         )
@@ -214,10 +224,14 @@ class AmazonBaby(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonBaby Class."""
         super().__init__(
-            dataset_name="amazon-baby", root_dir=root_dir, url=AMAZON_Baby_URL,
+            dataset_name="amazon-baby",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=AMAZON_Baby_URL,
         )
 
 
@@ -227,10 +241,12 @@ class AmazonPatioLawnGarden(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonPatioLawnGarden Class."""
         super().__init__(
             dataset_name="amazon-patio-lawn-garden",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Patio_Lawn_Garden_URL,
         )
@@ -242,10 +258,12 @@ class AmazonGroceryGourmetFood(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonGroceryGourmetFood Class."""
         super().__init__(
             dataset_name="amazon-grocery-gourmet-food",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Grocery_Gourmet_Food_URL,
         )
@@ -257,10 +275,12 @@ class AmazonAutomotive(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonAutomotive Class."""
         super().__init__(
             dataset_name="amazon-automotive",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Automotive_URL,
         )
@@ -272,10 +292,12 @@ class AmazonPetSupplies(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonPetSupplies Class."""
         super().__init__(
             dataset_name="amazon-pet-suppplies",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Pet_Supplies_URL,
         )
@@ -287,10 +309,12 @@ class AmazonCellPhonesAndAccessories(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonPetSupplies Class."""
         super().__init__(
             dataset_name="amazon-cell-phones-and-accessories",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Cell_Phones_and_Accessories_URL,
         )
@@ -302,10 +326,12 @@ class AmazonHealthAndPersonalCare(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonHealthAndPersonalCare Class."""
         super().__init__(
             dataset_name="amazon-health-and-personal-care",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Health_and_Personal_Care_URL,
         )
@@ -317,10 +343,12 @@ class AmazonToysAndGames(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonToysAndGames Class."""
         super().__init__(
             dataset_name="amazon-toys-and-games",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Toys_and_Games_URL,
         )
@@ -332,10 +360,12 @@ class AmazonVideoGames(AmazonDataset):
     Amazon Review dataset.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonVideoGames Class."""
         super().__init__(
             dataset_name="amazon-video-games",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=AMAZON_Video_Games_URL,
         )

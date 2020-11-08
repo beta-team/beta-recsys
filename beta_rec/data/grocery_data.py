@@ -2,10 +2,10 @@ import os
 
 import pandas as pd
 
-from beta_rec.data.auxiliary_data import Auxiliary
-from beta_rec.data.base_data import BaseData
-from beta_rec.utils.common_util import ensureDir
-from beta_rec.utils.triple_sampler import Sampler
+from ..data.auxiliary_data import Auxiliary
+from ..data.base_data import BaseData
+from ..utils.common_util import ensureDir
+from ..utils.triple_sampler import Sampler
 
 pd.options.mode.chained_assignment = None  # default='warn'
 

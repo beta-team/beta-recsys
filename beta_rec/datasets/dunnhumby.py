@@ -2,9 +2,9 @@ import os
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.common_util import timeit, un_zip
-from beta_rec.utils.constants import (
+from ..datasets.dataset_base import DatasetBase
+from ..utils.common_util import timeit, un_zip
+from ..utils.constants import (
     DEFAULT_FLAG_COL,
     DEFAULT_ITEM_COL,
     DEFAULT_ORDER_COL,
@@ -46,10 +46,13 @@ class Dunnhumby(DatasetBase):
     then put it into the directory `dunnhumby/raw`
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, min_u_c=0, min_i_c=3, min_o_c=0, root_dir=None):
         """Init Dunnhumby Class."""
         super().__init__(
             "dunnhumby",
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            min_o_c=min_o_c,
             root_dir=root_dir,
             url=None,
             manual_download_url=manual_download_url,

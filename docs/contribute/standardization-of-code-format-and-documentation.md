@@ -46,7 +46,9 @@ use_parentheses=true
 force_grid_wrap=0
 ```
 
-**The following examples are part of `demo.py`. For complete usages, please refer to [demo.py](https://github.com/beta-team/community/blob/master/demo.py).**
+Also, as **jupyter notebook** is widely used by most researchers, we are suppposed to ensure the codes in notebook also follow our code style. So we use [flake8_nb](https://pypi.org/project/flake8-nb/) to check your notebook. **Be careful** when you **black** your notebook. Because **black** can only format code in `*.py` file, it may cause terrible problem if you use **black** to format a notebook.** We strongly suggest that you should use [black_nbconvert](https://pypi.org/project/black-nbconvert/) to format your notebook safely.**
+
+**The following examples are part of `demo.py`. For complete usages, please refer to [demo.py](https://github.com/beta-team/community/blob/master/beta_recsys/demo.py).**
 
 ### Class
 
@@ -180,9 +182,9 @@ If you want to link a class to its definition in comments, you can write comment
 
 There are many ways to write returns. Just choose one of them and clarify the values and types.
 
-![return type1](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img14.png)
+![return type1](https://raw.githubusercontent.com/beta-team/community/master/beta_recsys/img/docs/img14.png)
 
-![return type2](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img15.png)
+![return type2](https://raw.githubusercontent.com/beta-team/community/master/beta_recsys/img/docs/img15.png)
 
 ------
 
@@ -201,8 +203,8 @@ There should be **no space** between the first letter and the `"""` in the first
 
 | Code Example                                                 | Documentation                                                |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![code example1](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img1.png) | ![result1](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img2.png) |
-| ![code example2](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img3.png) | ![result2](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img4.png) |
+| ![code example1](https://raw.githubusercontent.com/beta-team/community/master/beta_recsys/img/docs/img1.png) | ![result1](https://raw.githubusercontent.com/beta-team/community/master/beta_recsys/img/docs/img2.png) |
+| ![code example2](https://raw.githubusercontent.com/beta-team/community/master/beta_recsys/img/docs/img3.png) | ![result2](https://raw.githubusercontent.com/beta-team/community/master/beta_recsys/img/docs/img4.png) |
 
 ### 2. Newlines
 
@@ -210,7 +212,7 @@ There should be a new line between summary and details in a comment block. But i
 
 | Code Example                                                 | Documentation                                                |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![code example3](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img9.png) | ![result3](https://raw.githubusercontent.com/beta-team/community/master/img/docs/img10.png) |
+| ![code example3](https://raw.githubusercontent.com/beta-team/community/master/beta_recsys/img/docs/img9.png) | ![result3](https://raw.githubusercontent.com/beta-team/community/master/beta_recsys/img/docs/img10.png) |
 
 ------
 
@@ -218,4 +220,4 @@ There should be a new line between summary and details in a comment block. But i
 
 - [x] Correct all typos in code, including code and comments.
 - [x] Correct all naming that do not match the naming rules.
-- [ ] Format all comments, adding usage example, more informative description etc.
+- [x] Format all comments, adding usage example, more informative description etc.

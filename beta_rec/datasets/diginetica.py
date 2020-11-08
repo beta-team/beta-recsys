@@ -3,12 +3,8 @@ import time
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.constants import (
-    DEFAULT_ITEM_COL,
-    DEFAULT_TIMESTAMP_COL,
-    DEFAULT_USER_COL,
-)
+from ..datasets.dataset_base import DatasetBase
+from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_USER_COL
 
 # Download URL.
 DIGINETICA_URL = "https://cikm2016.cs.iupui.edu/cikm-cup/"
@@ -59,10 +55,12 @@ class Diginetica(DatasetBase):
     Note: you also need unzip files in 'diginetica/raw/diginetica'.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="diginetica", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Diginetica Class."""
         super().__init__(
-            "diginetica",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=DIGINETICA_URL,
             tips=DIGINETICA_TIPS,

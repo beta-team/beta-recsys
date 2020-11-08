@@ -1,7 +1,7 @@
 import numpy as np
 
-from beta_rec.datasets.data_load import load_item_fea_dic
-from beta_rec.utils.common_util import get_random_rep
+from ..datasets.data_load import load_item_fea_dic
+from ..utils.common_util import get_random_rep
 
 
 class Auxiliary(object):

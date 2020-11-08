@@ -6,22 +6,22 @@ import pandas as pd
 from py7zr import unpack_7zarchive
 from tabulate import tabulate
 
-from beta_rec.datasets.data_split import (
+from ..datasets.data_split import (
     filter_user_item,
     filter_user_item_order,
     generate_parameterized_path,
     load_split_data,
     split_data,
 )
-from beta_rec.utils.common_util import (
+from ..utils.common_util import (
     get_dataframe_from_npz,
     save_dataframe_as_npz,
     timeit,
     un_zip,
 )
-from beta_rec.utils.constants import DEFAULT_ORDER_COL, DEFAULT_TIMESTAMP_COL
-from beta_rec.utils.download import download_file, get_format
-from beta_rec.utils.onedrive import OneDrive
+from ..utils.constants import DEFAULT_ORDER_COL, DEFAULT_TIMESTAMP_COL
+from ..utils.download import download_file, get_format
+from ..utils.onedrive import OneDrive
 
 default_root_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
@@ -39,6 +39,12 @@ class DatasetBase(object):
 
     Attributes:
          dataset_name: the dataset name.
+         min_u_c: filter the items that were purchased by less than min_u_c users.
+        (default: :obj:`0`)
+        min_i_c: filter the users that have purchased by less than min_i_c items.
+        (default: :obj:`3`)
+        min_o_c: filter the users that have purchased by less than min_o_c orders.
+        (default: :obj:`0`)
          url: the url of raw files.
          manual_download_url: the url that users use to download raw files manually
     """
@@ -46,6 +52,9 @@ class DatasetBase(object):
     def __init__(
         self,
         dataset_name,
+        min_u_c=0,
+        min_i_c=3,
+        min_o_c=0,
         url=None,
         root_dir=None,
         manual_download_url=None,
@@ -67,7 +76,9 @@ class DatasetBase(object):
         self.processed_random_basket_split_url = processed_random_basket_split_url
         self.processed_temporal_split_url = processed_temporal_split_url
         self.processed_temporal_basket_split_url = processed_temporal_basket_split_url
-
+        self.min_u_c = min_u_c
+        self.min_i_c = min_i_c
+        self.min_o_c = min_o_c
         self.dataset_name = dataset_name
         # compatible method for the previous version
         self.save_dataframe_as_npz = save_dataframe_as_npz
@@ -170,8 +181,10 @@ class DatasetBase(object):
         raise RuntimeError("please implement this function!")
 
     def load_interaction(self):
-        """Load the user-item interaction.
+        """Load the user-item interaction. And filter users, items or orders.
 
+        Returns:
+            DataFrame: Loaded interactions after filtering
         Load the interaction from the processed file(Need to preprocess the raw file before loading)
         """
         processed_file_path = os.path.join(
@@ -189,7 +202,28 @@ class DatasetBase(object):
                 self.preprocess()
         data = get_dataframe_from_npz(processed_file_path)
         print("-" * 80)
-        print("Loaded raw interaction statistics")
+        print("Raw interaction statistics")
+        print(
+            tabulate(
+                data.agg(["count", "nunique"]),
+                headers=data.columns,
+                tablefmt="psql",
+                disable_numparse=True,
+            )
+        )
+        print("-" * 80)
+        if self.min_o_c > 0:
+            data = filter_user_item_order(
+                data, min_u_c=self.min_u_c, min_i_c=self.min_i_c, min_o_c=self.min_o_c
+            )
+        elif self.min_u_c > 0 or self.min_i_c > 0:
+            data = filter_user_item(data, min_u_c=self.min_u_c, min_i_c=self.min_i_c)
+
+        print("-" * 80)
+        print(
+            "Interaction statistics after filtering "
+            + f"-- min_u_c:{self.min_u_c}, min_i_c:{self.min_i_c}, min_o_c:{self.min_o_c}."
+        )
         print(
             tabulate(
                 data.agg(["count", "nunique"]),
@@ -225,7 +259,6 @@ class DatasetBase(object):
         """
         if data is None:
             data = self.load_interaction()
-            data = filter_user_item(data, min_u_c=0, min_i_c=3)
 
         if not isinstance(data, pd.DataFrame):
             raise RuntimeError("data is not a type of DataFrame")
@@ -252,11 +285,6 @@ class DatasetBase(object):
 
         Args:
             data (DataFrame): DataFrame to be split.
-                - Default is None. It will load the raw interaction, with a default filter
-                    '''
-                    filter_user_item(data, min_u_c=0, min_o_c=3, min_i_c=0)
-                    '''
-                - Users can specify their filtered data by using filter methods in data_split.py
             random: bool. Whether randomly leave one basket as testing.
             n_negative:  Number of negative samples for testing and validation data.
             n_test: int. Default 10. The number of testing and validation copies.
@@ -268,7 +296,6 @@ class DatasetBase(object):
         """
         if data is None:
             data = self.load_interaction()
-            data = filter_user_item_order(data, min_u_c=0, min_o_c=3, min_i_c=0)
 
         if not isinstance(data, pd.DataFrame):
             raise RuntimeError("data is not a type of DataFrame")
@@ -345,11 +372,6 @@ class DatasetBase(object):
 
         Args:
             data (DataFrame): DataFrame to be split.
-                - Default is None. It will load the raw interaction, with a default filter
-                ```
-                data = filter_user_item_order(data, min_u_c=3, min_o_c=3, min_i_c=3)
-                ```
-                - Users can specify their filtered data by using filter methods in data_split.py
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
@@ -364,7 +386,6 @@ class DatasetBase(object):
         """
         if data is None:
             data = self.load_interaction()
-            data = filter_user_item_order(data, min_u_c=3, min_o_c=3, min_i_c=3)
 
         if not isinstance(data, pd.DataFrame):
             raise RuntimeError("data is not a type of DataFrame")
@@ -442,9 +463,6 @@ class DatasetBase(object):
         Args:
             data (DataFrame): DataFrame to be split.
                 - Default is None. It will load the raw interaction, with a default filter
-                ```
-                data = filter_user_item_order(data, min_u_c=3, min_o_c=3, min_i_c=3)
-                ```
                 - Users can specify their filtered data by using filter methods in data_split.py
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as testing.
             n_negative:  Number of negative samples for testing and validation data.
@@ -460,7 +478,6 @@ class DatasetBase(object):
         """
         if data is None:
             data = self.load_interaction()
-            data = filter_user_item_order(data, min_u_c=3, min_o_c=3, min_i_c=3)
 
         if not isinstance(data, pd.DataFrame):
             raise RuntimeError("data is not a type of DataFrame")
@@ -483,16 +500,18 @@ class DatasetBase(object):
         return result
 
     def load_leave_one_out(
-        self, random=False, n_negative=100, n_test=10, download=False
+        self, random=False, n_negative=100, n_test=10, download=False, force_redo=False
     ):
         """Load split data generated by leave_out_out without random select.
 
         Load split data generated by leave_out_out without random select from Onedrive.
 
         Args:
-            random: bool. Whether randomly leave one item as testing.
-            n_negative:  Number of negative samples for testing and validation data.
-            n_test: int. Default 10. The number of testing and validation copies.
+            random (bool): . Whether randomly leave one item as testing.
+            n_negative (int):  Number of negative samples for testing and validation data.
+            download (bool): Whether download the split produced by the Beta-rec team (With random seed:2020).
+            force_redo (bool): Whether force to re-split the dataset.
+            n_test (int): Default 10. The number of testing and validation copies.
                     If n_test==0, will load the original (no negative items) valid and test datasets.
 
         Returns:
@@ -514,8 +533,9 @@ class DatasetBase(object):
         processed_leave_one_out_path = os.path.join(
             processed_leave_one_out_path, parameterized_path
         )
-
-        if not os.path.exists(processed_leave_one_out_path):
+        if force_redo:
+            self.make_leave_one_out(random=random, n_negative=n_negative, n_test=n_test)
+        elif not os.path.exists(processed_leave_one_out_path):
             if download and random is False and n_negative == 100:
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(
@@ -533,7 +553,7 @@ class DatasetBase(object):
         return load_split_data(processed_leave_one_out_path, n_test=n_test)
 
     def load_leave_one_basket(
-        self, random=False, n_negative=100, n_test=10, download=False
+        self, random=False, n_negative=100, n_test=10, download=False, force_redo=False
     ):
         """Load split date generated by leave_one_basket without random select.
 
@@ -542,6 +562,8 @@ class DatasetBase(object):
         Args:
             random: bool. Whether randomly leave one basket as testing.
             n_negative:  Number of negative samples for testing and validation data.
+            download (bool): Whether download the split produced by the Beta-rec team (With random seed:2020).
+            force_redo (bool): Whether force to re-split the dataset.
             n_test: int. Default 10. The number of testing and validation copies.
                     If n_test==0, will load the original (no negative items) valid and test datasets.
 
@@ -563,7 +585,11 @@ class DatasetBase(object):
         processed_leave_one_basket_path = os.path.join(
             processed_leave_one_basket_path, parameterized_path
         )
-        if not os.path.exists(processed_leave_one_basket_path):
+        if force_redo:
+            self.make_leave_one_basket(
+                random=random, n_negative=n_negative, n_test=n_test
+            )
+        elif not os.path.exists(processed_leave_one_basket_path):
             if download and random is False and n_negative == 100:
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(
@@ -588,6 +614,7 @@ class DatasetBase(object):
         by_user=False,
         n_test=10,
         download=False,
+        force_redo=False,
     ):
         """Load split date generated by random_split.
 
@@ -597,6 +624,8 @@ class DatasetBase(object):
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as
                         test data.
             random: bool. Whether randomly leave one basket as testing.
+            download (bool): Whether download the split produced by the Beta-rec team (With random seed:2020).
+            force_redo (bool): Whether force to re-split the dataset.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
                     - Ture: user-based split,
@@ -620,7 +649,15 @@ class DatasetBase(object):
         processed_random_split_path = os.path.join(
             processed_random_split_path, parameterized_path
         )
-        if not os.path.exists(processed_random_split_path):
+        if force_redo:
+            self.make_random_split(
+                test_rate=test_rate,
+                random=random,
+                n_negative=n_negative,
+                by_user=by_user,
+                n_test=n_test,
+            )
+        elif not os.path.exists(processed_random_split_path):
             if (
                 download
                 and test_rate == 0.1
@@ -655,6 +692,7 @@ class DatasetBase(object):
         by_user=False,
         n_test=10,
         download=False,
+        force_redo=False,
     ):
         """Load split date generated by random_basket_split.
 
@@ -664,6 +702,8 @@ class DatasetBase(object):
             test_rate: percentage of the test data. Note that percentage of the validation data will be the same as
                         test data.
             random: bool. Whether randomly leave one basket as testing.
+            download (bool): Whether download the split produced by the Beta-rec team (With random seed:2020).
+            force_redo (bool): Whether force to re-split the dataset.
             n_negative:  Number of negative samples for testing and validation data.
             by_user: bool. Default False.
                     - True: user-based split,
@@ -690,7 +730,15 @@ class DatasetBase(object):
         processed_random_basket_split_path = os.path.join(
             processed_random_basket_split_path, parameterized_path
         )
-        if not os.path.exists(processed_random_basket_split_path):
+        if force_redo:
+            self.make_random_basket_split(
+                test_rate=test_rate,
+                random=random,
+                n_negative=n_negative,
+                by_user=by_user,
+                n_test=n_test,
+            )
+        elif not os.path.exists(processed_random_basket_split_path):
             if (
                 download
                 and test_rate == 0.1
@@ -718,7 +766,13 @@ class DatasetBase(object):
         return load_split_data(processed_random_basket_split_path, n_test=n_test)
 
     def load_temporal_split(
-        self, test_rate=0.1, n_negative=100, by_user=False, n_test=10, download=False
+        self,
+        test_rate=0.1,
+        n_negative=100,
+        by_user=False,
+        n_test=10,
+        download=False,
+        force_redo=False,
     ):
         """Load split date generated by temporal_split.
 
@@ -733,6 +787,8 @@ class DatasetBase(object):
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
                     If n_test==0, will load the original (no negative items) valid and test datasets.
+            download (bool): Whether download the split produced by the Beta-rec team (With random seed:2020).
+            force_redo (bool): Whether force to re-split the dataset.
 
         Returns:
             train_data (DataFrame): Interaction for training.
@@ -752,7 +808,14 @@ class DatasetBase(object):
         processed_temporal_split_path = os.path.join(
             processed_temporal_split_path, parameterized_path
         )
-        if not os.path.exists(processed_temporal_split_path):
+        if force_redo:
+            self.make_temporal_split(
+                test_rate=test_rate,
+                n_negative=n_negative,
+                by_user=by_user,
+                n_test=n_test,
+            )
+        elif not os.path.exists(processed_temporal_split_path):
             if download and test_rate == 0.1 and n_negative == 100 and by_user is False:
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(
@@ -773,7 +836,13 @@ class DatasetBase(object):
         return load_split_data(processed_temporal_split_path, n_test=n_test)
 
     def load_temporal_basket_split(
-        self, test_rate=0.1, n_negative=100, by_user=False, n_test=10, download=False
+        self,
+        test_rate=0.1,
+        n_negative=100,
+        by_user=False,
+        n_test=10,
+        download=False,
+        force_redo=False,
     ):
         """Load split date generated by temporal_basket_split.
 
@@ -788,6 +857,8 @@ class DatasetBase(object):
                     - False: global split,
             n_test: int. Default 10. The number of testing and validation copies.
                     If n_test==0, will load the original (no negative items) valid and test datasets.
+            download (bool): Whether download the split produced by the Beta-rec team (With random seed:2020).
+            force_redo (bool): Whether force to re-split the dataset.
 
         Returns:
             train_data (DataFrame): Interaction for training.
@@ -808,7 +879,14 @@ class DatasetBase(object):
         processed_temporal_basket_split_path = os.path.join(
             processed_temporal_basket_split_path, parameterized_path
         )
-        if not os.path.exists(processed_temporal_basket_split_path):
+        if force_redo:
+            self.make_temporal_basket_split(
+                test_rate=test_rate,
+                n_negative=n_negative,
+                by_user=by_user,
+                n_test=n_test,
+            )
+        elif not os.path.exists(processed_temporal_basket_split_path):
             if download and test_rate == 0.1 and n_negative == 100 and by_user is False:
                 # default parameters, can be downloaded from Onedrive
                 folder = OneDrive(

@@ -2,12 +2,8 @@ import os
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.constants import (
-    DEFAULT_ITEM_COL,
-    DEFAULT_RATING_COL,
-    DEFAULT_USER_COL,
-)
+from ..datasets.dataset_base import DatasetBase
+from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_USER_COL
 
 # download_url
 LAST_FM_URL = r"http://files.grouplens.org/datasets/hetrec2011/hetrec2011-lastfm-2k.zip"
@@ -20,10 +16,12 @@ LAST_FM_RANDOM_SPLIT_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugV8roce2jec5yVMs?e=
 class LastFM(DatasetBase):
     """LastFM Dataset."""
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="last_fm", min_u_c=0, min_i_c=3, root_dir=None):
         """Init LastFM Class."""
         super().__init__(
-            "last_fm",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             url=LAST_FM_URL,
             processed_leave_one_out_url=LAST_FM_LEAVE_ONE_OUT_URL,

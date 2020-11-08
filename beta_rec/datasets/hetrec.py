@@ -3,8 +3,8 @@ import os
 
 import pandas as pd
 
-from beta_rec.datasets.dataset_base import DatasetBase
-from beta_rec.utils.constants import (
+from ..datasets.dataset_base import DatasetBase
+from ..utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_ORDER_COL,
     DEFAULT_RATING_COL,
@@ -42,10 +42,14 @@ class MovieLens_2k(DatasetBase):
     then put it into the directory `movielens-2k/raw.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(
+        self, dataset_name="movielens-2k", min_u_c=0, min_i_c=3, root_dir=None
+    ):
         """Init Movielens_2k Class."""
         super().__init__(
-            "movielens-2k",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=ML_2K_URL,
             url=ML_2K_URL,
@@ -110,10 +114,14 @@ class Delicious_2k(DatasetBase):
     then put it into the directory `delicious-2k/raw`.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(
+        self, dataset_name="delicious-2k", min_u_c=0, min_i_c=3, root_dir=None,
+    ):
         """Init Delicious_2k Class."""
         super().__init__(
-            "delicious-2k",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=DL_2K_URL,
             url=DL_2K_URL,
@@ -183,10 +191,12 @@ class LastFM_2k(DatasetBase):
     then put it into the directory `delicious-2k/raw`.
     """
 
-    def __init__(self, root_dir=None):
+    def __init__(self, dataset_name="lastfm-2k", min_u_c=0, min_i_c=3, root_dir=None):
         """Init LastFM_2k Class."""
         super().__init__(
-            "lastfm-2k",
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
             root_dir=root_dir,
             manual_download_url=LF_2K_URL,
             url=LF_2K_URL,

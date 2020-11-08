@@ -6,6 +6,52 @@ Beta-Recsys provides users a wide range of datasets for recommendation system tr
 
 ---
 
+## Usage
+
+The following codes can automatically download the Movielens_100k dataset, and split it using the leave-one-out splitting strategy.
+```python
+from beta_rec.datasets.movielens import Movielens_100k
+dataset = Movielens_100k()
+split_dataset = dataset.load_leave_one_out()
+```
+
+To clean the dataset by filtering before splitting, you can use the filtering parameters.
+E.g., to filter out users that have less then 30 items and items that have less then 15 records, you can run:
+
+```python
+dataset = Movielens_100k(min_u_c=15, min_i_c=30)
+```
+with these filtering parameters showing as follows:
+
+```shell
+min_u_c: filter the items that were purchased by less than min_u_c users.
+(default: :obj:`0`)
+min_i_c: filter the users that have purchased by less than min_i_c items.
+(default: :obj:`3`)
+min_o_c: filter the users that have purchased by less than min_o_c orders.
+(default: :obj:`0`)
+```
+
+By default, the testing set will sample 100 negative items to reduce the evaluation cost.
+To reduce the bias of certain negative items, each splitting strategy will generate 10 different validation and testing sets.
+You can also specify these parameters:
+
+```python
+split_dataset = dataset.load_leave_one_out(n_test=15,n_negative=200)
+```
+
+If you want to use the data splits generate by our Beta team, you can specify the download parameter.
+
+```python
+from beta_rec.datasets.movielens import Movielens_100k
+dataset = Movielens_100k()
+split_dataset = dataset.load_leave_one_out(download=True)
+```
+
+For some very large datasets, generating negative items can be time-costly. This feature can greatly reduce some repeated work, and provide a benchmarking.
+
+> Note: 25, Oct. 2020. Now the preprocessed splits of each dataset are a bit out-of-date, we will regenerate a new version as soon as possible.
+ 
 ## Dataset Statistics
 
 Here we present some basic staticstics for the datasets in our framework.
@@ -101,14 +147,22 @@ Also, we provide some information about the dataset content such as the number o
 | [Amazon Reviews -- Patio, Lawn and Garden](http://jmcauley.ucsd.edu/data/amazon/links.html) | 993,490 | 714,791 | 105,984 | 5 | 4,929 |
 | [Amazon Reviews -- Automotive](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,373,768 | 851,418 | 320,112 | 5 | 3,704 |
 | [Amazon Reviews -- Pet Supplies](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,235,316 | 740,985 | 103,288 | 5 | 3,900 |
-| [Amazon Reviews -- Cell Phones and Accessories](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3447249 | 2261045 | 319678 | 5 | 4724 |
-| [Amazon Reviews -- Health and Personal Care](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2982326 | 1851132 | 252331 | 5 | 4733 |
-| [Amazon Reviews -- Toys and Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2252771 | 1342911 | 327698 | 5 | 5151 |
-| [Amazon Reviews -- Video Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1324753 | 826767 | 50210 | 5 | 5396 |
-| [Amazon Reviews -- Tools and Home Improvement](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1926047 | 1212468 | 260659 | 5 | 5366 |
-| [Amazon Reviews -- Beauty](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2023070 | 1210271 | 249274 | 5 | 4231 |
-| [Amazon Reviews -- Apps for Android](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2638173 | 1323884 | 61275 | 5 | 1283 |
-| [Amazon Reviews -- Office Products](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1243186 | 909314 | 130006 | 5 | 5400 |
+| [Amazon Reviews -- Cell Phones and Accessories](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3,447,249 | 2,261,045 | 319,678 | 5 | 4,724 |
+| [Amazon Reviews -- Health and Personal Care](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2,982,326 | 1,851,132 | 252,331 | 5 | 4,733 |
+| [Amazon Reviews -- Toys and Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2,252,771 | 1,342,911 | 327,698 | 5 | 5,151 |
+| [Amazon Reviews -- Video Games](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,324,753 | 826,767 | 50,210 | 5 | 5,396 |
+| [Amazon Reviews -- Tools and Home Improvement](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,926,047 | 1,212,468 | 260,659 | 5 | 5,366 |
+| [Amazon Reviews -- Beauty](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2,023,070 | 1,210,271 | 249,274 | 5 | 4,231 |
+| [Amazon Reviews -- Apps for Android](http://jmcauley.ucsd.edu/data/amazon/links.html) | 2,638,173 | 1,323,884 | 61,275 | 5 | 1,283 |
+| [Amazon Reviews -- Office Products](http://jmcauley.ucsd.edu/data/amazon/links.html) | 1,243,186 | 909,314 | 130,006 | 5 | 5,400 |
+| [Amazon Reviews -- Sports And Outdoors](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3,268,695 | 1,990,521 | 478,898 | 5 | 4,786 |
+| [Amazon Reviews -- Kindle Store](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3205467 | 1,406,890 | 1,406,890 | 5 | 3,328 |
+| [Amazon Reviews -- Home And Kitchen](http://jmcauley.ucsd.edu/data/amazon/links.html) | 4,253,926 | 2,511,610 | 410,243 | 5 | 5,202 |
+| [Amazon Reviews -- Clothing Shoes And Jewelry](http://jmcauley.ucsd.edu/data/amazon/links.html) | 5,748,920 | 3,117,268 | 1,136,004 | 5 | 4,209 |
+| [Amazon Reviews -- CDs And Vinyl](http://jmcauley.ucsd.edu/data/amazon/links.html) | 3,749,004 | 1,578,597 | 486,360 | 5 | 6,041 |
+| [Amazon Reviews -- Movies And TV](http://jmcauley.ucsd.edu/data/amazon/links.html) | 4,607,047 | 2,088,620 | 200,941 | 5 | 6,004 |
+| [Amazon Reviews -- Electronics](http://jmcauley.ucsd.edu/data/amazon/links.html) | 7,824,482 | 4,201,696 | 476,002 | 5 | 5,489 |
+| [Amazon Reviews -- Books](http://jmcauley.ucsd.edu/data/amazon/links.html) | 22,507,155 | 8,026,324 | 2,330,066 | 5 | 6,296 |
 
 ---
 
@@ -116,10 +170,7 @@ Also, we provide some information about the dataset content such as the number o
 
 ### Download Data
 
-Beta-Recsys
-
-
- provides download interface for users to download different dataset. Here is an example:
+Beta-Recsys provides download interface for users to download different dataset. Here is an example:
 
 ```python
 import sys
@@ -191,7 +242,6 @@ This splitting approach is for evaluating how well a model performs on segments 
 ### temporal_basket_split
 
 This method will first rank all the records by time (if a timestamp column is provided), and then select the last portion of baskets.
-
 
 ---
 

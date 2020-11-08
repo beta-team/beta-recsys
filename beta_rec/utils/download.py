@@ -3,7 +3,7 @@ import os
 import requests
 from tqdm import tqdm
 
-from beta_rec.utils.onedrive import OneDrive
+from ..utils.onedrive import OneDrive
 
 
 def download_file(url, store_file_path):

@@ -38,12 +38,19 @@ RUN conda update conda
 RUN mkdir /home/ubuntu/notebooks
 RUN jupyter notebook --generate-config --allow-root
 RUN echo "c.NotebookApp.password = u'sha1:6a3f528eec40:6e896b6e4828f525a6e20e5411cd1c8075d68619'" >> /home/ubuntu/.jupyter/jupyter_notebook_config.py
+# jupyter notbook password: root
 
 # clone repo
-RUN cd /home/ubuntu && git clone "https://github.com/beta-team/beta-recsys.git"
-RUN ls
+RUN cd /home/ubuntu && git clone "https://github.com/beta-team/beta-recsys.git" develop
+
+RUN mv /home/ubuntu/develop /home/ubuntu/beta-recsys
+
+RUN cd /home/ubuntu/beta-recsys && pip install --upgrade pip && \
+    pip install flake8==3.7.9 --ignore-installed &&\
+    pip install --no-cache-dir -r requirements.txt
+RUN cd /home/ubuntu/beta-recsys && python setup.py install --record files.txt
 
 # Jupyter listens port: 8888
 EXPOSE 8888
 
-CMD ["jupyter", "notebook", "--allow-root", "--notebook-dir=/home/ubuntu/beta-recsys", "--ip='*'", "--port=8888", "--no-browser"]
+CMD ["jupyter", "lab", "--allow-root", "--notebook-dir=/home/ubuntu/beta-recsys", "--ip='0.0.0.0'", "--port=8888", "--no-browser"]
