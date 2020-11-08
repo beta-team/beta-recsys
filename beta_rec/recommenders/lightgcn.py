@@ -39,8 +39,8 @@ def tune_train(config):
     )
 
 
-class LGCN(Recommender):
-    """The Matrix Factorization Mode."""
+class LightGCN(Recommender):
+    """The LightGCN Model."""
 
     def __init__(self, config):
         """Initialize the config of this recommender.
