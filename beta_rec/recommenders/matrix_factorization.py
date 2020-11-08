@@ -26,7 +26,7 @@ def tune_train(config):
 
 
 class MatrixFactorization(Recommender):
-    """The Matrix Factorization Mode."""
+    """The Matrix Factorization Model."""
 
     def __init__(self, config):
         """Initialize the config of this recommender.
