@@ -104,12 +104,10 @@ class LightGCNEngine(ModelEngine):
     def __init__(self, config):
         """Initialize LightGCNEngine Class."""
         self.config = config
-        self.regs = config["regs"]  # reg is the regularisation
+        self.regs = config["model"]["regs"]  # reg is the regularisation
         self.decay = self.regs[0]
-        self.batch_size = config["batch_size"]
-        self.norm_adj = config["norm_adj"]
-        self.num_batch = config["num_batch"]
-        self.model = LightGCN(config, self.norm_adj)
+        self.norm_adj = config["model"]["norm_adj"]
+        self.model = LightGCN(config["model"], self.norm_adj)
         super(LightGCNEngine, self).__init__(config)
         self.model.to(self.device)
 
