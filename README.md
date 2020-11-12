@@ -37,6 +37,27 @@ If you use pip, you can install it with:
 pip install beta-rec
 ```
 
+### Docker
+
+We also provide docker image for you to run this project on any platform. You can use the image with:
+
+1. Pull image from Docker Hub
+
+   ```
+   docker pull betarecsys/beta-recsys:latest
+   ```
+
+2. Start a docker container with this image (Make sure the port 8888 is available on you local machine, or you can change the port in the command)
+
+   ```
+   docker run -ti --name beta-recsys -p 8888:8888 -d beta-recsys
+   ```
+
+3. Open Jupyter on a brower with this URL:
+
+   ```
+   http://localhost:8888
+   ```
 
 ## Quick Start
 
