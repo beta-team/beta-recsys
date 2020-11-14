@@ -34,6 +34,7 @@ via pre-built docker containers and supports distributed parameter tuning using 
    notes/models
    notes/evaluation
    notes/tuning
+   notes/experiment
 
 .. toctree::
    :maxdepth: 1
