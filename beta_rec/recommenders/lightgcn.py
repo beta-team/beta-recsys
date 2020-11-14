@@ -7,7 +7,7 @@ from munch import munchify
 from ray import tune
 
 from ..data.deprecated_data_base import DataLoaderBase
-from ..models.ngcf import NGCFEngine
+from ..models.lightgcn import LightGCNEngine
 from ..recommenders.recommender import Recommender
 from ..utils.monitor import Monitor
 
@@ -30,7 +30,7 @@ def tune_train(config):
         config (dict): All the parameters for the model.
     """
     data = config["data"]
-    train_engine = NGCF(munchify(config))
+    train_engine = LightGCN(munchify(config))
     result = train_engine.train(data)
     while train_engine.eval_engine.n_worker > 0:
         time.sleep(20)
@@ -39,8 +39,8 @@ def tune_train(config):
     )
 
 
-class NGCF(Recommender):
-    """The NGCF Model."""
+class LightGCN(Recommender):
+    """The LightGCN Model."""
 
     def __init__(self, config):
         """Initialize the config of this recommender.
@@ -48,7 +48,7 @@ class NGCF(Recommender):
         Args:
             config:
         """
-        super(NGCF, self).__init__(config, name="NGCF")
+        super(LightGCN, self).__init__(config, name="NGCF")
 
     def init_engine(self, data):
         """Initialize the required parameters for the model.
@@ -67,7 +67,7 @@ class NGCF(Recommender):
 
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items
-        self.engine = NGCFEngine(self.config)
+        self.engine = LightGCNEngine(self.config)
 
     def train(self, data):
         """Training the model.
@@ -95,7 +95,7 @@ class NGCF(Recommender):
 
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items
-        self.engine = NGCFEngine(self.config)
+        self.engine = LightGCNEngine(self.config)
 
         self.monitor = Monitor(
             log_dir=self.config["system"]["run_dir"], delay=1, gpu_id=self.gpu_id
