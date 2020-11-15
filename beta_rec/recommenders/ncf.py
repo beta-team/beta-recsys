@@ -1,7 +1,9 @@
 import os
 import time
+
 from munch import munchify
 from ray import tune
+
 from ..models.ncf import NeuMFEngine
 from ..recommenders.recommender import Recommender
 from ..utils.monitor import Monitor
