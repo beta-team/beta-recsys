@@ -88,9 +88,9 @@ class NeuMFEngine(ModelEngine):
     def __init__(self, config):
         """Initialize NeuMFEngine Class."""
         self.config = config
-        self.model = NeuMF(config)
+        self.model = NeuMF(config["model"])
         self.loss = torch.nn.BCELoss()
-        super(NeuMFEngine, self).__init__(config["model"])
+        super(NeuMFEngine, self).__init__(config)
         print(self.model)
         if self.config["model"]["model"] == "ncf_pre":
             self.load_pretrain_weights()
@@ -131,7 +131,7 @@ class NeuMFEngine(ModelEngine):
         self.model.train()
         total_loss = 0
         for batch_id, batch in enumerate(train_loader):
-            assert isinstance(batch[0], torch.LongTensor)
+            # assert isinstance(batch[0], torch.LongTensor)
             user, item, rating = batch[0], batch[1], batch[2]
             rating = rating.float()
             loss = self.train_single_batch(user, item, rating)
@@ -155,7 +155,7 @@ class NeuMFEngine(ModelEngine):
     def load_pretrain_weights(self):
         """Load weights from trained MLP model & GMF model."""
         # load GMF model
-        gmf_model = GMF(self.config)
+        gmf_model = GMF(self.config["model"])
         gmf_save_dir = os.path.join(
             self.config["system"]["model_save_dir"],
             self.config["model"]["gmf_config"]["save_name"],
