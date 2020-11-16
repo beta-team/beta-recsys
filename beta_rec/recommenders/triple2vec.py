@@ -6,8 +6,8 @@ from munch import munchify
 from ray import tune
 from torch.utils.data import DataLoader
 
+from ..core.recommender import Recommender
 from ..models.triple2vec import Triple2vecEngine
-from ..recommenders.recommender import Recommender
 from ..utils.monitor import Monitor
 
 
@@ -28,7 +28,7 @@ def tune_train(config):
 
 
 class Triple2vec(Recommender):
-    """The Matrix Factorization Model."""
+    """The Triple2vec Model."""
 
     def __init__(self, config):
         """Initialize the config of this recommender.
