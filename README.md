@@ -58,6 +58,8 @@ We also provide docker image for you to run this project on any platform. You ca
    ```
    http://localhost:8888
    ```
+   
+4. Enter `root` as the password for the notebook.
 
 ## Quick Start
 
