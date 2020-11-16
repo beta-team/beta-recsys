@@ -1,6 +1,6 @@
 from munch import munchify
 
-from ..core.train_engine import TrainEngine
+from .train_engine import TrainEngine
 
 
 class Recommender(TrainEngine):

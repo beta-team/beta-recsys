@@ -4,8 +4,8 @@ import time
 from munch import munchify
 from ray import tune
 
+from ..core.recommender import Recommender
 from ..models.mf import MFEngine
-from ..recommenders.recommender import Recommender
 from ..utils.monitor import Monitor
 
 

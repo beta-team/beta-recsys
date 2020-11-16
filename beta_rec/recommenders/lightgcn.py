@@ -6,9 +6,9 @@ import torch
 from munch import munchify
 from ray import tune
 
+from ..core.recommender import Recommender
 from ..data.deprecated_data_base import DataLoaderBase
 from ..models.lightgcn import LightGCNEngine
-from ..recommenders.recommender import Recommender
 from ..utils.monitor import Monitor
 
 
