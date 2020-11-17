@@ -33,7 +33,7 @@ class Monitor(Thread):
         self.writer.add_text(
             "device/CPU",
             "cpu count: {:d} \t brand: {:s}".format(
-                os.cpu_count(), cpuinfo.get_cpu_info()["brand"]
+                os.cpu_count(), cpuinfo.get_cpu_info()["brand_raw"]
             ),
             0,
         )
