@@ -76,7 +76,7 @@ class LightGCN_train(TrainEngine):
         super(LightGCN_train, self).__init__(config)
         self.load_dataset()
         self.build_data_loader()
-        self.engine = LightGCNEngine(self.config["model"])
+        self.engine = LightGCNEngine(self.config)
 
     def build_data_loader(self):
         """Missing Doc."""
@@ -87,9 +87,6 @@ class LightGCN_train(TrainEngine):
         )
         norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj_mat)
         self.config["model"]["norm_adj"] = norm_adj
-        self.config["model"]["num_batch"] = (
-            self.data.n_train // self.config["model"]["batch_size"] + 1
-        )
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
 
