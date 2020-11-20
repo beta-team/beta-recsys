@@ -1,6 +1,6 @@
 requests==2.24.0
 tensorboardX==2.1
-ray==0.8.5
+ray==1.0.1
 torch==1.6.0
 numpy==1.16.0
 tqdm==4.45.0
@@ -25,7 +25,6 @@ wheel~=0.34.2
 sphinx_markdown_tables~=0.0.14
 flake8-isort==4.0.0
 flake8-docstrings==1.5.0
-flake8-nb==0.2.5
 isort==5.5.2
 rstcheck~=3.3.1
 black==19.10b0

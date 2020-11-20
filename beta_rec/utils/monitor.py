@@ -160,7 +160,7 @@ def print_cpu_stat():
     """Print CPU status."""
     print(
         "Cpu count: {:d} \t brand: {:s}".format(
-            os.cpu_count(), cpuinfo.get_cpu_info()["brand"]
+            os.cpu_count(), cpuinfo.get_cpu_info()["brand_raw"]
         )
     )
     print("Avg_load_1m: \t{:.3f}%%;".format(os.getloadavg()[0]))

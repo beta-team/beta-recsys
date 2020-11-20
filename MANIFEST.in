@@ -1,0 +1,4 @@
+include requirements.txt
+
+# Include the README
+include *.md
