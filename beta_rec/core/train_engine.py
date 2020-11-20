@@ -263,9 +263,7 @@ class TrainEngine(object):
             config=config,
             local_dir=self.config["system"]["tune_dir"],
             # temp_dir=self.config["system"]["tune_dir"] + "/temp",
-            resources_per_trial={
-                "gpu": 1,
-            },
+            resources_per_trial={"cpu": 3},
         )
         df = analysis.dataframe()
         tune_result_dir = os.path.join(
