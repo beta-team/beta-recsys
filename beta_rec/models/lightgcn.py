@@ -167,15 +167,9 @@ class LightGCNEngine(ModelEngine):
         """Calculate BPR loss."""
         pos_scores = torch.sum(torch.mul(usersE, pos_itemsE), dim=1)
         neg_scores = torch.sum(torch.mul(usersE, neg_itemsE), dim=1)
-        userEmb0 = self.model.user_embedding(
-            torch.tensor(users).clone().detach().to(self.device)
-        )
-        posEmb0 = self.model.item_embedding(
-            torch.tensor(pos_item).clone().detach().to(self.device)
-        )
-        negEmb0 = self.model.item_embedding(
-            torch.tensor(neg_item).clone().detach().to(self.device)
-        )
+        userEmb0 = self.model.user_embedding(users.to(self.device))
+        posEmb0 = self.model.item_embedding(pos_item.to(self.device))
+        negEmb0 = self.model.item_embedding(neg_item.to(self.device))
 
         reg_loss = (
             (1 / 2)
