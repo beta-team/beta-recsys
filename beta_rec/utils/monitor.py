@@ -30,10 +30,9 @@ class Monitor(Thread):
         self.delay = delay  # Time between calls to GPUtil
         self.pid = os.getpid()
         self.writer = SummaryWriter(log_dir=log_dir)  # tensorboard writer
+        label = 'brand'
         if 'brand_raw' in cpuinfo.get_cpu_info().keys():
             label = 'brand_raw'
-        if 'brand' in cpuinfo.get_cpu_info().keys():
-            label = 'brand'
         self.writer.add_text(
             "device/CPU",
             "cpu count: {:d} \t brand: {:s}".format(
@@ -162,10 +161,9 @@ some static methods
 
 def print_cpu_stat():
     """Print CPU status."""
+    label = 'brand'
     if 'brand_raw' in cpuinfo.get_cpu_info().keys():
         label = 'brand_raw'
-    if 'brand' in cpuinfo.get_cpu_info().keys():
-        label = 'brand'
     print(
         "Cpu count: {:d} \t brand: {:s}".format(
             os.cpu_count(), cpuinfo.get_cpu_info()[label]
