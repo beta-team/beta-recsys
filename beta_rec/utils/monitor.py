@@ -74,9 +74,7 @@ class Monitor(Thread):
         """Write CPU status."""
         CPU_load = psutil.Process(self.pid).cpu_percent(interval=1)
         self.writer.add_scalars(
-            "device/cpu",
-            {"CPU_load (%)": CPU_load},
-            self.count,
+            "device/cpu", {"CPU_load (%)": CPU_load}, self.count,
         )
         self.CPU_load.append(CPU_load)
 
@@ -86,9 +84,7 @@ class Monitor(Thread):
             psutil.Process(self.pid).memory_info()[0] / 2.0 ** 30
         )  # current app memory use in GB
         self.writer.add_scalars(
-            "device/mem",
-            {"memory_used (GB)": memoryUsed},
-            self.count,
+            "device/mem", {"memory_used (GB)": memoryUsed}, self.count,
         )
         self.memoryUsed.append(memoryUsed)
 
