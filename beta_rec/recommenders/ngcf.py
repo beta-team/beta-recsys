@@ -6,9 +6,9 @@ import torch
 from munch import munchify
 from ray import tune
 
+from ..core.recommender import Recommender
 from ..data.deprecated_data_base import DataLoaderBase
 from ..models.ngcf import NGCFEngine
-from ..recommenders import Recommender
 from ..utils.monitor import Monitor
 
 
@@ -40,7 +40,7 @@ def tune_train(config):
 
 
 class NGCF(Recommender):
-    """The Matrix Factorization Mode."""
+    """The NGCF Model."""
 
     def __init__(self, config):
         """Initialize the config of this recommender.
@@ -57,11 +57,12 @@ class NGCF(Recommender):
             data: the Dataset object.
 
         """
-        self.sample_generator = DataLoaderBase(ratings=self.data.train)
+        self.sample_generator = DataLoaderBase(ratings=data.train)
         adj_mat, norm_adj_mat, mean_adj_mat = self.sample_generator.get_adj_mat(
             self.config
         )
         norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj_mat)
+
         self.config["model"]["norm_adj"] = norm_adj
 
         self.config["model"]["n_users"] = data.n_users
@@ -83,6 +84,14 @@ class NGCF(Recommender):
             return self.tune(tune_train)
 
         self.gpu_id, self.config["device_str"] = self.get_device()  # Train the model.
+
+        self.sample_generator = DataLoaderBase(ratings=data.train)
+        adj_mat, norm_adj_mat, mean_adj_mat = self.sample_generator.get_adj_mat(
+            self.config
+        )
+        norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj_mat)
+
+        self.config["model"]["norm_adj"] = norm_adj
 
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items

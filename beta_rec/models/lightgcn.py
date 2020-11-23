@@ -104,12 +104,10 @@ class LightGCNEngine(ModelEngine):
     def __init__(self, config):
         """Initialize LightGCNEngine Class."""
         self.config = config
-        self.regs = config["regs"]  # reg is the regularisation
+        self.regs = config["model"]["regs"]  # reg is the regularisation
         self.decay = self.regs[0]
-        self.batch_size = config["batch_size"]
-        self.norm_adj = config["norm_adj"]
-        self.num_batch = config["num_batch"]
-        self.model = LightGCN(config, self.norm_adj)
+        self.norm_adj = config["model"]["norm_adj"]
+        self.model = LightGCN(config["model"], self.norm_adj)
         super(LightGCNEngine, self).__init__(config)
         self.model.to(self.device)
 
@@ -169,15 +167,9 @@ class LightGCNEngine(ModelEngine):
         """Calculate BPR loss."""
         pos_scores = torch.sum(torch.mul(usersE, pos_itemsE), dim=1)
         neg_scores = torch.sum(torch.mul(usersE, neg_itemsE), dim=1)
-        userEmb0 = self.model.user_embedding(
-            torch.tensor(users).clone().detach().to(self.device)
-        )
-        posEmb0 = self.model.item_embedding(
-            torch.tensor(pos_item).clone().detach().to(self.device)
-        )
-        negEmb0 = self.model.item_embedding(
-            torch.tensor(neg_item).clone().detach().to(self.device)
-        )
+        userEmb0 = self.model.user_embedding(users.to(self.device))
+        posEmb0 = self.model.item_embedding(pos_item.to(self.device))
+        negEmb0 = self.model.item_embedding(neg_item.to(self.device))
 
         reg_loss = (
             (1 / 2)

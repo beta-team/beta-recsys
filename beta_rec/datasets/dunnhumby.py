@@ -127,6 +127,7 @@ class Dunnhumby(DatasetBase):
         zip_file_name = os.path.join(self.raw_path, "dunnhumby.zip")
         unzip_file_name = os.path.join(self.raw_path, "unzip")
         if not os.path.exists(unzip_file_name):
+            print(zip_file_name)
             un_zip(zip_file_name, unzip_file_name)
 
         if not os.path.exists(
