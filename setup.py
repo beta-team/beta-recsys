@@ -10,9 +10,9 @@ url = "https://github.com/beta-team/beta-recsys"
 HERE = pathlib.Path(__file__).parent
 
 # The text of the README file
-README = (HERE / "README.md").read_text()
+README = (HERE / "README.md").read_text(encoding="utf-8")
 
-with pathlib.Path("requirements.txt").open() as requirements_txt:
+with pathlib.Path("requirements.txt").open(encoding="utf-8") as requirements_txt:
     install_requires = [
         str(requirement)
         for requirement in pkg_resources.parse_requirements(requirements_txt)
