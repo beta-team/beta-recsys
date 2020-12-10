@@ -1,9 +1,8 @@
 import math
-import multiprocessing
 import os
 import time
 from collections import defaultdict
-from multiprocessing import *
+from multiprocessing import Process
 from multiprocessing.managers import BaseManager
 
 import numpy as np
@@ -461,39 +460,71 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
 
 
 class SplitHelper(object):
+    r"""SplitHelper Class.
+
+    SplitHelper class is used to store shared data for multi-processing access. All the data in this class can be
+    accessed or edited by any process.
+    """
+
     def __int__(self, data, user_actions, users, flags):
+        r"""Init the SplitHelper Class.
+
+        Args:
+            data (DataFrame): interaction DataFrame to be split. (read only)
+            user_actions (defaultdict): a dict map each user to its records ID. (read only)
+            users (list): a list of keys for user_actions. (read only)
+            flags (list): the FLAG column of data. (write)
+        """
         self.data = data
         self.user_actions = user_actions
         self.users = users
         self.flags = flags
 
     def set_flag(self, i, flag):
+        r"""Set flag given index.
+
+        This method will set the value to flag based on the index given.
+
+        Args:
+            i (int): the index in flag.
+            flag (str): the value to be set.
+        """
         self.data.loc[i, DEFAULT_FLAG_COL] = flag
 
     def get_data(self):
+        r"""Get data."""
         return self.data
 
     def get_flags(self):
+        r"""Get flags."""
         return self.flags
 
     def get_users(self):
+        r"""Get users."""
         return self.users
 
     def get_user_actions(self):
+        r"""Get user_actions."""
         return self.user_actions
 
 
 class MyManager(BaseManager):
+    r"""MyManager Class.
+
+    This class inherits from BaseManager to handle shared data.
+    """
+
     pass
 
 
 def ResourceManager():
+    r"""Initialize a manager for shared data."""
     m = MyManager()
     m.start()
     return m
 
 
-MyManager.register("SplitHelper", SplitHelper)
+MyManager.register("SplitHelper", SplitHelper)  # register self-define struct
 
 
 def leave_one_out(data, random=False):
@@ -567,7 +598,7 @@ def leave_one_out(data, random=False):
     # blocking wait for all task done
     for p in workers:
         p.join()
-    print(f"all workers done")
+    print("all workers done")
     data[DEFAULT_FLAG_COL] = split_helper.get_flags()
 
     end_time = time.time()
@@ -576,9 +607,18 @@ def leave_one_out(data, random=False):
 
 
 def leave_one_out_helper(i, split_helper, start, end):
+    f"""leave_one_out helper.
+
+    This method is used to handle leave_one_out for a given partition of users. Each process will run this method.
+
+    Args:
+        i (int): the number of process
+        split_helper (SplitHelper): SplitHelper class for shared data
+        start (int): the start index for users to be handled
+        end (int): the end index for users to be handled.
+    """
     users = split_helper.get_users()
     user_actions = split_helper.get_user_actions()
-    data = split_helper.get_data()
 
     if end != -1:
         users = users[start:end]
@@ -627,7 +667,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         by_user (bool): bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
 
     Returns:
@@ -677,7 +717,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         by_user (bool): Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
 
     Returns:
