@@ -470,13 +470,12 @@ def leave_one_out(data, random=False):
     if random:
         data = sklearn.utils.shuffle(data)
     else:
-        data.sort_values(by=[DEFAULT_TIMESTAMP_COL], inplace=True)
+        data.sort_values(by=[DEFAULT_TIMESTAMP_COL], ascending=False, inplace=True)
 
-    users = data[DEFAULT_USER_COL].unique()
-    for u in tqdm(users):
-        interactions = data[data[DEFAULT_USER_COL] == u].index.values
-        data.loc[interactions[-1], DEFAULT_FLAG_COL] = "test"
-        data.loc[interactions[-2], DEFAULT_FLAG_COL] = "validate"
+    data.loc[
+        data.groupby([DEFAULT_USER_COL]).head(2).index, DEFAULT_FLAG_COL
+    ] = "validate"
+    data.loc[data.groupby([DEFAULT_USER_COL]).head(1).index, DEFAULT_FLAG_COL] = "test"
 
     return data
 
