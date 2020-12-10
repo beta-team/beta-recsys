@@ -466,7 +466,7 @@ class SplitHelper(object):
     accessed or edited by any process.
     """
 
-    def __int__(self, data, user_actions, users, flags):
+    def __init__(self, data, user_actions, users, flags):
         r"""Init the SplitHelper Class.
 
         Args:
@@ -626,7 +626,7 @@ def leave_one_out_helper(i, split_helper, start, end):
         users = users[start:]
 
     for user in users:
-        if len(user_actions[users]) > 2:
+        if len(user_actions[user]) > 2:
             idx = user_actions[user]
             split_helper.set_flag(idx[-1], "test")
             split_helper.set_flag(idx[-2], "validate")
