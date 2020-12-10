@@ -607,7 +607,7 @@ def leave_one_out(data, random=False):
 
 
 def leave_one_out_helper(i, split_helper, start, end):
-    f"""leave_one_out helper.
+    """leave_one_out helper.
 
     This method is used to handle leave_one_out for a given partition of users. Each process will run this method.
 
