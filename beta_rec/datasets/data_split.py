@@ -1,5 +1,10 @@
 import math
+import multiprocessing
 import os
+import time
+from collections import defaultdict
+from multiprocessing import *
+from multiprocessing.managers import BaseManager
 
 import numpy as np
 import pandas as pd
@@ -455,6 +460,42 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
     return data
 
 
+class SplitHelper(object):
+    def __int__(self, data, user_actions, users, flags):
+        self.data = data
+        self.user_actions = user_actions
+        self.users = users
+        self.flags = flags
+
+    def set_flag(self, i, flag):
+        self.data.loc[i, DEFAULT_FLAG_COL] = flag
+
+    def get_data(self):
+        return self.data
+
+    def get_flags(self):
+        return self.flags
+
+    def get_users(self):
+        return self.users
+
+    def get_user_actions(self):
+        return self.user_actions
+
+
+class MyManager(BaseManager):
+    pass
+
+
+def ResourceManager():
+    m = MyManager()
+    m.start()
+    return m
+
+
+MyManager.register("SplitHelper", SplitHelper)
+
+
 def leave_one_out(data, random=False):
     """leave_one_out split.
 
@@ -465,6 +506,7 @@ def leave_one_out(data, random=False):
     Returns:
         DataFrame: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
+    start_time = time.time()
     print("leave_one_out")
     data[DEFAULT_FLAG_COL] = "train"
     if random:
@@ -472,13 +514,82 @@ def leave_one_out(data, random=False):
     else:
         data.sort_values(by=[DEFAULT_TIMESTAMP_COL], inplace=True)
 
+    # method 1
     users = data[DEFAULT_USER_COL].unique()
     for u in tqdm(users):
         interactions = data[data[DEFAULT_USER_COL] == u].index.values
         data.loc[interactions[-1], DEFAULT_FLAG_COL] = "test"
         data.loc[interactions[-2], DEFAULT_FLAG_COL] = "validate"
 
+    # method 2
+    user_actions = defaultdict(list)
+    for index, row in data.iterrows():
+        if index == 0:
+            # skip header row
+            continue
+        user_actions[row[DEFAULT_USER_COL]].append(index)
+
+    users = list(user_actions.keys())
+    dict_length = len(users)
+    processor_count = 4  # number of CPU
+    block_size = dict_length // processor_count
+    flags = data[DEFAULT_FLAG_COL]
+
+    # shared resource
+    manager = ResourceManager()
+    split_helper = manager.SplitHelper(data, user_actions, users, flags)
+    workers = []
+    for i in range(processor_count - 1):
+        start = i * block_size
+        end = (i + 1) * block_size
+        print(f"process {i} ready to handle {start}-{end}")
+        p = Process(target=leave_one_out_helper, args=(i, split_helper, start, end))
+        workers.append(p)
+        p.start()
+        print(f"process {i} already started!")
+    # handle last block
+    print(
+        f"process {processor_count - 1} ready to handle {(processor_count - 2) * block_size}-{-1}"
+    )
+    p = Process(
+        target=leave_one_out_helper,
+        args=(
+            processor_count - 1,
+            split_helper,
+            (processor_count - 2) * block_size,
+            -1,
+        ),
+    )
+    workers.append(p)
+    p.start()
+    print(f"process {processor_count - 1} already started!")
+
+    # blocking wait for all task done
+    for p in workers:
+        p.join()
+    print(f"all workers done")
+    data[DEFAULT_FLAG_COL] = split_helper.get_flags()
+
+    end_time = time.time()
+    print(f"leave_one_out time cost: {end_time - start_time}")
     return data
+
+
+def leave_one_out_helper(i, split_helper, start, end):
+    users = split_helper.get_users()
+    user_actions = split_helper.get_user_actions()
+    data = split_helper.get_data()
+
+    if end != -1:
+        users = users[start:end]
+    else:
+        users = users[start:]
+
+    for user in users:
+        if len(user_actions[users]) > 2:
+            idx = user_actions[user]
+            split_helper.set_flag(idx[-1], "test")
+            split_helper.set_flag(idx[-2], "validate")
 
 
 def leave_one_basket(data, random=False):
