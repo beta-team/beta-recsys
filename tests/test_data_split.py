@@ -242,32 +242,16 @@ class TestDataSplit(unittest.TestCase):
         self.assertEqual(tp_test.shape[0], 3)
 
         # check validate
-        self.assertEqual(tp_validate.iloc[0, 0], 0)
-        self.assertEqual(tp_validate.iloc[0, 1], 2)
-        self.assertEqual(tp_validate.iloc[0, 2], 300)
-        self.assertEqual(tp_validate.iloc[0, 3], 15)
-        self.assertEqual(tp_validate.iloc[1, 0], 1)
-        self.assertEqual(tp_validate.iloc[1, 1], 4)
-        self.assertEqual(tp_validate.iloc[1, 2], 500)
-        self.assertEqual(tp_validate.iloc[1, 3], 50)
-        self.assertEqual(tp_validate.iloc[2, 0], 2)
-        self.assertEqual(tp_validate.iloc[2, 1], 7)
-        self.assertEqual(tp_validate.iloc[2, 2], 800)
-        self.assertEqual(tp_validate.iloc[2, 3], 60)
+        tp_validate_users = tp_validate[DEFAULT_USER_COL].to_list()
+        self.assertTrue(0 in tp_validate_users)
+        self.assertTrue(1 in tp_validate_users)
+        self.assertTrue(2 in tp_validate_users)
 
         # check test
-        self.assertEqual(tp_test.iloc[0, 0], 0)
-        self.assertEqual(tp_test.iloc[0, 1], 2)
-        self.assertEqual(tp_test.iloc[0, 2], 300)
-        self.assertEqual(tp_test.iloc[0, 3], 30)
-        self.assertEqual(tp_test.iloc[1, 0], 1)
-        self.assertEqual(tp_test.iloc[1, 1], 5)
-        self.assertEqual(tp_test.iloc[1, 2], 600)
-        self.assertEqual(tp_test.iloc[1, 3], 45)
-        self.assertEqual(tp_test.iloc[2, 0], 2)
-        self.assertEqual(tp_test.iloc[2, 1], 8)
-        self.assertEqual(tp_test.iloc[2, 2], 900)
-        self.assertEqual(tp_test.iloc[2, 3], 10)
+        tp_test_users = tp_test[DEFAULT_USER_COL].to_list()
+        self.assertTrue(0 in tp_test_users)
+        self.assertTrue(1 in tp_test_users)
+        self.assertTrue(2 in tp_test_users)
 
     def test_leave_one_basket(self):
         """Test leave one basket."""
