@@ -459,74 +459,6 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
     return data
 
 
-class SplitHelper(object):
-    r"""SplitHelper Class.
-
-    SplitHelper class is used to store shared data for multi-processing access. All the data in this class can be
-    accessed or edited by any process.
-    """
-
-    def __init__(self, data, user_actions, users, flags):
-        r"""Init the SplitHelper Class.
-
-        Args:
-            data (DataFrame): interaction DataFrame to be split. (read only)
-            user_actions (defaultdict): a dict map each user to its records ID. (read only)
-            users (list): a list of keys for user_actions. (read only)
-            flags (list): the FLAG column of data. (write)
-        """
-        self.data = data
-        self.user_actions = user_actions
-        self.users = users
-        self.flags = flags
-
-    def set_flag(self, i, flag):
-        r"""Set flag given index.
-
-        This method will set the value to flag based on the index given.
-
-        Args:
-            i (int): the index in flag.
-            flag (str): the value to be set.
-        """
-        self.data.loc[i, DEFAULT_FLAG_COL] = flag
-
-    def get_data(self):
-        r"""Get data."""
-        return self.data
-
-    def get_flags(self):
-        r"""Get flags."""
-        return self.flags
-
-    def get_users(self):
-        r"""Get users."""
-        return self.users
-
-    def get_user_actions(self):
-        r"""Get user_actions."""
-        return self.user_actions
-
-
-class MyManager(BaseManager):
-    r"""MyManager Class.
-
-    This class inherits from BaseManager to handle shared data.
-    """
-
-    pass
-
-
-def ResourceManager():
-    r"""Initialize a manager for shared data."""
-    m = MyManager()
-    m.start()
-    return m
-
-
-MyManager.register("SplitHelper", SplitHelper)  # register self-define struct
-
-
 def leave_one_out(data, random=False):
     """leave_one_out split.
 
@@ -552,84 +484,9 @@ def leave_one_out(data, random=False):
         data.loc[interactions[-1], DEFAULT_FLAG_COL] = "test"
         data.loc[interactions[-2], DEFAULT_FLAG_COL] = "validate"
 
-    # method 2
-    user_actions = defaultdict(list)
-    for index, row in data.iterrows():
-        if index == 0:
-            # skip header row
-            continue
-        user_actions[row[DEFAULT_USER_COL]].append(index)
-
-    users = list(user_actions.keys())
-    dict_length = len(users)
-    processor_count = 4  # number of CPU
-    block_size = dict_length // processor_count
-    flags = data[DEFAULT_FLAG_COL]
-
-    # shared resource
-    manager = ResourceManager()
-    split_helper = manager.SplitHelper(data, user_actions, users, flags)
-    workers = []
-    for i in range(processor_count - 1):
-        start = i * block_size
-        end = (i + 1) * block_size
-        print(f"process {i} ready to handle {start}-{end}")
-        p = Process(target=leave_one_out_helper, args=(i, split_helper, start, end))
-        workers.append(p)
-        p.start()
-        print(f"process {i} already started!")
-    # handle last block
-    print(
-        f"process {processor_count - 1} ready to handle {(processor_count - 2) * block_size}-{-1}"
-    )
-    p = Process(
-        target=leave_one_out_helper,
-        args=(
-            processor_count - 1,
-            split_helper,
-            (processor_count - 2) * block_size,
-            -1,
-        ),
-    )
-    workers.append(p)
-    p.start()
-    print(f"process {processor_count - 1} already started!")
-
-    # blocking wait for all task done
-    for p in workers:
-        p.join()
-    print("all workers done")
-    data[DEFAULT_FLAG_COL] = split_helper.get_flags()
-
     end_time = time.time()
     print(f"leave_one_out time cost: {end_time - start_time}")
     return data
-
-
-def leave_one_out_helper(i, split_helper, start, end):
-    """leave_one_out helper.
-
-    This method is used to handle leave_one_out for a given partition of users. Each process will run this method.
-
-    Args:
-        i (int): the number of process
-        split_helper (SplitHelper): SplitHelper class for shared data
-        start (int): the start index for users to be handled
-        end (int): the end index for users to be handled.
-    """
-    users = split_helper.get_users()
-    user_actions = split_helper.get_user_actions()
-
-    if end != -1:
-        users = users[start:end]
-    else:
-        users = users[start:]
-
-    for user in users:
-        if len(user_actions[user]) > 2:
-            idx = user_actions[user]
-            split_helper.set_flag(idx[-1], "test")
-            split_helper.set_flag(idx[-2], "validate")
 
 
 def leave_one_basket(data, random=False):
