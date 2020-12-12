@@ -1,5 +1,6 @@
 import math
 import os
+import time
 
 import numpy as np
 import pandas as pd
@@ -465,6 +466,7 @@ def leave_one_out(data, random=False):
     Returns:
         DataFrame: DataFrame that have already by labeled by a col with "train", "test" or "valid".
     """
+    start_time = time.time()
     print("leave_one_out")
     data[DEFAULT_FLAG_COL] = "train"
     if random:
@@ -477,6 +479,8 @@ def leave_one_out(data, random=False):
     ] = "validate"
     data.loc[data.groupby([DEFAULT_USER_COL]).head(1).index, DEFAULT_FLAG_COL] = "test"
 
+    end_time = time.time()
+    print(f"leave_one_out time cost: {end_time - start_time}")
     return data
 
 
@@ -515,7 +519,7 @@ def temporal_split(data, test_rate=0.1, by_user=False):
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         by_user (bool): bool. Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
 
     Returns:
@@ -565,7 +569,7 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
         test_rate (float): percentage of the test data.
             Note that percentage of the validation data will be the same as testing.
         by_user (bool): Default False.
-                    - Ture: user-based split,
+                    - True: user-based split,
                     - False: global split,
 
     Returns:
