@@ -43,7 +43,7 @@ RUN cd /root/beta-recsys && pip install --upgrade pip && \
     pip install jupyterlab && \
     pip install flake8==3.7.9 --ignore-installed &&\
     pip install --no-cache-dir -r requirements.txt
-RUN cd /root/beta-recsys && python setup.py install --record files.txt
+RUN cd /root/beta-recsys
 
 # Jupyter listens port: 8888
 EXPOSE 8888
