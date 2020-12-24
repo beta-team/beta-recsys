@@ -44,7 +44,8 @@
         "optimizer": "rmsprop",
         "activator": "tanh",
         "l2_regularization": 0.01,
-        "max_epoch": 120,
+        "max_epoch": 200,
+        "max_n_update": 20,
         "save_name": "vbcar.model",
         "result_col": ["model","emb_dim","late_dim","batch_size","n_sample","optimizer","lr","alpha"]
     },

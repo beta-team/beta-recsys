@@ -39,7 +39,8 @@
         "dropout": 0.0,
         "optimizer": "adam",
         "l2_regularization": 0.01,
-        "max_epoch": 20,
+        "max_epoch": 200,
+        "max_n_update": 20,
         "gmf_config": {
             "name": "gmf",
             "save_name": "gmf.model"
