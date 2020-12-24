@@ -17,7 +17,6 @@ from ..data.base_data import BaseData
 from ..datasets.data_load import load_split_dataset
 from ..utils import logger
 from ..utils.common_util import ensureDir, print_dict_as_table, set_seed, update_args
-from ..utils.constants import MAX_N_UPDATE
 
 
 class TrainEngine(object):
@@ -207,15 +206,16 @@ class TrainEngine(object):
         Returns:
             bool: True: if early stop criterion is triggered,  False: else
         """
+        max_n_update = self.config["model"]["max_n_update"]
         if epoch > 0 and self.eval_engine.n_no_update == 0:
             # save model if previous epoch have already obtained better result
             engine.save_checkpoint(model_dir=model_dir)
 
-        if self.eval_engine.n_no_update >= MAX_N_UPDATE:
+        if self.eval_engine.n_no_update >= max_n_update:
             # stop training if early stop criterion is triggered
             print(
                 "Early stop criterion triggered, no performance update for"
-                f" {MAX_N_UPDATE} times"
+                f" {max_n_update} times"
             )
             return True
         return False

@@ -39,7 +39,8 @@
         "lr": 0.05,
         "device": "gpu",
         "optimizer": "adam",
-        "max_epoch": 50,
+        "max_epoch": 200,
+        "max_n_update": 20,
         "save_name": "lightgcn.model"
     },
     "tunable": [
