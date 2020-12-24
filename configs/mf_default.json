@@ -39,7 +39,8 @@
         "loss": "bpr",
         "lr": 0.05,
         "reg": 0.001,
-        "max_epoch": 20,
+        "max_epoch": 200,
+        "max_n_update": 20,
         "save_name": "mf.model",
         "result_col": ["model","emb_dim","batch_size","dropout","optimizer","loss","lr","reg"]
     },
