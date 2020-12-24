@@ -1,4 +1,4 @@
-**[Installation](#installation)** |
+|**[Installation](#installation)** |
 **[Quick Start](#installation)** |
 **[Documentation](https://beta-recsys.readthedocs.io/)** |
 **[Contributing](#contributing)** |
@@ -134,6 +134,7 @@ The following is a list of recommender models currently available in the reposit
   - [x] NGCF: [Neural graph collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3331184.3331267), SIGIR 2019
   - [x] LightGCN: [**LightGCN**: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126), SIGIR 2020
   - [x] MF: [Neural Collaborative Filtering vs. Matrix Factorization Revisited](https://arxiv.org/abs/2005.09683), arXiv’ 2020
+  - [ ] LCF: [Graph Convolutional Network for Recommendation with Low-pass Collaborative Filters](https://arxiv.org/abs/2006.15516)
 
 ### Sequential Models
   - [x] NARM: [Neural Attentive Session-based Recommendation](https://arxiv.org/abs/1711.04725), CIKM 2017
@@ -151,20 +152,7 @@ The following is a list of recommender models currently available in the reposit
 
 > If you want your model to be implemented by our maintenance team (or by yourself), please submit an issue following our community [instruction]((#contributing)). 
 
-## Recent Changing Logs
-
-### [Version v0.2.2](https://github.com/beta-team/beta-recsys/releases/tag/v0.2.2)(2020-10-25)
-
--  Add Amazon Reviews datasets --> [link](https://beta-recsys.readthedocs.io/en/develop/notes/datasets.html)
--  New API for Recommenders. --> [notebook example](https://github.com/beta-team/beta-recsys/blob/master/examples/MF_API_test.ipynb)
--  Move the data filtering process to the main dataset classes. -->[Usage](https://beta-recsys.readthedocs.io/en/develop/notes/datasets.html#usage)
--  New feature for experiment --> [Usage](https://github.com/beta-team/beta-recsys/blob/develop/examples/experiment.ipynb)
-
-###  [Version v0.2.1](https://github.com/beta-team/beta-recsys/releases/tag/v0.2.1)(2020-09-24)
-
-- add Dockefile
-- update experiment
-- update dataset
+## Recent Changing Logs ---> See [version release](https://github.com/beta-team/beta-recsys/releases).
 
 
 ## Contributing
@@ -172,9 +160,9 @@ The following is a list of recommender models currently available in the reposit
 This project welcomes contributions and suggestions. Please make sure to read the [Contributing Guide](https://github.com/beta-team/community/blob/master/beta_recsys/README.md) before creating a pull request. 
 ### Community meeting
 
-- Meeting time: Saturday (1:30 – 2:30pm **[UTC +0](https://24timezones.com/time-zone/utc#gref)**/9:30 – 10:30pm **[UTC +8](https://24timezones.com/time-zone/utc+8#gref)**), (start from 7 November 2020)**⋅** [![Add Event](https://img.shields.io/badge/Add-Event-blue)](https://github.com/beta-team/community/releases/download/meeting/bi-weekly.meeting.ics)
+- Meeting time: Saturday (1:30 – 2:30pm [UTC +0](https://24timezones.com/time-zone/utc#gref)) / (9:30 – 10:30pm [UTC +8](https://24timezones.com/time-zone/utc+8#gref)) [![Add Event](https://img.shields.io/badge/Add-Event-blue)](https://github.com/beta-team/community/releases/download/meeting/bi-weekly.meeting.ics)
 - Meeting minutes: [notes](https://github.com/beta-team/community/tree/master/beta_recsys/meeting%20minutes)
-- Meeting recordings: [recording links]: Can be found in each [meeting note](https://github.com/beta-team/community/tree/master/beta_recsys/meeting%20minutes) (since Nov.7, 2020).
+- Meeting recordings: [recording links]: Can be found in each [meeting note](https://github.com/beta-team/community/tree/master/beta_recsys/meeting%20minutes).
 
 ### Discussion channels
 
