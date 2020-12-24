@@ -49,7 +49,7 @@ class TrainEngine(object):
                     int(self.config["system"]["device"].replace("cuda", "")),
                     self.config["system"]["device"],
                 )
-            elif len(self.config["system"]["device"]) < 1:  # receive an int string
+            elif len(self.config["system"]["device"]) == 1:  # receive an gpu id
                 return (
                     int(self.config["system"]["device"]),
                     "cuda:" + self.config["system"]["device"],
