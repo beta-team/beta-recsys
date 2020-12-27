@@ -6,8 +6,6 @@ import time
 
 sys.path.append("../")
 
-import numpy as np
-import torch
 from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
