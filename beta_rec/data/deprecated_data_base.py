@@ -355,10 +355,13 @@ class DataLoaderBase(object):
         return adj_mat.tocsr(), norm_adj_mat.tocsr(), mean_adj_mat.tocsr()
 
     def get_graph_embeddings(self, config):
-        """Get the adjacent matrix, if not previously stored then call the function to create.
-        This method is for the low-pass collaborative filtering
-        """
+        """Get the graph embedding, if not previously stored then call the function to create.
 
+        This method is for LCFN model.
+
+        Returns:
+            eigsh of the graph matrix
+        """
         process_file_name = (
             "lcfn_"
             + config["dataset"]["dataset"]
@@ -404,6 +407,7 @@ class DataLoaderBase(object):
         return [graph_u, graph_i]
 
     def create_graph_embeddings(self, config):
+        """Create graph embeddings from the user and item hypergraph."""
         cut_off = config["model"]["cut_off"]
         user_np = np.array(self.ratings[DEFAULT_USER_COL])
         item_np = np.array(self.ratings[DEFAULT_ITEM_COL])
