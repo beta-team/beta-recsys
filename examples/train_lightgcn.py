@@ -14,7 +14,6 @@ from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.deprecated_data_base import DataLoaderBase
 from beta_rec.models.lightgcn import LightGCNEngine
 from beta_rec.utils.common_util import DictToObject
-from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
 
@@ -98,6 +97,7 @@ class LightGCN_train(TrainEngine):
         self.model_save_dir = os.path.join(
             self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
         )
+        self.max_n_update = self.config["model"]["max_n_update"]
         for epoch in range(self.config["model"]["max_epoch"]):
             print(f"Epoch {epoch} starts !")
             print("-" * 80)
@@ -105,10 +105,10 @@ class LightGCN_train(TrainEngine):
                 # previous epoch have already obtained better result
                 self.engine.save_checkpoint(model_dir=self.model_save_dir)
 
-            if self.eval_engine.n_no_update >= MAX_N_UPDATE:
+            if self.eval_engine.n_no_update >= self.max_n_update:
                 print(
                     "Early stop criterion triggered, no performance update for {:} times".format(
-                        MAX_N_UPDATE
+                        self.max_n_update
                     )
                 )
                 break

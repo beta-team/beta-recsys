@@ -73,13 +73,13 @@ def parse_gzip_file(path):
     Args:
         path: the file path of gzip file.
     """
-    g = gzip.open(path, "rb")
-    for l in g:
-        yield eval(l)
+    file = gzip.open(path, "rb")
+    for line in file:
+        yield eval(line)
 
 
 def get_data_frame_from_gzip_file(path):
-    """Get dataframe from a gzip file.
+    """Get Dataframe from a gzip file.
 
     Args:
         path the file path of gzip file.
