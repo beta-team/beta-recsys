@@ -1,3 +1,4 @@
+import json
 import os
 import random
 from copy import deepcopy
@@ -6,6 +7,7 @@ import numpy as np
 import pandas as pd
 import scipy.sparse as sp
 import torch
+from scipy.sparse.linalg import eigsh
 from torch.utils.data import DataLoader, Dataset
 
 from ..utils.common_util import ensureDir, normalized_adj_single
@@ -351,3 +353,109 @@ class DataLoaderBase(object):
         mean_adj_mat = normalized_adj_single(adj_mat)
         print("already normalize adjacency matrix")
         return adj_mat.tocsr(), norm_adj_mat.tocsr(), mean_adj_mat.tocsr()
+
+    def get_graph_embeddings(self, config):
+        """Get the adjacent matrix, if not previously stored then call the function to create.
+        This method is for the low-pass collaborative filtering
+        """
+
+        process_file_name = (
+            "lcfn_"
+            + config["dataset"]["dataset"]
+            + "_"
+            + config["dataset"]["data_split"]
+            + (
+                ("_" + str(config["dataset"]["percent"] * 100))
+                if "percent" in config
+                else ""
+            )
+        )
+        process_path = os.path.join(
+            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+        )
+        process_file_name = os.path.join(process_path, process_file_name)
+        ensureDir(process_file_name)
+        print(process_file_name)
+
+        try:
+
+            with open(process_file_name + "/graph_embeddings.json") as f:
+                line = f.readline()
+                graph_embeddings = json.loads(line)
+            f.close()
+
+            print("already load graph embeddings")
+        except Exception:
+            graph_embeddings = self.create_graph_embeddings(config)
+
+            f = open(process_file_name + "/graph_embeddings.json", "w")
+            jsObj = json.dumps(graph_embeddings)
+            f.write(jsObj)
+            f.close()
+
+        cut_off = config["model"]["cut_off"]
+        [graph_u, graph_i] = graph_embeddings
+        graph_u = np.array(graph_u)[:, 0 : int(cut_off * self.n_users)].astype(
+            np.float32
+        )
+        graph_i = np.array(graph_i)[:, 0 : int(cut_off * self.n_items)].astype(
+            np.float32
+        )
+        return [graph_u, graph_i]
+
+    def create_graph_embeddings(self, config):
+        cut_off = config["model"]["cut_off"]
+        user_np = np.array(self.ratings[DEFAULT_USER_COL])
+        item_np = np.array(self.ratings[DEFAULT_ITEM_COL])
+        user_number = self.n_users
+        item_number = self.n_items
+        tolerant = 0.1 ** 5
+        epsilon = 0.1 ** 10
+        H_u = sp.lil_matrix((user_number, item_number))
+        H_v = sp.lil_matrix((item_number, user_number))
+        D_u = sp.lil_matrix((user_number, user_number))
+        D_v = sp.lil_matrix((item_number, item_number))
+        I_u = sp.lil_matrix(np.eye(user_number, user_number))
+        I_v = sp.lil_matrix(np.eye(item_number, item_number))
+
+        for user in range(self.n_users):
+            index = list(np.where(user_np == user)[0])
+            i = item_np[index]
+            for item in i:
+                H_u[user, item] = 1
+                H_v[item, user] = 1
+                D_u[user, user] += 1
+                D_v[item, item] += 1
+
+        print("   constructing user matrix...")
+        D_n = sp.lil_matrix((user_number, user_number))
+        D_e = sp.lil_matrix((item_number, item_number))
+        for i in range(user_number):
+            D_n[i, i] = 1.0 / max(np.sqrt(D_u[i, i]), epsilon)
+        for i in range(item_number):
+            D_e[i, i] = 1.0 / max(D_v[i, i], epsilon)
+        L_u = I_u - D_n * H_u * D_e * H_u.T * D_n
+
+        print("   constructing item matrix...")
+        D_n = sp.lil_matrix((item_number, item_number))
+        D_e = sp.lil_matrix((user_number, user_number))
+        for i in range(item_number):
+            D_n[i, i] = 1.0 / max(np.sqrt(D_v[i, i]), epsilon)
+        for i in range(user_number):
+            D_e[i, i] = 1.0 / max(D_u[i, i], epsilon)
+        L_v = I_v - D_n * H_v * D_e * H_v.T * D_n
+
+        print("Decomposing the laplacian matrices...")
+        print("   decomposing user matrix...")
+
+        [Lamda, user_graph_embeddings] = eigsh(
+            L_u, k=int(cut_off * self.n_users), which="SM", tol=tolerant
+        )
+        print(Lamda[0:10])
+        print("   decomposing item matrix...")
+        [Lamda, item_graph_embeddings] = eigsh(
+            L_v, k=int(cut_off * self.n_items), which="SM", tol=tolerant
+        )
+        print(Lamda[0:10])
+
+        return [user_graph_embeddings.tolist(), item_graph_embeddings.tolist()]
