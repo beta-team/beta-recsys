@@ -53,6 +53,7 @@ class LCFN(torch.nn.Module):
         nn.init.normal(self.item_embeddings.weight, mean=0.01, std=0.02)
 
     def forward(self):
+        """Graph propagation and noise filtering."""
         User_embedding = self.user_embeddings
         self.user_all_embeddings = [User_embedding.weight]
         for k in range(self.layer):
@@ -80,7 +81,7 @@ class LCFN(torch.nn.Module):
         self.item_all_embeddings = torch.cat(self.item_all_embeddings, 1)
 
     def predict(self, users, items):
-
+        """Model prediction."""
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
 
@@ -170,7 +171,7 @@ class LCFNEngine(ModelEngine):
         pos_i_all,
         neg_i_all,
     ):
-
+        """Loss computation."""
         pos_scores = torch.sum(torch.mul(user_all_emb, pos_i_all), dim=1)
         neg_scores = torch.sum(torch.mul(user_all_emb, neg_i_all), dim=1)
         bpr_loss = self.bpr_loss(pos_scores, neg_scores)
