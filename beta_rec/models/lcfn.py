@@ -53,7 +53,7 @@ class LCFN(torch.nn.Module):
         nn.init.normal(self.item_embeddings.weight, mean=0.01, std=0.02)
 
     def forward(self):
-        """Graph propagation and noise filtering"""
+        """Graph propagation and noise filtering."""
         self.P = self.P.to(self.device)
         self.Q = self.Q.to(self.device)
         for i in range(self.layer):
