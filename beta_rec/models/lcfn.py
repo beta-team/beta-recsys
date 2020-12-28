@@ -53,7 +53,13 @@ class LCFN(torch.nn.Module):
         nn.init.normal(self.item_embeddings.weight, mean=0.01, std=0.02)
 
     def forward(self):
-        """Graph propagation and noise filtering."""
+        """Graph propagation and noise filtering"""
+        self.P = self.P.to(self.device)
+        self.Q = self.Q.to(self.device)
+        for i in range(self.layer):
+            self.user_filters[i] = self.user_filters[i].to(self.device)
+            self.item_filters[i] = self.item_filters[i].to(self.device)
+            self.transformers[i] = self.transformers[i].to(self.device)
         User_embedding = self.user_embeddings
         self.user_all_embeddings = [User_embedding.weight]
         for k in range(self.layer):
@@ -67,7 +73,7 @@ class LCFN(torch.nn.Module):
             self.user_all_embeddings += [User_embedding]
         self.user_all_embeddings = torch.cat(self.user_all_embeddings, 1)
 
-        Item_embedding = self.item_embeddings
+        Item_embedding = self.item_embeddings.to(self.device)
         self.item_all_embeddings = [Item_embedding.weight]
         for k in range(self.layer):
             Item_embedding = torch.matmul(
