@@ -192,8 +192,10 @@ class LCFNEngine(ModelEngine):
         lamda = self.model.lamda
 
         for k in range(layer):
-            regularizer += torch.norm(self.model.user_filters[k]) + torch.norm(
-                self.model.item_filters[k] + torch.norm(self.model.transformers[k])
+            regularizer += (
+                torch.norm(self.model.user_filters[k])
+                + torch.norm(self.model.item_filters[k])
+                + torch.norm(self.model.transformers[k])
             )
 
         regularizer = lamda * regularizer
