@@ -60,7 +60,7 @@ def find_config(config_file):
     for config_file in config_file_paths(config_file):
         if os.path.exists(config_file):
             print("Find default config file in {}".format(config_file))
-            return
+            return config_file
 
 
 def config_file_paths(config_file):
