@@ -58,8 +58,8 @@ def find_config(config_file):
     if os.path.exists(config_file):
         return config_file
     for config_file in config_file_paths(config_file):
-        pring("Search config file in {}".format(config_file))
         if os.path.exists(config_file):
+            print("Find default config file in {}".format(config_file))
             return
 
 
