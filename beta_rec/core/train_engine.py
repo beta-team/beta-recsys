@@ -12,6 +12,7 @@ from ray import tune
 from tabulate import tabulate
 from tqdm import tqdm
 
+from ..core.config import find_config
 from ..core.eval_engine import EvalEngine
 from ..data.base_data import BaseData
 from ..datasets.data_load import load_split_dataset
@@ -49,7 +50,7 @@ class TrainEngine(object):
                     int(self.config["system"]["device"].replace("cuda", "")),
                     self.config["system"]["device"],
                 )
-            elif len(self.config["system"]["device"]) < 1:  # receive an int string
+            elif len(self.config["system"]["device"]) == 1:  # receive an gpu id
                 return (
                     int(self.config["system"]["device"]),
                     "cuda:" + self.config["system"]["device"],
@@ -86,8 +87,9 @@ class TrainEngine(object):
         * Initialize logging.
         """
         # Load config file from json
-        with open(self.args.config_file) as config_params:
-            print(f"loading config file {self.args.config_file}")
+        config_file = find_config(self.args.config_file)
+        with open(config_file) as config_params:
+            print(f"loading config file {config_file}")
             config = json.load(config_params)
 
         # Update configs based on the received args from the command line .
@@ -263,7 +265,6 @@ class TrainEngine(object):
             config=config,
             local_dir=self.config["system"]["tune_dir"],
             # temp_dir=self.config["system"]["tune_dir"] + "/temp",
-            resources_per_trial={"cpu": 3},
         )
         df = analysis.dataframe()
         tune_result_dir = os.path.join(
