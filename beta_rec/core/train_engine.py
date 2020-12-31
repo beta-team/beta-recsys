@@ -12,8 +12,8 @@ from ray import tune
 from tabulate import tabulate
 from tqdm import tqdm
 
-from ..core.eval_engine import EvalEngine
 from ..core.config import find_config
+from ..core.eval_engine import EvalEngine
 from ..data.base_data import BaseData
 from ..datasets.data_load import load_split_dataset
 from ..utils import logger
