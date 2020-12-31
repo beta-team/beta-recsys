@@ -15,8 +15,7 @@ def find_config(config_file):
 
 
 def config_file_paths(config_file):
-    r"""Get a list of config file paths.
-    """
+    """Get a list of config file paths."""
     config_filename = config_file.replace("../configs/", "beta_rec/")
     paths = []
     paths.append(os.path.join(sys.exec_prefix, config_filename))

@@ -2,7 +2,6 @@ import pathlib
 from glob import glob
 
 import pkg_resources
-from pkg_resources import resource_filename
 from setuptools import find_packages, setup
 
 __version__ = "0.2.4" ""
@@ -38,5 +37,5 @@ setup(
     setup_requires=setup_requires,
     tests_require=tests_require,
     packages=find_packages(),
-    data_files=[("beta_rec", glob("configs/*")),],  # source_dir only - not recursive
+    data_files=[("beta_rec", glob("configs/*"))],  # source_dir only - not recursive
 )
