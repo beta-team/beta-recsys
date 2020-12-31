@@ -13,6 +13,7 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 from ..core.eval_engine import EvalEngine
+from ..core.config import find_config
 from ..data.base_data import BaseData
 from ..datasets.data_load import load_split_dataset
 from ..utils import logger
@@ -86,8 +87,9 @@ class TrainEngine(object):
         * Initialize logging.
         """
         # Load config file from json
-        with open(self.args.config_file) as config_params:
-            print(f"loading config file {self.args.config_file}")
+        config_file = find_config(self.args.config_file)
+        with open(config_file) as config_params:
+            print(f"loading config file {config_file}")
             config = json.load(config_params)
 
         # Update configs based on the received args from the command line .

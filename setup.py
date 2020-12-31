@@ -5,7 +5,7 @@ import pkg_resources
 from pkg_resources import resource_filename
 from setuptools import find_packages, setup
 
-__version__ = "0.2.2"
+__version__ = "0.2.4" ""
 url = "https://github.com/beta-team/beta-recsys"
 
 # The directory containing this file
@@ -38,5 +38,5 @@ setup(
     setup_requires=setup_requires,
     tests_require=tests_require,
     packages=find_packages(),
-    data_files=[("configs", glob("configs/*")),],  # source_dir only - not recursive
+    data_files=[("beta_rec", glob("configs/*")),],  # source_dir only - not recursive
 )
