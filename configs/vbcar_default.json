@@ -14,7 +14,8 @@
         "k": [5,10,20],
         "valid_metric": "ndcg",
         "valid_k": 10,
-        "result_file": "vbcar_result.csv"
+        "result_file": "vbcar_result.csv",
+        "save_mode": "average"
     },
     "dataset": {
         "dataset": "tafeng",
