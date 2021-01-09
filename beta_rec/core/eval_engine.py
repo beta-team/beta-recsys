@@ -149,6 +149,7 @@ def test_eval_worker(testEngine, eval_data_df, prediction):
 
     Prediction and evaluation on the testing set.
     """
+    config = testEngine.config["system"]
     result_para = {
         "run_time": [testEngine.config["run_time"]],
     }
@@ -166,9 +167,19 @@ def test_eval_worker(testEngine, eval_data_df, prediction):
     test_result_dic.update(result_para)
     lock_test_eval.acquire()  # need to be test
     result_df = pd.DataFrame(test_result_dic)
-    save_to_csv(result_df, testEngine.config["system"]["result_file"])
+    save_to_csv(result_df, config["result_file"])
     lock_test_eval.release()
     testEngine.n_worker -= 1
+    save_mode = config["save_mode"]
+    if save_mode == "per_user":
+        rating_pre_df = eval_data_df.drop(columns=["col_timestamp"])
+        rating_pre_df["col_prediction"] = prediction
+        save_to_csv(
+            rating_pre_df,
+            config["root_dir"] + "/" + config["result_dir"] + config["model_run_id"],
+        )
+    else:
+        pass
     return test_result_dic
 
 

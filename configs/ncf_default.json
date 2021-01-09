@@ -14,7 +14,8 @@
         "k": [5,10,20],
         "valid_metric": "ndcg",
         "valid_k": 10,
-        "result_file": "ncf_result.csv"
+        "result_file": "ncf_result.csv",
+        "save_mode": "average"
     },
     "dataset": {
         "dataset": "ml_100k",
@@ -54,7 +55,7 @@
             "name": "ncf",
             "save_name": "ncf.model"
         },
-        "save_name": "vbcar.model",
+        "save_name": "ncf.model",
         "result_col": ["model","emb_dim","batch_size","optimizer","lr"]
     },
     "tunable": [
