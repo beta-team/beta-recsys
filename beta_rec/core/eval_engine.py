@@ -11,11 +11,16 @@ import pandas as pd
 import torch
 from prometheus_client import Gauge, start_http_server
 from tensorboardX import SummaryWriter
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 
 from ..utils import evaluation as eval_model
 from ..utils.common_util import print_dict_as_table, save_to_csv, timeit
-from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_PREDICTION_COL, DEFAULT_USER_COL
+from ..utils.constants import (
+    DEFAULT_ITEM_COL,
+    DEFAULT_PREDICTION_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_USER_COL,
+)
 from ..utils.seq_evaluation import mrr, ndcg, precision, recall
 
 lock_train_eval = Lock()
@@ -268,6 +273,117 @@ class EvalEngine(object):
             )
         return predictions
 
+    def seq_predict(self, train_seq, data_df, model, maxlen):
+        """Make prediction for a trained model.
+
+        Args:
+            data_df (DataFrame): A dataset to be evaluated.
+            model: A trained model.
+            batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
+
+        Returns:
+            array: predicted scores.
+        """
+        user_ids = data_df[DEFAULT_USER_COL].to_numpy()
+        item_ids = data_df[DEFAULT_ITEM_COL].to_numpy()
+        predictions = np.array([])
+        batch_u = []
+        batch_seq = []
+        batch_item = []
+        total_count = user_ids.shape[0]
+        for u, item in tqdm(zip(user_ids, item_ids)):
+            total_count -= 1
+            if len(train_seq[u]) < 1:
+                continue
+            seq = np.zeros([maxlen], dtype=np.int32)
+            idx = maxlen - 1
+            for i in reversed(train_seq[u]):
+                seq[idx] = i
+                idx -= 1
+                if idx == -1:
+                    break
+            batch_u.append(u)
+            batch_seq.append(seq)
+            batch_item.append(item)
+            if len(batch_u) == self.config["model"]["batch_size"] or total_count <= 0:
+                score = np.array(
+                    model.predict(
+                        np.array(batch_u).reshape(1, -1),
+                        np.array(batch_seq),
+                        np.array(batch_item).reshape(1, -1),
+                    )
+                    .flatten()
+                    .to(torch.device("cpu"))
+                    .detach()
+                    .numpy()
+                )
+                predictions = np.append(predictions, score)
+                batch_u = []
+                batch_seq = []
+                batch_item = []
+        return predictions
+
+    def test_seq_predict(self, train_seq, valid_data_df, test_data_df, model, maxlen):
+        """Make prediction for a trained model.
+
+        Args:
+            data_df (DataFrame): A dataset to be evaluated.
+            model: A trained model.
+            batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
+
+        Returns:
+            array: predicted scores.
+        """
+        valid_user_item_list = (
+            valid_data_df[valid_data_df[DEFAULT_RATING_COL] > 0]
+            .groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL]
+            .apply(list)
+        )
+        user_ids = test_data_df[DEFAULT_USER_COL].to_numpy()
+        item_ids = test_data_df[DEFAULT_ITEM_COL].to_numpy()
+        predictions = np.array([])
+        batch_u = []
+        batch_seq = []
+        batch_item = []
+        total_count = user_ids.shape[0]
+        for u, item in tqdm(zip(user_ids, item_ids)):
+            total_count -= 1
+            if len(train_seq[u]) < 1:
+                continue
+            seq = np.zeros([maxlen], dtype=np.int32)
+            idx = maxlen - 1
+            if u in valid_user_item_list:
+                for i in reversed(valid_user_item_list[u]):  # add validate item list
+                    seq[idx] = i
+                    idx -= 1
+                    if idx == -1:
+                        break
+            for i in reversed(train_seq[u]):
+                seq[idx] = i
+                idx -= 1
+                if idx == -1:
+                    break
+            batch_u.append(u)
+            batch_seq.append(seq)
+            batch_item.append(item)
+            if len(batch_u) == self.config["model"]["batch_size"] or total_count <= 0:
+                score = np.array(
+                    model.predict(
+                        np.array(batch_u).reshape(1, -1),
+                        np.array(batch_seq),
+                        np.array(batch_item).reshape(1, -1),
+                    )
+                    .flatten()
+                    .to(torch.device("cpu"))
+                    .detach()
+                    .numpy()
+                )
+                predictions = np.append(predictions, score)
+                batch_u = []
+                batch_seq = []
+                batch_item = []
+        return predictions
+
     def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0):
         """Evaluate the performance for a (validation) dataset with multiThread.
 
@@ -280,6 +396,28 @@ class EvalEngine(object):
         """
         valid_pred = self.predict(valid_data_df, model, self.batch_eval)
         test_pred = self.predict(test_data_df, model, self.batch_eval)
+        worker = Thread(
+            target=train_eval_worker,
+            args=(self, valid_data_df, test_data_df, valid_pred, test_pred, epoch_id,),
+        )
+        worker.start()
+
+    def seq_train_eval(
+        self, train_seq, valid_data_df, test_data_df, model, maxlen, epoch_id=0
+    ):
+        """Evaluate the performance for a (validation) dataset with multiThread.
+
+        Args:
+            valid_data_df (DataFrame): A validation dataset.
+            test_data_df (DataFrame): A testing dataset.
+            model: trained model.
+            epoch_id: epoch_id.
+            k (int or list): top k result to be evaluate.
+        """
+        valid_pred = self.seq_predict(train_seq, valid_data_df, model, maxlen)
+        test_pred = self.test_seq_predict(
+            train_seq, valid_data_df, test_data_df, model, maxlen
+        )
         worker = Thread(
             target=train_eval_worker,
             args=(self, valid_data_df, test_data_df, valid_pred, test_pred, epoch_id,),
