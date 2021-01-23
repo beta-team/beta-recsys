@@ -11,8 +11,8 @@ from ..models.sasrec import SASRecEngine
 from ..utils.monitor import Monitor
 
 
-# sampler for batch generation
 def random_neq(l, r, s):
+    """Sampler for batch generation."""
     t = np.random.randint(l, r)
     while t in s:
         t = np.random.randint(l, r)
@@ -22,6 +22,8 @@ def random_neq(l, r, s):
 def sample_function(
     user_train, usernum, itemnum, batch_size, maxlen, result_queue, SEED
 ):
+    """Sample function for multi-thead"""
+
     def sample():
 
         user = np.random.randint(0, usernum)
@@ -57,7 +59,10 @@ def sample_function(
 
 
 class WarpSampler(object):
+    """Multi Thead sampler"""
+
     def __init__(self, User, usernum, itemnum, batch_size=64, maxlen=10, n_workers=1):
+        """Start thead."""
         self.result_queue = Queue(maxsize=n_workers * 10)
         self.processors = []
         for i in range(n_workers):
@@ -79,9 +84,11 @@ class WarpSampler(object):
             self.processors[-1].start()
 
     def next_batch(self):
+        """Next batch."""
         return self.result_queue.get()
 
     def close(self):
+        """Close all the theads."""
         for p in self.processors:
             p.terminate()
             p.join()

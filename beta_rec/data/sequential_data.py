@@ -1,17 +1,7 @@
-import os
-
 import pandas as pd
 
 from ..data.base_data import BaseData
-from ..utils.common_util import ensureDir
-from ..utils.constants import (
-    DEFAULT_ITEM_COL,
-    DEFAULT_ORDER_COL,
-    DEFAULT_RATING_COL,
-    DEFAULT_TIMESTAMP_COL,
-    DEFAULT_USER_COL,
-)
-from ..utils.triple_sampler import Sampler
+from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_TIMESTAMP_COL, DEFAULT_USER_COL
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -56,14 +46,10 @@ class SequentialData(BaseData):
 
     def get_train_seq(self, dump=True, load_save=False):
         """Sample triples or load triples samples from files.
-
         This method is only applicable for basket based Recommender.
-
         Returns:
             None
-
         """
-
         self.train.sort_values(
             by=[DEFAULT_TIMESTAMP_COL], ascending=False, inplace=True
         )

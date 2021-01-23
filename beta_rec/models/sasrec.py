@@ -1,13 +1,14 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from beta_rec.models.torch_engine import ModelEngine
 
 
 class PointWiseFeedForward(torch.nn.Module):
+    """PointWiseFeedForward. """
     def __init__(self, hidden_units, dropout_rate):
+        """ PointWiseFeedForward. """
         super(PointWiseFeedForward, self).__init__()
         self.conv1 = torch.nn.Conv1d(hidden_units, hidden_units, kernel_size=1)
         self.dropout1 = torch.nn.Dropout(p=dropout_rate)
@@ -75,6 +76,7 @@ class SASRec(nn.Module):
             # self.neg_sigmoid = torch.nn.Sigmoid()
 
     def log2feats(self, log_seqs):
+        """Get embedding from log_seqs."""
         seqs = self.item_emb(torch.LongTensor(log_seqs).to(self.device))
         seqs *= self.item_emb.embedding_dim ** 0.5
         positions = np.tile(np.array(range(log_seqs.shape[1])), [log_seqs.shape[0], 1])
@@ -108,7 +110,8 @@ class SASRec(nn.Module):
 
         return log_feats
 
-    def forward(self, user_ids, log_seqs, pos_seqs, neg_seqs):  # for training
+    def forward(self, user_ids, log_seqs, pos_seqs, neg_seqs):  #
+        """For training."""
         log_feats = self.log2feats(log_seqs)  # user_ids hasn't been used yet
 
         pos_embs = self.item_emb(torch.LongTensor(pos_seqs).to(self.device))
@@ -122,7 +125,8 @@ class SASRec(nn.Module):
 
         return pos_logits, neg_logits  # pos_pred, neg_pred
 
-    def predict(self, user_ids, log_seqs, item_indices):  # for inference
+    def predict(self, user_ids, log_seqs, item_indices):  #
+        """For inference."""
         log_feats = self.log2feats(log_seqs)  # user_ids hasn't been used yet
 
         final_feat = log_feats[:, -1, :]  # only use last QKV classifier, a waste
