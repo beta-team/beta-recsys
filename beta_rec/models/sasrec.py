@@ -6,10 +6,10 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class PointWiseFeedForward(torch.nn.Module):
-    """PointWiseFeedForward. """
+    """PointWiseFeedForward."""
 
     def __init__(self, hidden_units, dropout_rate):
-        """ PointWiseFeedForward. """
+        """PointWiseFeedForward."""
         super(PointWiseFeedForward, self).__init__()
         self.conv1 = torch.nn.Conv1d(hidden_units, hidden_units, kernel_size=1)
         self.dropout1 = torch.nn.Dropout(p=dropout_rate)
@@ -18,6 +18,7 @@ class PointWiseFeedForward(torch.nn.Module):
         self.dropout2 = torch.nn.Dropout(p=dropout_rate)
 
     def forward(self, inputs):
+        """Forward method."""
         outputs = self.dropout2(
             self.conv2(self.relu(self.dropout1(self.conv1(inputs.transpose(-1, -2)))))
         )

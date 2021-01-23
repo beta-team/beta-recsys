@@ -46,6 +46,7 @@ class SequentialData(BaseData):
 
     def get_train_seq(self, dump=True, load_save=False):
         """Sample triples or load triples samples from files.
+
         This method is only applicable for basket based Recommender.
         Returns:
             None

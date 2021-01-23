@@ -22,7 +22,7 @@ def random_neq(l, r, s):
 def sample_function(
     user_train, usernum, itemnum, batch_size, maxlen, result_queue, SEED
 ):
-    """Sample function for multi-thead"""
+    """Sample function for multi-thead."""
 
     def sample():
 
@@ -59,7 +59,7 @@ def sample_function(
 
 
 class WarpSampler(object):
-    """Multi Thead sampler"""
+    """Multi Thead sampler."""
 
     def __init__(self, User, usernum, itemnum, batch_size=64, maxlen=10, n_workers=1):
         """Start thead."""
