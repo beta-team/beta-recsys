@@ -7,6 +7,7 @@ from beta_rec.models.torch_engine import ModelEngine
 
 class PointWiseFeedForward(torch.nn.Module):
     """PointWiseFeedForward. """
+
     def __init__(self, hidden_units, dropout_rate):
         """ PointWiseFeedForward. """
         super(PointWiseFeedForward, self).__init__()
