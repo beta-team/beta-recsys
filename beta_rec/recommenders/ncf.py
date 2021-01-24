@@ -20,8 +20,9 @@ def tune_train(config):
     result = train_engine.train(data)
     while train_engine.eval_engine.n_worker > 0:
         time.sleep(20)
-    tune.track.log(
-        valid_metric=result["valid_metric"], model_save_dir=result["model_save_dir"],
+    tune.report(
+        valid_metric=result["valid_metric"],
+        model_save_dir=result["model_save_dir"],
     )
 
 

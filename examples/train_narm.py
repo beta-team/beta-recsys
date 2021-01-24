@@ -65,7 +65,10 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--late_dim", nargs="?", type=int, help="Dimension of the latent layers.",
+        "--late_dim",
+        nargs="?",
+        type=int,
+        help="Dimension of the latent layers.",
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Intial learning rate.")
     parser.add_argument("--num_epoch", nargs="?", type=int, help="Number of max epoch.")

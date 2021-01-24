@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from beta_rec.models.torch_engine import ModelEngine
 
@@ -75,10 +74,14 @@ class SASRec(nn.Module):
             # self.neg_sigmoid = torch.nn.Sigmoid()
 
     def log2feats(self, log_seqs):
-        seqs = self.item_emb(torch.LongTensor(log_seqs).to(self.device))
+        seqs = self.item_emb(
+            torch.as_tensor(log_seqs, dtype=torch.long).to(self.device)
+        )
         seqs *= self.item_emb.embedding_dim ** 0.5
         positions = np.tile(np.array(range(log_seqs.shape[1])), [log_seqs.shape[0], 1])
-        seqs += self.pos_emb(torch.LongTensor(positions).to(self.device))
+        seqs += self.pos_emb(
+            torch.as_tensor(positions, dtype=torch.long).to(self.device)
+        )
         seqs = self.emb_dropout(seqs)
 
         timeline_mask = torch.BoolTensor(log_seqs == 0).to(self.device)
@@ -111,8 +114,12 @@ class SASRec(nn.Module):
     def forward(self, user_ids, log_seqs, pos_seqs, neg_seqs):  # for training
         log_feats = self.log2feats(log_seqs)  # user_ids hasn't been used yet
 
-        pos_embs = self.item_emb(torch.LongTensor(pos_seqs).to(self.device))
-        neg_embs = self.item_emb(torch.LongTensor(neg_seqs).to(self.device))
+        pos_embs = self.item_emb(
+            torch.as_tensor(pos_seqs, dtype=torch.long, device=self.device)
+        )
+        neg_embs = self.item_emb(
+            torch.as_tensor(neg_seqs, dtype=torch.long, device=self.device)
+        )
 
         pos_logits = (log_feats * pos_embs).sum(dim=-1)
         neg_logits = (log_feats * neg_embs).sum(dim=-1)
@@ -128,10 +135,10 @@ class SASRec(nn.Module):
         final_feat = log_feats[:, -1, :]  # only use last QKV classifier, a waste
 
         item_embs = self.item_emb(
-            torch.LongTensor(item_indices).to(self.device)
+            torch.as_tensor(item_indices, dtype=torch.long, device=self.device)
         )  # (U, I, C)
 
-        logits = item_embs.matmul(final_feat.unsqueeze(-1)).squeeze(-1).sum(-1)
+        logits = item_embs.matmul(final_feat.unsqueeze(-1)).squeeze(-1)
 
         # preds = self.pos_sigmoid(logits) # rank same item list for different users
 
@@ -144,6 +151,7 @@ class SASRecEngine(ModelEngine):
     def __init__(self, config):
         """Initialize Triple2vecEngine Class."""
         self.config = config
+        print(config)
         self.model = SASRec(config["model"])
         self.num_batch = config["model"]["n_users"] // config["model"]["batch_size"]
         self.bce_criterion = torch.nn.BCEWithLogitsLoss()  # torch.nn.BCELoss()

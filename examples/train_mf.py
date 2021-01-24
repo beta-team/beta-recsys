@@ -29,7 +29,10 @@ def parse_args():
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     parser.add_argument(
-        "--root_dir", nargs="?", type=str, help="Root path of the project",
+        "--root_dir",
+        nargs="?",
+        type=str,
+        help="Root path of the project",
     )
     # If the following settings are specified with command line,
     # These settings will used to update the parameters received from the config file.
@@ -46,16 +49,28 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str2bool, help="Tun parameter",
+        "--tune",
+        nargs="?",
+        type=str2bool,
+        help="Tun parameter",
     )
     parser.add_argument(
-        "--device", nargs="?", type=str, help="Device",
+        "--device",
+        nargs="?",
+        type=str,
+        help="Device",
     )
     parser.add_argument(
-        "--loss", nargs="?", type=str, help="loss: bpr or bce",
+        "--loss",
+        nargs="?",
+        type=str,
+        help="loss: bpr or bce",
     )
     parser.add_argument(
-        "--remark", nargs="?", type=str, help="remark",
+        "--remark",
+        nargs="?",
+        type=str,
+        help="remark",
     )
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."

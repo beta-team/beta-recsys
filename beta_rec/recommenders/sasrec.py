@@ -12,10 +12,10 @@ from ..utils.monitor import Monitor
 
 
 # sampler for batch generation
-def random_neq(l, r, s):
-    t = np.random.randint(l, r)
+def random_neq(low, r, s):
+    t = np.random.randint(low, r)
     while t in s:
-        t = np.random.randint(l, r)
+        t = np.random.randint(low, r)
     return t
 
 
@@ -94,11 +94,11 @@ def tune_train(config):
         config (dict): All the parameters for the model.
     """
     data = config["data"]
-    train_engine = SASRecEngine(munchify(config))
+    train_engine = SASRec(munchify(config))
     result = train_engine.train(data)
     while train_engine.eval_engine.n_worker > 0:
         time.sleep(20)
-    tune.track.log(
+    tune.report(
         valid_metric=result["valid_metric"],
         model_save_dir=result["model_save_dir"],
     )

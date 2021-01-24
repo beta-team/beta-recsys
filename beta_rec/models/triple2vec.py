@@ -128,13 +128,19 @@ class Triple2vecEngine(ModelEngine):
         total_loss = 0
         for batch_id, sample in enumerate(train_loader):
             pos_u = torch.tensor(
-                [triple[0] for triple in sample], dtype=torch.int64, device=self.device,
+                [triple[0] for triple in sample],
+                dtype=torch.int64,
+                device=self.device,
             )
             pos_i_1 = torch.tensor(
-                [triple[1] for triple in sample], dtype=torch.int64, device=self.device,
+                [triple[1] for triple in sample],
+                dtype=torch.int64,
+                device=self.device,
             )
             pos_i_2 = torch.tensor(
-                [triple[2] for triple in sample], dtype=torch.int64, device=self.device,
+                [triple[2] for triple in sample],
+                dtype=torch.int64,
+                device=self.device,
             )
             neg_u = torch.tensor(
                 self.data.user_sampler.sample(
