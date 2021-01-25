@@ -239,6 +239,37 @@ class TrainEngine(object):
             else:
                 self.eval_engine.train_eval(valid_df, test_df, engine.model, epoch)
 
+    def _seq_train(
+        self, engine, train_loader, save_dir, train_seq, valid_df=None, test_df=None
+    ):
+        self.eval_engine.flush()
+        epoch_bar = tqdm(range(self.config["model"]["max_epoch"]), file=sys.stdout)
+        for epoch in epoch_bar:
+            print("Epoch {} starts !".format(epoch))
+            print("-" * 80)
+            if self.check_early_stop(engine, save_dir, epoch):
+                break
+            engine.train_an_epoch(train_loader, epoch_id=epoch)
+            """evaluate model on validation and test sets"""
+            if (valid_df is None) & (test_df is None):
+                self.eval_engine.seq_train_eval(
+                    train_seq,
+                    self.data.valid[0],
+                    self.data.test[0],
+                    engine.model,
+                    self.config["model"]["maxlen"],
+                    epoch,
+                )
+            else:
+                self.eval_engine.seq_train_eval(
+                    train_seq,
+                    valid_df,
+                    test_df,
+                    engine.model,
+                    self.config["model"]["maxlen"],
+                    epoch,
+                )
+
     def tune(self, runable):
         """Tune parameters using ray.tune."""
         config = vars(self.args)

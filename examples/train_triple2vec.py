@@ -47,10 +47,16 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument(
-        "--root_dir", nargs="?", type=str, help="working directory",
+        "--root_dir",
+        nargs="?",
+        type=str,
+        help="working directory",
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str2bool, help="Tune parameters",
+        "--tune",
+        nargs="?",
+        type=str2bool,
+        help="Tune parameters",
     )
     parser.add_argument(
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."

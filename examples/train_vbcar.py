@@ -53,7 +53,10 @@ def parse_args():
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str2bool, help="Tune parameter",
+        "--tune",
+        nargs="?",
+        type=str2bool,
+        help="Tune parameter",
     )
     parser.add_argument("--sub_set", nargs="?", type=int, help="Subset of dataset.")
     parser.add_argument(
@@ -66,7 +69,10 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--late_dim", nargs="?", type=int, help="Dimension of the latent layers.",
+        "--late_dim",
+        nargs="?",
+        type=int,
+        help="Dimension of the latent layers.",
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Intial learning rate.")
     parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
