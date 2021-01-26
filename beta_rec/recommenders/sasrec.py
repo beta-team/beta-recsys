@@ -85,7 +85,7 @@ class WarpSampler(object):
     """
 
     def __init__(self, User, usernum, itemnum, batch_size=64, maxlen=10, n_workers=1):
-        """Initial workers.
+        """Initialize workers.
 
         Args:
             User ([type]): [description]

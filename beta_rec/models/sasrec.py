@@ -23,7 +23,7 @@ class PointWiseFeedForward(torch.nn.Module):
         self.dropout2 = torch.nn.Dropout(p=dropout_rate)
 
     def forward(self, inputs):
-        """forward functioin.
+        """Forward functioin.
 
         Args:
             inputs ([type]): [description]
@@ -90,7 +90,7 @@ class SASRec(nn.Module):
             # self.neg_sigmoid = torch.nn.Sigmoid()
 
     def log2feats(self, log_seqs):
-        """encode sequential items.
+        """Encode sequential items.
 
         Args:
             log_seqs ([type]): [description]
@@ -136,7 +136,7 @@ class SASRec(nn.Module):
         return log_feats
 
     def forward(self, user_ids, log_seqs, pos_seqs, neg_seqs):  # for training
-        """forward functioin.
+        """Forward functioin.
 
         Args:
             user_ids ([type]): [description]
