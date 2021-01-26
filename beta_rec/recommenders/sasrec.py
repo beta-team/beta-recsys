@@ -11,8 +11,17 @@ from ..models.sasrec import SASRecEngine
 from ..utils.monitor import Monitor
 
 
-# sampler for batch generation
 def random_neq(low, r, s):
+    """sampler for batch generation.
+
+    Args:
+        low ([type]): [description]
+        r ([type]): [description]
+        s ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     t = np.random.randint(low, r)
     while t in s:
         t = np.random.randint(low, r)
@@ -22,6 +31,18 @@ def random_neq(low, r, s):
 def sample_function(
     user_train, usernum, itemnum, batch_size, maxlen, result_queue, SEED
 ):
+    """Sample batch of pos and neg sequences.
+
+    Args:
+        user_train ([type]): [description]
+        usernum ([type]): [description]
+        itemnum ([type]): [description]
+        batch_size ([type]): [description]
+        maxlen ([type]): [description]
+        result_queue ([type]): [description]
+        SEED ([type]): [description]
+    """
+
     def sample():
 
         user = np.random.randint(0, usernum)
@@ -57,6 +78,12 @@ def sample_function(
 
 
 class WarpSampler(object):
+    """MultiThread Sampler.
+
+    Args:
+        object ([type]): [description]
+    """
+
     def __init__(self, User, usernum, itemnum, batch_size=64, maxlen=10, n_workers=1):
         self.result_queue = Queue(maxsize=n_workers * 10)
         self.processors = []

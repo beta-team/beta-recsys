@@ -51,7 +51,6 @@ class SequentialData(BaseData):
 
         Returns:
             None
-
         """
 
         self.train.sort_values(
