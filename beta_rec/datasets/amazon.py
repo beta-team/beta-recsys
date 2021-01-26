@@ -395,7 +395,9 @@ class AmazonBeauty(AmazonDataset):
     def __init__(self, root_dir=None):
         r"""Init AmazonBeauty Class."""
         super().__init__(
-            dataset_name="amazon-beauty", root_dir=root_dir, url=AMAZON_Beauty_URL,
+            dataset_name="amazon-beauty",
+            root_dir=root_dir,
+            url=AMAZON_Beauty_URL,
         )
 
 
@@ -438,7 +440,9 @@ class AmazonBooks(AmazonDataset):
     def __init__(self, root_dir=None):
         r"""Init AmazonBooks Class."""
         super().__init__(
-            dataset_name="amazon-books", root_dir=root_dir, url=AMAZON_Books_URL,
+            dataset_name="amazon-books",
+            root_dir=root_dir,
+            url=AMAZON_Books_URL,
         )
 
 

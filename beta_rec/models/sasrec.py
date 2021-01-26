@@ -6,7 +6,15 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class PointWiseFeedForward(torch.nn.Module):
+    """PointWise forward Module."""
+
     def __init__(self, hidden_units, dropout_rate):
+        """Class Initialization.
+
+        Args:
+            hidden_units ([int]): Embedding dimension.
+            dropout_rate ([float]): dropout rate.
+        """
         super(PointWiseFeedForward, self).__init__()
         self.conv1 = torch.nn.Conv1d(hidden_units, hidden_units, kernel_size=1)
         self.dropout1 = torch.nn.Dropout(p=dropout_rate)
@@ -15,6 +23,14 @@ class PointWiseFeedForward(torch.nn.Module):
         self.dropout2 = torch.nn.Dropout(p=dropout_rate)
 
     def forward(self, inputs):
+        """Forward functioin.
+
+        Args:
+            inputs ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         outputs = self.dropout2(
             self.conv2(self.relu(self.dropout1(self.conv1(inputs.transpose(-1, -2)))))
         )
@@ -74,6 +90,14 @@ class SASRec(nn.Module):
             # self.neg_sigmoid = torch.nn.Sigmoid()
 
     def log2feats(self, log_seqs):
+        """Encode sequential items.
+
+        Args:
+            log_seqs ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         seqs = self.item_emb(
             torch.as_tensor(log_seqs, dtype=torch.long).to(self.device)
         )
@@ -112,6 +136,17 @@ class SASRec(nn.Module):
         return log_feats
 
     def forward(self, user_ids, log_seqs, pos_seqs, neg_seqs):  # for training
+        """Forward functioin.
+
+        Args:
+            user_ids ([type]): [description]
+            log_seqs ([type]): [description]
+            pos_seqs ([type]): [description]
+            neg_seqs ([type]): [description]
+
+        Returns:
+            [type]: [pos_logits neg_logits]
+        """
         log_feats = self.log2feats(log_seqs)  # user_ids hasn't been used yet
 
         pos_embs = self.item_emb(
@@ -130,6 +165,16 @@ class SASRec(nn.Module):
         return pos_logits, neg_logits  # pos_pred, neg_pred
 
     def predict(self, user_ids, log_seqs, item_indices):  # for inference
+        """Predict scores for input item sequential.
+
+        Args:
+            user_ids ([type]): [description]
+            log_seqs ([type]): [description]
+            item_indices ([type]): [description]
+
+        Returns:
+            [type]: [logits]
+        """
         log_feats = self.log2feats(log_seqs)  # user_ids hasn't been used yet
 
         final_feat = log_feats[:, -1, :]  # only use last QKV classifier, a waste

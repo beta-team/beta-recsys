@@ -11,8 +11,17 @@ from ..models.sasrec import SASRecEngine
 from ..utils.monitor import Monitor
 
 
-# sampler for batch generation
 def random_neq(low, r, s):
+    """Sampler for batch generation.
+
+    Args:
+        low ([type]): [description]
+        r ([type]): [description]
+        s ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     t = np.random.randint(low, r)
     while t in s:
         t = np.random.randint(low, r)
@@ -22,6 +31,18 @@ def random_neq(low, r, s):
 def sample_function(
     user_train, usernum, itemnum, batch_size, maxlen, result_queue, SEED
 ):
+    """Sample batch of pos and neg sequences.
+
+    Args:
+        user_train ([type]): [description]
+        usernum ([type]): [description]
+        itemnum ([type]): [description]
+        batch_size ([type]): [description]
+        maxlen ([type]): [description]
+        result_queue ([type]): [description]
+        SEED ([type]): [description]
+    """
+
     def sample():
 
         user = np.random.randint(0, usernum)
@@ -57,7 +78,23 @@ def sample_function(
 
 
 class WarpSampler(object):
+    """MultiThread Sampler.
+
+    Args:
+        object ([type]): [description]
+    """
+
     def __init__(self, User, usernum, itemnum, batch_size=64, maxlen=10, n_workers=1):
+        """Initialize workers.
+
+        Args:
+            User ([type]): [description]
+            usernum ([type]): [description]
+            itemnum ([type]): [description]
+            batch_size (int, optional): [description]. Defaults to 64.
+            maxlen (int, optional): [description]. Defaults to 10.
+            n_workers (int, optional): [description]. Defaults to 1.
+        """
         self.result_queue = Queue(maxsize=n_workers * 10)
         self.processors = []
         for i in range(n_workers):
@@ -79,9 +116,15 @@ class WarpSampler(object):
             self.processors[-1].start()
 
     def next_batch(self):
+        """Get next batch.
+
+        Returns:
+            [type]: [description]
+        """
         return self.result_queue.get()
 
     def close(self):
+        """Close processors."""
         for p in self.processors:
             p.terminate()
             p.join()
