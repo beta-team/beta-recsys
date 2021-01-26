@@ -140,7 +140,7 @@ The following is a list of recommender models currently available in the reposit
   - [ ] Caser: [Personalized Top-N Sequential Recommendation via Convolutional Sequence Embedding
 ](https://dl.acm.org/doi/abs/10.1145/3159652.3159656), WSDM 2018
   - [ ] GRU4Rec: [Session-based recommendations with recurrent neural networks](https://arxiv.org/abs/1511.06939), ICLR 2016
-  - [ ] SasRec:[**Self**-**attentive sequential recommendation**](https://ieeexplore.ieee.org/abstract/document/8594844/?casa_token=RINDZUuHnwoAAAAA:XBjSlh6-KqBjgCY1AWwgXyZqHtT_8zAPBMKjLIUJMlf6Ex9j55gG2UAsrRtG10roMUd6-_w3Jw). ICDM 2018
+  - [x] SasRec:[**Self**-**attentive sequential recommendation**](https://ieeexplore.ieee.org/abstract/document/8594844/?casa_token=RINDZUuHnwoAAAAA:XBjSlh6-KqBjgCY1AWwgXyZqHtT_8zAPBMKjLIUJMlf6Ex9j55gG2UAsrRtG10roMUd6-_w3Jw). ICDM 2018
   - [ ] MARank: [Multi-Order Attentive Ranking Model for Sequential Recommendation
 ](https://ojs.aaai.org//index.php/AAAI/article/view/4516), AAAI 2019
   - [ ] NextItnet: [A Simple Convolutional Generative Network for Next Item Recommendation
