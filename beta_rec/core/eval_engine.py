@@ -356,6 +356,8 @@ class EvalEngine(object):
                         if idx == -1:
                             break
                 for i in reversed(train_seq[u]):
+                    if idx <= -1:
+                        break
                     seq[idx] = i
                     idx -= 1
                     if idx == -1:

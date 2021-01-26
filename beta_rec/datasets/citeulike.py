@@ -121,7 +121,10 @@ class CiteULikeT(DatasetBase):
     """
 
     def __init__(
-        self, dataset_name="citeulike-t", min_u_c=0, min_i_c=3,
+        self,
+        dataset_name="citeulike-t",
+        min_u_c=0,
+        min_i_c=3,
     ):
         r"""Init CiteULikeT Class."""
         super().__init__(
