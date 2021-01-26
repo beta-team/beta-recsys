@@ -49,10 +49,13 @@ class SequentialData(BaseData):
 
         This method is only applicable for basket based Recommender.
 
-        Returns:
-            None
-        """
+        Args:
+            dump (bool, optional): [description]. Defaults to True.
+            load_save (bool, optional): [description]. Defaults to False.
 
+        Returns:
+            [DataFrame]: [description]
+        """
         self.train.sort_values(
             by=[DEFAULT_TIMESTAMP_COL], ascending=False, inplace=True
         )

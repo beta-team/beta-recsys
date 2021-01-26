@@ -12,7 +12,7 @@ from ..utils.monitor import Monitor
 
 
 def random_neq(low, r, s):
-    """sampler for batch generation.
+    """Sampler for batch generation.
 
     Args:
         low ([type]): [description]
@@ -85,6 +85,16 @@ class WarpSampler(object):
     """
 
     def __init__(self, User, usernum, itemnum, batch_size=64, maxlen=10, n_workers=1):
+        """Initial workers.
+
+        Args:
+            User ([type]): [description]
+            usernum ([type]): [description]
+            itemnum ([type]): [description]
+            batch_size (int, optional): [description]. Defaults to 64.
+            maxlen (int, optional): [description]. Defaults to 10.
+            n_workers (int, optional): [description]. Defaults to 1.
+        """
         self.result_queue = Queue(maxsize=n_workers * 10)
         self.processors = []
         for i in range(n_workers):
@@ -106,9 +116,15 @@ class WarpSampler(object):
             self.processors[-1].start()
 
     def next_batch(self):
+        """Get next batch.
+
+        Returns:
+            [type]: [description]
+        """
         return self.result_queue.get()
 
     def close(self):
+        """Close processors."""
         for p in self.processors:
             p.terminate()
             p.join()
