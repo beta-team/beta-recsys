@@ -146,7 +146,7 @@ The following is a list of recommender models currently available in the reposit
   - [ ] NextItnet: [A Simple Convolutional Generative Network for Next Item Recommendation
 ](https://dl.acm.org/doi/abs/10.1145/3289600.3290975), WSDM 2019
   - [ ] BERT4Rec: [BERT4Rec: **Sequential recommendation** with **bidirectional encoder representations** from **transformer**](https://dl.acm.org/doi/abs/10.1145/3357384.3357895), CIKM 2019
-  - [ ] TiSASRec: [Time Interval Aware Self-Attention for **Sequential Recommendation**](https://dl.acm.org/doi/abs/10.1145/3336191.3371786). WWW 2020
+  - [ ] TiSASRec: [Time Interval Aware Self-Attention for **Sequential Recommendation**](https://dl.acm.org/doi/abs/10.1145/3336191.3371786). WSDM 2020
 
 ### Recommendation Models with Auxiliary information
   ### Baskets/Sessions
