@@ -295,11 +295,11 @@ class TiSASRec(Recommender):
         #from main.py in original TiSASRec implementation
         try:
             self.relation_matrix = pickle.load(
-                open('D:/beta-recsys/results/relation_matrix_%s_%d_%d.pickle' % (self.config["model"]["maxlen"], self.config["model"]["time_span"]), 'rb'))
+                open('/beta-recsys/results/relation_matrix_%s_%d_%d.pickle' % (self.config["model"]["maxlen"], self.config["model"]["time_span"]), 'rb'))
         except:
             self.relation_matrix = Relation(user_train, usernum, self.config["model"]["maxlen"], self.config["model"]["time_span"])
             pickle.dump(self.relation_matrix,
-                    open('D:/beta-recsys/results/relation_matrix_%s_%d_%d.pickle' % (self.config["dataset"]["dataset"], self.config["model"]["maxlen"], self.config["model"]["time_span"]),
+                    open('/beta-recsys/results/relation_matrix_%s_%d_%d.pickle' % (self.config["dataset"]["dataset"], self.config["model"]["maxlen"], self.config["model"]["time_span"]),
                              'wb'))
         sampler = WarpSampler(
             user_train, #tried data.get_train_seq() as well but not sure if it accounts for the different format of data compared with SASRec
