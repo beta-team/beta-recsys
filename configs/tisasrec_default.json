@@ -1,0 +1,114 @@
+{
+    "system": {
+        "root_dir": "../",
+        "log_dir": "logs/",
+        "result_dir": "results/",
+        "process_dir": "processes/",
+        "checkpoint_dir": "checkpoints/",
+        "dataset_dir": "datasets/",
+        "run_dir": "runs/",
+        "tune_dir": "tune_results/",
+        "device": "gpu",
+        "seed": 2020,
+        "metrics": [
+            "ndcg",
+            "precision",
+            "recall",
+            "map"
+        ],
+        "k": [
+            5,
+            10,
+            20
+        ],
+        "valid_metric": "ndcg",
+        "valid_k": 10,
+        "result_file": "tisasrec_result.csv",
+        "save_mode": "average"
+    },
+    "dataset": {
+        "dataset": "ml_1m",
+        "data_split": "temporal",
+        "test_rate": 0.2,
+        "download": false,
+        "random": false,
+        "by_user": false,
+        "n_test": 10,
+        "n_negative": 100,
+        "result_col": [
+            "dataset",
+            "data_split",
+            "test_rate",
+            "n_negative"
+        ]
+    },
+    "model": {
+        "model": "TiSASRec",
+        "config_id": "default",
+        "time_span": 128,
+        "device": "gpu",
+        "emb_dim": 64,
+        "num_blocks": 2,
+        "num_heads": 2,
+        "maxlen": 150,
+        "lr": 0.5,
+        "batch_size": 128,
+        "batch_eval": true,
+        "dropout_rate": 0.1,
+        "optimizer": "adam",
+        "l2_emb": 0.1,
+        "max_epoch": 20,
+        "max_n_update": 20,
+        "save_name": "tisasrec.model",
+        "result_col": [
+            "model",
+            "emb_dim",
+            "time_span",
+            "batch_size",
+            "maxlen",
+            "optimizer",
+            "lr",
+            "l2_emb"
+        ]
+    },
+    "tunable": [
+        {
+            "name": "emb_dim",
+            "type": "choice",
+            "values": [
+                32,
+                64
+            ]
+        },
+        {
+            "name": "lr",
+            "type": "choice",
+            "values": [
+                1,
+                0.5,
+                0.3,
+                0.1,
+                0.001
+            ]
+        },
+        {
+            "name": "lrnum_heads",
+            "type": "choice",
+            "values": [
+                1,
+                2
+            ]
+        },
+        {
+            "name": "l2_emb",
+            "type": "choice",
+            "values": [
+                0.0001,
+                0.001,
+                0.01,
+                0.1,
+                1
+            ]
+        }
+    ]
+}
