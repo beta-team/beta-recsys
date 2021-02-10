@@ -115,7 +115,11 @@ class Delicious_2k(DatasetBase):
     """
 
     def __init__(
-        self, dataset_name="delicious-2k", min_u_c=0, min_i_c=3, root_dir=None,
+        self,
+        dataset_name="delicious-2k",
+        min_u_c=0,
+        min_i_c=3,
+        root_dir=None,
     ):
         """Init Delicious_2k Class."""
         super().__init__(

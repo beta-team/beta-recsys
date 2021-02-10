@@ -376,7 +376,10 @@ class GroceryData(BaseData):
             fea_type = "random"
         data_str = config["dataset"]["dataset"]
         print(
-            "Loading item feature for dataset:", data_str, " type:", fea_type,
+            "Loading item feature for dataset:",
+            data_str,
+            " type:",
+            fea_type,
         )
 
         if fea_type == "random":
