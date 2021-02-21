@@ -9,7 +9,6 @@ from threading import Lock, Thread
 import numpy as np
 import pandas as pd
 import torch
-from beta_rec.recommenders.tisasrec import computeRePos
 from prometheus_client import Gauge, start_http_server
 from tensorboardX import SummaryWriter
 from tqdm.autonotebook import tqdm
@@ -28,13 +27,12 @@ lock_train_eval = Lock()
 lock_test_eval = Lock()
 
 
+
 def detect_port(port, ip="127.0.0.1"):
     """Test whether the port is occupied.
-
     Args:
         port (int): port number.
         ip (str): Ip address.
-
     Returns:
         True -- it's possible to listen on this port for TCP/IPv4 or TCP/IPv6
                 connections.
@@ -52,15 +50,33 @@ def detect_port(port, ip="127.0.0.1"):
     finally:
         return ready
 
+def computeRePos(time_seq, time_span):
+    """Evaluate the performance of a prediction by different metrics.
+        Args:
+            time_seq: time sequences.
+            time_span: time span
+        Returns:
+            time_matrix: Relation matrix for a single user.
+        """
+    size = time_seq.shape[0]
+    time_matrix = np.zeros([size, size], dtype=np.int32)
+    for i in range(size):
+        for j in range(size):
+            span = abs(time_seq[i] - time_seq[j])
+            if span > time_span:
+                time_matrix[i][j] = time_span
+            else:
+                time_matrix[i][j] = span
+    return time_matrix
+
+
 def evaluate(data_df, predictions, metrics, k_li):
     """Evaluate the performance of a prediction by different metrics.
-
     Args:
         data_df (DataFrame): the dataset to be evaluated.
         predictions (narray): 1-D array. The predicted scores for each user-item pair in the dataset.
         metrics (list):  metrics to be evaluated.
         k_li (int or list): top k (s) to be evaluated.
-
     Returns:
         result_dic (dict): Performance result.
     """
@@ -96,7 +112,6 @@ def evaluate(data_df, predictions, metrics, k_li):
 @timeit
 def train_eval_worker(testEngine, valid_df, test_df, valid_pred, test_pred, epoch):
     """Start a worker for the evaluation during training.
-
     Args:
         testEngine:
         valid_df:
@@ -104,7 +119,6 @@ def train_eval_worker(testEngine, valid_df, test_df, valid_pred, test_pred, epoc
         valid_pred:
         test_pred:
         epoch (int):
-
     Returns:
         (dict,dict): dictionary with performances on validation and testing sets.
     """
@@ -151,7 +165,6 @@ def train_eval_worker(testEngine, valid_df, test_df, valid_pred, test_pred, epoc
 @timeit
 def test_eval_worker(testEngine, eval_data_df, prediction):
     """Start a worker for the evaluation during training.
-
     Prediction and evaluation on the testing set.
     """
     config = testEngine.config["system"]
@@ -195,7 +208,6 @@ class EvalEngine(object):
 
     def __init__(self, config):
         """Init EvalEngine Class.
-
         Args:
             config (dict): parameters for the model
         """
@@ -238,12 +250,10 @@ class EvalEngine(object):
 
     def predict(self, data_df, model, batch_eval=False):
         """Make prediction for a trained model.
-
         Args:
             data_df (DataFrame): A dataset to be evaluated.
             model: A trained model.
             batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
-
         Returns:
             array: predicted scores.
         """
@@ -277,12 +287,10 @@ class EvalEngine(object):
 
     def seq_predict(self, train_seq, data_df, model, maxlen):
         """Make prediction for a trained model.
-
         Args:
             data_df (DataFrame): A dataset to be evaluated.
             model: A trained model.
             batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
-
         Returns:
             array: predicted scores.
         """
@@ -322,12 +330,10 @@ class EvalEngine(object):
 
     def test_seq_predict(self, train_seq, valid_data_df, test_data_df, model, maxlen):
         """Make prediction for a trained model.
-
         Args:
             data_df (DataFrame): A dataset to be evaluated.
             model: A trained model.
             batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
-
         Returns:
             array: predicted scores.
         """
@@ -381,12 +387,10 @@ class EvalEngine(object):
 #implemented this due to differences in indexing for TiSASRec, not sure if needed at all
     def seq_predict_time(self, train_seq, data_df, model, maxlen, time_span):
         """Make prediction for a trained model.
-
         Args:
             data_df (DataFrame): A dataset to be evaluated.
             model: A trained model.
             batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
-
         Returns:
             array: predicted scores.
         """
@@ -397,7 +401,6 @@ class EvalEngine(object):
         )
         result_dic = {}
         with torch.no_grad():
-            print("Train seq",type(train_seq))
             for u, items in user_item_list.items():
                 if len(train_seq[u]) < 1:
                     continue
@@ -430,12 +433,10 @@ class EvalEngine(object):
 # implemented this due to differences in indexing, not sure if needed
     def test_seq_predict_time(self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span):
         """Make prediction for a trained model.
-
         Args:
             data_df (DataFrame): A dataset to be evaluated.
             model: A trained model.
             batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
-
         Returns:
             array: predicted scores.
         """
@@ -453,6 +454,7 @@ class EvalEngine(object):
         result_dic = {}
         with torch.no_grad():
             for u, items in user_item_list.items():
+                print("User",u)
                 if len(train_seq[u]) < 1:
                     continue
                 seq = np.zeros([maxlen], dtype=np.int32)
@@ -494,7 +496,6 @@ class EvalEngine(object):
 
     def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0):
         """Evaluate the performance for a (validation) dataset with multiThread.
-
         Args:
             valid_data_df (DataFrame): A validation dataset.
             test_data_df (DataFrame): A testing dataset.
@@ -521,7 +522,6 @@ class EvalEngine(object):
         self, train_seq, valid_data_df, test_data_df, model, maxlen, epoch_id=0
     ):
         """Evaluate the performance for a (validation) dataset with multiThread.
-
         Args:
             valid_data_df (DataFrame): A validation dataset.
             test_data_df (DataFrame): A testing dataset.
@@ -551,7 +551,6 @@ class EvalEngine(object):
         self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span, epoch_id=0
     ):
         """Evaluate the performance for a (validation) dataset with multiThread.
-
         Args:
             valid_data_df (DataFrame): A validation dataset.
             test_data_df (DataFrame): A testing dataset.
@@ -579,7 +578,6 @@ class EvalEngine(object):
     @timeit
     def test_eval(self, test_df_list, model):
         """Evaluate the performance for a (testing) dataset list with multiThread.
-
         Args:
             test_df_list (list): (testing) dataset list.
             model: trained model.
@@ -599,7 +597,6 @@ class EvalEngine(object):
 
     def record_performance(self, valid_result, test_result, epoch_id):
         """Record perforance result on tensorboard.
-
         Args:
             valid_result (dict): Performance result of validation set.
             test_result (dict): Performance result of testing set.
@@ -649,7 +646,6 @@ class EvalEngine(object):
 
     def expose_performance(self, valid_result, test_result):
         """Expose performance to a http_client.
-
         Args:
             valid_result (dict): Performance result of validation set.
             test_result (dict): Performance result of testing set.
@@ -687,7 +683,6 @@ class SeqEvalEngine(object):
 
     def __init__(self, config):
         """Init SeqEvalEngine Class.
-
         Args:
             config (dict): parameters for the model.
         """
@@ -708,7 +703,6 @@ class SeqEvalEngine(object):
         step=1,
     ):
         """Run sequential evaluation of a recommender over a set of test sequences.
-
         Args:
             recommender (object): the instance of the recommender to test.
             test_sequences (List): the set of test sequences
@@ -726,7 +720,6 @@ class SeqEvalEngine(object):
                     If False, evaluate recommendations once per sequence without expanding the user profile.
             step (int): (optional) number of interactions that will be added to the user profile at each
                         step of the sequential evaluation.
-
         Returns:
             metrics/len(test_sequences) (1d array): the list of the average values for each evaluation metric.
         """
@@ -775,7 +768,6 @@ class SeqEvalEngine(object):
         top_n,
     ):
         """Compute metrics for each sequence.
-
         Args:
             recommender (object): which recommender to use
             seq (List): the user_profile/ context
@@ -783,7 +775,6 @@ class SeqEvalEngine(object):
             evaluation_functions (dict): which function to use to evaluate the rec performance
             look_ahead (int): number of elements in ground truth to consider.
                         If look_ahead = 'all' then all the ground_truth sequence is considered
-
         Returns:
             np.array(tmp_results) (1d array): performance of recommender.
         """
@@ -828,7 +819,6 @@ class SeqEvalEngine(object):
         step,
     ):
         """Compute metrics for each sequence incrementally.
-
         Args:
             recommender (object): which recommender to use
             seq (List): the user_profile/ context
@@ -836,7 +826,6 @@ class SeqEvalEngine(object):
             evaluation_functions (dict): which function to use to evaluate the rec performance
             look_ahead (int): number of elements in ground truth to consider.
                             If look_ahead = 'all' then all the ground_truth sequence is considered
-
         Returns:
             eval_res/eval_cnt (1d array): performance of recommender.
         """
@@ -860,14 +849,11 @@ class SeqEvalEngine(object):
 
     def get_test_sequences(self, test_data, given_k):
         """Run evaluation only over sequences longer than abs(LAST_K).
-
         Args:
             test_data (pandas.DataFrame): Test set.
             given_k (int): last element used as ground truth.
-
         Returns:
             test_sequences (List): list of sequences for testing.
-
         """
         # we can run evaluation only over sequences longer than abs(LAST_K)
         test_sequences = test_data.loc[
@@ -877,17 +863,14 @@ class SeqEvalEngine(object):
 
     def train_eval_seq(self, valid_data, test_data, recommender, epoch_id=0):
         """Compute performance of the sequential models with validation and test datasets for each epoch during training.
-
         Args:
             valid_data (pandas.DataFrame): validation dataset.
             test_data (pandas.DataFrame): test dataset.
             recommender (Object): Sequential recommender.
             epoch_id (int): id of the epoch.
             k (int): size of the recommendation list
-
         Returns:
             None
-
         """
         METRICS = {
             "ndcg": ndcg,
@@ -951,12 +934,10 @@ class SeqEvalEngine(object):
 
     def test_eval_seq(self, test_data, recommender):
         """Compute performance of the sequential models with test dataset.
-
         Args:
             test_data (pandas.DataFrame): test dataset.
             recommender (Object): Sequential recommender.
             k (int): size of the recommendation list
-
         Returns:
             None
         """

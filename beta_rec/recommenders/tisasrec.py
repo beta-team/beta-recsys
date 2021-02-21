@@ -15,12 +15,10 @@ import pickle
 #same as SASRec
 def random_neq(low, r, s):
     """Sampler for batch generation.
-
     Args:
         low ([type]): [description]
         r ([type]): [description]
         s ([type]): [description]
-
     Returns:
         [type]: [description]
     """
@@ -31,11 +29,9 @@ def random_neq(low, r, s):
 
 #new in TiSASRec
 def timeSlice(time_set):
-    """Normalizer for timestamps.
-
+    """Normalize timestamps.
         Args:
             time_set ([type]): [description]
-
         Returns:
             time_map [type]: [description]
         """
@@ -47,17 +43,6 @@ def timeSlice(time_set):
 
 #new in TiSASRec
 def cleanAndsort(User, time_map):
-    """Obtain staistics for user.
-
-            Args:
-                User ([type]): [description]
-                time_map [type]: [description]
-            Returns:
-                User_res ([type]): [description]
-                len(user_set) ([type]): [description]
-                len(item_set) ([type]): [description]
-                max(time_max) ([type]): [description]
-    """
     User_filted = dict()
     user_set = set()
     item_set = set()
@@ -100,16 +85,6 @@ def cleanAndsort(User, time_map):
 
 #new in TiSASRec
 def computeRePos(time_seq, time_span):
-    """Compute entry of relation matrix for a single user .
-
-                Args:
-                    time_seq:Array of timestamps
-                    time_span: Time interval.
-
-                Returns:
-                    time_matrix: Relation matrix for a user
-
-    """
     size = time_seq.shape[0]
     time_matrix = np.zeros([size, size], dtype=np.int32)
     for i in range(size):
@@ -124,18 +99,6 @@ def computeRePos(time_seq, time_span):
 
 #new in TiSASRec
 def Relation(user_train, usernum, maxlen, time_span):
-    """Compute full relation matrix .
-
-                    Args:
-                        user_train: training data
-                        usernum: number of users
-                        maxlen: maximum sequence length
-                        time_span: Time interval.
-
-                    Returns:
-                        data_train: Relation matrix
-
-        """
     data_train = dict()
     for user in tqdm(range(1, usernum+1), desc='Preparing relation matrix'):
         time_seq = np.zeros([maxlen], dtype=np.int32)
@@ -150,11 +113,6 @@ def Relation(user_train, usernum, maxlen, time_span):
 #there's a similar function in SASRec but I'm not sure what code in Beta-Recsys
 #corresponds to this
 def data_partition():
-    """Prepare data .
-        Returns:
-                list: split data as well as number of users and items
-    """
-
     usernum = 0
     itemnum = 0
     User = defaultdict(list)
@@ -223,7 +181,7 @@ def sample_function(user_train, usernum, itemnum, batch_size, maxlen, relation_m
             relation_matrix ([type]): [description]
             result_queue ([type]): [description]
             SEED ([type]): [description]
-    """
+        """
     def sample(user):
 
         seq = np.zeros([maxlen], dtype=np.int32)
@@ -264,14 +222,14 @@ class WarpSampler(object):
     def __init__(self, User, usernum, itemnum, relation_matrix, batch_size=64, maxlen=10,n_workers=1):
         """Initialize workers.
 
-            Args:
-                User ([type]): [description]
-                usernum ([type]): [description]
-                itemnum ([type]): [description]
-                relation_matrix ([type]): [description]
-                batch_size (int, optional): [description]. Defaults to 64.
-                maxlen (int, optional): [description]. Defaults to 10.
-                n_workers (int, optional): [description]. Defaults to 1.
+                Args:
+                    User ([type]): [description]
+                    usernum ([type]): [description]
+                    itemnum ([type]): [description]
+                    batch_size (int, optional): [description]. Defaults to 64.
+                    relation_matrix ([type]): [description]
+                    maxlen (int, optional): [description]. Defaults to 10.
+                    n_workers (int, optional): [description]. Defaults to 1.
         """
         self.result_queue = Queue(maxsize=n_workers * 10)
         self.processors = []
@@ -305,7 +263,6 @@ class WarpSampler(object):
 
 def tune_train(config):
     """Train the model with a hypyer-parameter tuner (ray).
-
     Args:
         config (dict): All the parameters for the model.
     """
@@ -325,7 +282,6 @@ class TiSASRec(Recommender):
 
     def __init__(self, config):
         """Initialize the config of this recommender.
-
         Args:
             config:
         """
@@ -333,10 +289,8 @@ class TiSASRec(Recommender):
 
     def init_engine(self, data):
         """Initialize the required parameters for the model.
-
         Args:
             data: the Dataset object.
-
         """
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items
@@ -344,13 +298,10 @@ class TiSASRec(Recommender):
 
     def train(self, data):
         """Training the model.
-
         Args:
             data: the Dataset object.
-
         Returns:
             dict: save k,v for "best_valid_performance" and "model_save_dir"
-
         """
         if ("tune" in self.args) and (self.args["tune"]):  # Tune the model.
             self.args.data = data
@@ -375,11 +326,11 @@ class TiSASRec(Recommender):
         #from main.py in original TiSASRec implementation
         try:
             self.relation_matrix = pickle.load(
-                open('D:/beta-recsys/results/relation_matrix_%s_%d_%d.pickle' % (self.config["model"]["maxlen"], self.config["model"]["time_span"]), 'rb'))
+                open('/beta-recsys/results/relation_matrix_%s_%d_%d.pickle' % (self.config["model"]["maxlen"], self.config["model"]["time_span"]), 'rb'))
         except:
             self.relation_matrix = Relation(user_train, usernum, self.config["model"]["maxlen"], self.config["model"]["time_span"])
             pickle.dump(self.relation_matrix,
-                    open('D:/beta-recsys/results/relation_matrix_%s_%d_%d.pickle' % (self.config["dataset"]["dataset"], self.config["model"]["maxlen"], self.config["model"]["time_span"]),
+                    open('/beta-recsys/results/relation_matrix_%s_%d_%d.pickle' % (self.config["dataset"]["dataset"], self.config["model"]["maxlen"], self.config["model"]["time_span"]),
                              'wb'))
         sampler = WarpSampler(
             user_train, #tried data.get_train_seq() as well but not sure if it accounts for the different format of data compared with SASRec
