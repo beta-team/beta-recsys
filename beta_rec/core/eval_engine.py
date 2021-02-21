@@ -27,7 +27,6 @@ lock_train_eval = Lock()
 lock_test_eval = Lock()
 
 
-
 def detect_port(port, ip="127.0.0.1"):
     """Test whether the port is occupied.
     Args:
@@ -50,14 +49,15 @@ def detect_port(port, ip="127.0.0.1"):
     finally:
         return ready
 
+
 def computeRePos(time_seq, time_span):
-    """Evaluate the performance of a prediction by different metrics.
-        Args:
-            time_seq: time sequences.
-            time_span: time span
-        Returns:
-            time_matrix: Relation matrix for a single user.
-        """
+    """Compute position matrix for a user.
+    Args:
+        time_seq ([type]): [description]
+        time_span ([type]): [description]
+    Returns:
+        [type]: [description]
+    """
     size = time_seq.shape[0]
     time_matrix = np.zeros([size, size], dtype=np.int32)
     for i in range(size):
@@ -326,8 +326,6 @@ class EvalEngine(object):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
 
-
-
     def test_seq_predict(self, train_seq, valid_data_df, test_data_df, model, maxlen):
         """Make prediction for a trained model.
         Args:
@@ -384,7 +382,7 @@ class EvalEngine(object):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
 
-#implemented this due to differences in indexing for TiSASRec, not sure if needed at all
+    # implemented this due to differences in indexing for TiSASRec, not sure if needed at all
     def seq_predict_time(self, train_seq, data_df, model, maxlen, time_span):
         """Make prediction for a trained model.
         Args:
@@ -401,6 +399,7 @@ class EvalEngine(object):
         )
         result_dic = {}
         with torch.no_grad():
+            print("Train seq", type(train_seq))
             for u, items in user_item_list.items():
                 if len(train_seq[u]) < 1:
                     continue
@@ -430,8 +429,10 @@ class EvalEngine(object):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
 
-# implemented this due to differences in indexing, not sure if needed
-    def test_seq_predict_time(self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span):
+    # implemented this due to differences in indexing, not sure if needed
+    def test_seq_predict_time(
+        self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span
+    ):
         """Make prediction for a trained model.
         Args:
             data_df (DataFrame): A dataset to be evaluated.
@@ -454,7 +455,6 @@ class EvalEngine(object):
         result_dic = {}
         with torch.no_grad():
             for u, items in user_item_list.items():
-                print("User",u)
                 if len(train_seq[u]) < 1:
                     continue
                 seq = np.zeros([maxlen], dtype=np.int32)
@@ -492,7 +492,6 @@ class EvalEngine(object):
         for u, i in zip(user_ids, item_ids):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
-
 
     def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0):
         """Evaluate the performance for a (validation) dataset with multiThread.
@@ -546,9 +545,16 @@ class EvalEngine(object):
         )
         worker.start()
 
-# implemented this due to differences in indexing, not sure if needed
+    # implemented this due to differences in indexing, not sure if needed
     def seq_train_eval_time(
-        self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span, epoch_id=0
+        self,
+        train_seq,
+        valid_data_df,
+        test_data_df,
+        model,
+        maxlen,
+        time_span,
+        epoch_id=0,
     ):
         """Evaluate the performance for a (validation) dataset with multiThread.
         Args:
@@ -558,9 +564,11 @@ class EvalEngine(object):
             epoch_id: epoch_id.
             k (int or list): top k result to be evaluate.
         """
-        valid_pred = self.seq_predict_time(train_seq, valid_data_df, model, maxlen,time_span)
+        valid_pred = self.seq_predict_time(
+            train_seq, valid_data_df, model, maxlen, time_span
+        )
         test_pred = self.test_seq_predict_time(
-            train_seq, valid_data_df, test_data_df, model, maxlen,time_span
+            train_seq, valid_data_df, test_data_df, model, maxlen, time_span
         )
         worker = Thread(
             target=train_eval_worker,
