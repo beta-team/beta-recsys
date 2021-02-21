@@ -34,6 +34,14 @@ def random_neq(low, r, s):
 
 # new in TiSASRec
 def timeSlice(time_set):
+    """To be filled.
+
+    Args:
+        time_set ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     time_min = min(time_set)
     time_map = dict()
     for t in time_set:  # float as map key?
@@ -43,6 +51,15 @@ def timeSlice(time_set):
 
 # new in TiSASRec
 def cleanAndsort(User, time_map):
+    """To be filled.
+
+    Args:
+        User ([type]): [description]
+        time_map ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     User_filted = dict()
     user_set = set()
     item_set = set()
@@ -89,6 +106,15 @@ def cleanAndsort(User, time_map):
 
 # new in TiSASRec
 def computeRePos(time_seq, time_span):
+    """To be filled.
+
+    Args:
+        time_seq ([type]): [description]
+        time_span ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     size = time_seq.shape[0]
     time_matrix = np.zeros([size, size], dtype=np.int32)
     for i in range(size):
@@ -103,6 +129,17 @@ def computeRePos(time_seq, time_span):
 
 # new in TiSASRec
 def Relation(user_train, usernum, maxlen, time_span):
+    """To be filled.
+
+    Args:
+        user_train ([type]): [description]
+        usernum ([type]): [description]
+        maxlen ([type]): [description]
+        time_span ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     data_train = dict()
     for user in tqdm(range(1, usernum + 1), desc="Preparing relation matrix"):
         time_seq = np.zeros([maxlen], dtype=np.int32)
@@ -119,6 +156,11 @@ def Relation(user_train, usernum, maxlen, time_span):
 # there's a similar function in SASRec but I'm not sure what code in Beta-Recsys
 # corresponds to this
 def data_partition():
+    """To be filled.
+
+    Returns:
+        [type]: [description]
+    """
     usernum = 0
     itemnum = 0
     User = defaultdict(list)
@@ -185,7 +227,28 @@ def sample_function(
     result_queue,
     SEED,
 ):
+    """To be filled.
+
+    Args:
+        user_train ([type]): [description]
+        usernum ([type]): [description]
+        itemnum ([type]): [description]
+        batch_size ([type]): [description]
+        maxlen ([type]): [description]
+        relation_matrix ([type]): [description]
+        result_queue ([type]): [description]
+        SEED ([type]): [description]
+    """
+
     def sample(user):
+        """To be filled.
+
+        Args:
+            user ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
 
         seq = np.zeros([maxlen], dtype=np.int32)
         time_seq = np.zeros([maxlen], dtype=np.int32)
@@ -231,6 +294,17 @@ class WarpSampler(object):
         maxlen=10,
         n_workers=1,
     ):
+        """To be filled.
+
+        Args:
+            User ([type]): [description]
+            usernum ([type]): [description]
+            itemnum ([type]): [description]
+            relation_matrix ([type]): [description]
+            batch_size (int, optional): [description]. Defaults to 64.
+            maxlen (int, optional): [description]. Defaults to 10.
+            n_workers (int, optional): [description]. Defaults to 1.
+        """
         self.result_queue = Queue(maxsize=n_workers * 10)
         self.processors = []
         for i in range(n_workers):

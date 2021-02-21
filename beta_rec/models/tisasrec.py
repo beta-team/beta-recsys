@@ -41,6 +41,13 @@ class PointWiseFeedForward(torch.nn.Module):
 
 class TimeAwareMultiHeadAttention(torch.nn.Module):
     def __init__(self, hidden_size, head_num, dropout_rate):
+        """To be filled.
+
+        Args:
+            hidden_size ([type]): [description]
+            head_num ([type]): [description]
+            dropout_rate ([type]): [description]
+        """
         super(TimeAwareMultiHeadAttention, self).__init__()
         self.Q_w = torch.nn.Linear(hidden_size, hidden_size)
         self.K_w = torch.nn.Linear(hidden_size, hidden_size)
@@ -65,6 +72,21 @@ class TimeAwareMultiHeadAttention(torch.nn.Module):
         abs_pos_K,
         abs_pos_V,
     ):
+        """To be filled.
+
+        Args:
+            queries ([type]): [description]
+            keys ([type]): [description]
+            time_mask ([type]): [description]
+            attn_mask ([type]): [description]
+            time_matrix_K ([type]): [description]
+            time_matrix_V ([type]): [description]
+            abs_pos_K ([type]): [description]
+            abs_pos_V ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         Q, K, V = self.Q_w(queries), self.K_w(keys), self.V_w(keys)
 
         # head dim * batch dim for parallelization (h*N, T, C/h)
@@ -133,10 +155,18 @@ class TimeAwareMultiHeadAttention(torch.nn.Module):
 
 
 class TiSASRec(nn.Module):
-    "Time Interval Aware Self-Attention for Sequential Recommendation class"
+    """Time Interval Aware Self-Attention for Sequential Recommendation class.
+
+    Args:
+        nn ([type]): [description]
+    """
 
     def __init__(self, config):
-        """Initialize TiSASRec Class."""
+        """Initialize TiSASRec Class.
+
+        Args:
+            config ([type]): [description]
+        """
         super(TiSASRec, self).__init__()
         self.config = config
         self.user_num = config["n_users"]
