@@ -53,7 +53,7 @@ def detect_port(port, ip="127.0.0.1"):
 
 
 def computeRePos(time_seq, time_span):
-    """To be filled.
+    """Compute position matrix for a user.
 
     Args:
         time_seq ([type]): [description]

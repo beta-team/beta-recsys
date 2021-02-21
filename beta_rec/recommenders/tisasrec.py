@@ -34,7 +34,7 @@ def random_neq(low, r, s):
 
 # new in TiSASRec
 def timeSlice(time_set):
-    """To be filled.
+    """Normalize timestamps.
 
     Args:
         time_set ([type]): [description]
@@ -51,7 +51,7 @@ def timeSlice(time_set):
 
 # new in TiSASRec
 def cleanAndsort(User, time_map):
-    """To be filled.
+    """Get user, lengths of users and items and timestamps.
 
     Args:
         User ([type]): [description]
@@ -106,7 +106,7 @@ def cleanAndsort(User, time_map):
 
 # new in TiSASRec
 def computeRePos(time_seq, time_span):
-    """To be filled.
+    """Compute position matrix for a single user.
 
     Args:
         time_seq ([type]): [description]
@@ -129,7 +129,7 @@ def computeRePos(time_seq, time_span):
 
 # new in TiSASRec
 def Relation(user_train, usernum, maxlen, time_span):
-    """To be filled.
+    """Compute relation matrix for all users.
 
     Args:
         user_train ([type]): [description]
@@ -156,7 +156,7 @@ def Relation(user_train, usernum, maxlen, time_span):
 # there's a similar function in SASRec but I'm not sure what code in Beta-Recsys
 # corresponds to this
 def data_partition():
-    """To be filled.
+    """Prepare and split data.
 
     Returns:
         [type]: [description]
@@ -227,7 +227,7 @@ def sample_function(
     result_queue,
     SEED,
 ):
-    """To be filled.
+    """Sample batch of pos and neg sequences.
 
     Args:
         user_train ([type]): [description]
@@ -241,13 +241,13 @@ def sample_function(
     """
 
     def sample(user):
-        """To be filled.
+        """Sample for a single user.
 
         Args:
             user ([type]): [description]
-
         Returns:
             [type]: [description]
+
         """
         seq = np.zeros([maxlen], dtype=np.int32)
         time_seq = np.zeros([maxlen], dtype=np.int32)
@@ -283,7 +283,7 @@ def sample_function(
 
 
 class WarpSampler(object):
-    """To be filled.
+    """MultiThread Sampler.
 
     Args:
         object ([type]): [description]
@@ -299,7 +299,7 @@ class WarpSampler(object):
         maxlen=10,
         n_workers=1,
     ):
-        """To be filled.
+        """Initialize workers.
 
         Args:
             User ([type]): [description]
@@ -332,7 +332,7 @@ class WarpSampler(object):
             self.processors[-1].start()
 
     def next_batch(self):
-        """To be filled.
+        """Get next batch.
 
         Returns:
             [type]: [description]
@@ -340,7 +340,7 @@ class WarpSampler(object):
         return self.result_queue.get()
 
     def close(self):
-        """To be filled."""
+        """Close processors."""
         for p in self.processors:
             p.terminate()
             p.join()

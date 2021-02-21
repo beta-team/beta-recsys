@@ -6,7 +6,7 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class PointWiseFeedForward(torch.nn.Module):
-    """To be filled.
+    """PointWise forward Module.
 
     Args:
         torch ([type]): [description]
@@ -45,14 +45,14 @@ class PointWiseFeedForward(torch.nn.Module):
 
 
 class TimeAwareMultiHeadAttention(torch.nn.Module):
-    """To be filled.
+    """TimeAwareMultiHeadAttention forward Module.
 
     Args:
         torch ([type]): [description]
     """
 
     def __init__(self, hidden_size, head_num, dropout_rate):
-        """To be filled.
+        """Class Initialization.
 
         Args:
             hidden_size ([type]): [description]
@@ -83,7 +83,7 @@ class TimeAwareMultiHeadAttention(torch.nn.Module):
         abs_pos_K,
         abs_pos_V,
     ):
-        """To be filled.
+        """Forward function.
 
         Args:
             queries ([type]): [description]

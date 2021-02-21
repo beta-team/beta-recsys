@@ -148,7 +148,7 @@ def tune_train(config):
 
 
 class NARM(Recommender):
-    """The SASRec Model."""
+    """The NARM Model."""
 
     def __init__(self, config):
         """Initialize the config of this recommender.
