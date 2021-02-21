@@ -18,5 +18,5 @@ __all__ = [
     "SASRec",
     "VBCAR",
     "NARM",
-    "TiSASRec"
+    "TiSASRec",
 ]
