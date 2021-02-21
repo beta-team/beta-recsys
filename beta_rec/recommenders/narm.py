@@ -1,14 +1,15 @@
 import os
 import time
+from multiprocessing import Process, Queue
+
 import numpy as np
-import torch
 from munch import munchify
 from ray import tune
-from torch.utils.data import DataLoader
-from multiprocessing import Process, Queue
+
 from ..core.recommender import Recommender
 from ..models.narm import NARMEngine
 from ..utils.monitor import Monitor
+
 
 def random_neq(low, r, s):
     """Sampler for batch generation.
@@ -144,6 +145,7 @@ def tune_train(config):
         valid_metric=result["valid_metric"],
         model_save_dir=result["model_save_dir"],
     )
+
 
 class NARM(Recommender):
     """The SASRec Model."""

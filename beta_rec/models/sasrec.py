@@ -138,7 +138,7 @@ class SASRec(nn.Module):
     def forward(self, user_ids, log_seqs, pos_seqs, neg_seqs):  # for training
         """Forward functioin.
 
-        Args:
+        Args:q
             user_ids ([type]): [description]
             log_seqs ([type]): [description]
             pos_seqs ([type]): [description]

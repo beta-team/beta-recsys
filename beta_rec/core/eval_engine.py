@@ -51,7 +51,17 @@ def detect_port(port, ip="127.0.0.1"):
     finally:
         return ready
 
+
 def computeRePos(time_seq, time_span):
+    """To be filled.
+
+    Args:
+        time_seq ([type]): [description]
+        time_span ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     size = time_seq.shape[0]
     time_matrix = np.zeros([size, size], dtype=np.int32)
     for i in range(size):
@@ -330,8 +340,6 @@ class EvalEngine(object):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
 
-
-
     def test_seq_predict(self, train_seq, valid_data_df, test_data_df, model, maxlen):
         """Make prediction for a trained model.
 
@@ -390,7 +398,7 @@ class EvalEngine(object):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
 
-#implemented this due to differences in indexing for TiSASRec, not sure if needed at all
+    # implemented this due to differences in indexing for TiSASRec, not sure if needed at all
     def seq_predict_time(self, train_seq, data_df, model, maxlen, time_span):
         """Make prediction for a trained model.
 
@@ -409,7 +417,7 @@ class EvalEngine(object):
         )
         result_dic = {}
         with torch.no_grad():
-            print("Train seq",type(train_seq))
+            print("Train seq", type(train_seq))
             for u, items in user_item_list.items():
                 if len(train_seq[u]) < 1:
                     continue
@@ -439,8 +447,10 @@ class EvalEngine(object):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
 
-# implemented this due to differences in indexing, not sure if needed
-    def test_seq_predict_time(self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span):
+    # implemented this due to differences in indexing, not sure if needed
+    def test_seq_predict_time(
+        self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span
+    ):
         """Make prediction for a trained model.
 
         Args:
@@ -503,7 +513,6 @@ class EvalEngine(object):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
 
-
     def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0):
         """Evaluate the performance for a (validation) dataset with multiThread.
 
@@ -558,9 +567,16 @@ class EvalEngine(object):
         )
         worker.start()
 
-# implemented this due to differences in indexing, not sure if needed
+    # implemented this due to differences in indexing, not sure if needed
     def seq_train_eval_time(
-        self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span, epoch_id=0
+        self,
+        train_seq,
+        valid_data_df,
+        test_data_df,
+        model,
+        maxlen,
+        time_span,
+        epoch_id=0,
     ):
         """Evaluate the performance for a (validation) dataset with multiThread.
 
@@ -571,9 +587,11 @@ class EvalEngine(object):
             epoch_id: epoch_id.
             k (int or list): top k result to be evaluate.
         """
-        valid_pred = self.seq_predict_time(train_seq, valid_data_df, model, maxlen,time_span)
+        valid_pred = self.seq_predict_time(
+            train_seq, valid_data_df, model, maxlen, time_span
+        )
         test_pred = self.test_seq_predict_time(
-            train_seq, valid_data_df, test_data_df, model, maxlen,time_span
+            train_seq, valid_data_df, test_data_df, model, maxlen, time_span
         )
         worker = Thread(
             target=train_eval_worker,
