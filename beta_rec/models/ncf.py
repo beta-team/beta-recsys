@@ -161,7 +161,8 @@ class NeuMFEngine(ModelEngine):
             self.config["model"]["gmf_config"]["save_name"],
         )
         self.resume_checkpoint(
-            gmf_save_dir, gmf_model,
+            gmf_save_dir,
+            gmf_model,
         )
         self.model.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
         self.model.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
@@ -173,7 +174,8 @@ class NeuMFEngine(ModelEngine):
             self.config["model"]["mlp_config"]["save_name"],
         )
         self.resume_checkpoint(
-            mlp_save_dir, mlp_model,
+            mlp_save_dir,
+            mlp_model,
         )
         self.model.embedding_user_mlp.weight.data = mlp_model.embedding_user.weight.data
         self.model.embedding_item_mlp.weight.data = mlp_model.embedding_item.weight.data

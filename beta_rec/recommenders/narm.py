@@ -7,7 +7,7 @@ from munch import munchify
 from ray import tune
 
 from ..core.recommender import Recommender
-from ..models.sasrec import SASRecEngine
+from ..models.narm import NARMEngine
 from ..utils.monitor import Monitor
 
 
@@ -137,7 +137,7 @@ def tune_train(config):
         config (dict): All the parameters for the model.
     """
     data = config["data"]
-    train_engine = SASRec(munchify(config))
+    train_engine = NARMEngine(munchify(config))
     result = train_engine.train(data)
     while train_engine.eval_engine.n_worker > 0:
         time.sleep(20)
@@ -147,7 +147,7 @@ def tune_train(config):
     )
 
 
-class SASRec(Recommender):
+class NARM(Recommender):
     """The SASRec Model."""
 
     def __init__(self, config):
@@ -156,7 +156,7 @@ class SASRec(Recommender):
         Args:
             config:
         """
-        super(SASRec, self).__init__(config, name="SASRec")
+        super(NARM, self).__init__(config, name="SASRec")
 
     def init_engine(self, data):
         """Initialize the required parameters for the model.
@@ -167,7 +167,7 @@ class SASRec(Recommender):
         """
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items
-        self.engine = SASRecEngine(self.config)
+        self.engine = NARMEngine(self.config)
 
     def train(self, data):
         """Training the model.
@@ -192,7 +192,7 @@ class SASRec(Recommender):
 
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items
-        self.engine = SASRecEngine(self.config)
+        self.engine = NARMEngine(self.config)
         self.engine.data = data
         data.config = self.config
         self.monitor = Monitor(

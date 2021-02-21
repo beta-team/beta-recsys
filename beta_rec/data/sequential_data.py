@@ -48,8 +48,13 @@ class SequentialData(BaseData):
         """Sample triples or load triples samples from files.
 
         This method is only applicable for basket based Recommender.
+
+        Args:
+            dump (bool, optional): [description]. Defaults to True.
+            load_save (bool, optional): [description]. Defaults to False.
+
         Returns:
-            None
+            [DataFrame]: [description]
         """
         self.train.sort_values(
             by=[DEFAULT_TIMESTAMP_COL], ascending=False, inplace=True

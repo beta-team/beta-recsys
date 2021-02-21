@@ -304,7 +304,8 @@ class DataLoaderBase(object):
             )
         )
         process_path = os.path.join(
-            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+            config["system"]["process_dir"],
+            config["dataset"]["dataset"] + "/",
         )
         process_file_name = os.path.join(process_path, process_file_name)
         ensureDir(process_file_name)
@@ -374,7 +375,8 @@ class DataLoaderBase(object):
             )
         )
         process_path = os.path.join(
-            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+            config["system"]["process_dir"],
+            config["dataset"]["dataset"] + "/",
         )
         process_file_name = os.path.join(process_path, process_file_name)
         ensureDir(process_file_name)
