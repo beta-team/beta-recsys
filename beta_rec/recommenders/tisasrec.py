@@ -17,10 +17,12 @@ from ..utils.monitor import Monitor
 # same as SASRec
 def random_neq(low, r, s):
     """Sampler for batch generation.
+
     Args:
         low ([type]): [description]
         r ([type]): [description]
         s ([type]): [description]
+
     Returns:
         [type]: [description]
     """
@@ -33,8 +35,10 @@ def random_neq(low, r, s):
 # new in TiSASRec
 def timeSlice(time_set):
     """Normalize timestamps.
+
     Args:
         time_set ([type]): [description]
+
     Returns:
         [type]: [description]
     """
@@ -48,9 +52,11 @@ def timeSlice(time_set):
 # new in TiSASRec
 def cleanAndsort(User, time_map):
     """Get user, lengths of users and items and timestamps.
+
     Args:
         User ([type]): [description]
         time_map ([type]): [description]
+
     Returns:
         [type]: [description]
     """
@@ -101,9 +107,11 @@ def cleanAndsort(User, time_map):
 # new in TiSASRec
 def computeRePos(time_seq, time_span):
     """Compute position matrix for a single user.
+
     Args:
         time_seq ([type]): [description]
         time_span ([type]): [description]
+
     Returns:
         [type]: [description]
     """
@@ -122,11 +130,13 @@ def computeRePos(time_seq, time_span):
 # new in TiSASRec
 def Relation(user_train, usernum, maxlen, time_span):
     """Compute relation matrix for all users.
+
     Args:
         user_train ([type]): [description]
         usernum ([type]): [description]
         maxlen ([type]): [description]
         time_span ([type]): [description]
+
     Returns:
         [type]: [description]
     """
@@ -147,6 +157,7 @@ def Relation(user_train, usernum, maxlen, time_span):
 # corresponds to this
 def data_partition():
     """Prepare and split data.
+
     Returns:
         [type]: [description]
     """
@@ -217,6 +228,7 @@ def sample_function(
     SEED,
 ):
     """Sample batch of pos and neg sequences.
+
     Args:
         user_train ([type]): [description]
         usernum ([type]): [description]
@@ -230,10 +242,12 @@ def sample_function(
 
     def sample(user):
         """Sample for a single user.
+
         Args:
             user ([type]): [description]
         Returns:
             [type]: [description]
+
         """
         seq = np.zeros([maxlen], dtype=np.int32)
         time_seq = np.zeros([maxlen], dtype=np.int32)
@@ -270,6 +284,7 @@ def sample_function(
 
 class WarpSampler(object):
     """MultiThread Sampler.
+
     Args:
         object ([type]): [description]
     """
@@ -285,6 +300,7 @@ class WarpSampler(object):
         n_workers=1,
     ):
         """Initialize workers.
+
         Args:
             User ([type]): [description]
             usernum ([type]): [description]
@@ -317,6 +333,7 @@ class WarpSampler(object):
 
     def next_batch(self):
         """Get next batch.
+
         Returns:
             [type]: [description]
         """
@@ -331,6 +348,7 @@ class WarpSampler(object):
 
 def tune_train(config):
     """Train the model with a hypyer-parameter tuner (ray).
+
     Args:
         config (dict): All the parameters for the model.
     """
@@ -350,6 +368,7 @@ class TiSASRec(Recommender):
 
     def __init__(self, config):
         """Initialize the config of this recommender.
+
         Args:
             config:
         """
@@ -357,8 +376,10 @@ class TiSASRec(Recommender):
 
     def init_engine(self, data):
         """Initialize the required parameters for the model.
+
         Args:
             data: the Dataset object.
+
         """
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items
@@ -366,10 +387,13 @@ class TiSASRec(Recommender):
 
     def train(self, data):
         """Training the model.
+
         Args:
             data: the Dataset object.
+
         Returns:
             dict: save k,v for "best_valid_performance" and "model_save_dir"
+
         """
         if ("tune" in self.args) and (self.args["tune"]):  # Tune the model.
             self.args.data = data

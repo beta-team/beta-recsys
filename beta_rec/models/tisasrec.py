@@ -6,10 +6,15 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class PointWiseFeedForward(torch.nn.Module):
-    """PointWise forward Module."""
+    """PointWise forward Module.
+
+    Args:
+        torch ([type]): [description]
+    """
 
     def __init__(self, hidden_units, dropout_rate):  # wried, why fusion X 2?
         """Class Initialization.
+
         Args:
             hidden_units ([int]): Embedding dimension.
             dropout_rate ([float]): dropout rate.
@@ -24,8 +29,10 @@ class PointWiseFeedForward(torch.nn.Module):
 
     def forward(self, inputs):
         """Forward function.
+
         Args:
             inputs ([type]): [description]
+
         Returns:
             [type]: [description]
         """
@@ -38,10 +45,15 @@ class PointWiseFeedForward(torch.nn.Module):
 
 
 class TimeAwareMultiHeadAttention(torch.nn.Module):
-    """TimeAwareMultiHeadAttention forward Module."""
+    """TimeAwareMultiHeadAttention forward Module.
+
+    Args:
+        torch ([type]): [description]
+    """
 
     def __init__(self, hidden_size, head_num, dropout_rate):
         """Class Initialization.
+
         Args:
             hidden_size ([type]): [description]
             head_num ([type]): [description]
@@ -72,6 +84,7 @@ class TimeAwareMultiHeadAttention(torch.nn.Module):
         abs_pos_V,
     ):
         """Forward function.
+
         Args:
             queries ([type]): [description]
             keys ([type]): [description]
@@ -81,6 +94,7 @@ class TimeAwareMultiHeadAttention(torch.nn.Module):
             time_matrix_V ([type]): [description]
             abs_pos_K ([type]): [description]
             abs_pos_V ([type]): [description]
+
         Returns:
             [type]: [description]
         """
@@ -153,12 +167,14 @@ class TimeAwareMultiHeadAttention(torch.nn.Module):
 
 class TiSASRec(nn.Module):
     """Time Interval Aware Self-Attention for Sequential Recommendation class.
+
     Args:
         nn ([type]): [description]
     """
 
     def __init__(self, config):
         """Initialize TiSASRec Class.
+
         Args:
             config ([type]): [description]
         """
@@ -221,8 +237,10 @@ class TiSASRec(nn.Module):
 
     def seq2feats(self, user_ids, log_seqs, time_matrices):
         """Encode sequential items.
+
         Args:
             log_seqs ([type]): [description]
+
         Returns:
             [type]: [description]
         """
@@ -287,11 +305,13 @@ class TiSASRec(nn.Module):
         self, user_ids, log_seqs, time_matrices, pos_seqs, neg_seqs
     ):  # for training
         """Forward function.
+
         Args:
             user_ids ([type]): [description]
             log_seqs ([type]): [description]
             pos_seqs ([type]): [description]
             neg_seqs ([type]): [description]
+
         Returns:
             [type]: [pos_logits neg_logits]
         """
@@ -316,10 +336,12 @@ class TiSASRec(nn.Module):
 
     def predict(self, user_ids, log_seqs, time_matrices, item_indices):  # for inference
         """Predict scores for input item sequential.
+
         Args:
             user_ids ([type]): [description]
             log_seqs ([type]): [description]
             item_indices ([type]): [description]
+
         Returns:
             [type]: [logits]
         """
