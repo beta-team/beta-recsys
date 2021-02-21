@@ -9,6 +9,7 @@ from threading import Lock, Thread
 import numpy as np
 import pandas as pd
 import torch
+from beta_rec.recommenders.tisasrec import computeRePos
 from prometheus_client import Gauge, start_http_server
 from tensorboardX import SummaryWriter
 from tqdm.autonotebook import tqdm
@@ -50,19 +51,6 @@ def detect_port(port, ip="127.0.0.1"):
         raise RuntimeError("The server is already running on port {0}".format(port))
     finally:
         return ready
-
-def computeRePos(time_seq, time_span):
-    size = time_seq.shape[0]
-    time_matrix = np.zeros([size, size], dtype=np.int32)
-    for i in range(size):
-        for j in range(size):
-            span = abs(time_seq[i] - time_seq[j])
-            if span > time_span:
-                time_matrix[i][j] = time_span
-            else:
-                time_matrix[i][j] = span
-    return time_matrix
-
 
 def evaluate(data_df, predictions, metrics, k_li):
     """Evaluate the performance of a prediction by different metrics.
