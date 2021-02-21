@@ -6,6 +6,12 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 class PointWiseFeedForward(torch.nn.Module):
+    """To be filled.
+
+    Args:
+        torch ([type]): [description]
+    """
+
     def __init__(self, hidden_units, dropout_rate):  # wried, why fusion X 2?
         """Class Initialization.
 
@@ -22,7 +28,7 @@ class PointWiseFeedForward(torch.nn.Module):
         self.dropout2 = torch.nn.Dropout(p=dropout_rate)
 
     def forward(self, inputs):
-        """Forward functioin.
+        """Forward function.
 
         Args:
             inputs ([type]): [description]
@@ -30,7 +36,6 @@ class PointWiseFeedForward(torch.nn.Module):
         Returns:
             [type]: [description]
         """
-
         outputs = self.dropout2(
             self.conv2(self.relu(self.dropout1(self.conv1(inputs.transpose(-1, -2)))))
         )
@@ -40,6 +45,12 @@ class PointWiseFeedForward(torch.nn.Module):
 
 
 class TimeAwareMultiHeadAttention(torch.nn.Module):
+    """To be filled.
+
+    Args:
+        torch ([type]): [description]
+    """
+
     def __init__(self, hidden_size, head_num, dropout_rate):
         """To be filled.
 

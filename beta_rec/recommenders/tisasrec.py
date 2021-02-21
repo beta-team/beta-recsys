@@ -249,7 +249,6 @@ def sample_function(
         Returns:
             [type]: [description]
         """
-
         seq = np.zeros([maxlen], dtype=np.int32)
         time_seq = np.zeros([maxlen], dtype=np.int32)
         pos = np.zeros([maxlen], dtype=np.int32)
@@ -284,6 +283,12 @@ def sample_function(
 
 
 class WarpSampler(object):
+    """To be filled.
+
+    Args:
+        object ([type]): [description]
+    """
+
     def __init__(
         self,
         User,
@@ -327,9 +332,15 @@ class WarpSampler(object):
             self.processors[-1].start()
 
     def next_batch(self):
+        """To be filled.
+
+        Returns:
+            [type]: [description]
+        """
         return self.result_queue.get()
 
     def close(self):
+        """To be filled."""
         for p in self.processors:
             p.terminate()
             p.join()
