@@ -52,6 +52,28 @@ def detect_port(port, ip="127.0.0.1"):
         return ready
 
 
+def computeRePos(time_seq, time_span):
+    """Compute position matrix for a user.
+
+    Args:
+        time_seq ([type]): [description]
+        time_span ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+    size = time_seq.shape[0]
+    time_matrix = np.zeros([size, size], dtype=np.int32)
+    for i in range(size):
+        for j in range(size):
+            span = abs(time_seq[i] - time_seq[j])
+            if span > time_span:
+                time_matrix[i][j] = time_span
+            else:
+                time_matrix[i][j] = span
+    return time_matrix
+
+
 def evaluate(data_df, predictions, metrics, k_li):
     """Evaluate the performance of a prediction by different metrics.
 
@@ -376,6 +398,121 @@ class EvalEngine(object):
             predictions.append(result_dic[(u, i)])
         return np.array(predictions)
 
+    # implemented this due to differences in indexing for TiSASRec, not sure if needed at all
+    def seq_predict_time(self, train_seq, data_df, model, maxlen, time_span):
+        """Make prediction for a trained model.
+
+        Args:
+            data_df (DataFrame): A dataset to be evaluated.
+            model: A trained model.
+            batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
+
+        Returns:
+            array: predicted scores.
+        """
+        user_ids = data_df[DEFAULT_USER_COL].to_numpy()
+        item_ids = data_df[DEFAULT_ITEM_COL].to_numpy()
+        user_item_list = data_df.groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL].apply(
+            list
+        )
+        result_dic = {}
+        with torch.no_grad():
+            print("Train seq", type(train_seq))
+            for u, items in user_item_list.items():
+                if len(train_seq[u]) < 1:
+                    continue
+                seq = np.zeros([maxlen], dtype=np.int32)
+                time_seq = np.zeros([maxlen], dtype=np.int32)
+                time_matrix = computeRePos(time_seq, time_span)
+                idx = maxlen - 1
+                for i in reversed(train_seq[u]):
+                    seq[idx] = i[0]
+                    time_seq[idx] = i[1]
+                    idx -= 1
+                    if idx == -1:
+                        break
+                score = model.predict(
+                    np.array([u]),
+                    np.array([seq]),
+                    np.array([time_matrix]),
+                    np.array(items),
+                )
+                score = np.array(
+                    score.flatten().to(torch.device("cpu")).detach().numpy() * -1
+                )
+                for i, item in enumerate(items):
+                    result_dic[(u, item)] = score[i]
+        predictions = []
+        for u, i in zip(user_ids, item_ids):
+            predictions.append(result_dic[(u, i)])
+        return np.array(predictions)
+
+    # implemented this due to differences in indexing, not sure if needed
+    def test_seq_predict_time(
+        self, train_seq, valid_data_df, test_data_df, model, maxlen, time_span
+    ):
+        """Make prediction for a trained model.
+
+        Args:
+            data_df (DataFrame): A dataset to be evaluated.
+            model: A trained model.
+            batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
+
+        Returns:
+            array: predicted scores.
+        """
+        valid_user_item_list = (
+            valid_data_df[valid_data_df[DEFAULT_RATING_COL] > 0]
+            .groupby([DEFAULT_USER_COL])[DEFAULT_ITEM_COL]
+            .apply(list)
+        )
+        user_item_list = test_data_df.groupby([DEFAULT_USER_COL])[
+            DEFAULT_ITEM_COL
+        ].apply(list)
+        user_ids = test_data_df[DEFAULT_USER_COL].to_numpy()
+        item_ids = test_data_df[DEFAULT_ITEM_COL].to_numpy()
+        predictions = []
+        result_dic = {}
+        with torch.no_grad():
+            for u, items in user_item_list.items():
+                if len(train_seq[u]) < 1:
+                    continue
+                seq = np.zeros([maxlen], dtype=np.int32)
+                time_seq = np.zeros([maxlen], dtype=np.int32)
+                time_matrix = computeRePos(time_seq, time_span)
+                idx = maxlen - 1
+                if u in valid_user_item_list:
+                    for i in reversed(
+                        valid_user_item_list[u]
+                    ):  # add validate item list
+                        seq[idx] = i[0]
+                        time_seq[idx] = i[1]
+                        idx -= 1
+                        if idx == -1:
+                            break
+                for i in reversed(train_seq[u]):
+                    if idx <= -1:
+                        break
+                    seq[idx] = i[0]
+                    time_seq[idx] = i[1]
+                    idx -= 1
+                    if idx == -1:
+                        break
+                score = model.predict(
+                    np.array([u]),
+                    np.array([seq]),
+                    np.array([time_matrix]),
+                    np.array(items),
+                )
+                score = np.array(
+                    score.flatten().to(torch.device("cpu")).detach().numpy() * -1
+                )
+                for i, item in enumerate(items):
+                    result_dic[(u, item)] = score[i]
+        for u, i in zip(user_ids, item_ids):
+            predictions.append(result_dic[(u, i)])
+        return np.array(predictions)
+
     def train_eval(self, valid_data_df, test_data_df, model, epoch_id=0):
         """Evaluate the performance for a (validation) dataset with multiThread.
 
@@ -416,6 +553,45 @@ class EvalEngine(object):
         valid_pred = self.seq_predict(train_seq, valid_data_df, model, maxlen)
         test_pred = self.test_seq_predict(
             train_seq, valid_data_df, test_data_df, model, maxlen
+        )
+        worker = Thread(
+            target=train_eval_worker,
+            args=(
+                self,
+                valid_data_df,
+                test_data_df,
+                valid_pred,
+                test_pred,
+                epoch_id,
+            ),
+        )
+        worker.start()
+
+    # implemented this due to differences in indexing, not sure if needed
+    def seq_train_eval_time(
+        self,
+        train_seq,
+        valid_data_df,
+        test_data_df,
+        model,
+        maxlen,
+        time_span,
+        epoch_id=0,
+    ):
+        """Evaluate the performance for a (validation) dataset with multiThread.
+
+        Args:
+            valid_data_df (DataFrame): A validation dataset.
+            test_data_df (DataFrame): A testing dataset.
+            model: trained model.
+            epoch_id: epoch_id.
+            k (int or list): top k result to be evaluate.
+        """
+        valid_pred = self.seq_predict_time(
+            train_seq, valid_data_df, model, maxlen, time_span
+        )
+        test_pred = self.test_seq_predict_time(
+            train_seq, valid_data_df, test_data_df, model, maxlen, time_span
         )
         worker = Thread(
             target=train_eval_worker,
