@@ -140,7 +140,7 @@ The following is a list of recommender models currently available in the reposit
   - [ ] Caser: [Personalized Top-N Sequential Recommendation via Convolutional Sequence Embedding
 ](https://dl.acm.org/doi/abs/10.1145/3159652.3159656), WSDM 2018
   - [ ] GRU4Rec: [Session-based recommendations with recurrent neural networks](https://arxiv.org/abs/1511.06939), ICLR 2016
-  - [ ] SasRec:[**Self**-**attentive sequential recommendation**](https://ieeexplore.ieee.org/abstract/document/8594844/?casa_token=RINDZUuHnwoAAAAA:XBjSlh6-KqBjgCY1AWwgXyZqHtT_8zAPBMKjLIUJMlf6Ex9j55gG2UAsrRtG10roMUd6-_w3Jw). ICDM 2018
+  - [x] SasRec[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1BbUuv6yZAdcQzvcmawnGnvbuZ5thipup?usp=sharing):[**Self**-**attentive sequential recommendation**](https://ieeexplore.ieee.org/abstract/document/8594844/?casa_token=RINDZUuHnwoAAAAA:XBjSlh6-KqBjgCY1AWwgXyZqHtT_8zAPBMKjLIUJMlf6Ex9j55gG2UAsrRtG10roMUd6-_w3Jw). ICDM 2018
   - [ ] MARank: [Multi-Order Attentive Ranking Model for Sequential Recommendation
 ](https://ojs.aaai.org//index.php/AAAI/article/view/4516), AAAI 2019
   - [ ] NextItnet: [A Simple Convolutional Generative Network for Next Item Recommendation
@@ -150,7 +150,7 @@ The following is a list of recommender models currently available in the reposit
 
 ### Recommendation Models with Auxiliary information
   ### Baskets/Sessions
-  - [x] Triple2vec: [Representing and recommending shopping baskets with complementarity, compatibility and loyalty](https://dl.acm.org/doi/abs/10.1145/3269206.3271786), CIKM 2018
+  - [x] Triple2vec[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/10utuVzOjsLzj2XqWUxXgZrqgEe5azv3B?usp=sharing): [Representing and recommending shopping baskets with complementarity, compatibility and loyalty](https://dl.acm.org/doi/abs/10.1145/3269206.3271786), CIKM 2018
   - [x] VBCAR[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gOW4-TVZ-Ub1fIQROcwRh1dziI86JshZ?usp=sharing): [Variational Bayesian Context-aware Representation for Grocery Recommendation](https://arxiv.org/abs/1909.07705),  arXiv’ 2019
   ### Knowledge Graph
   - [ ] KGAT: [Kgat: Knowledge graph attention network for recommendation](https://dl.acm.org/doi/abs/10.1145/3292500.3330989). SIGKDD 2019
