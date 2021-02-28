@@ -2,14 +2,11 @@
 
 """This is the core implementation of the evaluation."""
 import concurrent.futures
-import os
-import socket
 from threading import Lock, Thread
 
 import numpy as np
 import pandas as pd
 import torch
-from prometheus_client import Gauge, start_http_server
 from tensorboardX import SummaryWriter
 from tqdm.autonotebook import tqdm
 
@@ -25,31 +22,6 @@ from ..utils.seq_evaluation import mrr, ndcg, precision, recall
 
 lock_train_eval = Lock()
 lock_test_eval = Lock()
-
-
-def detect_port(port, ip="127.0.0.1"):
-    """Test whether the port is occupied.
-
-    Args:
-        port (int): port number.
-        ip (str): Ip address.
-
-    Returns:
-        True -- it's possible to listen on this port for TCP/IPv4 or TCP/IPv6
-                connections.
-        False -- otherwise.
-    """
-    ready = True
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.bind((ip, port))
-        sock.listen(5)
-        sock.close()
-    except socket.error:
-        ready = False
-        raise RuntimeError("The server is already running on port {0}".format(port))
-    finally:
-        return ready
 
 
 def computeRePos(time_seq, time_span):
@@ -250,7 +222,6 @@ class EvalEngine(object):
         self.n_worker = 0
         self.n_no_update = 0
         self.best_valid_performance = 0
-        self.init_prometheus_env()
         print("Initializing test engine ...")
 
     def flush(self):
@@ -644,72 +615,6 @@ class EvalEngine(object):
                 },
                 epoch_id,
             )
-
-    def init_prometheus_client(self):
-        """Initialize the prometheus http client."""
-        if "port" not in self.config["system"]:
-            port = 8003
-        else:
-            port = self.config["system"]["port"]
-        if detect_port(port):  # check if the port is available
-            print(f"port {port} is available. start_http_server.")
-            start_http_server(port)
-        else:
-            print(f"[Warning]: port {port} was already in use. ")
-            print(
-                "If you need to use prometheus, please check that port or specify"
-                " another port number."
-            )
-        gauges_test = {}
-        gauges_valid = {}
-        model_run_id = self.config["system"]["model_run_id"]
-        for metric in self.metrics:
-            gauges_test[metric] = Gauge(
-                metric + "_test" + f"_{model_run_id}",
-                "Model Testing Performance under " + metric,
-                self.tunable,
-            )
-            gauges_valid[metric] = Gauge(
-                metric + "_valid" + f"_{model_run_id}",
-                "Model Validation Performance under " + metric,
-                self.tunable,
-            )
-        self.gauges_test = gauges_test
-        self.gauges_valid = gauges_valid
-
-    def expose_performance(self, valid_result, test_result):
-        """Expose performance to a http_client.
-
-        Args:
-            valid_result (dict): Performance result of validation set.
-            test_result (dict): Performance result of testing set.
-        """
-        for metric in self.metrics:
-            self.gauges_valid[metric].labels(*self.labels).set(
-                valid_result[f"{metric}@{self.valid_k}"]
-            )
-            self.gauges_test[metric].labels(*self.labels).set(
-                test_result[f"{metric}@{self.valid_k}"]
-            )
-
-    def init_prometheus_env(self):
-        """Initialize prometheus environment."""
-        self.tunable = []
-        self.labels = []
-
-        for cfg in ["model", "dataset"]:
-            for col in self.config[cfg]["result_col"]:
-                self.tunable.append(col)
-                self.labels.append(self.config[cfg][col])
-
-        environs = ["objectID", "owner", "instance", "namespace", "appID"]
-        for environ in environs:
-            if environ in os.environ:
-                env_name = os.environ[environ]
-                self.tunable.append(environ)
-                self.labels.append(env_name)
-        self.labels = tuple(self.labels)
-        self.init_prometheus_client()
 
 
 class SeqEvalEngine(object):
