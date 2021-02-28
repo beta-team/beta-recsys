@@ -125,7 +125,7 @@ where the model will tune the hyper-parameters according to the specifed tuning 
 The following is a list of recommender models currently available in the repository, or to be implemented soon.
 
 ### General Models
-|Model|Paper|Colab Example|
+|Model|Paper|Colab|
 |------|------|------|
 |MF|[Neural Collaborative Filtering vs. Matrix Factorization Revisited](https://arxiv.org/abs/2005.09683), arXiv’ 2020 |[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tJX4ZTtNp6tdGer-jUQ_ZZSIf9J2MB7G?usp=sharing)|
 |GMF|Generalized Matrix Factorization, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017||
@@ -138,7 +138,7 @@ The following is a list of recommender models currently available in the reposit
 |VAECF|[Variational autoencoders for collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3178876.3186150), WWW 2018||
 
 ### Sequential Models
-|Model|Paper|Colab Example|
+|Model|Paper|Colab|
 |------|------|------|
 |NARM|[Neural Attentive Session-based Recommendation](https://arxiv.org/abs/1711.04725), CIKM 2017||
 |Caser|[Personalized Top-N Sequential Recommendation via Convolutional Sequence Embedding](https://dl.acm.org/doi/abs/10.1145/3159652.3159656), WSDM 2018||
@@ -151,7 +151,7 @@ The following is a list of recommender models currently available in the reposit
 
 ### Recommendation Models with Auxiliary information
   ### Baskets/Sessions
-|Model|Paper|Colab Example|
+|Model|Paper|Colab|
 |------|------|------|
 |Triple2vec|[Representing and recommending shopping baskets with complementarity, compatibility and loyalty](https://dl.acm.org/doi/abs/10.1145/3269206.3271786), CIKM 2018|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/10utuVzOjsLzj2XqWUxXgZrqgEe5azv3B?usp=sharing)|
 |VBCAR|[Variational Bayesian Context-aware Representation for Grocery Recommendation](https://arxiv.org/abs/1909.07705),  arXiv’ 2019|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gOW4-TVZ-Ub1fIQROcwRh1dziI86JshZ?usp=sharing)|
