@@ -125,33 +125,37 @@ where the model will tune the hyper-parameters according to the specifed tuning 
 The following is a list of recommender models currently available in the repository, or to be implemented soon.
 
 ### General Models
-  - [x] MF[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tJX4ZTtNp6tdGer-jUQ_ZZSIf9J2MB7G?usp=sharing): [Neural Collaborative Filtering vs. Matrix Factorization Revisited](https://arxiv.org/abs/2005.09683), arXiv’ 2020 
-  - [x] GMF: Generalized Matrix Factorization, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017
-  - [x] MLP: Multi-Layer Perceptron, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017
-  - [x] NCF[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1-3zfUNEexpB5eoTIwDfIqgMNFLQet2vV?usp=sharing): [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031),  WWW 2017
-  - [x] CMN: [Collaborative memory network for recommendation systems](https://dl.acm.org/doi/abs/10.1145/3209978.3209991),  SIGIR 2018
-  - [x] NGCF[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1s5fEy47XUMDdCV5TEs2O3mArL4hY9pyi?usp=sharing): [Neural graph collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3331184.3331267), SIGIR 2019
-  - [x] LightGCN[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/118SkZ3mpG6gBzOgeVTs8_jVYBd4k8pOa?usp=sharing): [**LightGCN**: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126), SIGIR 2020
-  - [x] LCF: [Graph Convolutional Network for Recommendation with Low-pass Collaborative Filters](https://arxiv.org/abs/2006.15516)
-  - [ ] VAECF: [Variational autoencoders for collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3178876.3186150), WWW 2018
+|Model|Paper|Colab Example|
+|------|------|------|
+|MF|[Neural Collaborative Filtering vs. Matrix Factorization Revisited](https://arxiv.org/abs/2005.09683), arXiv’ 2020 |[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tJX4ZTtNp6tdGer-jUQ_ZZSIf9J2MB7G?usp=sharing)|
+|GMF|Generalized Matrix Factorization, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017||
+|MLP|Multi-Layer Perceptron, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017||
+|NCF|[Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031),  WWW 2017|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1-3zfUNEexpB5eoTIwDfIqgMNFLQet2vV?usp=sharing)|
+|CMN|[Collaborative memory network for recommendation systems](https://dl.acm.org/doi/abs/10.1145/3209978.3209991),  SIGIR 2018||
+|NGCF|[Neural graph collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3331184.3331267), SIGIR 2019|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1s5fEy47XUMDdCV5TEs2O3mArL4hY9pyi?usp=sharing)|
+|LightGCN|[**LightGCN**: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126), SIGIR 2020|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/118SkZ3mpG6gBzOgeVTs8_jVYBd4k8pOa?usp=sharing)|
+|LCF|[Graph Convolutional Network for Recommendation with Low-pass Collaborative Filters](https://arxiv.org/abs/2006.15516)||
+|VAECF|[Variational autoencoders for collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3178876.3186150), WWW 2018||
 
 ### Sequential Models
-  - [x] NARM: [Neural Attentive Session-based Recommendation](https://arxiv.org/abs/1711.04725), CIKM 2017
-  - [ ] Caser: [Personalized Top-N Sequential Recommendation via Convolutional Sequence Embedding
-](https://dl.acm.org/doi/abs/10.1145/3159652.3159656), WSDM 2018
-  - [ ] GRU4Rec: [Session-based recommendations with recurrent neural networks](https://arxiv.org/abs/1511.06939), ICLR 2016
-  - [x] SasRec[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1BbUuv6yZAdcQzvcmawnGnvbuZ5thipup?usp=sharing):[**Self**-**attentive sequential recommendation**](https://ieeexplore.ieee.org/abstract/document/8594844/?casa_token=RINDZUuHnwoAAAAA:XBjSlh6-KqBjgCY1AWwgXyZqHtT_8zAPBMKjLIUJMlf6Ex9j55gG2UAsrRtG10roMUd6-_w3Jw). ICDM 2018
-  - [ ] MARank: [Multi-Order Attentive Ranking Model for Sequential Recommendation
-](https://ojs.aaai.org//index.php/AAAI/article/view/4516), AAAI 2019
-  - [ ] NextItnet: [A Simple Convolutional Generative Network for Next Item Recommendation
-](https://dl.acm.org/doi/abs/10.1145/3289600.3290975), WSDM 2019
-  - [ ] BERT4Rec: [BERT4Rec: **Sequential recommendation** with **bidirectional encoder representations** from **transformer**](https://dl.acm.org/doi/abs/10.1145/3357384.3357895), CIKM 2019
-  - [ ] TiSASRec: [Time Interval Aware Self-Attention for **Sequential Recommendation**](https://dl.acm.org/doi/abs/10.1145/3336191.3371786). WSDM 2020
+|Model|Paper|Colab Example|
+|------|------|------|
+|NARM|[Neural Attentive Session-based Recommendation](https://arxiv.org/abs/1711.04725), CIKM 2017||
+|Caser|[Personalized Top-N Sequential Recommendation via Convolutional Sequence Embedding](https://dl.acm.org/doi/abs/10.1145/3159652.3159656), WSDM 2018||
+|GRU4Rec|[Session-based recommendations with recurrent neural networks](https://arxiv.org/abs/1511.06939), ICLR 2016||
+|SasRec|[**Self**-**attentive sequential recommendation**](https://ieeexplore.ieee.org/abstract/document/8594844/?casa_token=RINDZUuHnwoAAAAA:XBjSlh6-KqBjgCY1AWwgXyZqHtT_8zAPBMKjLIUJMlf6Ex9j55gG2UAsrRtG10roMUd6-_w3Jw). ICDM 2018|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1BbUuv6yZAdcQzvcmawnGnvbuZ5thipup?usp=sharing)|
+|MARank|[Multi-Order Attentive Ranking Model for Sequential Recommendation](https://ojs.aaai.org//index.php/AAAI/article/view/4516), AAAI 2019||
+|NextItnet|[A Simple Convolutional Generative Network for Next Item Recommendation](https://dl.acm.org/doi/abs/10.1145/3289600.3290975), WSDM 2019||
+|BERT4Rec|[BERT4Rec: **Sequential recommendation** with **bidirectional encoder representations** from **transformer**](https://dl.acm.org/doi/abs/10.1145/3357384.3357895), CIKM 2019||
+|TiSASRec|||
 
 ### Recommendation Models with Auxiliary information
   ### Baskets/Sessions
-  - [x] Triple2vec[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/10utuVzOjsLzj2XqWUxXgZrqgEe5azv3B?usp=sharing): [Representing and recommending shopping baskets with complementarity, compatibility and loyalty](https://dl.acm.org/doi/abs/10.1145/3269206.3271786), CIKM 2018
-  - [x] VBCAR[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gOW4-TVZ-Ub1fIQROcwRh1dziI86JshZ?usp=sharing): [Variational Bayesian Context-aware Representation for Grocery Recommendation](https://arxiv.org/abs/1909.07705),  arXiv’ 2019
+|Model|Paper|Colab Example|
+|------|------|------|
+|Triple2vec|[Representing and recommending shopping baskets with complementarity, compatibility and loyalty](https://dl.acm.org/doi/abs/10.1145/3269206.3271786), CIKM 2018|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/10utuVzOjsLzj2XqWUxXgZrqgEe5azv3B?usp=sharing)|
+|VBCAR|[Variational Bayesian Context-aware Representation for Grocery Recommendation](https://arxiv.org/abs/1909.07705),  arXiv’ 2019|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gOW4-TVZ-Ub1fIQROcwRh1dziI86JshZ?usp=sharing)|
+|T-VBR|||
   ### Knowledge Graph
   - [ ] KGAT: [Kgat: Knowledge graph attention network for recommendation](https://dl.acm.org/doi/abs/10.1145/3292500.3330989). SIGKDD 2019
 
