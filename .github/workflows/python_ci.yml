@@ -70,7 +70,7 @@ jobs:
     - name: Lint with flake8
       run: |
         # install flake8 checking tools dependencies
-        pip install flake8==3.7.9,black==20.8b1,flake8-black==0.2.1
+        pip install flake8==3.7.9 black==20.8b1 flake8-black==0.2.1
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select BLK --show-source --statistics
         # --exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
@@ -80,7 +80,7 @@ jobs:
     - name: Test with pytest
       run: |
         # install flake8 checking tools dependencies
-        pip install pytest==5.4.1, pytest-cov==2.8.1
+        pip install pytest==5.4.1 pytest-cov==2.8.1
         python -m pytest --cov-report=xml --cov=./
     - name: Check import foramt
       run: |
