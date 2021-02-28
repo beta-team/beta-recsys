@@ -2,8 +2,6 @@
 
 """This is the core implementation of the evaluation."""
 import concurrent.futures
-import os
-import socket
 from threading import Lock, Thread
 
 import numpy as np

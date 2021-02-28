@@ -1,5 +1,5 @@
 requests==2.24.0
-tensorboardX==2.1
+tensorboardX>=2.1
 ray==1.0.1
 torch>=1.7.1
 numpy>=1.16.0
