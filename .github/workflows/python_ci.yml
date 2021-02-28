@@ -69,6 +69,8 @@ jobs:
         pip install -r requirements.txt
     - name: Lint with flake8
       run: |
+        # install flake8 checking tools dependencies
+        pip install flake8==3.7.9,black==20.8b1,flake8-black==0.2.1
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select BLK --show-source --statistics
         # --exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
@@ -77,14 +79,18 @@ jobs:
         # flake8_nb --count --exclude=*/*.py,*.ipynb_checkpoints* --ignore=E402,W503,W504,E203,C901,I001,I003,I004,I100,I101,I201,I202,D100 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+        # install flake8 checking tools dependencies
+        pip install pytest==5.4.1, pytest-cov==2.8.1
         python -m pytest --cov-report=xml --cov=./
     - name: Check import foramt
       run: |
         # use isort to check
+        pip install flake8-isort==4.0.0
         isort . --check-only --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=88
     - name: Check rst file syntax
       run: |
         # use rstcheck
+        pip install flake8-docstrings==1.5.0
         rstcheck docs/notes/*.rst -r
     - uses: codecov/codecov-action@v1
       with:
