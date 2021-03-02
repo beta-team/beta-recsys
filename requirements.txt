@@ -18,3 +18,4 @@ tabulate~=0.8.7
 py7zr~=0.6
 rstcheck~=3.3.1
 munch==2.5.0
+sphinx_markdown_tables~=0.0.14
