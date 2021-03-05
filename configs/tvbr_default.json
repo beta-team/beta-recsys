@@ -1,0 +1,88 @@
+{
+    "system": {
+        "root_dir": "../",
+        "log_dir": "logs/",
+        "result_dir": "results/",
+        "process_dir": "processes/",
+        "checkpoint_dir": "checkpoints/",
+        "dataset_dir": "datasets/",
+        "run_dir": "runs/",
+        "tune_dir": "tune_results/",
+        "device": "gpu",
+        "seed": 2020,
+        "metrics": [
+            "ndcg",
+            "precision",
+            "recall",
+            "map"
+        ],
+        "k": [
+            5,
+            10,
+            20
+        ],
+        "valid_metric": "ndcg",
+        "valid_k": 10,
+        "result_file": "tvbr_result.csv",
+        "save_mode": "average"
+    },
+    "dataset": {
+        "dataset": "tafeng",
+        "data_split": "temporal",
+        "item_fea_type": "random",
+        "download": false,
+        "random": false,
+        "test_rate": 0.2,
+        "by_user": false,
+        "n_test": 1,
+        "n_negative": 100,
+        "result_col": [
+            "dataset",
+            "data_split",
+            "test_rate",
+            "n_negative",
+            "item_fea_type"
+        ]
+    },
+    "model": {
+        "model": "TVBR",
+        "config_id": "default",
+        "n_sample": 100000,
+        "emb_dim": 64,
+        "late_dim": 256,
+        "feature_type": "random",
+        "n_neg": 5,
+        "time_step": 10,
+        "lr": 0.0005,
+        "alpha": 0.001,
+        "batch_size": 256,
+        "batch_eval": true,
+        "dropout": 0.0,
+        "optimizer": "rmsprop",
+        "activator": "tanh",
+        "l2_regularization": 0.01,
+        "max_epoch": 200,
+        "max_n_update": 20,
+        "save_name": "tvbr.model",
+        "result_col": [
+            "model",
+            "emb_dim",
+            "late_dim",
+            "batch_size",
+            "n_sample",
+            "optimizer",
+            "lr",
+            "alpha"
+        ]
+    },
+    "tunable": [
+        {
+            "name": "lr",
+            "type": "choice",
+            "values": [
+                0.0005,
+                0.00025
+            ]
+        }
+    ]
+}
