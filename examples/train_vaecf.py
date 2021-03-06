@@ -28,7 +28,10 @@ def parse_args():
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     parser.add_argument(
-        "--root_dir", nargs="?", type=str, help="Root path of the project",
+        "--root_dir", 
+        nargs="?", 
+        type=str, 
+        help="Root path of the project",
     )
     # If the following settings are specified with command line,
     # These settings will used to update the parameters received from the config file.
@@ -67,10 +70,10 @@ def parse_args():
 
 
 class VAECF_train(TrainEngine):
-    """VAECF_train Class."""
+    """MF_train Class."""
 
     def __init__(self, args):
-        """Initialize VAECF_train Class."""
+        """Initialize MF_train Class."""
         print(args)
         super(VAECF_train, self).__init__(args)
 
