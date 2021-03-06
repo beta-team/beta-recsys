@@ -248,8 +248,7 @@ class BaseData(object):
         )
         print(f"Making PairwiseNegativeDataset of length {len(dataset)}")
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
-    
-    
+
     def instance_vae_loader(self, device):
         """Instance a train DataLoader that have rating."""
         users = list(self.train[DEFAULT_USER_COL])
@@ -265,7 +264,8 @@ class BaseData(object):
         user_indices = np.fromiter(uids, dtype=np.int)
 
         matrix = csr_matrix(
-            (ratings, (users, items)), shape=(self.n_users, self.n_items),
+            (ratings, (users, items)),
+            shape=(self.n_users, self.n_items),
         )
         print(f"Making RatingDataset of length {len(dataset)}")
         return user_indices, matrix
