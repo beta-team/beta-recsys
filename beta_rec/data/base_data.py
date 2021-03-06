@@ -251,7 +251,7 @@ class BaseData(object):
     
     def instance_vae_loader(self, device):
         """Instance a train DataLoader that have rating.
-        Generate a csr format sparse matrix of the interaction data
+        Generate a csr format sparse matrix of the interaction data.
         """
         users = list(self.train[DEFAULT_USER_COL])
         items = list(self.train[DEFAULT_ITEM_COL])
