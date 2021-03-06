@@ -249,6 +249,7 @@ class BaseData(object):
         print(f"Making PairwiseNegativeDataset of length {len(dataset)}")
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
     
+    
     def instance_vae_loader(self, device):
         """Instance a train DataLoader that have rating."""
         users = list(self.train[DEFAULT_USER_COL])
