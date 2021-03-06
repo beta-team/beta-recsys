@@ -12,6 +12,7 @@ from ray import tune
 from tabulate import tabulate
 from tqdm import tqdm
 
+from ..core.config import find_config
 from ..core.eval_engine import EvalEngine
 from ..data.base_data import BaseData
 from ..datasets.data_load import load_split_dataset
@@ -86,8 +87,9 @@ class TrainEngine(object):
         * Initialize logging.
         """
         # Load config file from json
-        with open(self.args.config_file) as config_params:
-            print(f"loading config file {self.args.config_file}")
+        config_file = find_config(self.args.config_file)
+        with open(config_file) as config_params:
+            print(f"loading config file {config_file}")
             config = json.load(config_params)
 
         # Update configs based on the received args from the command line .
@@ -237,6 +239,70 @@ class TrainEngine(object):
             else:
                 self.eval_engine.train_eval(valid_df, test_df, engine.model, epoch)
 
+    def _seq_train(
+        self, engine, train_loader, save_dir, train_seq, valid_df=None, test_df=None
+    ):
+        self.eval_engine.flush()
+        epoch_bar = tqdm(range(self.config["model"]["max_epoch"]), file=sys.stdout)
+        for epoch in epoch_bar:
+            print("Epoch {} starts !".format(epoch))
+            print("-" * 80)
+            if self.check_early_stop(engine, save_dir, epoch):
+                break
+            engine.train_an_epoch(train_loader, epoch_id=epoch)
+            """evaluate model on validation and test sets"""
+            if (valid_df is None) & (test_df is None):
+                self.eval_engine.seq_train_eval(
+                    train_seq,
+                    self.data.valid[0],
+                    self.data.test[0],
+                    engine.model,
+                    self.config["model"]["maxlen"],
+                    epoch,
+                )
+            else:
+                self.eval_engine.seq_train_eval(
+                    train_seq,
+                    valid_df,
+                    test_df,
+                    engine.model,
+                    self.config["model"]["maxlen"],
+                    epoch,
+                )
+
+    def _seq_train_time(
+        self, engine, train_loader, save_dir, train_seq, valid_df=None, test_df=None
+    ):
+        self.eval_engine.flush()
+        epoch_bar = tqdm(range(self.config["model"]["max_epoch"]), file=sys.stdout)
+        for epoch in epoch_bar:
+            print("Epoch {} starts !".format(epoch))
+            print("-" * 80)
+            if self.check_early_stop(engine, save_dir, epoch):
+                break
+            engine.train_an_epoch(train_loader, epoch_id=epoch)
+            """evaluate model on validation and test sets"""
+            if (valid_df is None) & (test_df is None):
+                self.eval_engine.seq_train_eval_time(
+                    train_seq,
+                    self.data.valid[0],
+                    self.data.test[0],
+                    engine.model,
+                    self.config["model"]["maxlen"],
+                    self.config["model"]["time_span"],
+                    epoch,
+                )
+            else:
+                self.eval_engine.seq_train_eval_time(
+                    train_seq,
+                    valid_df,
+                    test_df,
+                    engine.model,
+                    self.config["model"]["maxlen"],
+                    self.config["model"]["time_span"],
+                    epoch,
+                )
+
     def tune(self, runable):
         """Tune parameters using ray.tune."""
         config = vars(self.args)
@@ -263,7 +329,6 @@ class TrainEngine(object):
             config=config,
             local_dir=self.config["system"]["tune_dir"],
             # temp_dir=self.config["system"]["tune_dir"] + "/temp",
-            resources_per_trial={"cpu": 3},
         )
         df = analysis.dataframe()
         tune_result_dir = os.path.join(

@@ -55,7 +55,7 @@
             "name": "ncf",
             "save_name": "ncf.model"
         },
-        "save_name": "vbcar.model",
+        "save_name": "ncf.model",
         "result_col": ["model","emb_dim","batch_size","optimizer","lr"]
     },
     "tunable": [

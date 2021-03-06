@@ -54,10 +54,16 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument(
-        "--root_dir", nargs="?", type=str, help="working directory",
+        "--root_dir",
+        nargs="?",
+        type=str,
+        help="working directory",
     )
     parser.add_argument(
-        "--toy", nargs="?", type=int, help="working directory",
+        "--toy",
+        nargs="?",
+        type=int,
+        help="working directory",
     )
     return parser.parse_args()
 

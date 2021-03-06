@@ -379,10 +379,12 @@ def random_split(data, test_rate=0.1, by_user=False):
             test_size = math.ceil(total_size * test_rate)
             train_size = total_size - test_size
             data.loc[
-                interactions[train_size:], DEFAULT_FLAG_COL,
+                interactions[train_size:],
+                DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
-                interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+                interactions[train_size - validate_size : train_size],
+                DEFAULT_FLAG_COL,
             ] = "validate"
 
     else:
@@ -394,10 +396,12 @@ def random_split(data, test_rate=0.1, by_user=False):
         train_size = total_size - test_size
 
         data.loc[
-            interactions[train_size:], DEFAULT_FLAG_COL,
+            interactions[train_size:],
+            DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
-            interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+            interactions[train_size - validate_size : train_size],
+            DEFAULT_FLAG_COL,
         ] = "validate"
     return data
 
@@ -428,7 +432,8 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
             test_size = math.ceil(total_size * test_rate)
             train_size = total_size - test_size
             data.loc[
-                data[DEFAULT_ORDER_COL].isin(orders[train_size:]), DEFAULT_FLAG_COL,
+                data[DEFAULT_ORDER_COL].isin(orders[train_size:]),
+                DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
@@ -445,7 +450,8 @@ def random_basket_split(data, test_rate=0.1, by_user=False):
         test_size = math.ceil(total_size * test_rate)
         train_size = total_size - test_size
         data.loc[
-            data[DEFAULT_ORDER_COL].isin(orders[train_size:]), DEFAULT_FLAG_COL,
+            data[DEFAULT_ORDER_COL].isin(orders[train_size:]),
+            DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(
@@ -538,10 +544,12 @@ def temporal_split(data, test_rate=0.1, by_user=False):
             train_size = total_size - test_size
 
             data.loc[
-                interactions[train_size:], DEFAULT_FLAG_COL,
+                interactions[train_size:],
+                DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
-                interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+                interactions[train_size - validate_size : train_size],
+                DEFAULT_FLAG_COL,
             ] = "validate"
 
     else:
@@ -552,10 +560,12 @@ def temporal_split(data, test_rate=0.1, by_user=False):
         train_size = total_size - test_size
 
         data.loc[
-            interactions[train_size:], DEFAULT_FLAG_COL,
+            interactions[train_size:],
+            DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
-            interactions[train_size - validate_size : train_size], DEFAULT_FLAG_COL,
+            interactions[train_size - validate_size : train_size],
+            DEFAULT_FLAG_COL,
         ] = "validate"
     return data
 
@@ -587,7 +597,8 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
             test_size = math.ceil(total_size * test_rate)
             train_size = total_size - test_size
             data.loc[
-                data[DEFAULT_ORDER_COL].isin(orders[train_size:]), DEFAULT_FLAG_COL,
+                data[DEFAULT_ORDER_COL].isin(orders[train_size:]),
+                DEFAULT_FLAG_COL,
             ] = "test"  # the last test_rate of the total orders to be the test set
             data.loc[
                 data[DEFAULT_ORDER_COL].isin(
@@ -602,7 +613,8 @@ def temporal_basket_split(data, test_rate=0.1, by_user=False):
         test_size = math.ceil(total_size * test_rate)
         train_size = total_size - test_size
         data.loc[
-            data[DEFAULT_ORDER_COL].isin(orders[train_size:]), DEFAULT_FLAG_COL,
+            data[DEFAULT_ORDER_COL].isin(orders[train_size:]),
+            DEFAULT_FLAG_COL,
         ] = "test"  # the last test_rate of the total orders to be the test set
         data.loc[
             data[DEFAULT_ORDER_COL].isin(

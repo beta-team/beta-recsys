@@ -1,9 +1,10 @@
 import pathlib
+from glob import glob
 
 import pkg_resources
 from setuptools import find_packages, setup
 
-__version__ = "0.2.2"
+__version__ = "0.3.2" ""
 url = "https://github.com/beta-team/beta-recsys"
 
 # The directory containing this file
@@ -31,9 +32,10 @@ setup(
     url=url,
     download_url="{}/archive/{}.tar.gz".format(url, __version__),
     keywords=["pytorch", "recommender system", "recommendations"],
-    python_requires=">=3.7",
+    python_requires=">=3.6.9",
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
     packages=find_packages(),
+    data_files=[("beta_rec", glob("configs/*"))],  # source_dir only - not recursive
 )
