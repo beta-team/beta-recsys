@@ -28,9 +28,9 @@ def parse_args():
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     parser.add_argument(
-        "--root_dir", 
-        nargs="?", 
-        type=str, 
+        "--root_dir",
+        nargs="?",
+        type=str,
         help="Root path of the project",
     )
     # If the following settings are specified with command line,
