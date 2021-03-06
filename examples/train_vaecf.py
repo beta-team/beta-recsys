@@ -33,8 +33,6 @@ def parse_args():
         type=str,
         help="Root path of the project",
     )
-    # If the following settings are specified with command line,
-    # These settings will used to update the parameters received from the config file.
     parser.add_argument(
         "--dataset",
         nargs="?",
@@ -64,32 +62,32 @@ def parse_args():
         "--emb_dim",
         nargs="?",
         type=int,
-        help="Dimension of the embedding."
+        help="Dimension of the embedding",
     )
     parser.add_argument(
         "--lr",
         nargs="?",
         type=float,
-        help="Initial learning rate.")
+        help="Initial learning rate")
     parser.add_argument(
         "--max_epoch",
         nargs="?",
         type=int,
-        help="Number of max epoch.")
+        help="Number of max epoch")
     parser.add_argument(
         "--batch_size",
         nargs="?",
         type=int,
-        help="Batch size for training."
+        help="Batch size for training"
     )
     return parser.parse_args()
 
 
 class VAECF_train(TrainEngine):
-    """MF_train Class."""
+    """VAECF_train Class."""
 
     def __init__(self, args):
-        """Initialize MF_train Class."""
+        """Initialize VAECF_train Class."""
         print(args)
         super(VAECF_train, self).__init__(args)
 
