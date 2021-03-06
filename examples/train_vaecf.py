@@ -48,23 +48,39 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument(
-        "--tune", nargs="?", default=False, type=str2bool, help="Tun parameter",
+        "--tune",
+        nargs="?",
+        default=False,
+        type=str2bool,
+        help="Tun parameter",
     )
     parser.add_argument(
-        "--device", nargs="?", type=str, help="Device",
+        "--device",
+        nargs="?",
+        type=str,
+        help="Device",
     )
-
     parser.add_argument(
-        "--remark", nargs="?", type=str, help="remark",
+        "--emb_dim",
+        nargs="?",
+        type=int,
+        help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
-    )
-    parser.add_argument("--lr", nargs="?", type=float, help="Initial learning rate.")
-    parser.add_argument("--reg", nargs="?", type=float, help="regularization.")
-    parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
+        "--lr",
+        nargs="?",
+        type=float,
+        help="Initial learning rate.")
     parser.add_argument(
-        "--batch_size", nargs="?", type=int, help="Batch size for training."
+        "--max_epoch",
+        nargs="?",
+        type=int,
+        help="Number of max epoch.")
+    parser.add_argument(
+        "--batch_size",
+        nargs="?",
+        type=int,
+        help="Batch size for training."
     )
     return parser.parse_args()
 
