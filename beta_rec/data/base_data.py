@@ -249,8 +249,10 @@ class BaseData(object):
         print(f"Making PairwiseNegativeDataset of length {len(dataset)}")
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
     
-    def instance_vae_loader(self, batch_size, device):
-        """Instance a train DataLoader that have rating."""
+    def instance_vae_loader(self, device):
+        """Instance a train DataLoader that have rating.
+        Generate a csr format sparse matrix of the interaction data
+        """
         users = list(self.train[DEFAULT_USER_COL])
         items = list(self.train[DEFAULT_ITEM_COL])
         ratings = list(self.train[DEFAULT_RATING_COL])
