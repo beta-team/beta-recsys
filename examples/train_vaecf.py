@@ -68,12 +68,14 @@ def parse_args():
         "--lr",
         nargs="?",
         type=float,
-        help="Initial learning rate")
+        help="Initial learning rate"
+    )
     parser.add_argument(
         "--max_epoch",
         nargs="?",
         type=int,
-        help="Number of max epoch")
+        help="Number of max epoch"
+    )
     parser.add_argument(
         "--batch_size",
         nargs="?",
