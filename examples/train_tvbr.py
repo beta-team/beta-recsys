@@ -11,7 +11,6 @@ from tqdm import tqdm
 
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.tvbr import TVBREngine
-from beta_rec.utils.common_util import update_args
 from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
@@ -22,7 +21,7 @@ def parse_args():
     Returns:
         args object.
     """
-    parser = argparse.ArgumentParser(description="Run VBCAR..")
+    parser = argparse.ArgumentParser(description="Run T-VBR..")
     parser.add_argument(
         "--config_file",
         nargs="?",
@@ -153,8 +152,6 @@ def tune_train(config):
 
 if __name__ == "__main__":
     args = parse_args()
-    config = {}
-    update_args(config, args)
-    tvbr = TVBR_train(config)
+    tvbr = TVBR_train(args)
     tvbr.train()
     tvbr.test()
