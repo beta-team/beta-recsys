@@ -3,6 +3,7 @@ import random
 import numpy as np
 import pandas as pd
 import torch
+from scipy.sparse import csr_matrix
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 
@@ -247,3 +248,24 @@ class BaseData(object):
         )
         print(f"Making PairwiseNegativeDataset of length {len(dataset)}")
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    def instance_vae_loader(self, device):
+        """Instance a train DataLoader that have rating."""
+        users = list(self.train[DEFAULT_USER_COL])
+        items = list(self.train[DEFAULT_ITEM_COL])
+        ratings = list(self.train[DEFAULT_RATING_COL])
+
+        dataset = RatingDataset(
+            user_tensor=torch.LongTensor(users).to(device),
+            item_tensor=torch.LongTensor(items).to(device),
+            target_tensor=torch.FloatTensor(ratings).to(device),
+        )
+        uids = self.user_id_pool
+        user_indices = np.fromiter(uids, dtype=np.int)
+
+        matrix = csr_matrix(
+            (ratings, (users, items)),
+            shape=(self.n_users, self.n_items),
+        )
+        print(f"Making RatingDataset of length {len(dataset)}")
+        return user_indices, matrix
