@@ -37,5 +37,5 @@ setup(
     setup_requires=setup_requires,
     tests_require=tests_require,
     packages=find_packages(),
-    data_files=[("beta_rec", glob("configs/*"))],  # source_dir only - not recursive
+    data_files=[("configs", glob("configs/*"))],  # source_dir only - not recursive
 )

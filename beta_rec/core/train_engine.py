@@ -130,7 +130,7 @@ class TrainEngine(object):
         logger.init_std_logger(config["system"]["log_file"])
 
         print("Python version:", sys.version)
-        print("pytorch version:", torch.__version__)
+        print("Pytorch version:", torch.__version__)
 
         #  File paths to be saved
         config["model"]["run_dir"] = os.path.join(
