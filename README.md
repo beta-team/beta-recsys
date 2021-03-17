@@ -136,6 +136,9 @@ The following is a list of recommender models currently available in the reposit
 |LightGCN|[**LightGCN**: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126), SIGIR 2020|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/118SkZ3mpG6gBzOgeVTs8_jVYBd4k8pOa?usp=sharing)|
 |LCF|[Graph Convolutional Network for Recommendation with Low-pass Collaborative Filters](https://arxiv.org/abs/2006.15516)||
 |VAECF|[Variational autoencoders for collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3178876.3186150), WWW 2018||
+|UserKNN|User-based K-Nearest Neighbour Recommender in [Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering](https://dl.acm.org/doi/10.1145/1401890.1401944), KDD 2008||
+|ItemKNN|Item-based K-Nearest Neighbour Recommender in [Item-Based Collaborative Filtering Recommendation](https://dl.acm.org/doi/10.1145/371920.372071), WWW 2001||
+
 
 ### Sequential Models
 |Model|Paper|Colab|
