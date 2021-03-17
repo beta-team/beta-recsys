@@ -14,7 +14,8 @@
         "k": [5, 10],
         "valid_metric": "ndcg",
         "valid_k": 10,
-        "result_file": "result.csv"
+        "result_file": "result.csv",
+        "save_mode": "average"
     },
     "dataset": {
         "dataset": "ml_100k",
@@ -39,8 +40,9 @@
         "lr": 0.01,
         "device": "gpu",
         "optimizer": "adam",
-        "num_epoch": 10,
-        "max_epoch": 10,
+        "num_epoch": 200,
+        "max_epoch": 200,
+        "max_n_update": 20,
         "hidden_size": 100, 
         "n_layers": 1,
         "dropout_input": 0.25,

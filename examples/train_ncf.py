@@ -52,10 +52,16 @@ def parse_args():
         help="Options are: leave_one_out and temporal",
     )
     parser.add_argument(
-        "--root_dir", nargs="?", type=str, help="Working directory",
+        "--root_dir",
+        nargs="?",
+        type=str,
+        help="Working directory",
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str2bool, help="Tune parameter",
+        "--tune",
+        nargs="?",
+        type=str2bool,
+        help="Tune parameter",
     )
     parser.add_argument(
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."

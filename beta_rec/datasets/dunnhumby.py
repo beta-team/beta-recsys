@@ -120,14 +120,16 @@ class Dunnhumby(DatasetBase):
         convert it to a dataframe consist of the user-item interaction
         and save in the processed directory
         """
-        file_name = os.path.join(self.raw_path, "dunnhumby.zip")
-        if not os.path.exists(file_name):
-            print("Raw file doesn't exist, try to download it.")
-            self.download()
         zip_file_name = os.path.join(self.raw_path, "dunnhumby.zip")
         unzip_file_name = os.path.join(self.raw_path, "unzip")
-        if not os.path.exists(unzip_file_name):
-            un_zip(zip_file_name, unzip_file_name)
+        if not os.path.exists(os.path.join(unzip_file_name, "transaction_data.csv")):
+            file_name = os.path.join(self.raw_path, "dunnhumby.zip")
+            if not os.path.exists(file_name):
+                print("Raw file doesn't exist, try to download it.")
+                self.download()
+            if not os.path.exists(unzip_file_name):
+                print(zip_file_name)
+                un_zip(zip_file_name, unzip_file_name)
 
         if not os.path.exists(
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz")

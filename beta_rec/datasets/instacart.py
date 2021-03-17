@@ -32,8 +32,8 @@ INSTACART_LEAVE_ONE_OUT_URL = (
 INSTACART_TIPS = """
     Instacart dataset can not be downloaded by this url automatically, and you need to do:
     1. Download this dataset via 'https://www.kaggle.com/c/instacart-market-basket-analysis/data',
-    2. Put 'instacart-market-basket-analysis.zip' into the directory `instacart/raw/instacart`,
-    3. Unzip 'instacart-market-basket-analysis.zip',
+    2. Put 'instacart-market-basket-analysis.zip' into the directory `instacart/raw/`,
+    3. Unzip 'instacart-market-basket-analysis.zip', put all the *.csv files into 'instacart/raw/'.
     4. Rerun this program.
 """
 
@@ -85,10 +85,10 @@ class Instacart(DatasetBase):
 
         print("Start loading data from raw data")
         order_products_prior_file = os.path.join(
-            self.raw_path, self.dataset_name, "order_products__prior.csv"
+            self.raw_path, "order_products__prior.csv"
         )
         order_products_train_file = os.path.join(
-            self.raw_path, self.dataset_name, "order_products__train.csv"
+            self.raw_path, "order_products__train.csv"
         )
         if not os.path.exists(order_products_prior_file) or not os.path.exists(
             order_products_train_file
@@ -96,7 +96,7 @@ class Instacart(DatasetBase):
             print("Raw file doesn't exist, try to download it.")
             self.download()
 
-        orders_file = os.path.join(self.raw_path, self.dataset_name, "orders.csv")
+        orders_file = os.path.join(self.raw_path, "orders.csv")
 
         #  order_products__*.csv: order_id,product_id,add_to_cart_order,reordered
         prior_products = pd.read_csv(
@@ -161,7 +161,11 @@ class Instacart_25(DatasetBase):
     """
 
     def __init__(
-        self, dataset_name="instacart_25", min_u_c=0, min_i_c=3, min_o_c=0,
+        self,
+        dataset_name="instacart_25",
+        min_u_c=0,
+        min_i_c=3,
+        min_o_c=0,
     ):
         """Init Instacart_25 Class."""
         super().__init__(
@@ -192,20 +196,20 @@ class Instacart_25(DatasetBase):
 
         print("Start loading data from raw data")
         order_products_prior_file = os.path.join(
-            self.raw_path, self.dataset_name, "order_products__prior.csv"
+            self.raw_path, "order_products__prior.csv"
         )
         order_products_train_file = os.path.join(
-            self.raw_path, self.dataset_name, "order_products__train.csv"
+            self.raw_path, "order_products__train.csv"
         )
         if not os.path.exists(order_products_prior_file) or not os.path.exists(
             order_products_train_file
         ):
             print("Raw file doesn't exist, try to download it.")
             self.download()
-            file_name = os.path.join(self.raw_path, self.dataset_name + ".gz")
+            file_name = os.path.join(self.raw_path + ".gz")
             un_zip(file_name)
 
-        orders_file = os.path.join(self.raw_path, self.dataset_name, "orders.csv")
+        orders_file = os.path.join(self.raw_path, "orders.csv")
 
         #  order_products__*.csv: order_id,product_id,add_to_cart_order,reordered
         prior_products = pd.read_csv(

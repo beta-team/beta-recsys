@@ -24,15 +24,18 @@ class ModelEngine(object):
         """Set optimizer in the model."""
         if self.config["model"]["optimizer"] == "sgd":
             self.optimizer = torch.optim.SGD(
-                self.model.parameters(), lr=self.config["model"]["lr"],
+                self.model.parameters(),
+                lr=self.config["model"]["lr"],
             )
         elif self.config["model"]["optimizer"] == "adam":
             self.optimizer = torch.optim.Adam(
-                self.model.parameters(), lr=self.config["model"]["lr"],
+                self.model.parameters(),
+                lr=self.config["model"]["lr"],
             )
         elif self.config["model"]["optimizer"] == "rmsprop":
             self.optimizer = torch.optim.RMSprop(
-                self.model.parameters(), lr=self.config["model"]["lr"],
+                self.model.parameters(),
+                lr=self.config["model"]["lr"],
             )
 
     def set_device(self):

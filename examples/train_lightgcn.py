@@ -14,7 +14,6 @@ from beta_rec.core.train_engine import TrainEngine
 from beta_rec.data.deprecated_data_base import DataLoaderBase
 from beta_rec.models.lightgcn import LightGCNEngine
 from beta_rec.utils.common_util import DictToObject
-from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 
 
@@ -38,7 +37,11 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str, default=True, help="Tun parameter",
+        "--tune",
+        nargs="?",
+        type=str,
+        default=True,
+        help="Tun parameter",
     )
     parser.add_argument(
         "--keep_pro", nargs="?", type=float, help="dropout", default=0.6
@@ -76,7 +79,7 @@ class LightGCN_train(TrainEngine):
         super(LightGCN_train, self).__init__(config)
         self.load_dataset()
         self.build_data_loader()
-        self.engine = LightGCNEngine(self.config["model"])
+        self.engine = LightGCNEngine(self.config)
 
     def build_data_loader(self):
         """Missing Doc."""
@@ -87,9 +90,6 @@ class LightGCN_train(TrainEngine):
         )
         norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj_mat)
         self.config["model"]["norm_adj"] = norm_adj
-        self.config["model"]["num_batch"] = (
-            self.data.n_train // self.config["model"]["batch_size"] + 1
-        )
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
 
@@ -101,6 +101,7 @@ class LightGCN_train(TrainEngine):
         self.model_save_dir = os.path.join(
             self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
         )
+        self.max_n_update = self.config["model"]["max_n_update"]
         for epoch in range(self.config["model"]["max_epoch"]):
             print(f"Epoch {epoch} starts !")
             print("-" * 80)
@@ -108,10 +109,10 @@ class LightGCN_train(TrainEngine):
                 # previous epoch have already obtained better result
                 self.engine.save_checkpoint(model_dir=self.model_save_dir)
 
-            if self.eval_engine.n_no_update >= MAX_N_UPDATE:
+            if self.eval_engine.n_no_update >= self.max_n_update:
                 print(
                     "Early stop criterion triggered, no performance update for {:} times".format(
-                        MAX_N_UPDATE
+                        self.max_n_update
                     )
                 )
                 break

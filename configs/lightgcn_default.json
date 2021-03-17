@@ -14,7 +14,8 @@
         "k": [5, 10, 20],
         "valid_metric": "ndcg",
         "valid_k": 10,
-        "result_file": "lightgcn_result.csv"
+        "result_file": "lightgcn_result.csv",
+        "save_mode": "average"
     },
     "dataset": {
         "dataset": "ml_100k",
@@ -39,7 +40,8 @@
         "lr": 0.05,
         "device": "gpu",
         "optimizer": "adam",
-        "max_epoch": 50,
+        "max_epoch": 200,
+        "max_n_update": 20,
         "save_name": "lightgcn.model"
     },
     "tunable": [

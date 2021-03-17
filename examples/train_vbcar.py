@@ -15,7 +15,6 @@ from tqdm import tqdm
 from beta_rec.core.train_engine import TrainEngine
 from beta_rec.models.vbcar import VBCAREngine
 from beta_rec.utils.common_util import DictToObject, str2bool
-from beta_rec.utils.constants import MAX_N_UPDATE
 from beta_rec.utils.monitor import Monitor
 from beta_rec.datasets.data_load import load_split_dataset
 from beta_rec.data.grocery_data import GroceryData
@@ -54,7 +53,10 @@ def parse_args():
         "--n_sample", nargs="?", type=int, help="Number of sampled triples."
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str2bool, help="Tune parameter",
+        "--tune",
+        nargs="?",
+        type=str2bool,
+        help="Tune parameter",
     )
     parser.add_argument("--sub_set", nargs="?", type=int, help="Subset of dataset.")
     parser.add_argument(
@@ -67,7 +69,10 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--late_dim", nargs="?", type=int, help="Dimension of the latent layers.",
+        "--late_dim",
+        nargs="?",
+        type=int,
+        help="Dimension of the latent layers.",
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Intial learning rate.")
     parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
@@ -116,6 +121,7 @@ class VBCAR_train(TrainEngine):
         )
         print("Start training... ")
         epoch_bar = tqdm(range(self.config["model"]["max_epoch"]), file=sys.stdout)
+        self.max_n_update = self.config["model"]["max_n_update"]
         for epoch in epoch_bar:
             print(f"Epoch {epoch} starts !")
             print("-" * 80)
@@ -127,10 +133,10 @@ class VBCAR_train(TrainEngine):
                     )
                 )
 
-            if self.eval_engine.n_no_update >= MAX_N_UPDATE:
+            if self.eval_engine.n_no_update >= self.max_n_update:
                 print(
                     "Early stop criterion triggered, no performance update for {:} times".format(
-                        MAX_N_UPDATE
+                        self.max_n_update
                     )
                 )
                 break

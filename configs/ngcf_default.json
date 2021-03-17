@@ -14,7 +14,8 @@
         "k": [5, 10, 20],
         "valid_metric": "ndcg",
         "valid_k": 10,
-        "result_file": "ngcf_result.csv"
+        "result_file": "ngcf_result.csv",
+        "save_mode": "average"
     },
     "dataset": {
         "dataset": "ml_100k",
@@ -38,7 +39,8 @@
         "optimizer": "adam",
         "mess_dropout": [0.1, 0.1, 0.1],
         "loss": "bpr",
-        "max_epoch": 50,
+        "max_epoch": 200,
+        "max_n_update": 20,
         "save_name": "ngcf.model",
         "result_col": ["model","emb_dim","batch_size","optimizer","lr","regs"]
     },

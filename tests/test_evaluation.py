@@ -248,21 +248,27 @@ def test_python_mae(rating_true, rating_pred):
 
 def test_python_rsquared(rating_true, rating_pred):
     """Test rspquared metric."""
-    assert rsquared(
-        rating_true=rating_true,
-        rating_pred=rating_true,
-        col_prediction=DEFAULT_RATING_COL,
-    ) == pytest.approx(1.0, TOL)
+    assert (
+        rsquared(
+            rating_true=rating_true,
+            rating_pred=rating_true,
+            col_prediction=DEFAULT_RATING_COL,
+        )
+        == pytest.approx(1.0, TOL)
+    )
     assert rsquared(rating_true, rating_pred) == pytest.approx(-31.699029, TOL)
 
 
 def test_python_exp_var(rating_true, rating_pred):
     """Test exp_var metric."""
-    assert exp_var(
-        rating_true=rating_true,
-        rating_pred=rating_true,
-        col_prediction=DEFAULT_RATING_COL,
-    ) == pytest.approx(1.0, TOL)
+    assert (
+        exp_var(
+            rating_true=rating_true,
+            rating_pred=rating_true,
+            col_prediction=DEFAULT_RATING_COL,
+        )
+        == pytest.approx(1.0, TOL)
+    )
     assert exp_var(rating_true, rating_pred) == pytest.approx(-6.4466, TOL)
 
 
@@ -361,46 +367,61 @@ def test_python_precision(rating_true, rating_pred, rating_nohit):
 
 def test_python_recall(rating_true, rating_pred, rating_nohit):
     """Test recall metric."""
-    assert recall_at_k(
-        rating_true=rating_true,
-        rating_pred=rating_true,
-        col_prediction=DEFAULT_RATING_COL,
-        k=10,
-    ) == pytest.approx(1, TOL)
+    assert (
+        recall_at_k(
+            rating_true=rating_true,
+            rating_pred=rating_true,
+            col_prediction=DEFAULT_RATING_COL,
+            k=10,
+        )
+        == pytest.approx(1, TOL)
+    )
     assert recall_at_k(rating_true, rating_nohit, k=10) == 0.0
     assert recall_at_k(rating_true, rating_pred, k=10) == pytest.approx(0.37777, TOL)
 
 
 def test_python_auc(rating_true_binary, rating_pred_binary):
     """Test auc metric."""
-    assert auc(
-        rating_true=rating_true_binary,
-        rating_pred=rating_true_binary,
-        col_prediction=DEFAULT_RATING_COL,
-    ) == pytest.approx(1.0, TOL)
+    assert (
+        auc(
+            rating_true=rating_true_binary,
+            rating_pred=rating_true_binary,
+            col_prediction=DEFAULT_RATING_COL,
+        )
+        == pytest.approx(1.0, TOL)
+    )
 
-    assert auc(
-        rating_true=rating_true_binary,
-        rating_pred=rating_pred_binary,
-        col_rating=DEFAULT_RATING_COL,
-        col_prediction=DEFAULT_PREDICTION_COL,
-    ) == pytest.approx(0.75, TOL)
+    assert (
+        auc(
+            rating_true=rating_true_binary,
+            rating_pred=rating_pred_binary,
+            col_rating=DEFAULT_RATING_COL,
+            col_prediction=DEFAULT_PREDICTION_COL,
+        )
+        == pytest.approx(0.75, TOL)
+    )
 
 
 def test_python_logloss(rating_true_binary, rating_pred_binary):
     """Test logloss metric."""
-    assert logloss(
-        rating_true=rating_true_binary,
-        rating_pred=rating_true_binary,
-        col_prediction=DEFAULT_RATING_COL,
-    ) == pytest.approx(0, TOL)
+    assert (
+        logloss(
+            rating_true=rating_true_binary,
+            rating_pred=rating_true_binary,
+            col_prediction=DEFAULT_RATING_COL,
+        )
+        == pytest.approx(0, TOL)
+    )
 
-    assert logloss(
-        rating_true=rating_true_binary,
-        rating_pred=rating_pred_binary,
-        col_rating=DEFAULT_RATING_COL,
-        col_prediction=DEFAULT_PREDICTION_COL,
-    ) == pytest.approx(0.7835, TOL)
+    assert (
+        logloss(
+            rating_true=rating_true_binary,
+            rating_pred=rating_pred_binary,
+            col_rating=DEFAULT_RATING_COL,
+            col_prediction=DEFAULT_PREDICTION_COL,
+        )
+        == pytest.approx(0.7835, TOL)
+    )
 
 
 def test_python_errors(rating_true, rating_pred):

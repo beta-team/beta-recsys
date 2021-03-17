@@ -30,10 +30,13 @@ class Monitor(Thread):
         self.delay = delay  # Time between calls to GPUtil
         self.pid = os.getpid()
         self.writer = SummaryWriter(log_dir=log_dir)  # tensorboard writer
+        label = "brand"
+        if "brand_raw" in cpuinfo.get_cpu_info().keys():
+            label = "brand_raw"
         self.writer.add_text(
             "device/CPU",
             "cpu count: {:d} \t brand: {:s}".format(
-                os.cpu_count(), cpuinfo.get_cpu_info()["brand"]
+                os.cpu_count(), cpuinfo.get_cpu_info()[label]
             ),
             0,
         )
@@ -71,7 +74,9 @@ class Monitor(Thread):
         """Write CPU status."""
         CPU_load = psutil.Process(self.pid).cpu_percent(interval=1)
         self.writer.add_scalars(
-            "device/cpu", {"CPU_load (%)": CPU_load}, self.count,
+            "device/cpu",
+            {"CPU_load (%)": CPU_load},
+            self.count,
         )
         self.CPU_load.append(CPU_load)
 
@@ -81,7 +86,9 @@ class Monitor(Thread):
             psutil.Process(self.pid).memory_info()[0] / 2.0 ** 30
         )  # current app memory use in GB
         self.writer.add_scalars(
-            "device/mem", {"memory_used (GB)": memoryUsed}, self.count,
+            "device/mem",
+            {"memory_used (GB)": memoryUsed},
+            self.count,
         )
         self.memoryUsed.append(memoryUsed)
 
@@ -158,9 +165,12 @@ some static methods
 
 def print_cpu_stat():
     """Print CPU status."""
+    label = "brand"
+    if "brand_raw" in cpuinfo.get_cpu_info().keys():
+        label = "brand_raw"
     print(
         "Cpu count: {:d} \t brand: {:s}".format(
-            os.cpu_count(), cpuinfo.get_cpu_info()["brand"]
+            os.cpu_count(), cpuinfo.get_cpu_info()[label]
         )
     )
     print("Avg_load_1m: \t{:.3f}%%;".format(os.getloadavg()[0]))

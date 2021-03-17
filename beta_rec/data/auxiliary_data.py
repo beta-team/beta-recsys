@@ -19,23 +19,18 @@ class Auxiliary(object):
         self.n_items = n_items
         self.random_dim = 512
         # subset of the dataset. use a small set of users and items if >0, otherwise use full dataset
-        if "random_dim" in config:
+        if config and "random_dim" in config:
             self.random_dim = config["model"]["random_dim"]
-        self.init_item_fea()
-        self.init_user_fea()
+        # self.init_item_fea()
+        # self.init_user_fea()
 
     def init_item_fea(self):
         """Initialize item feature."""
         config = self.config
-        if "item_fea_type" in config["dataset"]:
+        if config and "item_fea_type" in config["dataset"]:
             fea_type = config["dataset"]["item_fea_type"]
         else:
             fea_type = "random"
-        data_str = config["dataset"]["dataset"]
-        print(
-            "Loading item feature for dataset:", data_str, " type:", fea_type,
-        )
-
         if fea_type == "random":
             self.item_feature = get_random_rep(self.n_items, self.random_dim)
         elif fea_type == "one_hot":
@@ -163,17 +158,11 @@ class Auxiliary(object):
 
     def init_user_fea(self):
         """Initialize user feature for VBCAR model."""
-        if "user_fea_type" in self.config["dataset"]:
+        if self.config and "user_fea_type" in self.config["dataset"]:
             fea_type = self.config["dataset"]["user_fea_type"]
         else:
             fea_type = "random"
 
-        print(
-            "init user featrue for dataset:",
-            self.config["dataset"]["dataset"],
-            " type:",
-            fea_type,
-        )
         if fea_type == "random":
             self.user_feature = get_random_rep(self.n_users, self.random_dim)
         else:

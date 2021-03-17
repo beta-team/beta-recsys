@@ -1,4 +1,4 @@
-**[Installation](#installation)** |
+|**[Installation](#installation)** |
 **[Quick Start](#installation)** |
 **[Documentation](https://beta-recsys.readthedocs.io/)** |
 **[Contributing](#contributing)** |
@@ -58,6 +58,8 @@ We also provide docker image for you to run this project on any platform. You ca
    ```
    http://localhost:8888
    ```
+   
+4. Enter `root` as the password for the notebook.
 
 ## Quick Start
 
@@ -123,46 +125,46 @@ where the model will tune the hyper-parameters according to the specifed tuning 
 The following is a list of recommender models currently available in the repository, or to be implemented soon.
 
 ### General Models
-
-  - [x] GMF: Generalized Matrix Factorization, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017
-  - [x] MLP: Multi-Layer Perceptron, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017
-  - [x] NCF: [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031),  WWW 2017
-  - [x] CMN: [Collaborative memory network for recommendation systems](https://dl.acm.org/doi/abs/10.1145/3209978.3209991),  SIGIR 2018
-  - [ ] VAECF: [Variational autoencoders for collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3178876.3186150), WWW 2018
-  - [x] NGCF: [Neural graph collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3331184.3331267), SIGIR 2019
-  - [x] LightGCN: [**LightGCN**: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126), SIGIR 2020
-  - [x] MF: [Neural Collaborative Filtering vs. Matrix Factorization Revisited](https://arxiv.org/abs/2005.09683), arXiv’ 2020
+|Model|Paper|Colab|
+|------|------|------|
+|MF|[Neural Collaborative Filtering vs. Matrix Factorization Revisited](https://arxiv.org/abs/2005.09683), arXiv’ 2020 |[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1tJX4ZTtNp6tdGer-jUQ_ZZSIf9J2MB7G?usp=sharing)|
+|GMF|Generalized Matrix Factorization, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017||
+|MLP|Multi-Layer Perceptron, in [Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031), WWW 2017||
+|NCF|[Neural Collaborative Filtering](https://arxiv.org/abs/1708.05031),  WWW 2017|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1-3zfUNEexpB5eoTIwDfIqgMNFLQet2vV?usp=sharing)|
+|CMN|[Collaborative memory network for recommendation systems](https://dl.acm.org/doi/abs/10.1145/3209978.3209991),  SIGIR 2018||
+|NGCF|[Neural graph collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3331184.3331267), SIGIR 2019|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1s5fEy47XUMDdCV5TEs2O3mArL4hY9pyi?usp=sharing)|
+|LightGCN|[**LightGCN**: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/abs/2002.02126), SIGIR 2020|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/118SkZ3mpG6gBzOgeVTs8_jVYBd4k8pOa?usp=sharing)|
+|LCF|[Graph Convolutional Network for Recommendation with Low-pass Collaborative Filters](https://arxiv.org/abs/2006.15516)||
+|VAECF|[Variational autoencoders for collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3178876.3186150), WWW 2018||
 
 ### Sequential Models
-  - [x] NARM: [Neural Attentive Session-based Recommendation](https://arxiv.org/abs/1711.04725), CIKM 2017
-  - [ ] GRU4Rec: [Session-based recommendations with recurrent neural networks](https://arxiv.org/abs/1511.06939), ICLR 2016
-  - [ ] SasRec:[**Self**-**attentive sequential recommendation**](https://ieeexplore.ieee.org/abstract/document/8594844/?casa_token=RINDZUuHnwoAAAAA:XBjSlh6-KqBjgCY1AWwgXyZqHtT_8zAPBMKjLIUJMlf6Ex9j55gG2UAsrRtG10roMUd6-_w3Jw). ICDM 2018
-  - [ ] BERT4Rec: [BERT4Rec: **Sequential recommendation** with **bidirectional encoder representations** from **transformer**](https://dl.acm.org/doi/abs/10.1145/3357384.3357895), CIKM 2019
-  - [ ] TiSASRec: [Time Interval Aware Self-Attention for **Sequential Recommendation**](https://dl.acm.org/doi/abs/10.1145/3336191.3371786). WWW 2020
+|Model|Paper|Colab|
+|------|------|------|
+|NARM|[Neural Attentive Session-based Recommendation](https://arxiv.org/abs/1711.04725), CIKM 2017||
+|Caser|[Personalized Top-N Sequential Recommendation via Convolutional Sequence Embedding](https://dl.acm.org/doi/abs/10.1145/3159652.3159656), WSDM 2018||
+|GRU4Rec|[Session-based recommendations with recurrent neural networks](https://arxiv.org/abs/1511.06939), ICLR 2016||
+|SasRec|[**Self**-**attentive sequential recommendation**](https://ieeexplore.ieee.org/abstract/document/8594844/?casa_token=RINDZUuHnwoAAAAA:XBjSlh6-KqBjgCY1AWwgXyZqHtT_8zAPBMKjLIUJMlf6Ex9j55gG2UAsrRtG10roMUd6-_w3Jw). ICDM 2018|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1BbUuv6yZAdcQzvcmawnGnvbuZ5thipup?usp=sharing)|
+|MARank|[Multi-Order Attentive Ranking Model for Sequential Recommendation](https://ojs.aaai.org//index.php/AAAI/article/view/4516), AAAI 2019||
+|NextItnet|[A Simple Convolutional Generative Network for Next Item Recommendation](https://dl.acm.org/doi/abs/10.1145/3289600.3290975), WSDM 2019||
+|BERT4Rec|[BERT4Rec: **Sequential recommendation** with **bidirectional encoder representations** from **transformer**](https://dl.acm.org/doi/abs/10.1145/3357384.3357895), CIKM 2019||
+|TiSASRec| Time Interval Aware Self-Attention for Sequential Recommendation. WSDM'20||
 
 ### Recommendation Models with Auxiliary information
   ### Baskets/Sessions
-  - [x] Triple2vec: [Representing and recommending shopping baskets with complementarity, compatibility and loyalty](https://dl.acm.org/doi/abs/10.1145/3269206.3271786), CIKM 2018
-  - [x] VBCAR: [Variational Bayesian Context-aware Representation for Grocery Recommendation](https://arxiv.org/abs/1909.07705),  arXiv’ 2019
+|Model|Paper|Colab|
+|------|------|------|
+|Triple2vec|[Representing and recommending shopping baskets with complementarity, compatibility and loyalty](https://dl.acm.org/doi/abs/10.1145/3269206.3271786), CIKM 2018|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/10utuVzOjsLzj2XqWUxXgZrqgEe5azv3B?usp=sharing)|
+|VBCAR|[Variational Bayesian Context-aware Representation for Grocery Recommendation](https://arxiv.org/abs/1909.07705),  arXiv’ 2019|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gOW4-TVZ-Ub1fIQROcwRh1dziI86JshZ?usp=sharing)|
+|TVBR|Temporal Variational Bayesian Representation Learning for Grocery Recommendation|[![Example In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1H3QU56YSrqKrqEwj_1_eYltBIA9WqB_R?usp=sharing)|
   ### Knowledge Graph
   - [ ] KGAT: [Kgat: Knowledge graph attention network for recommendation](https://dl.acm.org/doi/abs/10.1145/3292500.3330989). SIGKDD 2019
 
 > If you want your model to be implemented by our maintenance team (or by yourself), please submit an issue following our community [instruction]((#contributing)). 
 
-## Recent Changing Logs
 
-### [Version v0.2.2](https://github.com/beta-team/beta-recsys/releases/tag/v0.2.2)(2020-10-25)
 
--  Add Amazon Reviews datasets --> [link](https://beta-recsys.readthedocs.io/en/develop/notes/datasets.html)
--  New API for Recommenders. --> [notebook example](https://github.com/beta-team/beta-recsys/blob/master/examples/MF_API_test.ipynb)
--  Move the data filtering process to the main dataset classes. -->[Usage](https://beta-recsys.readthedocs.io/en/develop/notes/datasets.html#usage)
--  New feature for experiment --> [Usage](https://github.com/beta-team/beta-recsys/blob/develop/examples/experiment.ipynb)
 
-###  [Version v0.2.1](https://github.com/beta-team/beta-recsys/releases/tag/v0.2.1)(2020-09-24)
-
-- add Dockefile
-- update experiment
-- update dataset
+## Recent Changing Logs ---> See [version release](https://github.com/beta-team/beta-recsys/releases).
 
 
 ## Contributing
@@ -170,9 +172,9 @@ The following is a list of recommender models currently available in the reposit
 This project welcomes contributions and suggestions. Please make sure to read the [Contributing Guide](https://github.com/beta-team/community/blob/master/beta_recsys/README.md) before creating a pull request. 
 ### Community meeting
 
-- Meeting time: Saturday (1:30 – 2:30pm **[UTC +0](https://24timezones.com/time-zone/utc#gref)**/9:30 – 10:30pm **[UTC +8](https://24timezones.com/time-zone/utc+8#gref)**), (start from 7 November 2020)**⋅** [![Add Event](https://img.shields.io/badge/Add-Event-blue)](https://github.com/beta-team/community/releases/download/meeting/bi-weekly.meeting.ics)
+- Meeting time: Saturday (1:30 – 2:30pm [UTC +0](https://24timezones.com/time-zone/utc#gref)) / (9:30 – 10:30pm [UTC +8](https://24timezones.com/time-zone/utc+8#gref)) [![Add Event](https://img.shields.io/badge/Add-Event-blue)](https://github.com/beta-team/community/releases/download/meeting/bi-weekly.meeting.ics)
 - Meeting minutes: [notes](https://github.com/beta-team/community/tree/master/beta_recsys/meeting%20minutes)
-- Meeting recordings: [recording links]: Can be found in each [meeting note](https://github.com/beta-team/community/tree/master/beta_recsys/meeting%20minutes) (since Nov.7, 2020).
+- Meeting recordings: [recording links]: Can be found in each [meeting note](https://github.com/beta-team/community/tree/master/beta_recsys/meeting%20minutes).
 
 ### Discussion channels
 

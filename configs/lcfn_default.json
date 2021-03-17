@@ -1,0 +1,54 @@
+{
+    "system": {
+        "root_dir": "../",
+        "log_dir": "logs/",
+        "result_dir": "results/",
+        "process_dir": "processes/",
+        "checkpoint_dir": "checkpoints/",
+        "dataset_dir": "datasets/",
+        "run_dir": "runs/",
+        "tune_dir": "tune_results/",
+        "device": "gpu",
+        "seed": 2020,
+        "metrics": ["ndcg", "precision", "recall", "map"],
+        "k": [5,10,20],
+        "valid_metric": "ndcg",
+        "valid_k": 10,
+        "result_file": "lcfn_result.csv",
+        "save_mode": "average"
+    },
+    "dataset": {
+        "dataset": "ml_100k",
+        "data_split": "leave_one_out",
+        "download": false,
+        "random": false,
+        "test_rate": 0.2,
+        "by_user": false,
+        "n_test": 10,
+        "n_negative": 100,
+        "result_col": ["dataset","data_split","test_rate","n_negative"]
+    },
+    "model": {
+        "model": "LCFN",
+        "config_id": "default",
+        "emb_dim": 64,
+        "num_negative": 4,
+        "batch_size": 400,
+        "batch_eval": true,
+        "dropout": 0.0,
+        "optimizer": "adam",
+        "loss": "bpr",
+        "lr": 0.05,
+        "reg": 0.001,
+        "max_epoch": 200,
+        "save_name": "lcfn.model",
+        "max_n_update": 20,
+        "cut_off": 0.005,
+        "layer": 1,
+        "lamda": 0.005,
+        "result_col": ["model","emb_dim","batch_size","dropout","optimizer","loss","lr","reg"]
+    },
+    "tunable": [
+        {"name": "loss", "type": "choice", "values": ["bce", "bpr"]}
+    ]
+}

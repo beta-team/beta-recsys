@@ -31,7 +31,7 @@ class GroceryData(BaseData, Auxiliary):
     def __init__(
         self,
         split_dataset,
-        config,
+        config=None,
         intersect=True,
         binarize=True,
         bin_thld=0.0,
