@@ -7,6 +7,7 @@ from .ngcf import NGCF
 from .sasrec import SASRec
 from .tisasrec import TiSASRec
 from .triple2vec import Triple2vec
+from .tvbr import TVBR
 from .vbcar import VBCAR
 
 __all__ = [
@@ -17,6 +18,7 @@ __all__ = [
     "NGCF",
     "SASRec",
     "VBCAR",
+    "TVBR",
     "NARM",
     "TiSASRec",
 ]
