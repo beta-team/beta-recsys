@@ -5,7 +5,7 @@ from munch import munchify
 from ray import tune
 
 from ..core.recommender import Recommender
-from ..models.userKNN import UserKNNEngine
+from ..models.itemKNN import ItemKNNEngine
 from ..utils.monitor import Monitor
 
 
@@ -16,7 +16,7 @@ def tune_train(config):
         config (dict): All the parameters for the model.
     """
     data = config["data"]
-    train_engine = UserKNN(munchify(config))
+    train_engine = ItemKNN(munchify(config))
     result = train_engine.train(data)
     while train_engine.eval_engine.n_worker > 0:
         time.sleep(20)
@@ -26,7 +26,7 @@ def tune_train(config):
     )
 
 
-class UserKNN(Recommender):
+class ItemKNN(Recommender):
     """The User-based K Nearest Neighbour Model."""
 
     def __init__(self, config):
@@ -35,7 +35,7 @@ class UserKNN(Recommender):
         Args:
             config:
         """
-        super(UserKNN, self).__init__(config, name="UserKNN")
+        super(ItemKNN, self).__init__(config, name="ItemKNN")
 
     def init_engine(self, data):
         """Initialize the required parameters for the model.
@@ -46,7 +46,7 @@ class UserKNN(Recommender):
         """
         self.config["model"]["n_users"] = data.n_users
         self.config["model"]["n_items"] = data.n_items
-        self.engine = UserKNNEngine(self.config)
+        self.engine = ItemKNNEngine(self.config)
 
     def train(self, data):
         """Training the model.
@@ -73,4 +73,4 @@ class UserKNN(Recommender):
             self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
         )
         self.config["run_time"] = self.monitor.stop()
-        return {}
+        return "data loaded"
