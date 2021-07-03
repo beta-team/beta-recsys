@@ -339,7 +339,7 @@ class TrainEngine(object):
         df.to_csv(tune_result_dir)
         print(tabulate(df, headers=df.columns, tablefmt="psql"))
         return df
-    
+
     def test(self):
         """Evaluate the performance for the testing sets based on the best performing model."""
         model_save_dir = os.path.join(
@@ -347,3 +347,4 @@ class TrainEngine(object):
         )
         model = self.engine.resume_checkpoint(model_save_dir)
         self.eval_engine.test_eval(self.data.test, model)
+
