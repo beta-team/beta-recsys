@@ -11,7 +11,6 @@ import torch
 from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
-from beta_rec.data.deprecated_data_base import DataLoaderBase
 from beta_rec.models.lightgcn import LightGCNEngine
 from beta_rec.utils.common_util import DictToObject
 from beta_rec.utils.monitor import Monitor
@@ -37,11 +36,7 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--tune",
-        nargs="?",
-        type=str,
-        default=True,
-        help="Tun parameter",
+        "--tune", nargs="?", type=str, default=False, help="Tun parameter",
     )
     parser.add_argument(
         "--keep_pro", nargs="?", type=float, help="dropout", default=0.6
@@ -83,11 +78,7 @@ class LightGCN_train(TrainEngine):
 
     def build_data_loader(self):
         """Missing Doc."""
-        # ToDo: Please define the directory to store the adjacent matrix
-        self.sample_generator = DataLoaderBase(ratings=self.data.train)
-        adj_mat, norm_adj_mat, mean_adj_mat = self.sample_generator.get_adj_mat(
-            self.config
-        )
+        adj_mat, norm_adj_mat, mean_adj_mat = self.data.get_adj_mat(self.config)
         norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj_mat)
         self.config["model"]["norm_adj"] = norm_adj
         self.config["model"]["n_users"] = self.data.n_users
@@ -117,8 +108,9 @@ class LightGCN_train(TrainEngine):
                 )
                 break
 
-            train_loader = self.sample_generator.pairwise_negative_train_loader(
-                self.config["model"]["batch_size"], self.config["model"]["device_str"]
+            train_loader = self.data.instance_bpr_loader(
+                batch_size=self.config["model"]["batch_size"],
+                device=self.config["model"]["device_str"],
             )
             self.engine.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
             self.eval_engine.train_eval(
