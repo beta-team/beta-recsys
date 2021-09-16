@@ -11,7 +11,7 @@ import torch
 from ray import tune
 
 from beta_rec.core.train_engine import TrainEngine
-from beta_rec.models.lightgcn import LightGCNEngine
+from beta_rec.models.mixgcf import LightGCNEngine
 from beta_rec.utils.common_util import DictToObject
 from beta_rec.utils.monitor import Monitor
 
@@ -22,12 +22,12 @@ def parse_args():
     Returns:
         args object.
     """
-    parser = argparse.ArgumentParser(description="Run LightGCN..")
+    parser = argparse.ArgumentParser(description="Run MixGCF-LightGCN..")
     parser.add_argument(
         "--config_file",
         nargs="?",
         type=str,
-        default="../configs/lightgcn_default.json",
+        default="../configs/mixgcf_default.json",
         help="Specify the config file name. Only accept a file from ../configs/",
     )
     # If the following settings are specified with command line,
@@ -39,11 +39,25 @@ def parse_args():
         "--tune", nargs="?", type=str, default=False, help="Tun parameter",
     )
     parser.add_argument(
-        "--keep_pro", nargs="?", type=float, help="dropout", default=0.6
+        "--n_negs",
+        nargs="?",
+        type=float,
+        help="Number of candidate negatives",
+        default=64,
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
+    parser.add_argument(
+        "--K",
+        nargs="?",
+        type=float,
+        default=1,
+        help="number of negative in K-pair loss",
+    )
     parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
-
+    parser.add_argument(
+        "--pool", type=str, default="concat", help="[concat, mean, sum]"
+    )
+    parser.add_argument("--context_hops", type=int, default=3, help="hop")
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
     )
@@ -77,7 +91,7 @@ class LightGCN_train(TrainEngine):
         self.engine = LightGCNEngine(self.config)
 
     def build_data_loader(self):
-        """Missing Doc."""
+        """Build dataloader for the MixGCF model including the adj matrix and sparse matrix to tensor transferring"""
         adj_mat, norm_adj_mat, mean_adj_mat = self.data.get_adj_mat(self.config)
         norm_adj = sparse_mx_to_torch_sparse_tensor(norm_adj_mat)
         self.config["model"]["norm_adj"] = norm_adj
@@ -108,9 +122,10 @@ class LightGCN_train(TrainEngine):
                 )
                 break
 
-            train_loader = self.data.instance_bpr_loader(
-                batch_size=self.config["model"]["batch_size"],
-                device=self.config["model"]["device_str"],
+            train_loader = self.data.instance_mul_neg_loader(
+                self.config["model"]["batch_size"],
+                self.config["model"]["device_str"],
+                self.config["model"]["n_negs"],
             )
             self.engine.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
             self.eval_engine.train_eval(
