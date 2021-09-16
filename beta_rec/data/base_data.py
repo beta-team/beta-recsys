@@ -1,7 +1,9 @@
+import os
 import random
 
 import numpy as np
 import pandas as pd
+import scipy.sparse as sp
 import torch
 from scipy.sparse import csr_matrix
 from tabulate import tabulate
@@ -9,6 +11,7 @@ from torch.utils.data import DataLoader
 
 from ..data.data_loaders import PairwiseNegativeDataset, RatingDataset
 from ..utils.alias_table import AliasTable
+from ..utils.common_util import ensureDir, normalized_adj_single
 from ..utils.constants import DEFAULT_ITEM_COL, DEFAULT_RATING_COL, DEFAULT_USER_COL
 
 
@@ -249,6 +252,112 @@ class BaseData(object):
         print(f"Making PairwiseNegativeDataset of length {len(dataset)}")
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
+    def instance_mul_neg_loader(self, batch_size, device, num_negative):
+        """Instance a pairwise Data_loader for training.
+
+        Sample multiples negative items for each user-item pare, and shuffle them with positive items.
+        A batch of data in this DataLoader is suitable for a binary cross-entropy loss.
+        """
+        users, pos_items, neg_items = [], [], []
+        interact_status = (
+            self.train.groupby(DEFAULT_USER_COL)[DEFAULT_ITEM_COL]
+            .apply(set)
+            .reset_index()
+            .rename(columns={DEFAULT_ITEM_COL: "positive_items"})
+        )
+        interact_status["negative_items"] = interact_status["positive_items"].apply(
+            lambda x: set(self.item_id_pool) - x
+        )
+        train_ratings = pd.merge(
+            self.train,
+            interact_status[[DEFAULT_USER_COL, "negative_items"]],
+            on=DEFAULT_USER_COL,
+        )
+        train_ratings["negative_sample"] = train_ratings["negative_items"].apply(
+            lambda x: random.sample(list(x), num_negative)
+        )
+        for _, row in train_ratings.iterrows():
+            users.append(row[DEFAULT_USER_COL])
+            pos_items.append(row[DEFAULT_ITEM_COL])
+            neg_items.append(row["negative_sample"])
+        dataset = PairwiseNegativeDataset(
+            user_tensor=torch.LongTensor(users).to(device),
+            pos_item_tensor=torch.LongTensor(pos_items).to(device),
+            neg_item_tensor=torch.LongTensor(neg_items).to(device),
+        )
+        print(f"Making PairwiseNegativeDataset of length {len(dataset)}")
+        return DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    def get_adj_mat(self, config):
+        """Get the adjacent matrix, if not previously stored then call the function to create.
+
+        This method is for NGCF model.
+
+        Returns:
+            Different types of adjacment matrix.
+        """
+        process_file_name = (
+            "ngcf_"
+            + config["dataset"]["dataset"]
+            + "_"
+            + config["dataset"]["data_split"]
+            + (
+                ("_" + str(config["dataset"]["percent"] * 100))
+                if "percent" in config
+                else ""
+            )
+        )
+        process_path = os.path.join(
+            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+        )
+        process_file_name = os.path.join(process_path, process_file_name)
+        ensureDir(process_file_name)
+        print(process_file_name)
+        try:
+            adj_mat = sp.load_npz(os.path.join(process_file_name, "s_adj_mat.npz"))
+            norm_adj_mat = sp.load_npz(
+                os.path.join(process_file_name, "s_norm_adj_mat.npz")
+            )
+            mean_adj_mat = sp.load_npz(
+                os.path.join(process_file_name, "s_mean_adj_mat.npz")
+            )
+            print("already load adj matrix", adj_mat.shape)
+        except Exception:
+            adj_mat, norm_adj_mat, mean_adj_mat = self.create_adj_mat()
+            sp.save_npz(os.path.join(process_file_name, "s_adj_mat.npz"), adj_mat)
+            sp.save_npz(
+                os.path.join(process_file_name, "s_norm_adj_mat.npz"), norm_adj_mat
+            )
+            sp.save_npz(
+                os.path.join(process_file_name, "s_mean_adj_mat.npz"), mean_adj_mat
+            )
+        return adj_mat, norm_adj_mat, mean_adj_mat
+
+    def create_adj_mat(self):
+        """Create adjacent matirx from the user-item interaction matrix."""
+        adj_mat = sp.dok_matrix(
+            (self.n_users + self.n_items, self.n_users + self.n_items), dtype=np.float32
+        )
+        adj_mat = adj_mat.tolil()
+
+        R = sp.dok_matrix((self.n_users, self.n_items), dtype=np.float32)
+        user_np = np.array(self.train[DEFAULT_USER_COL])
+        item_np = np.array(self.train[DEFAULT_ITEM_COL])
+        for u in range(self.n_users):
+            index = list(np.where(user_np == u)[0])
+            i = item_np[index]
+            for item in i:
+                R[u, item] = 1
+        R = R.tolil()
+        adj_mat[: self.n_users, self.n_users :] = R
+        adj_mat[self.n_users :, : self.n_users] = R.T
+        adj_mat = adj_mat.todok()
+        print("already create adjacency matrix", adj_mat.shape)
+        norm_adj_mat = normalized_adj_single(adj_mat + sp.eye(adj_mat.shape[0]))
+        mean_adj_mat = normalized_adj_single(adj_mat)
+        print("already normalize adjacency matrix")
+        return adj_mat.tocsr(), norm_adj_mat.tocsr(), mean_adj_mat.tocsr()
+
     def instance_vae_loader(self, device):
         """Instance a train DataLoader that have rating."""
         users = list(self.train[DEFAULT_USER_COL])
@@ -264,8 +373,7 @@ class BaseData(object):
         user_indices = np.fromiter(uids, dtype=np.int)
 
         matrix = csr_matrix(
-            (ratings, (users, items)),
-            shape=(self.n_users, self.n_items),
+            (ratings, (users, items)), shape=(self.n_users, self.n_items),
         )
         print(f"Making RatingDataset of length {len(dataset)}")
         return user_indices, matrix
