@@ -59,7 +59,7 @@ def update_args(config, args):
         args (object): An argparse Argument object with attributes being the parameters to be updated.
     """
     args_dic = {}
-    for cfg in ["system", "model"]:
+    for cfg in ["system", "model", "dataset"]:
         for k, v in vars(args).items():
             if v is not None and k in config[cfg]:
                 config[cfg][k] = v
