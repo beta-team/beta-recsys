@@ -14,6 +14,7 @@ class GraphConv(nn.Module):
         n_hops,
         n_users,
         interact_mat,
+        device,
         edge_dropout_rate=0.5,
         mess_dropout_rate=0.1,
     ):
@@ -24,7 +25,7 @@ class GraphConv(nn.Module):
         self.n_hops = n_hops
         self.edge_dropout_rate = edge_dropout_rate
         self.mess_dropout_rate = mess_dropout_rate
-
+        self.device = device
         self.dropout = nn.Dropout(p=mess_dropout_rate)  # mess dropout
 
     def _sparse_dropout(self, x, rate=0.5):
@@ -55,7 +56,7 @@ class GraphConv(nn.Module):
                 else self.interact_mat
             )
 
-            agg_embed = torch.sparse.mm(interact_mat, agg_embed)
+            agg_embed = torch.sparse.mm(interact_mat.to(self.device), agg_embed.to(self.device))
             if mess_dropout:
                 agg_embed = self.dropout(agg_embed)
             # agg_embed = F.normalize(agg_embed)
@@ -77,7 +78,7 @@ class LightGCN(torch.nn.Module):
         self.pool = config["pool"]
         self.norm_adj = norm_adj
         # self.layer_size = [self.emb_dim] + self.layer_size
-
+        self.device = config["device_str"]
         self.context_hops = config["context_hops"]
         self.mess_dropout = config["mess_dropout"]
         self.mess_dropout_rate = config["mess_dropout_rate"]
@@ -101,6 +102,7 @@ class LightGCN(torch.nn.Module):
             n_hops=self.context_hops,
             n_users=self.n_users,
             interact_mat=self.norm_adj,
+            device=self.device,
             edge_dropout_rate=self.edge_dropout_rate,
             mess_dropout_rate=self.mess_dropout_rate,
         )
@@ -161,7 +163,6 @@ class LightGCNEngine(ModelEngine):
         self.config = config
         self.norm_adj = config["model"]["norm_adj"]
         self.model = LightGCN(config["model"], self.norm_adj)
-
         self.decay = config["model"]["l2"]
         self.pool = config["model"]["pool"]
         self.n_negs = config["model"]["n_negs"]
