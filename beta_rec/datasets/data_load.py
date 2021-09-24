@@ -1,11 +1,13 @@
 import numpy as np
 
+from ..datasets.amazon import AmazonInstantVideo
 from ..datasets.dunnhumby import Dunnhumby
 from ..datasets.epinions import Epinions
 from ..datasets.instacart import Instacart, Instacart_25
 from ..datasets.last_fm import LastFM
-from ..datasets.movielens import Movielens_1m, Movielens_25m, Movielens_100k
+from ..datasets.movielens import Movielens_1m, Movielens_10m, Movielens_25m, Movielens_100k
 from ..datasets.tafeng import Tafeng
+from ..datasets.yelp import Yelp
 from ..utils.common_util import print_dict_as_table
 
 
@@ -93,6 +95,9 @@ def load_split_dataset(config):
         "dunnhumby": Dunnhumby,
         "instacart": Instacart,
         "instacart_25": Instacart_25,
+        "yelp": Yelp,
+        "ml_10m": Movielens_10m,
+        "amazon-instant-video": AmazonInstantVideo,
     }
     dataset = dataset_mapping[config["dataset"]["dataset"]](
         root_dir=config["system"]["root_dir"]

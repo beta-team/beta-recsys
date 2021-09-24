@@ -47,6 +47,9 @@ def parse_args():
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
     )
+    parser.add_argument(
+        "--dataset", nargs="?", type=str, help="Dataset Options"
+    )
     return parser.parse_args()
 
 
@@ -92,36 +95,14 @@ class LightGCN_train(TrainEngine):
         self.model_save_dir = os.path.join(
             self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
         )
-        self.max_n_update = self.config["model"]["max_n_update"]
-        for epoch in range(self.config["model"]["max_epoch"]):
-            print(f"Epoch {epoch} starts !")
-            print("-" * 80)
-            if epoch > 0 and self.eval_engine.n_no_update == 0:
-                # previous epoch have already obtained better result
-                self.engine.save_checkpoint(model_dir=self.model_save_dir)
-
-            if self.eval_engine.n_no_update >= self.max_n_update:
-                print(
-                    "Early stop criterion triggered, no performance update for {:} times".format(
-                        self.max_n_update
-                    )
-                )
-                break
-
-            train_loader = self.data.instance_bpr_loader(
-                batch_size=self.config["model"]["batch_size"],
-                device=self.config["model"]["device_str"],
-            )
-            self.engine.train_an_epoch(epoch_id=epoch, train_loader=train_loader)
-            self.eval_engine.train_eval(
-                self.data.valid[0], self.data.test[0], self.engine.model, epoch
-            )
+        self.engine = LightGCNEngine(self.config)
+        train_loader = self.data.instance_bpr_loader(
+            batch_size=self.config["model"]["batch_size"],
+            device=self.config["model"]["device_str"],
+        )
+        self._train(self.engine, train_loader, self.model_save_dir)
         self.config["run_time"] = self.monitor.stop()
-
-    def test(self):
-        """Test the model."""
-        self.engine.resume_checkpoint(model_dir=self.model_save_dir)
-        super(LightGCN_train, self).test()
+        return self.eval_engine.best_valid_performance
 
 
 def tune_train(config):
