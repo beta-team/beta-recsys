@@ -77,7 +77,6 @@ class LightGCN_train(TrainEngine):
         super(LightGCN_train, self).__init__(config)
         self.load_dataset()
         self.build_data_loader()
-        self.engine = LightGCNEngine(self.config)
 
     def build_data_loader(self):
         """Missing Doc."""
