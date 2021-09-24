@@ -49,8 +49,8 @@ class LCFN(torch.nn.Module):
 
     def init_emb(self):
         """Initialize users and items' embeddings."""
-        nn.init.normal(self.user_embeddings.weight, mean=0.01, std=0.02)
-        nn.init.normal(self.item_embeddings.weight, mean=0.01, std=0.02)
+        nn.init.normal_(self.user_embeddings.weight, mean=0.01, std=0.02)
+        nn.init.normal_(self.item_embeddings.weight, mean=0.01, std=0.02)
 
     def forward(self):
         """Graph propagation and noise filtering."""
