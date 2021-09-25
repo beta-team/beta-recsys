@@ -93,9 +93,6 @@ class NCF_train(TrainEngine):
         """Missing Doc."""
         # ToDo: Please define the directory to store the adjacent matrix
         self.sample_generator = DataLoaderBase(ratings=self.data.train)
-        self.config["model"]["num_batch"] = (
-            self.data.n_train // self.config["model"]["batch_size"] + 1
-        )
         self.config["model"]["n_users"] = self.data.n_users
         self.config["model"]["n_items"] = self.data.n_items
 
