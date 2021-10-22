@@ -138,7 +138,7 @@ The following is a list of recommender models currently available in the reposit
 |VAECF|[Variational autoencoders for collaborative filtering](https://dl.acm.org/doi/abs/10.1145/3178876.3186150), WWW 2018||
 |UserKNN|User-based K-Nearest Neighbour Recommender in [Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering](https://dl.acm.org/doi/10.1145/1401890.1401944), KDD 2008||
 |ItemKNN|Item-based K-Nearest Neighbour Recommender in [Item-Based Collaborative Filtering Recommendation](https://dl.acm.org/doi/10.1145/371920.372071), WWW 2001||
-
+|MixGCF| [MixGCF: An Improved Training Method for Graph Neural Network-based Recommender Systems](http://keg.cs.tsinghua.edu.cn/jietang/publications/KDD21-Huang-et-al-MixGCF.pdf), KDD 2021||
 
 ### Sequential Models
 |Model|Paper|Colab|

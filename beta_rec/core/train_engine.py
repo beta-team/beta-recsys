@@ -340,23 +340,11 @@ class TrainEngine(object):
         print(tabulate(df, headers=df.columns, tablefmt="psql"))
         return df
 
-    # def ax_tune(self, runable):
-    #     # todo still cannot runable yet.
-    #     ax = AxClient(enforce_sequential_optimization=False)
-    #     # verbose_logging=False,
-    #     ax.create_experiment(
-    #         name=self.config["model"]["model"],
-    #         parameters=self.config["tunable"],
-    #         objective_name="valid_metric",
-    #     )
-    #     tune.run(
-    #         runable,
-    #         num_samples=30,
-    #         search_alg=AxSearch(ax),  # Note that the argument here is the `AxClient`.
-    #         verbose=2,  # Set this level to 1 to see status updates and to 2 to also see trial results.
-    #         # To use GPU, specify: resources_per_trial={"gpu": 1}.
-    #     )
-
     def test(self):
-        """Evaluate the performance for the testing sets based on the final model."""
-        self.eval_engine.test_eval(self.data.test, self.engine.model)
+        """Evaluate the performance for the testing sets based on the best performing model."""
+        model_save_dir = os.path.join(
+            self.config["system"]["model_save_dir"], self.config["model"]["save_name"]
+        )
+        model = self.engine.resume_checkpoint(model_save_dir)
+        self.eval_engine.test_eval(self.data.test, model)
+
