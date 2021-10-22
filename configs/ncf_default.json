@@ -29,7 +29,7 @@
         "result_col": ["dataset","data_split","test_rate","n_negative"]
     },
     "model": {
-        "model": "ncf",
+        "model": "ncf_end",
         "config_id": "default",
         "emb_dim": 32,
         "num_negative": 5,
