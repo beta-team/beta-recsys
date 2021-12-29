@@ -358,6 +358,76 @@ class BaseData(object):
         print("already normalize adjacency matrix")
         return adj_mat.tocsr(), norm_adj_mat.tocsr(), mean_adj_mat.tocsr()
 
+    def get_constraint_mat(self, config):
+        """Get the adjacent matrix, if not previously stored then call the function to create.
+
+        This method is for NGCF model.
+
+        Returns:
+            Different types of adjacment matrix.
+        """
+        process_file_name = (
+            "ultragcn_"
+            + config["dataset"]["dataset"]
+            + "_"
+            + config["dataset"]["data_split"]
+            + (
+                ("_" + str(config["dataset"]["percent"] * 100))
+                if "percent" in config
+                else ""
+            )
+        )
+        process_path = os.path.join(
+            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+        )
+        process_file_name = os.path.join(process_path, process_file_name)
+        ensureDir(process_file_name)
+        print(process_file_name)
+        try:
+            train_mat = sp.load_npz(os.path.join(process_file_name, "train_mat.npz"))
+            constraint_mat = np.load(
+                os.path.join(process_file_name, "constraint_mat.npz")
+            )
+            beta_uD = constraint_mat["beta_uD"]
+            beta_iD = constraint_mat["beta_iD"]
+            print("already load train mat and constraint mat")
+        except Exception:
+            train_mat, beta_uD, beta_iD = self.create_constraint_mat()
+            sp.save_npz(os.path.join(process_file_name, "train_mat.npz"), train_mat)
+
+            np.savez_compressed(
+                os.path.join(process_file_name, "constraint_mat.npz"),
+                beta_uD=beta_uD,
+                beta_iD=beta_iD,
+            )
+
+        constraint_mat = {"beta_uD": beta_uD, "beta_iD": beta_iD}
+
+        return train_mat, constraint_mat
+
+    def create_constraint_mat(self):
+        """Create adjacent matirx from the user-item interaction matrix."""
+        train_mat = sp.dok_matrix((self.n_users, self.n_items), dtype=np.float32)
+
+        user_np = np.array(self.train[DEFAULT_USER_COL])
+        item_np = np.array(self.train[DEFAULT_ITEM_COL])
+        for u in range(self.n_users):
+            index = list(np.where(user_np == u)[0])
+            i = item_np[index]
+            for item in i:
+                train_mat[u, item] = 1.0
+
+        items_D = np.sum(train_mat, axis=0).reshape(-1)
+        users_D = np.sum(train_mat, axis=1).reshape(-1)
+
+        beta_uD = (np.sqrt(users_D + 1) / users_D).reshape(-1, 1)
+        beta_iD = (1 / np.sqrt(items_D + 1)).reshape(1, -1)
+
+        # constraint_mat = {"beta_uD": beta_uD.reshape(-1),
+        #                   "beta_iD": beta_iD.reshape(-1)}
+
+        return train_mat.tocsr(), beta_uD.reshape(-1), beta_iD.reshape(-1)
+
     def instance_vae_loader(self, device):
         """Instance a train DataLoader that have rating."""
         users = list(self.train[DEFAULT_USER_COL])
