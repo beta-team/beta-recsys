@@ -36,7 +36,11 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str, default=False, help="Tun parameter",
+        "--tune",
+        nargs="?",
+        type=str,
+        default=False,
+        help="Tun parameter",
     )
     parser.add_argument(
         "--keep_pro", nargs="?", type=float, help="dropout", default=0.6
@@ -46,9 +50,6 @@ def parse_args():
 
     parser.add_argument(
         "--batch_size", nargs="?", type=int, help="Batch size for training."
-    )
-    parser.add_argument(
-        "--dataset", nargs="?", type=str, help="Dataset Options"
     )
     return parser.parse_args()
 
@@ -77,6 +78,7 @@ class LightGCN_train(TrainEngine):
         super(LightGCN_train, self).__init__(config)
         self.load_dataset()
         self.build_data_loader()
+        self.engine = LightGCNEngine(self.config)
 
     def build_data_loader(self):
         """Missing Doc."""
