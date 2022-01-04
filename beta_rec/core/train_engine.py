@@ -347,4 +347,3 @@ class TrainEngine(object):
         )
         model = self.engine.resume_checkpoint(model_save_dir)
         self.eval_engine.test_eval(self.data.test, model)
-
