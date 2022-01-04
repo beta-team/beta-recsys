@@ -5,7 +5,12 @@ from ..datasets.dunnhumby import Dunnhumby
 from ..datasets.epinions import Epinions
 from ..datasets.instacart import Instacart, Instacart_25
 from ..datasets.last_fm import LastFM
-from ..datasets.movielens import Movielens_1m, Movielens_10m, Movielens_25m, Movielens_100k
+from ..datasets.movielens import (
+    Movielens_1m,
+    Movielens_10m,
+    Movielens_25m,
+    Movielens_100k,
+)
 from ..datasets.tafeng import Tafeng
 from ..datasets.yelp import Yelp
 from ..utils.common_util import print_dict_as_table
