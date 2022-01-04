@@ -139,8 +139,7 @@ The following is a list of recommender models currently available in the reposit
 |UserKNN|User-based K-Nearest Neighbour Recommender in [Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering](https://dl.acm.org/doi/10.1145/1401890.1401944), KDD 2008||
 |ItemKNN|Item-based K-Nearest Neighbour Recommender in [Item-Based Collaborative Filtering Recommendation](https://dl.acm.org/doi/10.1145/371920.372071), WWW 2001||
 |MixGCF| [MixGCF: An Improved Training Method for Graph Neural Network-based Recommender Systems](http://keg.cs.tsinghua.edu.cn/jietang/publications/KDD21-Huang-et-al-MixGCF.pdf), KDD 2021||
-|UltraGCN| [UltraGCN: Ultra Simplification of Graph Convolutional
-Networks for Recommendation](https://arxiv.org/pdf/2110.15114.pdf), CIKM 2021||
+|UltraGCN| [UltraGCN: Ultra Simplification of Graph Convolutional Networks for Recommendation](https://arxiv.org/pdf/2110.15114.pdf), CIKM 2021||
 |SGL| [Self-supervised Graph Learning for Recommendation](https://arxiv.org/pdf/2010.10783.pdf), SIGIR 2021||
 
 ### Sequential Models
