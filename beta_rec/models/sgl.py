@@ -7,8 +7,7 @@ from beta_rec.models.torch_engine import ModelEngine
 
 
 def randint_choice(high, size=None, replace=True, p=None, exclusion=None):
-    """Return random integers from `0` (inclusive) to `high` (exclusive).
-    """
+    """Return random integers from `0` (inclusive) to `high` (exclusive)."""
     a = np.arange(high)
     if exclusion is not None:
         if p is None:
@@ -528,8 +527,7 @@ class SGLEngine(ModelEngine):
         return adj_matrix
 
     def randint_choice(self, high, size=None, replace=True, p=None, exclusion=None):
-        """Return random integers from `0` (inclusive) to `high` (exclusive).
-        """
+        """Return random integers from `0` (inclusive) to `high` (exclusive)."""
         a = np.arange(high)
         if exclusion is not None:
             if p is None:
