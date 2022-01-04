@@ -56,7 +56,9 @@ class GraphConv(nn.Module):
                 else self.interact_mat
             )
 
-            agg_embed = torch.sparse.mm(interact_mat.to(self.device), agg_embed.to(self.device))
+            agg_embed = torch.sparse.mm(
+                interact_mat.to(self.device), agg_embed.to(self.device)
+            )
             if mess_dropout:
                 agg_embed = self.dropout(agg_embed)
             # agg_embed = F.normalize(agg_embed)
@@ -175,7 +177,6 @@ class LightGCNEngine(ModelEngine):
 
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
-        norm_adj = self.norm_adj
 
         batch_users, pos_items, neg_items = batch_data
 

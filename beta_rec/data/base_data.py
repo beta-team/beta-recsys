@@ -308,7 +308,8 @@ class BaseData(object):
             )
         )
         process_path = os.path.join(
-            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+            config["system"]["process_dir"],
+            config["dataset"]["dataset"] + "/",
         )
         process_file_name = os.path.join(process_path, process_file_name)
         ensureDir(process_file_name)
@@ -358,6 +359,157 @@ class BaseData(object):
         print("already normalize adjacency matrix")
         return adj_mat.tocsr(), norm_adj_mat.tocsr(), mean_adj_mat.tocsr()
 
+    def get_constraint_mat(self, config):
+        """Get the adjacent matrix, if not previously stored then call the function to create.
+
+        This method is for NGCF model.
+
+        Returns:
+            Different types of adjacment matrix.
+        """
+        process_file_name = (
+            "ultragcn_"
+            + config["dataset"]["dataset"]
+            + "_"
+            + config["dataset"]["data_split"]
+            + (
+                ("_" + str(config["dataset"]["percent"] * 100))
+                if "percent" in config
+                else ""
+            )
+        )
+        process_path = os.path.join(
+            config["system"]["process_dir"],
+            config["dataset"]["dataset"] + "/",
+        )
+        process_file_name = os.path.join(process_path, process_file_name)
+        ensureDir(process_file_name)
+        print(process_file_name)
+        try:
+            train_mat = sp.load_npz(os.path.join(process_file_name, "train_mat.npz"))
+            constraint_mat = np.load(
+                os.path.join(process_file_name, "constraint_mat.npz")
+            )
+            beta_uD = constraint_mat["beta_uD"]
+            beta_iD = constraint_mat["beta_iD"]
+            print("already load train mat and constraint mat")
+        except Exception:
+            train_mat, beta_uD, beta_iD = self.create_constraint_mat()
+            sp.save_npz(os.path.join(process_file_name, "train_mat.npz"), train_mat)
+
+            np.savez_compressed(
+                os.path.join(process_file_name, "constraint_mat.npz"),
+                beta_uD=beta_uD,
+                beta_iD=beta_iD,
+            )
+
+        constraint_mat = {"beta_uD": beta_uD, "beta_iD": beta_iD}
+
+        return train_mat, constraint_mat
+
+    def create_constraint_mat(self):
+        """Create adjacent matirx from the user-item interaction matrix."""
+        train_mat = sp.dok_matrix((self.n_users, self.n_items), dtype=np.float32)
+
+        user_np = np.array(self.train[DEFAULT_USER_COL])
+        item_np = np.array(self.train[DEFAULT_ITEM_COL])
+        for u in range(self.n_users):
+            index = list(np.where(user_np == u)[0])
+            i = item_np[index]
+            for item in i:
+                train_mat[u, item] = 1.0
+
+        items_D = np.sum(train_mat, axis=0).reshape(-1)
+        users_D = np.sum(train_mat, axis=1).reshape(-1)
+
+        beta_uD = (np.sqrt(users_D + 1) / users_D).reshape(-1, 1)
+        beta_iD = (1 / np.sqrt(items_D + 1)).reshape(1, -1)
+
+        # constraint_mat = {"beta_uD": beta_uD.reshape(-1),
+        #                   "beta_iD": beta_iD.reshape(-1)}
+
+        return train_mat.tocsr(), beta_uD.reshape(-1), beta_iD.reshape(-1)
+
+    def create_sgl_mat(self, config):
+        """Create adjacent matirx from the user-item interaction matrix."""
+
+        n_nodes = self.n_users + self.n_items
+        is_subgraph = config["model"]["is_subgraph"]
+        aug_type = config["model"]["aug_type"]
+        ssl_ratio = config["model"]["ssl_ratio"]
+        user_np = np.array(self.train[DEFAULT_USER_COL])
+        item_np = np.array(self.train[DEFAULT_ITEM_COL])
+        if is_subgraph and aug_type in [0, 1, 2] and ssl_ratio > 0:
+            # data augmentation type --- 0: Node Dropout; 1: Edge Dropout; 2: Random Walk
+            if aug_type == 0:
+                drop_user_idx = self.randint_choice(
+                    self.n_users, size=self.n_users * ssl_ratio, replace=False
+                )
+                drop_item_idx = self.randint_choice(
+                    self.n_items, size=self.n_items * ssl_ratio, replace=False
+                )
+                indicator_user = np.ones(self.n_users, dtype=np.float32)
+                indicator_item = np.ones(self.n_items, dtype=np.float32)
+                indicator_user[drop_user_idx] = 0.0
+                indicator_item[drop_item_idx] = 0.0
+                diag_indicator_user = sp.diags(indicator_user)
+                diag_indicator_item = sp.diags(indicator_item)
+                R = sp.csr_matrix(
+                    (np.ones_like(user_np, dtype=np.float32), (user_np, item_np)),
+                    shape=(self.n_users, self.n_items),
+                )
+                R_prime = diag_indicator_user.dot(R).dot(diag_indicator_item)
+                (user_np_keep, item_np_keep) = R_prime.nonzero()
+                ratings_keep = R_prime.data
+                tmp_adj = sp.csr_matrix(
+                    (ratings_keep, (user_np_keep, item_np_keep + self.n_users)),
+                    shape=(n_nodes, n_nodes),
+                )
+            if aug_type in [1, 2]:
+                keep_idx = self.randint_choice(
+                    len(user_np),
+                    size=int(len(user_np) * (1 - ssl_ratio)),
+                    replace=False,
+                )
+                user_keep_np = np.array(user_np)[keep_idx]
+                item_keep_np = np.array(item_np)[keep_idx]
+                ratings = np.ones_like(user_keep_np, dtype=np.float32)
+                tmp_adj = sp.csr_matrix(
+                    (ratings, (user_keep_np, item_keep_np + self.n_users)),
+                    shape=(n_nodes, n_nodes),
+                )
+        else:
+            ratings = np.ones_like(user_np, dtype=np.float32)
+            tmp_adj = sp.csr_matrix(
+                (ratings, (user_np, item_np + self.n_users)), shape=(n_nodes, n_nodes)
+            )
+        adj_mat = tmp_adj + tmp_adj.T
+
+        # pre adjcency matrix
+        rowsum = np.array(adj_mat.sum(1))
+        d_inv = np.power(rowsum, -0.5).flatten()
+        d_inv[np.isinf(d_inv)] = 0.0
+        d_mat_inv = sp.diags(d_inv)
+        norm_adj_tmp = d_mat_inv.dot(adj_mat)
+        adj_matrix = norm_adj_tmp.dot(d_mat_inv)
+        # print('use the pre adjcency matrix')
+        return adj_matrix
+
+    def randint_choice(self, high, size=None, replace=True, p=None, exclusion=None):
+        """Return random integers from `0` (inclusive) to `high` (exclusive)."""
+        a = np.arange(high)
+        if exclusion is not None:
+            if p is None:
+                p = np.ones_like(a)
+            else:
+                p = np.array(p, copy=True)
+            p = p.flatten()
+            p[exclusion] = 0
+        if p is not None:
+            p = p / np.sum(p)
+        sample = np.random.choice(a, size=size, replace=replace, p=p)
+        return sample
+
     def instance_vae_loader(self, device):
         """Instance a train DataLoader that have rating."""
         users = list(self.train[DEFAULT_USER_COL])
@@ -373,7 +525,8 @@ class BaseData(object):
         user_indices = np.fromiter(uids, dtype=np.int)
 
         matrix = csr_matrix(
-            (ratings, (users, items)), shape=(self.n_users, self.n_items),
+            (ratings, (users, items)),
+            shape=(self.n_users, self.n_items),
         )
         print(f"Making RatingDataset of length {len(dataset)}")
         return user_indices, matrix

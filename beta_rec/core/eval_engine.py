@@ -198,7 +198,7 @@ class EvalEngine(object):
         self.valid_metric = config["system"]["valid_metric"]
         self.valid_k = config["system"]["valid_k"]
         self.batch_eval = (
-            config["model"]["batch_eval"] if "batch_eval" in config else False
+            config["model"]["batch_eval"] if "batch_eval" in config["model"] else False
         )
         self.batch_size = config["model"]["batch_size"]
         self.writer = SummaryWriter(
