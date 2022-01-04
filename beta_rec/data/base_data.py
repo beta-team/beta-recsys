@@ -308,7 +308,8 @@ class BaseData(object):
             )
         )
         process_path = os.path.join(
-            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+            config["system"]["process_dir"],
+            config["dataset"]["dataset"] + "/",
         )
         process_file_name = os.path.join(process_path, process_file_name)
         ensureDir(process_file_name)
@@ -378,7 +379,8 @@ class BaseData(object):
             )
         )
         process_path = os.path.join(
-            config["system"]["process_dir"], config["dataset"]["dataset"] + "/",
+            config["system"]["process_dir"],
+            config["dataset"]["dataset"] + "/",
         )
         process_file_name = os.path.join(process_path, process_file_name)
         ensureDir(process_file_name)
@@ -494,8 +496,7 @@ class BaseData(object):
         return adj_matrix
 
     def randint_choice(self, high, size=None, replace=True, p=None, exclusion=None):
-        """Return random integers from `0` (inclusive) to `high` (exclusive).
-        """
+        """Return random integers from `0` (inclusive) to `high` (exclusive)."""
         a = np.arange(high)
         if exclusion is not None:
             if p is None:
@@ -524,7 +525,8 @@ class BaseData(object):
         user_indices = np.fromiter(uids, dtype=np.int)
 
         matrix = csr_matrix(
-            (ratings, (users, items)), shape=(self.n_users, self.n_items),
+            (ratings, (users, items)),
+            shape=(self.n_users, self.n_items),
         )
         print(f"Making RatingDataset of length {len(dataset)}")
         return user_indices, matrix
