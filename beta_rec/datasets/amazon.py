@@ -176,7 +176,7 @@ class AmazonInstantVideo(AmazonDataset):
     def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
         r"""Init AmazonInstantVideo Class."""
         super().__init__(
-            dataset_name="amazon-amazon-instant-video",
+            dataset_name="amazon-instant-video",
             min_u_c=min_u_c,
             min_i_c=min_i_c,
             root_dir=root_dir,

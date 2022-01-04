@@ -199,7 +199,11 @@ class UltraGCNEngine(ModelEngine):
 
         batch_users, pos_items, neg_items = batch_data
 
-        batch_loss = self.model.forward(batch_users, pos_items, neg_items,)
+        batch_loss = self.model.forward(
+            batch_users,
+            pos_items,
+            neg_items,
+        )
 
         batch_loss.backward()
         self.optimizer.step()

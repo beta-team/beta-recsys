@@ -31,7 +31,11 @@ def parse_args():
         "--emb_dim", nargs="?", type=int, help="Dimension of the embedding."
     )
     parser.add_argument(
-        "--tune", nargs="?", type=str, default=False, help="Tun parameter",
+        "--tune",
+        nargs="?",
+        type=str,
+        default=False,
+        help="Tun parameter",
     )
     parser.add_argument("--lr", nargs="?", type=float, help="Initialize learning rate.")
     parser.add_argument("--max_epoch", nargs="?", type=int, help="Number of max epoch.")
