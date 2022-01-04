@@ -177,7 +177,6 @@ class LightGCNEngine(ModelEngine):
 
         assert hasattr(self, "model"), "Please specify the exact model !"
         self.optimizer.zero_grad()
-        norm_adj = self.norm_adj
 
         batch_users, pos_items, neg_items = batch_data
 
