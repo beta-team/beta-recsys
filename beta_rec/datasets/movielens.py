@@ -257,7 +257,7 @@ class Movielens_25m(DatasetBase):
         
         
 class Movielens_10m(DatasetBase):
-    """Movielens 25m Dataset."""
+    """Movielens 10m Dataset."""
 
     def __init__(self, dataset_name="ml_10m", min_u_c=0, min_i_c=3, root_dir=None):
         """Init Movielens_10m Class."""
@@ -269,7 +269,7 @@ class Movielens_10m(DatasetBase):
             url=ML_10M_URL,
         )
 
-    def filter_process(self):
+    def preprocess(self):
         """Preprocess the raw file.
 
         Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
@@ -291,7 +291,6 @@ class Movielens_10m(DatasetBase):
                 DEFAULT_TIMESTAMP_COL,
             ],
         )
-        # data = data[data[DEFAULT_RATING_COL]>=4.0]
         self.save_dataframe_as_npz(
             data,
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
