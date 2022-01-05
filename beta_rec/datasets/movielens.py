@@ -246,7 +246,7 @@ class Movielens_25m(DatasetBase):
             data,
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
-        
+
 
 class Movielens_10m(DatasetBase):
     """Movielens 10m Dataset."""
@@ -286,4 +286,3 @@ class Movielens_10m(DatasetBase):
             data,
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
-
