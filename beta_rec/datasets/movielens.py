@@ -14,6 +14,7 @@ from beta_rec.utils.constants import (
 # download_url
 ML_100K_URL = r"http://files.grouplens.org/datasets/movielens/ml-100k.zip"
 ML_1M_URL = r"http://files.grouplens.org/datasets/movielens/ml-1m.zip"
+ML_10M_URL = r"http://files.grouplens.org/datasets/movielens/ml-10m.zip"
 ML_25M_URL = r"http://files.grouplens.org/datasets/movielens/ml-25m.zip"
 
 # processed data url
@@ -217,7 +218,7 @@ class Movielens_25m(DatasetBase):
             min_u_c=min_u_c,
             min_i_c=min_i_c,
             root_dir=root_dir,
-            url=ML_1M_URL,
+            url=ML_25M_URL,
         )
 
     def preprocess(self):
@@ -245,3 +246,44 @@ class Movielens_25m(DatasetBase):
             data,
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
+        
+
+class Movielens_10m(DatasetBase):
+    """Movielens 10m Dataset."""
+
+    def __init__(self, dataset_name="ml_10m", min_u_c=0, min_i_c=3, root_dir=None):
+        """Init Movielens_10m Class."""
+        super().__init__(
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=ML_10M_URL,
+        )
+
+    def preprocess(self):
+        """Preprocess the raw file.
+        Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
+        interactions and save it in the processed directory.
+        """
+        file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.csv")
+        if not os.path.exists(file_name):
+            self.download()
+
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
+
