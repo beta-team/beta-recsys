@@ -254,3 +254,45 @@ class Movielens_25m(DatasetBase):
             data,
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
+        
+        
+class Movielens_10m(DatasetBase):
+    """Movielens 25m Dataset."""
+
+    def __init__(self, dataset_name="ml_10m", min_u_c=0, min_i_c=3, root_dir=None):
+        """Init Movielens_10m Class."""
+        super().__init__(
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=ML_10M_URL,
+        )
+
+    def filter_process(self):
+        """Preprocess the raw file.
+
+        Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
+        interactions and save it in the processed directory.
+        """
+        file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.dat")
+        if not os.path.exists(file_name):
+            self.download()
+
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
+        # data = data[data[DEFAULT_RATING_COL]>=4.0]
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
