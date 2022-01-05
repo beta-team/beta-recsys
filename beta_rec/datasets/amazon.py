@@ -1,551 +1,298 @@
 import os
 
+import numpy as np
 import pandas as pd
 
-from ..datasets.dataset_base import DatasetBase
-from ..utils.common_util import get_data_frame_from_gzip_file
-from ..utils.constants import (
+from beta_rec.datasets.dataset_base import DatasetBase
+from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
     DEFAULT_USER_COL,
 )
 
-# Download URL.
-AMAZON_Amazon_Instant_Video_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Amazon_Instant_Video.json.gz"
-)
-AMAZON_Musical_Instruments_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Musical_Instruments.json.gz"
-)
-AMAZON_Digital_Music_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Digital_Music.json.gz"
-)
-AMAZON_Baby_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Baby.json.gz"
-)
-AMAZON_Patio_Lawn_Garden_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Patio_Lawn_and_Garden.json.gz"
-)
-AMAZON_Grocery_Gourmet_Food_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Grocery_and_Gourmet_Food.json.gz"
-)
-AMAZON_Automotive_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Automotive.json.gz"
-)
-AMAZON_Pet_Supplies_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Pet_Supplies.json.gz"
-)
-AMAZON_Cell_Phones_and_Accessories_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Cell_Phones_and_Accessories.json.gz"
-)
-AMAZON_Health_and_Personal_Care_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Health_and_Personal_Care.json.gz"
-)
-AMAZON_Toys_and_Games_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Toys_and_Games.json.gz"
-)
-AMAZON_Video_Games_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Video_Games.json.gz"
-)
-AMAZON_Tools_and_Home_Improvement_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Tools_and_Home_Improvement.json.gz"
-)
-AMAZON_Beauty_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Beauty.json.gz"
-)
-AMAZON_Apps_for_Android_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Apps_for_Android.json.gz"
-)
-AMAZON_Office_Products_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Office_Products.json.gz"
-)
-AMAZON_Books_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Books.json.gz"
-)
-AMAZON_Electronics_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Electronics.json.gz"
-)
-AMAZON_Movies_and_TV_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Movies_and_TV.json.gz"
-)
-AMAZON_CDs_and_Vinyl_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_CDs_and_Vinyl.json.gz"
-)
-AMAZON_Clothing_Shoes_and_Jewelry_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Clothing_Shoes_and_Jewelry.json.gz"
-)
-AMAZON_Home_and_Kitchen_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Home_and_Kitchen.json.gz"
-)
-AMAZON_Kindle_Store_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Kindle_Store.json.gz"
-)
-AMAZON_Sports_and_Outdoors_URL = (
-    "http://snap.stanford.edu/data/amazon/productGraph/categoryFiles"
-    "/reviews_Sports_and_Outdoors.json.gz"
-)
+# download_url
+ML_100K_URL = r"http://files.grouplens.org/datasets/movielens/ml-100k.zip"
+ML_1M_URL = r"http://files.grouplens.org/datasets/movielens/ml-1m.zip"
+ML_10M_URL = r"http://files.grouplens.org/datasets/movielens/ml-10m.zip"
+ML_25M_URL = r"http://files.grouplens.org/datasets/movielens/ml-25m.zip"
+
+# processed data url
+ML_100K_LEAVE_ONE_OUT_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugU-siALoN5y9eaCq?e=jsgoOB"
+ML_100K_RANDOM_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugVD4bv1iR6KgZn63?e=89eToa"
+ML_100K_TEMPORAL_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugVG_vS_DggoFaySY?e=HpcD9b"
+
+ML_1M_LEAVE_ONE_OUT_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugVMZ5TK2sTGBUSr0?e=32CmFJ"
+ML_1M_RANDOM_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugVW2Bl1A1kORNuTY?e=iEabat"
+ML_1M_TEMPORAL_URL = r"https://1drv.ms/u/s!AjMahLyQeZqugVf8PRlo82hSnblP?e=VpZa0L"
+
+# indicators of the colunmn name
+par_abs_dir = os.path.abspath(os.path.join(os.path.abspath("."), os.pardir))
+
+# raw dataset
+ml_1m_raw_dir = "datasets/ml-1m/raw/ratings.dat"
+# dataset dir under temporal split
+ml_1m_temporal_dir = "datasets/ml-1m/temporal"
+# dataset dir under leave-one-out split
+ml_1m_l1o_dir = os.path.join(par_abs_dir, "datasets/ml-1m/leave_one_out")
 
 
-class AmazonDataset(DatasetBase):
-    r"""AmazonDataset.
+class Movielens_100k(DatasetBase):
+    """Movielens 100k Dataset."""
 
-    Amazon base dataset.
-    """
-
-    def __init__(self, dataset_name, min_u_c=0, min_i_c=3, url=None, root_dir=None):
-        r"""Init AmazonDataset Class."""
+    def __init__(self, dataset_name="ml_100k", min_u_c=0, min_i_c=3, root_dir=None):
+        """Init Movielens_100k Class."""
         super().__init__(
             dataset_name=dataset_name,
             min_u_c=min_u_c,
             min_i_c=min_i_c,
             root_dir=root_dir,
-            url=url,
+            url=ML_100K_URL,
+            processed_leave_one_out_url=ML_100K_LEAVE_ONE_OUT_URL,
+            processed_random_split_url=ML_100K_RANDOM_URL,
+            processed_temporal_split_url=ML_100K_TEMPORAL_URL,
         )
 
     def preprocess(self):
         """Preprocess the raw file.
 
-        Preprocess the file downloaded via the url, convert it to a dataframe consist of the user-item interaction,
-        and save in the processed directory.
+        Preprocess the file downloaded via the url, convert it to a dataframe consisting of the user-item
+        interactions and save it in the processed directory.
         """
-        file_name = os.path.join(self.raw_path, f"{self.dataset_name}.json.gz")
-        print(f"file_name: {file_name}")
+        file_name = os.path.join(self.raw_path, self.dataset_name, "u.data")
         if not os.path.exists(file_name):
             self.download()
 
-        # parse json data
-        data = get_data_frame_from_gzip_file(file_name)
-
-        # rename columns
-        data = data.rename(
-            columns={
-                "reviewerID": DEFAULT_USER_COL,
-                "asin": DEFAULT_ITEM_COL,
-                "overall": DEFAULT_RATING_COL,
-                "unixReviewTime": DEFAULT_TIMESTAMP_COL,
-            }
-        )
-
-        # select necessary columns
-        data = pd.DataFrame(
-            data,
-            columns=[
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="\t",
+            engine="python",
+            names=[
                 DEFAULT_USER_COL,
                 DEFAULT_ITEM_COL,
                 DEFAULT_RATING_COL,
                 DEFAULT_TIMESTAMP_COL,
             ],
         )
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
 
+    def make_fea_vec(self):
+        """Make feature vectors for users and items.
+
+        1. For items (movies), we use the last 19 fields as feature, which are the genres,
+        with 1 indicating the movie is of that genre, and 0 indicating it is not;
+        movies can be in several genres at once.
+
+        2. For users, we construct one_hot encoding for age, gender and occupation as their
+        feature, where ages are categorized into 8 groups.
+
+        Returns:
+            user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors.
+            item_feat (numpy.ndarray): The first column is the item id, rest column are feat vectors.
+        """
+        print(f"Making user and item feature vectors for dataset {self.dataset_name}")
+        data = pd.read_table(
+            f"{self.dataset_dir}/raw/ml_100k/u.item",
+            header=None,
+            sep="|",
+            engine="python",
+        )
+        item_feat = data[[0] + [i for i in range(5, 24)]].to_numpy()
+        # first column is the item id, other 19 columns are feature
+        data = pd.read_table(
+            f"{self.dataset_dir}/raw/ml_100k/u.user",
+            header=None,
+            sep="|",
+            engine="python",
+        )
+        age_one_hot = np.eye(8).astype(np.int)
+        # categorize age into 8 groups
+        age_mapping = {
+            1: age_one_hot[0],
+            2: age_one_hot[1],
+            3: age_one_hot[2],
+            4: age_one_hot[3],
+            5: age_one_hot[4],
+            6: age_one_hot[5],
+            7: age_one_hot[6],
+            8: age_one_hot[7],
+        }
+        data["age_one_hot"] = data[1].apply(lambda x: age_mapping[int(x / 10) + 1])
+        col_2 = data[2].unique()
+        col_2_one_hot = np.eye(len(col_2)).astype(np.int)
+        col_2_mapping = {}
+        for idx, col in enumerate(col_2):
+            col_2_mapping[col] = col_2_one_hot[idx]
+        data["col_2_one_hot"] = data[2].apply(lambda x: col_2_mapping[x])
+        col_3 = data[3].unique()
+        col_3_one_hot = np.eye(len(col_3)).astype(np.int)
+
+        col_3_mapping = {}
+        for idx, col in enumerate(col_3):
+            col_3_mapping[col] = col_3_one_hot[idx]
+        data["col_3_one_hot"] = data[3].apply(lambda x: col_3_mapping[x])
+        A = []
+        for i in data.index:
+            A.append(
+                [data.loc[i][0]]
+                + list(data.loc[i]["age_one_hot"])
+                + list(data.loc[i]["col_2_one_hot"])
+                + list(data.loc[i]["col_3_one_hot"])
+            )
+        user_feat = np.stack(A)
+
+        np.savez_compressed(
+            f"{self.dataset_dir}/processed/feature_vec.npz",
+            user_feat=user_feat,
+            item_feat=item_feat,
+        )
+        return user_feat, item_feat
+
+    def load_fea_vec(self):
+        """Load feature vectors for users and items.
+
+        1. For items (movies), we use the last 19 fields as feature, which are the genres,
+        with 1 indicating the movie is of that genre, and 0 indicating it is not;
+        movies can be in several genres at once.
+
+        2. For users, we construct one_hot encoding for age, gender and occupation as their
+        feature, where ages are categorized into 8 groups.
+
+        Returns:
+            user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors.
+            item_feat (numpy.ndarray): The first column is the itm id, rest column are feat vectors.
+        """
+        if not os.path.exists(self.dataset_dir):
+            self.preprocess()
+        if not os.path.exists(f"{self.dataset_dir}/processed/feature_vec.npz"):
+            self.make_fea_vec()
+        print(f"Loading user and item feature vectors for dataset {self.dataset_name}")
+        loaded = np.load(f"{self.dataset_dir}/processed/feature_vec.npz")
+        return loaded["user_feat"], loaded["item_feat"]
+
+
+class Movielens_1m(DatasetBase):
+    """Movielens 1m Dataset."""
+
+    def __init__(self, dataset_name="ml_1m", min_u_c=0, min_i_c=3, root_dir=None):
+        """Init Movielens_1m Class."""
+        super().__init__(
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=ML_1M_URL,
+        )
+
+    def preprocess(self):
+        """Preprocess the raw file.
+
+        Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
+        interactions and save it in the processed directory.
+        """
+        file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.dat")
+        if not os.path.exists(file_name):
+            self.download()
+
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
         self.save_dataframe_as_npz(
             data,
             os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
 
 
-class AmazonInstantVideo(AmazonDataset):
-    r"""AmazonInstantVideo.
+class Movielens_25m(DatasetBase):
+    """Movielens 25m Dataset."""
 
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonInstantVideo Class."""
+    def __init__(self, dataset_name="ml_25m", min_u_c=0, min_i_c=3, root_dir=None):
+        """Init Movielens_25m Class."""
         super().__init__(
-            dataset_name="amazon-instant-video",
+            dataset_name=dataset_name,
             min_u_c=min_u_c,
             min_i_c=min_i_c,
             root_dir=root_dir,
-            url=AMAZON_Amazon_Instant_Video_URL,
+            url=ML_1M_URL,
+        )
+
+    def preprocess(self):
+        """Preprocess the raw file.
+
+        Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
+        interactions and save it in the processed directory.
+        """
+        file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.csv")
+        if not os.path.exists(file_name):
+            self.download()
+
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
 
 
-class AmazonMusicalInstruments(AmazonDataset):
-    r"""AmazonMusicalInstruments.
+class Movielens_10m(DatasetBase):
+    """Movielens 10m Dataset."""
 
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonMusicalInstruments Class."""
+    def __init__(self, dataset_name="ml_10m", min_u_c=0, min_i_c=3, root_dir=None):
+        """Init Movielens_10m Class."""
         super().__init__(
-            dataset_name="amazon-musical-instruments",
+            dataset_name=dataset_name,
             min_u_c=min_u_c,
             min_i_c=min_i_c,
             root_dir=root_dir,
-            url=AMAZON_Musical_Instruments_URL,
+            url=ML_10M_URL,
         )
 
+    def filter_process(self):
+        """Preprocess the raw file.
 
-class AmazonDigitalMusic(AmazonDataset):
-    r"""AmazonDigitalMusic.
+        Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
+        interactions and save it in the processed directory.
+        """
+        file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.dat")
+        if not os.path.exists(file_name):
+            self.download()
 
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonDigitalMusic Class."""
-        super().__init__(
-            dataset_name="amazon-digital-music",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Digital_Music_URL,
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
         )
-
-
-class AmazonBaby(AmazonDataset):
-    r"""AmazonBaby.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonBaby Class."""
-        super().__init__(
-            dataset_name="amazon-baby",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Baby_URL,
-        )
-
-
-class AmazonPatioLawnGarden(AmazonDataset):
-    r"""AmazonPatioLawnGarden.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonPatioLawnGarden Class."""
-        super().__init__(
-            dataset_name="amazon-patio-lawn-garden",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Patio_Lawn_Garden_URL,
-        )
-
-
-class AmazonGroceryGourmetFood(AmazonDataset):
-    r"""AmazonGroceryGourmetFood.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonGroceryGourmetFood Class."""
-        super().__init__(
-            dataset_name="amazon-grocery-gourmet-food",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Grocery_Gourmet_Food_URL,
-        )
-
-
-class AmazonAutomotive(AmazonDataset):
-    r"""AmazonAutomotive.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonAutomotive Class."""
-        super().__init__(
-            dataset_name="amazon-automotive",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Automotive_URL,
-        )
-
-
-class AmazonPetSupplies(AmazonDataset):
-    r"""AmazonPetSupplies.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonPetSupplies Class."""
-        super().__init__(
-            dataset_name="amazon-pet-suppplies",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Pet_Supplies_URL,
-        )
-
-
-class AmazonCellPhonesAndAccessories(AmazonDataset):
-    r"""AmazonCellPhonesAndAccessories.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonPetSupplies Class."""
-        super().__init__(
-            dataset_name="amazon-cell-phones-and-accessories",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Cell_Phones_and_Accessories_URL,
-        )
-
-
-class AmazonHealthAndPersonalCare(AmazonDataset):
-    r"""AmazonHealthAndPersonalCare.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonHealthAndPersonalCare Class."""
-        super().__init__(
-            dataset_name="amazon-health-and-personal-care",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Health_and_Personal_Care_URL,
-        )
-
-
-class AmazonToysAndGames(AmazonDataset):
-    r"""AmazonToysAndGames.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonToysAndGames Class."""
-        super().__init__(
-            dataset_name="amazon-toys-and-games",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Toys_and_Games_URL,
-        )
-
-
-class AmazonVideoGames(AmazonDataset):
-    r"""AmazonVideoGames.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, min_u_c=0, min_i_c=3, root_dir=None):
-        r"""Init AmazonVideoGames Class."""
-        super().__init__(
-            dataset_name="amazon-video-games",
-            min_u_c=min_u_c,
-            min_i_c=min_i_c,
-            root_dir=root_dir,
-            url=AMAZON_Video_Games_URL,
-        )
-
-
-class AmazonToolsAndHomeImprovement(AmazonDataset):
-    r"""AmazonToolsAndHomeImprovement.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonToolsAndHomeImprovement Class."""
-        super().__init__(
-            dataset_name="amazon-tools-and-home-improvement",
-            root_dir=root_dir,
-            url=AMAZON_Tools_and_Home_Improvement_URL,
-        )
-
-
-class AmazonBeauty(AmazonDataset):
-    r"""AmazonBeauty.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonBeauty Class."""
-        super().__init__(
-            dataset_name="amazon-beauty",
-            root_dir=root_dir,
-            url=AMAZON_Beauty_URL,
-        )
-
-
-class AmazonAppsForAndroid(AmazonDataset):
-    r"""AmazonAppsForAndroid.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonAppsForAndroid Class."""
-        super().__init__(
-            dataset_name="amazon-apps-for-android",
-            root_dir=root_dir,
-            url=AMAZON_Apps_for_Android_URL,
-        )
-
-
-class AmazonOfficeProducts(AmazonDataset):
-    r"""AmazonOfficeProducts.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonOfficeProducts Class."""
-        super().__init__(
-            dataset_name="amazon-office-products",
-            root_dir=root_dir,
-            url=AMAZON_Office_Products_URL,
-        )
-
-
-class AmazonBooks(AmazonDataset):
-    r"""AmazonBooks.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonBooks Class."""
-        super().__init__(
-            dataset_name="amazon-books",
-            root_dir=root_dir,
-            url=AMAZON_Books_URL,
-        )
-
-
-class AmazonElectronics(AmazonDataset):
-    r"""AmazonElectronics.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonElectronics Class."""
-        super().__init__(
-            dataset_name="amazon-electronics",
-            root_dir=root_dir,
-            url=AMAZON_Electronics_URL,
-        )
-
-
-class AmazonMoviesAndTV(AmazonDataset):
-    r"""AmazonMoviesAndTV.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonMoviesAndTV Class."""
-        super().__init__(
-            dataset_name="amazon-movies-and-tv",
-            root_dir=root_dir,
-            url=AMAZON_Movies_and_TV_URL,
-        )
-
-
-class AmazonCDsAndVinyl(AmazonDataset):
-    r"""AmazonCDsAndVinyl.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonCDsAndVinyl Class."""
-        super().__init__(
-            dataset_name="amazon-cds-and-vinyl",
-            root_dir=root_dir,
-            url=AMAZON_CDs_and_Vinyl_URL,
-        )
-
-
-class AmazonClothingShoesAndJewelry(AmazonDataset):
-    r"""AmazonClothingShoesAndJewelry.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonClothingShoesAndJewelry Class."""
-        super().__init__(
-            dataset_name="amazon-clothing_shoes_and_jewelry",
-            root_dir=root_dir,
-            url=AMAZON_Clothing_Shoes_and_Jewelry_URL,
-        )
-
-
-class AmazonHomeAndKitchen(AmazonDataset):
-    r"""AmazonHomeAndKitchen.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonHomeAndKitchen Class."""
-        super().__init__(
-            dataset_name="amazon-home-and-kitchen",
-            root_dir=root_dir,
-            url=AMAZON_Home_and_Kitchen_URL,
-        )
-
-
-class AmazonKindleStore(AmazonDataset):
-    r"""AmazonKindleStore.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonKindleStore Class."""
-        super().__init__(
-            dataset_name="amazon-kindle-store",
-            root_dir=root_dir,
-            url=AMAZON_Kindle_Store_URL,
-        )
-
-
-class AmazonSportsAndOutdoors(AmazonDataset):
-    r"""AmazonSportsAndOutdoors.
-
-    Amazon Review dataset.
-    """
-
-    def __init__(self, root_dir=None):
-        r"""Init AmazonSportsAndOutdoors Class."""
-        super().__init__(
-            dataset_name="amazon-sports-and-outdoors",
-            root_dir=root_dir,
-            url=AMAZON_Sports_and_Outdoors_URL,
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
         )
