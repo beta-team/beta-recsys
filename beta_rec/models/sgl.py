@@ -309,7 +309,7 @@ class SGL(nn.Module):
 
         for k in range(1, self.n_layers + 1):
 
-            ego_embeddings = torch.matmul(self.adj_mat, ego_embeddings)
+            ego_embeddings = torch.matmul(self.adj_mat.to(self.device), ego_embeddings)
             all_embeddings += [ego_embeddings]
 
             ego_embeddings_sub1 = torch.matmul(
