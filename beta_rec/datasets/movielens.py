@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 
-from ..datasets.dataset_base import DatasetBase
-from ..utils.constants import (
+from beta_rec.datasets.dataset_base import DatasetBase
+from beta_rec.utils.constants import (
     DEFAULT_ITEM_COL,
     DEFAULT_RATING_COL,
     DEFAULT_TIMESTAMP_COL,
@@ -14,6 +14,7 @@ from ..utils.constants import (
 # download_url
 ML_100K_URL = r"http://files.grouplens.org/datasets/movielens/ml-100k.zip"
 ML_1M_URL = r"http://files.grouplens.org/datasets/movielens/ml-1m.zip"
+ML_10M_URL = r"http://files.grouplens.org/datasets/movielens/ml-10m.zip"
 ML_25M_URL = r"http://files.grouplens.org/datasets/movielens/ml-25m.zip"
 
 # processed data url
@@ -54,7 +55,6 @@ class Movielens_100k(DatasetBase):
 
     def preprocess(self):
         """Preprocess the raw file.
-
         Preprocess the file downloaded via the url, convert it to a dataframe consisting of the user-item
         interactions and save it in the processed directory.
         """
@@ -81,14 +81,11 @@ class Movielens_100k(DatasetBase):
 
     def make_fea_vec(self):
         """Make feature vectors for users and items.
-
         1. For items (movies), we use the last 19 fields as feature, which are the genres,
         with 1 indicating the movie is of that genre, and 0 indicating it is not;
         movies can be in several genres at once.
-
         2. For users, we construct one_hot encoding for age, gender and occupation as their
         feature, where ages are categorized into 8 groups.
-
         Returns:
             user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors.
             item_feat (numpy.ndarray): The first column is the item id, rest column are feat vectors.
@@ -153,14 +150,11 @@ class Movielens_100k(DatasetBase):
 
     def load_fea_vec(self):
         """Load feature vectors for users and items.
-
         1. For items (movies), we use the last 19 fields as feature, which are the genres,
         with 1 indicating the movie is of that genre, and 0 indicating it is not;
         movies can be in several genres at once.
-
         2. For users, we construct one_hot encoding for age, gender and occupation as their
         feature, where ages are categorized into 8 groups.
-
         Returns:
             user_feat (numpy.ndarray): The first column is the user id, rest column are feat vectors.
             item_feat (numpy.ndarray): The first column is the itm id, rest column are feat vectors.
@@ -189,7 +183,6 @@ class Movielens_1m(DatasetBase):
 
     def preprocess(self):
         """Preprocess the raw file.
-
         Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
         interactions and save it in the processed directory.
         """
@@ -225,12 +218,51 @@ class Movielens_25m(DatasetBase):
             min_u_c=min_u_c,
             min_i_c=min_i_c,
             root_dir=root_dir,
-            url=ML_1M_URL,
+            url=ML_25M_URL,
         )
 
     def preprocess(self):
         """Preprocess the raw file.
+        Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
+        interactions and save it in the processed directory.
+        """
+        file_name = os.path.join(self.raw_path, self.dataset_name, "ratings.csv")
+        if not os.path.exists(file_name):
+            self.download()
 
+        data = pd.read_table(
+            file_name,
+            header=None,
+            sep="::",
+            engine="python",
+            names=[
+                DEFAULT_USER_COL,
+                DEFAULT_ITEM_COL,
+                DEFAULT_RATING_COL,
+                DEFAULT_TIMESTAMP_COL,
+            ],
+        )
+        self.save_dataframe_as_npz(
+            data,
+            os.path.join(self.processed_path, f"{self.dataset_name}_interaction.npz"),
+        )
+
+
+class Movielens_10m(DatasetBase):
+    """Movielens 10m Dataset."""
+
+    def __init__(self, dataset_name="ml_10m", min_u_c=0, min_i_c=3, root_dir=None):
+        """Init Movielens_10m Class."""
+        super().__init__(
+            dataset_name=dataset_name,
+            min_u_c=min_u_c,
+            min_i_c=min_i_c,
+            root_dir=root_dir,
+            url=ML_10M_URL,
+        )
+
+    def preprocess(self):
+        """Preprocess the raw file.
         Preprocess the file downloaded via the url, convert it to a DataFrame consisting of the user-item
         interactions and save it in the processed directory.
         """
