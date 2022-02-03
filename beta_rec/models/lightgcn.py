@@ -67,7 +67,7 @@ class LightGCN(torch.nn.Module):
         if self.training:
 
             norm_adj = self.dropout(x=norm_adj, keep_prob=self.config["keep_pro"])
-            
+
         for layer in range(self.n_layers):
 
             all_emb = torch.sparse.mm(norm_adj, all_emb)
