@@ -4,8 +4,12 @@ import pandas as pd
 
 from beta_rec.datasets.dataset_base import DatasetBase
 from beta_rec.utils.common_util import get_data_frame_from_gzip_file
-from beta_rec.utils.constants import (DEFAULT_ITEM_COL, DEFAULT_RATING_COL,
-                                      DEFAULT_TIMESTAMP_COL, DEFAULT_USER_COL)
+from beta_rec.utils.constants import (
+    DEFAULT_ITEM_COL,
+    DEFAULT_RATING_COL,
+    DEFAULT_TIMESTAMP_COL,
+    DEFAULT_USER_COL,
+)
 
 # Download URL.
 AMAZON_Amazon_Instant_Video_URL = (
