@@ -21,7 +21,6 @@ class LightGCN(torch.nn.Module):
 
         self.user_embedding = nn.Embedding(self.n_users, self.emb_dim)
         self.item_embedding = nn.Embedding(self.n_items, self.emb_dim)
-        self.f = nn.Sigmoid()
         self.init_emb()
 
     def dropout(self, x, keep_prob):
@@ -65,13 +64,12 @@ class LightGCN(torch.nn.Module):
         # else:
         #     norm_adj = norm_adj
         if self.training:
-
             norm_adj = self.dropout(x=norm_adj, keep_prob=self.config["keep_pro"])
 
         for layer in range(self.n_layers):
-
             all_emb = torch.sparse.mm(norm_adj, all_emb)
             embs.append(all_emb)
+
         embs = torch.stack(embs, dim=1)
         embs = torch.mean(embs, dim=1)
         u_g_embeddings, i_g_embeddings = torch.split(embs, [self.n_users, self.n_items])
@@ -86,6 +84,7 @@ class LightGCN(torch.nn.Module):
         Return:
             scores (int): dot product.
         """
+        self.eval()
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
 
@@ -96,7 +95,7 @@ class LightGCN(torch.nn.Module):
             ua_embeddings, ia_embeddings = self.forward(self.norm_adj)
             u_g_embeddings = ua_embeddings[users_t]
             i_g_embeddings = ia_embeddings[items_t]
-            scores = self.f(torch.mul(u_g_embeddings, i_g_embeddings).sum(dim=1))
+            scores = torch.mul(u_g_embeddings, i_g_embeddings).sum(dim=1)
         return scores
 
 
