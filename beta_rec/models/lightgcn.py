@@ -86,6 +86,7 @@ class LightGCN(torch.nn.Module):
         Return:
             scores (int): dot product.
         """
+        self.eval()
         users_t = torch.tensor(users, dtype=torch.int64, device=self.device)
         items_t = torch.tensor(items, dtype=torch.int64, device=self.device)
 
