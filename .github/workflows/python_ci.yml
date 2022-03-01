@@ -97,3 +97,7 @@ jobs:
         file: ./coverage.xml # optional
         flags: unittests # optional
         fail_ci_if_error: true # optional (default = false)
+    - name: github-repo-stats
+      uses: jgehrcke/github-repo-stats@v1.3.0
+
+      
