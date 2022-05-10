@@ -28,7 +28,7 @@ class SimGCL(torch.nn.Module):
         )
         all_embeddings = []
         for k in range(self.n_layers):
-            ego_embeddings = torch.sparse.mm(self.norm_adj, ego_embeddings)
+            ego_embeddings = sparse.mm(self.norm_adj, ego_embeddings)
             if perturbed:
                 random_noise = torch.rand_like(ego_embeddings)
                 ego_embeddings += (
