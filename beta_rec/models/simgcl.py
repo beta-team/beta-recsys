@@ -26,9 +26,11 @@ class SimGCL(torch.nn.Module):
         ego_embeddings = torch.cat(
             (self.user_embedding.weight, self.item_embedding.weight), dim=0
         )
+
+        norm_adj = self.norm_adj.to(self.device)
         all_embeddings = []
         for k in range(self.n_layers):
-            ego_embeddings = sparse.mm(self.norm_adj, ego_embeddings)
+            ego_embeddings = sparse.mm(norm_adj, ego_embeddings)
             if perturbed:
                 random_noise = torch.rand_like(ego_embeddings)
                 ego_embeddings += (
