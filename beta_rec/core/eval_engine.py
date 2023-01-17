@@ -230,12 +230,10 @@ class EvalEngine(object):
 
     def predict(self, data_df, model, batch_eval=False):
         """Make prediction for a trained model.
-
         Args:
             data_df (DataFrame): A dataset to be evaluated.
             model: A trained model.
             batch_eval (Boolean): A signal to indicate if the model is evaluated in batches.
-
         Returns:
             array: predicted scores.
         """
@@ -244,19 +242,28 @@ class EvalEngine(object):
         if batch_eval:
             n_batch = len(data_df) // self.batch_size + 1
             predictions = np.array([])
+            stop_batch = False # If we need to set a smaller number of batches
+            
             for idx in range(n_batch):
-                start_idx = idx * self.batch_size
-                end_idx = min((idx + 1) * self.batch_size, len(data_df))
-                sub_user_ids = user_ids[start_idx:end_idx]
-                sub_item_ids = item_ids[start_idx:end_idx]
-                sub_predictions = np.array(
-                    model.predict(sub_user_ids, sub_item_ids)
-                    .flatten()
-                    .to(torch.device("cpu"))
-                    .detach()
-                    .numpy()
-                )
-                predictions = np.append(predictions, sub_predictions)
+                if not stop_batch:
+                    start_idx = idx * self.batch_size
+                    end_idx = min((idx + 1) * self.batch_size, len(data_df))
+
+                    if len(data_df) == end_idx + 1:
+                        end_idx = len(data_df)
+                        stop_batch = True
+
+                    sub_user_ids = user_ids[start_idx:end_idx]
+                    sub_item_ids = item_ids[start_idx:end_idx]
+
+                    sub_predictions = np.array(
+                        model.predict(sub_user_ids, sub_item_ids)
+                        .flatten()
+                        .to(torch.device("cpu"))
+                        .detach()
+                        .numpy()
+                    )
+                    predictions = np.append(predictions, sub_predictions)
         else:
             predictions = np.array(
                 model.predict(user_ids, item_ids)
