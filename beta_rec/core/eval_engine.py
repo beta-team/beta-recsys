@@ -242,7 +242,7 @@ class EvalEngine(object):
         if batch_eval:
             n_batch = len(data_df) // self.batch_size + 1
             predictions = np.array([])
-            stop_batch = False # If we need to set a smaller number of batches
+            stop_batch = False
             
             for idx in range(n_batch):
                 if not stop_batch:
