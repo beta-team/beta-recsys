@@ -1,6 +1,6 @@
 requests==2.32.0
 tensorboardX>=2.1
-ray==2.8.1
+ray==2.43.0
 torch>=1.7.1
 numpy>=1.16.0
 tqdm>=4.45.0
